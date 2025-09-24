@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://norbertzzentai.github.io/software-dev-prep/sitemap.xml
+
+# Crawl delay (optional, helps with load)
+Crawl-delay: 1
+
+# Block unnecessary paths
+Disallow: /scripts/
+Disallow: *.js$
+Disallow: *.css$
+Disallow: /assets/icons/

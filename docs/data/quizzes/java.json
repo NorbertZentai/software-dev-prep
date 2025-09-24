@@ -1,0 +1,67 @@
+{
+  "title": "Java alapok kvíz",
+  "description": "Java programozási alapismeretek tesztelése",
+  "category": "programming",
+  "difficulty": "beginner",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "Melyik kulcsszó szolgál új objektum létrehozására Java-ban?",
+      "options": [
+        "create",
+        "new",
+        "make",
+        "object"
+      ],
+      "correct": 1,
+      "explanation": "A 'new' kulcsszó használatos új objektumok létrehozására Java-ban. Ez az operátor memóriát foglal le az objektum számára és meghívja a konstruktort."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "Mi a különbség a == és az equals() között Java-ban?",
+      "options": [
+        "Nincs különbség, ugyanazt csinálják",
+        "A == referenciákat, az equals() értékeket hasonlít össze",
+        "A == gyorsabb, az equals() pontosabb",
+        "A == csak primitívekhez használható"
+      ],
+      "correct": 1,
+      "explanation": "A == operátor referenciákat hasonlít össze (ugyanaz az objektum-e), míg az equals() metódus az objektumok tartalmát hasonlítja össze."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "A Java egy interpretált nyelv.",
+      "correct": false,
+      "explanation": "A Java egy hibrid nyelv. A Java kód bytecode-ra kompilálódik, amelyet aztán a JVM interpretál vagy just-in-time (JIT) kompilál."
+    },
+    {
+      "id": 4,
+      "type": "multiple",
+      "question": "Melyik NEM SOLID alapelv?",
+      "options": [
+        "Single Responsibility Principle",
+        "Open/Closed Principle",
+        "Don't Repeat Yourself",
+        "Dependency Inversion Principle"
+      ],
+      "correct": 2,
+      "explanation": "A DRY (Don't Repeat Yourself) nem része a SOLID alapelveknek. A SOLID: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion."
+    },
+    {
+      "id": 5,
+      "type": "multiple",
+      "question": "Mi történik, ha egy metódusban nem kezeljük le a checked exception-t?",
+      "options": [
+        "A program lefagy",
+        "Compilation error",
+        "Runtime exception keletkezik",
+        "A program automatikusan lekezeli"
+      ],
+      "correct": 1,
+      "explanation": "A checked exception-öket kötelező lekezelnünk (try-catch) vagy továbbdobnunk (throws). Ha nem tesszük meg, compilation error lesz."
+    }
+  ]
+}

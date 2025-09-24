@@ -1,0 +1,67 @@
+{
+  "title": "Web fejlesztés kvíz",
+  "description": "HTML, CSS, JavaScript és web technológiák alapjai",
+  "category": "web",
+  "difficulty": "beginner",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "Melyik HTML tag szolgál hivatkozások létrehozására?",
+      "options": [
+        "<link>",
+        "<a>",
+        "<href>",
+        "<url>"
+      ],
+      "correct": 1,
+      "explanation": "Az <a> (anchor) tag használatos hivatkozások létrehozására. Az href attribútumban adjuk meg a cél URL-t."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "Melyik CSS property változtatja meg a szöveg színét?",
+      "options": [
+        "text-color",
+        "font-color",
+        "color",
+        "text-style"
+      ],
+      "correct": 2,
+      "explanation": "A 'color' property állítja be a szöveg színét CSS-ben. Értékként használhatunk színneveket, hex kódokat, RGB vagy HSL értékeket."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "A JavaScript egy erősen típusos nyelv.",
+      "correct": false,
+      "explanation": "A JavaScript gyengén típusos (dynamically typed) nyelv. A változók típusa futásidőben változhat és nem kell előre deklarálni."
+    },
+    {
+      "id": 4,
+      "type": "multiple",
+      "question": "Mi a különbség a let és var között JavaScript-ben?",
+      "options": [
+        "Nincs különbség",
+        "let funkció, var blokk szintű",
+        "var funkció, let blokk szintű",
+        "let gyorsabb"
+      ],
+      "correct": 2,
+      "explanation": "A 'var' funkció szintű hatókörrel rendelkezik, míg a 'let' blokk szintű hatókörrel. A 'let' biztonságosabb és modernebb megoldás."
+    },
+    {
+      "id": 5,
+      "type": "multiple",
+      "question": "Melyik HTTP státuszkód jelzi a sikeres kérést?",
+      "options": [
+        "404",
+        "500",
+        "200",
+        "302"
+      ],
+      "correct": 2,
+      "explanation": "A 200 OK státuszkód jelzi, hogy a HTTP kérés sikeresen teljesült. Ez a leggyakoribb sikeres válasz."
+    }
+  ]
+}

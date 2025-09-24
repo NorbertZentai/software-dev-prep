@@ -1,0 +1,128 @@
+{
+  "roadmap": {
+    "title": "Software Developer Learning Path",
+    "description": "Teljes fejlesztői felkészülési útmutató",
+    "phases": [
+      {
+        "id": "fundamentals",
+        "title": "1. Alapok",
+        "description": "Programozási alapok és eszközök",
+        "duration": "4-6 hét",
+        "skills": [
+          {
+            "id": "java-basics",
+            "name": "Java alapok",
+            "path": "/theory/java",
+            "exercises": "/exercises/java",
+            "quiz": "/quiz/java",
+            "status": "available"
+          },
+          {
+            "id": "git-version-control",
+            "name": "Git verziókezelés",
+            "path": "/theory/git",
+            "exercises": "/exercises/git",
+            "status": "available"
+          },
+          {
+            "id": "sql-basics",
+            "name": "SQL alapok",
+            "path": "/theory/sql",
+            "exercises": "/exercises/sql",
+            "quiz": "/quiz/sql",
+            "status": "available"
+          }
+        ]
+      },
+      {
+        "id": "frameworks",
+        "title": "2. Keretrendszerek",
+        "description": "Spring Framework és modern eszközök",
+        "duration": "6-8 hét",
+        "skills": [
+          {
+            "id": "spring-framework",
+            "name": "Spring Framework",
+            "path": "/theory/spring",
+            "exercises": "/exercises/java",
+            "status": "available"
+          },
+          {
+            "id": "testing",
+            "name": "Tesztelés",
+            "path": "/theory/testing",
+            "exercises": "/exercises/java",
+            "quiz": "/quiz/testing",
+            "status": "available"
+          }
+        ]
+      },
+      {
+        "id": "web-technologies",
+        "title": "3. Web technológiák",
+        "description": "Frontend és backend integrációs ismeretek",
+        "duration": "4-6 hét",
+        "skills": [
+          {
+            "id": "web-fundamentals",
+            "name": "Web alapok",
+            "path": "/theory/web",
+            "exercises": "/exercises/web",
+            "quiz": "/quiz/web",
+            "status": "available"
+          },
+          {
+            "id": "rest-apis",
+            "name": "REST API-k",
+            "path": "/theory/arch",
+            "exercises": "/exercises/arch",
+            "status": "available"
+          }
+        ]
+      },
+      {
+        "id": "architecture",
+        "title": "4. Architektúra",
+        "description": "Szoftver architektúra és tervezési minták",
+        "duration": "3-4 hét",
+        "skills": [
+          {
+            "id": "design-patterns",
+            "name": "Tervezési minták",
+            "path": "/theory/arch",
+            "exercises": "/exercises/arch",
+            "quiz": "/quiz/arch",
+            "status": "available"
+          },
+          {
+            "id": "microservices",
+            "name": "Mikroszolgáltatások",
+            "path": "/theory/arch",
+            "status": "planned"
+          }
+        ]
+      },
+      {
+        "id": "soft-skills",
+        "title": "5. Soft skillek",
+        "description": "Kommunikáció és csapatmunka",
+        "duration": "folyamatos",
+        "skills": [
+          {
+            "id": "interview-prep",
+            "name": "Interjú felkészítés",
+            "path": "/theory/softskills",
+            "checklist": "/checklists/interview",
+            "status": "available"
+          },
+          {
+            "id": "project-management",
+            "name": "Projekt menedzsment",
+            "checklist": "/checklists/project-setup",
+            "status": "available"
+          }
+        ]
+      }
+    ]
+  }
+}

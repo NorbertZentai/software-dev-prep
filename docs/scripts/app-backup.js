@@ -8,6 +8,8 @@ class App {
     this.router = new Router();
     this.themeManager = new ThemeManager();
     this.storageManager = new StorageManager();
+    this.searchManager = null; // Initialize later when needed
+    this.sidebarManager = null; // Initialize later when needed
     
     this.init();
   }
@@ -124,18 +126,28 @@ class App {
     // Create update notification
     const notification = document.createElement('div');
     notification.className = 'update-notification';
-    notification.innerHTML = '<div class="update-content">' +
-      '<span>🔄 Új verzió elérhető!</span>' +
-      '<button onclick="window.location.reload()" class="update-btn">Frissítés</button>' +
-      '<button onclick="this.parentElement.parentElement.remove()" class="dismiss-btn">×</button>' +
-      '</div>';
+    notification.innerHTML = `
+      <div class="update-content">
+        <span>🔄 Új verzió elérhető!</span>
+        <button onclick="window.location.reload()" class="update-btn">Frissítés</button>
+        <button onclick="this.parentElement.parentElement.remove()" class="dismiss-btn">×</button>
+      </div>
+    `;
     
     // Add styles
-    const styles = 'position: fixed; top: 20px; right: 20px; background: var(--accent-primary); ' +
-      'color: white; padding: 1rem; border-radius: 0.5rem; ' +
-      'box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000;';
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--accent-primary);
+      color: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    `;
     
-    notification.style.cssText = styles;
     document.body.appendChild(notification);
     
     // Auto-dismiss after 10 seconds
@@ -155,4 +167,84 @@ class App {
 }
 
 // Initialize app when script loads
+new App();"update-content">
+        <span>🔄 Új verzió elérhető!</span>
+        <button onclick="window.location.reload()" class="update-btn">Frissítés</button>
+        <button onclick="this.parentElement.parentElement.remove()" class="dismiss-btn">×</button>
+      </div>
+    `;
+    
+    // Add styles
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--accent-primary);
+      color: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-dismiss after 10 seconds
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.remove();
+      }
+    }, 10000);
+  }
+  
+  trackPageView() {
+    // Send page view to Plausible analytics
+    if (window.plausible) {
+      window.plausible('pageview');
+    }
+  }
+}
+
+// Initialize app when script loads
+new App();
+    this.sidebarManager.init();
+    
+    // Initialize search
+    this.searchManager.init();
+    
+    // Initialize router last
+    this.router.init();
+    
+    // Set up active navigation highlighting
+    this.setupActiveNav();
+    
+    console.log('🚀 Software Developer Prep App initialized');
+  }
+  
+  setupActiveNav() {
+    // Update active navigation links
+    const updateActiveNav = () => {
+      const currentHash = window.location.hash || '#/theory/java';
+      
+      // Remove active class from all nav links
+      document.querySelectorAll('.nav-link, .nav-group a').forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      // Add active class to current link
+      document.querySelectorAll(`a[href="${currentHash}"]`).forEach(link => {
+        link.classList.add('active');
+      });
+    };
+    
+    // Update on hash change
+    window.addEventListener('hashchange', updateActiveNav);
+    
+    // Initial update
+    updateActiveNav();
+  }
+}
+
+// Initialize app
 new App();

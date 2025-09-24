@@ -1,0 +1,67 @@
+{
+  "title": "Szoftver architektúra kvíz",
+  "description": "Tervezési minták, architektúrális megoldások és best practice-ek",
+  "category": "architecture",
+  "difficulty": "intermediate",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "Melyik tervezési minta biztosítja, hogy egy osztálynak csak egy példánya legyen?",
+      "options": [
+        "Factory",
+        "Singleton",
+        "Observer",
+        "Strategy"
+      ],
+      "correct": 1,
+      "explanation": "A Singleton pattern biztosítja, hogy egy osztálynak csak egy példánya legyen a teljes alkalmazás életciklusa során, és globális hozzáférést biztosít hozzá."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "Mi a REST architektúra egyik alapelve?",
+      "options": [
+        "Statefull kommunikáció",
+        "Stateless kommunikáció",
+        "Binary protokoll",
+        "Synchrön üzenetküldés"
+      ],
+      "correct": 1,
+      "explanation": "A REST (Representational State Transfer) egyik alapelve a stateless kommunikáció: minden kérésnek tartalmaznia kell az összes szükséges információt."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "A mikroszolgáltatás architektúrában minden szolgáltatásnak saját adatbázisa van.",
+      "correct": true,
+      "explanation": "A mikroszolgáltatás architektúra egyik alapelve, hogy minden szolgáltatás független legyen, beleértve az adattárolást is. Ez biztosítja a loose coupling-ot."
+    },
+    {
+      "id": 4,
+      "type": "multiple",
+      "question": "Melyik SOLID alapelv szerint egy osztály csak egy okból változhat?",
+      "options": [
+        "Open/Closed Principle",
+        "Single Responsibility Principle",
+        "Liskov Substitution Principle",
+        "Interface Segregation Principle"
+      ],
+      "correct": 1,
+      "explanation": "A Single Responsibility Principle (SRP) szerint egy osztálynak csak egy felelőssége legyen, így csak egy okból kell változnia."
+    },
+    {
+      "id": 5,
+      "type": "multiple",
+      "question": "Mi a különbség a synchronous és asynchronous kommunikáció között?",
+      "options": [
+        "Nincs különbség",
+        "Sync blokkoló, async nem blokkoló",
+        "Async gyorsabb",
+        "Sync biztonságosabb"
+      ],
+      "correct": 1,
+      "explanation": "A synchronous kommunikáció blokkoló: a küldő vár a válaszra. Az asynchronous nem blokkoló: a küldő folytatja a munkát anélkül, hogy várna."
+    }
+  ]
+}

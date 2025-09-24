@@ -1,0 +1,67 @@
+{
+  "title": "SQL alapok kvíz",
+  "description": "SQL lekérdezések és adatbázis-kezelés alapjai",
+  "category": "database",
+  "difficulty": "beginner",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "Melyik SQL parancs szolgál adatok lekérdezésére?",
+      "options": [
+        "GET",
+        "FETCH",
+        "SELECT",
+        "RETRIEVE"
+      ],
+      "correct": 2,
+      "explanation": "A SELECT parancs az alapvető adatlekérdező utasítás SQL-ben. Segítségével táblákból tudunk adatokat kiválasztani és lekérdezni."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "Mi a célja a PRIMARY KEY-nek?",
+      "options": [
+        "Gyorsabb lekérdezések",
+        "Egyedi azonosítás",
+        "Adattípus meghatározás",
+        "Index létrehozás"
+      ],
+      "correct": 1,
+      "explanation": "A PRIMARY KEY egyedileg azonosítja a táblában lévő sorokat. Nem lehet NULL és egyedinek kell lennie minden sorban."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "Az INNER JOIN visszaadja az összes sort mindkét táblából.",
+      "correct": false,
+      "explanation": "Az INNER JOIN csak azokat a sorokat adja vissza, amelyeknek van megfelelő párja mindkét táblában. Az összes sort a FULL OUTER JOIN adja vissza."
+    },
+    {
+      "id": 4,
+      "type": "multiple",
+      "question": "Melyik paranccsal hozunk létre új táblát?",
+      "options": [
+        "NEW TABLE",
+        "CREATE TABLE",
+        "MAKE TABLE",
+        "ADD TABLE"
+      ],
+      "correct": 1,
+      "explanation": "A CREATE TABLE paranccsal hozunk létre új táblákat az adatbázisban. Meg kell adnunk a tábla nevét és az oszlopok definícióját."
+    },
+    {
+      "id": 5,
+      "type": "multiple",
+      "question": "Mi a különbség a DELETE és a TRUNCATE között?",
+      "options": [
+        "Nincs különbség",
+        "DELETE sorokat, TRUNCATE táblát töröl",
+        "DELETE feltételes, TRUNCATE teljes táblát töröl",
+        "DELETE gyorsabb"
+      ],
+      "correct": 2,
+      "explanation": "A DELETE parancs feltételekkel (WHERE) sorokat töröl és vissza lehet vonni, míg a TRUNCATE a teljes tábla tartalmát törli gyorsan, de nem visszavonható."
+    }
+  ]
+}

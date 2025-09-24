@@ -1,0 +1,72 @@
+{
+  "categories": [
+    {
+      "id": "programming",
+      "name": "Programozás",
+      "color": "#3b82f6",
+      "tags": ["java", "oop", "algoritmusok", "adatstruktúrák", "clean-code"]
+    },
+    {
+      "id": "frameworks",
+      "name": "Keretrendszerek",
+      "color": "#10b981",
+      "tags": ["spring", "spring-boot", "hibernate", "maven", "gradle"]
+    },
+    {
+      "id": "database",
+      "name": "Adatbázis",
+      "color": "#f59e0b",
+      "tags": ["sql", "postgresql", "mysql", "indexek", "optimalizáció"]
+    },
+    {
+      "id": "web",
+      "name": "Web fejlesztés",
+      "color": "#ef4444",
+      "tags": ["html", "css", "javascript", "typescript", "react", "rest"]
+    },
+    {
+      "id": "testing",
+      "name": "Tesztelés",
+      "color": "#8b5cf6",
+      "tags": ["junit", "mockito", "integration-testing", "tdd", "bdd"]
+    },
+    {
+      "id": "architecture",
+      "name": "Architektúra",
+      "color": "#06b6d4",
+      "tags": ["design-patterns", "solid", "microservices", "api-design"]
+    },
+    {
+      "id": "tools",
+      "name": "Eszközök",
+      "color": "#84cc16",
+      "tags": ["git", "docker", "ci-cd", "ide", "debugging"]
+    },
+    {
+      "id": "soft-skills",
+      "name": "Soft skillek",
+      "color": "#f97316",
+      "tags": ["kommunikáció", "csapatmunka", "problémamegoldás", "időmenedzsment"]
+    }
+  ],
+  "difficulty_levels": [
+    {
+      "id": "beginner",
+      "name": "Kezdő",
+      "color": "#22c55e",
+      "description": "Alapismeretek, első lépések"
+    },
+    {
+      "id": "intermediate",
+      "name": "Haladó",
+      "color": "#f59e0b",
+      "description": "Mélyebb ismeretek, komplex problémák"
+    },
+    {
+      "id": "advanced",
+      "name": "Profi",
+      "color": "#ef4444",
+      "description": "Szakértői szint, architektúrális döntések"
+    }
+  ]
+}
