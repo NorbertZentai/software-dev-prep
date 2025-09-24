@@ -8,12 +8,7 @@
       "id": 1,
       "type": "multiple",
       "question": "Melyik tervezési minta biztosítja, hogy egy osztálynak csak egy példánya legyen?",
-      "options": [
-        "Factory",
-        "Singleton",
-        "Observer",
-        "Strategy"
-      ],
+      "options": ["Factory", "Singleton", "Observer", "Strategy"],
       "correct": 1,
       "explanation": "A Singleton pattern biztosítja, hogy egy osztálynak csak egy példánya legyen a teljes alkalmazás életciklusa során, és globális hozzáférést biztosít hozzá."
     },

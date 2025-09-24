@@ -8,12 +8,7 @@
       "id": 1,
       "type": "multiple",
       "question": "Melyik kulcsszó szolgál új objektum létrehozására Java-ban?",
-      "options": [
-        "create",
-        "new",
-        "make",
-        "object"
-      ],
+      "options": ["create", "new", "make", "object"],
       "correct": 1,
       "explanation": "A 'new' kulcsszó használatos új objektumok létrehozására Java-ban. Ez az operátor memóriát foglal le az objektum számára és meghívja a konstruktort."
     },

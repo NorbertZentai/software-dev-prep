@@ -1,194 +1,246 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hu">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  
-  <!-- SEO Meta Tags -->
-  <title>Software Developer Prep - Állásfelkészítő Platform</title>
-  <meta name="description" content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, tesztelés, architektúra témákban. Ingyenes elméleti anyagok, gyakorlatok és kvízek." />
-  <meta name="keywords" content="java, spring, sql, szoftverfejlesztés, álláskereső, felkészülés, programozás, backend, interjú" />
-  <meta name="author" content="Software Developer Prep" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://norbertzzentai.github.io/software-dev-prep/" />
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://norbertzzentai.github.io/software-dev-prep/" />
-  <meta property="og:title" content="Software Developer Prep - Állásfelkészítő Platform" />
-  <meta property="og:description" content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, tesztelés, architektúra témákban. Ingyenes elméleti anyagok, gyakorlatok és kvízek." />
-  <meta property="og:image" content="https://norbertzzentai.github.io/software-dev-prep/assets/og-default.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Software Developer Prep platform logo" />
-  <meta property="og:locale" content="hu_HU" />
-  <meta property="og:site_name" content="Software Developer Prep" />
-  
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://norbertzzentai.github.io/software-dev-prep/" />
-  <meta property="twitter:title" content="Software Developer Prep - Állásfelkészítő Platform" />
-  <meta property="twitter:description" content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, tesztelés, architektúra témákban." />
-  <meta property="twitter:image" content="https://norbertzzentai.github.io/software-dev-prep/assets/og-default.png" />
-  
-  <!-- PWA Meta Tags -->
-  <meta name="theme-color" content="#0f172a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Dev Prep" />
-  <meta name="application-name" content="Dev Prep" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="msapplication-TileColor" content="#0f172a" />
-  <meta name="msapplication-config" content="./browserconfig.xml" />
-  
-  <!-- Preload critical resources -->
-  <link rel="preload" href="./styles/main.css" as="style" />
-  <link rel="preload" href="./scripts/app.js" as="script" />
-  
-  <!-- Icons and Manifest -->
-  <link rel="icon" href="./assets/logo.svg" type="image/svg+xml" />
-  <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
-  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
-  <link rel="manifest" href="./manifest.webmanifest" />
-  
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="./styles/main.css" />
-  
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "Software Developer Prep",
-    "description": "Komplett szoftverfejlesztő állásfelkészítő platform",
-    "url": "https://norbertzzentai.github.io/software-dev-prep/",
-    "logo": "https://norbertzzentai.github.io/software-dev-prep/assets/logo.svg",
-    "educationalCredentialAwarded": "Szoftverfejlesztő készségek",
-    "teaches": [
-      "Java programozás",
-      "Spring Framework",
-      "SQL és adatbázis kezelés",
-      "Szoftver tesztelés",
-      "Szoftver architektúra",
-      "Git verziókezelés"
-    ]
-  }
-  </script>
-</head>
-<body>
-  <header class="topbar">
-    <div class="header-content">
-      <div class="logo-section">
-        <img src="./assets/logo.svg" alt="Software Dev Prep Logo" class="logo" />
-        <h1 class="site-title">Software Dev Prep</h1>
-      </div>
-      <nav class="main-nav">
-        <a href="#/theory/java" class="nav-link">📚 Elmélet</a>
-        <a href="#/exercises/java" class="nav-link">💻 Gyakorlat</a>
-        <a href="#/quiz/java" class="nav-link">🧩 Kvíz</a>
-        <a href="#/roadmap" class="nav-link">🗺️ Roadmap</a>
-      </nav>
-      <div class="header-tools">
-        <input id="search-input" placeholder="🔍 Keresés..." />
-        <button id="theme-toggle" class="theme-btn" title="Sötét/Világos mód">🌙</button>
-      </div>
-    </div>
-  </header>
-  
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-content">
-      <h3>📖 Navigáció</h3>
-      <div class="nav-group">
-        <h4>Elmélet</h4>
-        <a href="#/theory/java">☕ Java Alapok</a>
-        <a href="#/theory/spring">🌱 Spring Framework</a>
-        <a href="#/theory/testing">🧪 Tesztelés</a>
-        <a href="#/theory/sql">🗄️ SQL & Adatbázis</a>
-        <a href="#/theory/web">🌐 Web Development</a>
-        <a href="#/theory/arch">🏗️ Architektúra</a>
-        <a href="#/theory/git">📚 Git & Verziókezelés</a>
-        <a href="#/theory/softskills">💬 Soft Skills</a>
-      </div>
-      
-      <div class="nav-group">
-        <h4>Gyakorlatok</h4>
-        <a href="#/exercises/java">☕ Java Feladatok</a>
-        <a href="#/exercises/sql">🗄️ SQL Feladatok</a>
-        <a href="#/exercises/web">🌐 Web Feladatok</a>
-        <a href="#/exercises/arch">🏗️ Architektúra</a>
-      </div>
-      
-      <div class="nav-group">
-        <h4>Kvízek</h4>
-        <a href="#/quiz/java">☕ Java Teszt</a>
-        <a href="#/quiz/sql">🗄️ SQL Teszt</a>
-        <a href="#/quiz/web">🌐 Web Teszt</a>
-        <a href="#/quiz/arch">🏗️ Architektúra Teszt</a>
-      </div>
-      
-      <div class="nav-group">
-        <h4>Segédletek</h4>
-        <a href="#/checklists/interview">💼 Interjú Kérdések</a>
-        <a href="#/checklists/project-setup">⚙️ Projekt Setup</a>
-        <a href="#/checklists/db-cheatsheet">📋 SQL Cheatsheet</a>
-      </div>
-    </div>
-  </aside>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <main id="app" class="main-content">
-    <div class="welcome-screen">
-      <h1>🎯 Üdvözöl a Software Developer Prep felkészítő platformon!</h1>
-      <p>Válassz a bal oldali menüből, vagy használd a navigációs linkeket.</p>
-      <div class="quick-actions">
-        <a href="#/roadmap" class="action-card">
-          <h3>🗺️ Tanulási Roadmap</h3>
-          <p>Tervezd meg a felkészülési útvonalad</p>
-        </a>
-        <a href="#/theory/java" class="action-card">
-          <h3>📚 Kezdj az elmélettel</h3>
-          <p>Java alapok és Spring Framework</p>
-        </a>
-        <a href="#/quiz/java" class="action-card">
-          <h3>🧩 Teszteld a tudásod</h3>
-          <p>Interaktív kvízek minden témához</p>
-        </a>
+    <!-- SEO Meta Tags -->
+    <title>Software Developer Prep - Állásfelkészítő Platform</title>
+    <meta
+      name="description"
+      content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, tesztelés, architektúra témákban. Ingyenes elméleti anyagok, gyakorlatok és kvízek."
+    />
+    <meta
+      name="keywords"
+      content="java, spring, sql, szoftverfejlesztés, álláskereső, felkészülés, programozás, backend, interjú"
+    />
+    <meta name="author" content="Software Developer Prep" />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://norbertzzentai.github.io/software-dev-prep/"
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://norbertzzentai.github.io/software-dev-prep/"
+    />
+    <meta
+      property="og:title"
+      content="Software Developer Prep - Állásfelkészítő Platform"
+    />
+    <meta
+      property="og:description"
+      content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, tesztelés, architektúra témákban. Ingyenes elméleti anyagok, gyakorlatok és kvízek."
+    />
+    <meta
+      property="og:image"
+      content="https://norbertzzentai.github.io/software-dev-prep/assets/og-default.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Software Developer Prep platform logo"
+    />
+    <meta property="og:locale" content="hu_HU" />
+    <meta property="og:site_name" content="Software Developer Prep" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:url"
+      content="https://norbertzzentai.github.io/software-dev-prep/"
+    />
+    <meta
+      property="twitter:title"
+      content="Software Developer Prep - Állásfelkészítő Platform"
+    />
+    <meta
+      property="twitter:description"
+      content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, tesztelés, architektúra témákban."
+    />
+    <meta
+      property="twitter:image"
+      content="https://norbertzzentai.github.io/software-dev-prep/assets/og-default.png"
+    />
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Dev Prep" />
+    <meta name="application-name" content="Dev Prep" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-TileColor" content="#0f172a" />
+    <meta name="msapplication-config" content="./browserconfig.xml" />
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="./styles/main.css" as="style" />
+    <link rel="preload" href="./scripts/app.js" as="script" />
+
+    <!-- Icons and Manifest -->
+    <link rel="icon" href="./assets/logo.svg" type="image/svg+xml" />
+    <link rel="icon" href="./assets/icons/icon-192.png" type="image/png" />
+    <link rel="apple-touch-icon" href="./assets/icons/icon-192.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./styles/main.css" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "Software Developer Prep",
+        "description": "Komplett szoftverfejlesztő állásfelkészítő platform",
+        "url": "https://norbertzzentai.github.io/software-dev-prep/",
+        "logo": "https://norbertzzentai.github.io/software-dev-prep/assets/logo.svg",
+        "educationalCredentialAwarded": "Szoftverfejlesztő készségek",
+        "teaches": [
+          "Java programozás",
+          "Spring Framework",
+          "SQL és adatbázis kezelés",
+          "Szoftver tesztelés",
+          "Szoftver architektúra",
+          "Git verziókezelés"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="header-content">
+        <div class="logo-section">
+          <img
+            src="./assets/logo.svg"
+            alt="Software Dev Prep Logo"
+            class="logo"
+          />
+          <h1 class="site-title">Software Dev Prep</h1>
+        </div>
+        <nav class="main-nav">
+          <a href="#/theory/java" class="nav-link">📚 Elmélet</a>
+          <a href="#/exercises/java" class="nav-link">💻 Gyakorlat</a>
+          <a href="#/quiz/java" class="nav-link">🧩 Kvíz</a>
+          <a href="#/roadmap" class="nav-link">🗺️ Roadmap</a>
+        </nav>
+        <div class="header-tools">
+          <input id="search-input" placeholder="🔍 Keresés..." />
+          <button id="theme-toggle" class="theme-btn" title="Sötét/Világos mód">
+            🌙
+          </button>
+        </div>
       </div>
-    </div>
-    <noscript>
-      <div class="error-message">
-        Kérlek engedélyezd a JavaScriptet a teljes funkcionalitáshoz.
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-content">
+        <h3>📖 Navigáció</h3>
+        <div class="nav-group">
+          <h4>Elmélet</h4>
+          <a href="#/theory/java">☕ Java Alapok</a>
+          <a href="#/theory/spring">🌱 Spring Framework</a>
+          <a href="#/theory/testing">🧪 Tesztelés</a>
+          <a href="#/theory/sql">🗄️ SQL & Adatbázis</a>
+          <a href="#/theory/web">🌐 Web Development</a>
+          <a href="#/theory/arch">🏗️ Architektúra</a>
+          <a href="#/theory/git">📚 Git & Verziókezelés</a>
+          <a href="#/theory/softskills">💬 Soft Skills</a>
+        </div>
+
+        <div class="nav-group">
+          <h4>Gyakorlatok</h4>
+          <a href="#/exercises/java">☕ Java Feladatok</a>
+          <a href="#/exercises/sql">🗄️ SQL Feladatok</a>
+          <a href="#/exercises/web">🌐 Web Feladatok</a>
+          <a href="#/exercises/arch">🏗️ Architektúra</a>
+        </div>
+
+        <div class="nav-group">
+          <h4>Kvízek</h4>
+          <a href="#/quiz/java">☕ Java Teszt</a>
+          <a href="#/quiz/sql">🗄️ SQL Teszt</a>
+          <a href="#/quiz/web">🌐 Web Teszt</a>
+          <a href="#/quiz/arch">🏗️ Architektúra Teszt</a>
+        </div>
+
+        <div class="nav-group">
+          <h4>Segédletek</h4>
+          <a href="#/checklists/interview">💼 Interjú Kérdések</a>
+          <a href="#/checklists/project-setup">⚙️ Projekt Setup</a>
+          <a href="#/checklists/db-cheatsheet">📋 SQL Cheatsheet</a>
+        </div>
       </div>
-    </noscript>
-  </main>
+    </aside>
 
-  <button id="sidebar-toggle" class="sidebar-toggle" title="Oldalsáv ki/be">☰</button>
+    <main id="app" class="main-content">
+      <div class="welcome-screen">
+        <h1>🎯 Üdvözöl a Software Developer Prep felkészítő platformon!</h1>
+        <p>
+          Válassz a bal oldali menüből, vagy használd a navigációs linkeket.
+        </p>
+        <div class="quick-actions">
+          <a href="#/roadmap" class="action-card">
+            <h3>🗺️ Tanulási Roadmap</h3>
+            <p>Tervezd meg a felkészülési útvonalad</p>
+          </a>
+          <a href="#/theory/java" class="action-card">
+            <h3>📚 Kezdj az elmélettel</h3>
+            <p>Java alapok és Spring Framework</p>
+          </a>
+          <a href="#/quiz/java" class="action-card">
+            <h3>🧩 Teszteld a tudásod</h3>
+            <p>Interaktív kvízek minden témához</p>
+          </a>
+        </div>
+      </div>
+      <noscript>
+        <div class="error-message">
+          Kérlek engedélyezd a JavaScriptet a teljes funkcionalitáshoz.
+        </div>
+      </noscript>
+    </main>
 
-  <footer class="footer">
-    <p>© 2025 Software Developer Prep – Személyes tanulási platform | 
-       <a href="https://github.com" target="_blank">GitHub</a> | 
-       Készítve: ❤️ + ☕
-    </p>
-  </footer>
+    <button id="sidebar-toggle" class="sidebar-toggle" title="Oldalsáv ki/be">
+      ☰
+    </button>
 
-  <script src="./scripts/vendor/marked.min.js"></script>
-  <script type="module" src="./scripts/app.js"></script>
-  
-  <!-- Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./service-worker.js')
-          .then(registration => {
-            console.log('SW registered: ', registration);
-          })
-          .catch(registrationError => {
-            console.log('SW registration failed: ', registrationError);
-          });
-      });
-    }
-  </script>
-  
-  <!-- Analytics (Plausible - privacy-friendly) -->
-  <script defer data-domain="norbertzzentai.github.io" src="https://plausible.io/js/script.js"></script>
-</body>
+    <footer class="footer">
+      <p>
+        © 2025 Software Developer Prep – Személyes tanulási platform |
+        <a href="https://github.com" target="_blank">GitHub</a> | Készítve: ❤️ +
+        ☕
+      </p>
+    </footer>
+
+    <script src="./scripts/vendor/marked.min.js"></script>
+    <script type="module" src="./scripts/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('./service-worker.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration)
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError)
+            })
+        })
+      }
+    </script>
+
+    <!-- Analytics (Plausible - privacy-friendly) -->
+    <script
+      defer
+      data-domain="norbertzzentai.github.io"
+      src="https://plausible.io/js/script.js"
+    ></script>
+  </body>
 </html>

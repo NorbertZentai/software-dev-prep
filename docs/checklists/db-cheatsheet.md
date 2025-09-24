@@ -31,7 +31,7 @@ WHERE datum >= '2023-01-01'
 
 -- LIKE pattern matching
 WHERE nev LIKE 'A%'        -- A-val kezdődik
-WHERE nev LIKE '%son'      -- son-ra végződik  
+WHERE nev LIKE '%son'      -- son-ra végződik
 WHERE nev LIKE '%and%'     -- tartalmazza: and
 
 -- IN lista
@@ -55,7 +55,7 @@ WHERE NOT aktiv = false
 ### INNER JOIN
 ```sql
 -- Csak azok a sorok, amiknek van párja mindkét táblában
-SELECT u.nev, p.cim 
+SELECT u.nev, p.cim
 FROM felhasznalok u
 INNER JOIN postok p ON u.id = p.felhasznalo_id;
 ```
@@ -63,7 +63,7 @@ INNER JOIN postok p ON u.id = p.felhasznalo_id;
 ### LEFT JOIN
 ```sql
 -- Minden sor a bal oldali táblából, nullokkal kiegészítve
-SELECT u.nev, p.cim 
+SELECT u.nev, p.cim
 FROM felhasznalok u
 LEFT JOIN postok p ON u.id = p.felhasznalo_id;
 ```
@@ -71,7 +71,7 @@ LEFT JOIN postok p ON u.id = p.felhasznalo_id;
 ### RIGHT JOIN
 ```sql
 -- Minden sor a jobb oldali táblából
-SELECT u.nev, p.cim 
+SELECT u.nev, p.cim
 FROM felhasznalok u
 RIGHT JOIN postok p ON u.id = p.felhasznalo_id;
 ```
@@ -79,7 +79,7 @@ RIGHT JOIN postok p ON u.id = p.felhasznalo_id;
 ### FULL OUTER JOIN
 ```sql
 -- Minden sor mindkét táblából
-SELECT u.nev, p.cim 
+SELECT u.nev, p.cim
 FROM felhasznalok u
 FULL OUTER JOIN postok p ON u.id = p.felhasznalo_id;
 ```
@@ -103,12 +103,12 @@ SELECT MIN(kor), MAX(kor) FROM emberek;
 
 -- GROUP BY
 SELECT varos, COUNT(*) as emberek_szama
-FROM lakosok 
+FROM lakosok
 GROUP BY varos;
 
 -- HAVING (GROUP BY után szűrés)
 SELECT varos, COUNT(*) as emberek_szama
-FROM lakosok 
+FROM lakosok
 GROUP BY varos
 HAVING COUNT(*) > 10000;
 ```
@@ -132,7 +132,7 @@ CREATE TABLE felhasznalok (
 -- Oszlop hozzáadása
 ALTER TABLE felhasznalok ADD COLUMN telefon VARCHAR(20);
 
--- Oszlop módosítása  
+-- Oszlop módosítása
 ALTER TABLE felhasznalok ALTER COLUMN nev TYPE VARCHAR(150);
 
 -- Oszlop törlése
@@ -148,13 +148,13 @@ ALTER TABLE felhasznalok ADD CONSTRAINT unique_email UNIQUE (email);
 INSERT INTO felhasznalok (nev, email) VALUES ('Kiss János', 'janos@email.com');
 
 -- Több sor beszúrása
-INSERT INTO felhasznalok (nev, email) VALUES 
+INSERT INTO felhasznalok (nev, email) VALUES
     ('Nagy Anna', 'anna@email.com'),
     ('Szabó Péter', 'peter@email.com');
 
 -- Frissítés
-UPDATE felhasznalok 
-SET email = 'uj.email@example.com' 
+UPDATE felhasznalok
+SET email = 'uj.email@example.com'
 WHERE id = 1;
 
 -- Törlés
@@ -186,7 +186,7 @@ DROP INDEX idx_felhasznalo_nev;
 -- PostgreSQL
 EXPLAIN ANALYZE SELECT * FROM felhasznalok WHERE nev = 'Kiss János';
 
--- MySQL  
+-- MySQL
 EXPLAIN SELECT * FROM felhasznalok WHERE nev = 'Kiss János';
 ```
 
@@ -195,7 +195,7 @@ EXPLAIN SELECT * FROM felhasznalok WHERE nev = 'Kiss János';
 ### Window Functions
 ```sql
 -- ROW_NUMBER
-SELECT nev, fizetes, 
+SELECT nev, fizetes,
        ROW_NUMBER() OVER (ORDER BY fizetes DESC) as sorszam
 FROM dolgozok;
 
@@ -215,18 +215,18 @@ FROM dolgozok;
 WITH magas_fizu AS (
     SELECT * FROM dolgozok WHERE fizetes > 500000
 )
-SELECT reszleg, COUNT(*) 
-FROM magas_fizu 
+SELECT reszleg, COUNT(*)
+FROM magas_fizu
 GROUP BY reszleg;
 
 -- Recursive CTE (hierarchia)
 WITH RECURSIVE szervezet AS (
     SELECT id, nev, fonok_id, 1 as szint
-    FROM dolgozok 
+    FROM dolgozok
     WHERE fonok_id IS NULL
-    
+
     UNION ALL
-    
+
     SELECT d.id, d.nev, d.fonok_id, s.szint + 1
     FROM dolgozok d
     JOIN szervezet s ON d.fonok_id = s.id
@@ -295,8 +295,8 @@ SELECT * FROM posts;  -- 1 query
 -- Minden post-hoz külön: SELECT * FROM users WHERE id = ?  -- N query
 
 -- ✅ Jó: JOIN használata
-SELECT p.*, u.name 
-FROM posts p 
+SELECT p.*, u.name
+FROM posts p
 JOIN users u ON p.user_id = u.id;
 ```
 
@@ -347,9 +347,9 @@ SELECT AGE(szuletesi_datum) as kor;
 ```sql
 -- CASE WHEN
 SELECT nev,
-       CASE 
+       CASE
            WHEN kor < 18 THEN 'Kiskorú'
-           WHEN kor < 65 THEN 'Felnőtt' 
+           WHEN kor < 65 THEN 'Felnőtt'
            ELSE 'Nyugdíjas'
        END as korcsoport
 FROM emberek;

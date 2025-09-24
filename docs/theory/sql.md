@@ -22,7 +22,7 @@ VARCHAR(50)     -- Változó hosszú szöveg
 CHAR(10)        -- Fix hosszú szöveg
 TEXT            -- Nagy szöveg
 
--- Numerikus típusok  
+-- Numerikus típusok
 INT             -- Egész szám
 DECIMAL(10,2)   -- Decimális szám (10 digit, 2 tizedeshely)
 FLOAT           -- Lebegőpontos szám
@@ -82,22 +82,22 @@ CREATE INDEX idx_orders_user_id ON orders(user_id);
 
 ```sql
 -- Alapvető lekérdezés
-SELECT first_name, last_name, email 
+SELECT first_name, last_name, email
 FROM users;
 
 -- Minden oszlop
 SELECT * FROM users;
 
 -- Feltételek
-SELECT * FROM users 
+SELECT * FROM users
 WHERE age > 18 AND email LIKE '%@gmail.com';
 
 -- Rendezés
-SELECT * FROM users 
+SELECT * FROM users
 ORDER BY last_name ASC, first_name DESC;
 
 -- Korlátozás
-SELECT * FROM users 
+SELECT * FROM users
 LIMIT 10 OFFSET 20;
 ```
 
@@ -115,7 +115,7 @@ SELECT MIN(order_date), MAX(order_date) FROM orders;
 
 -- Csoportosítás
 SELECT status, COUNT(*) as order_count, AVG(amount) as avg_amount
-FROM orders 
+FROM orders
 GROUP BY status
 HAVING COUNT(*) > 5;
 ```
@@ -154,7 +154,7 @@ SELECT first_name, last_name,
 FROM users u;
 
 -- IN használata
-SELECT * FROM users 
+SELECT * FROM users
 WHERE id IN (SELECT user_id FROM orders WHERE amount > 1000);
 
 -- EXISTS használata
@@ -170,19 +170,19 @@ WHERE age > (SELECT AVG(age) FROM users u2 WHERE u2.id != u1.id);
 
 ```sql
 -- Egy sor beszúrása
-INSERT INTO users (first_name, last_name, email, age) 
+INSERT INTO users (first_name, last_name, email, age)
 VALUES ('John', 'Doe', 'john@example.com', 30);
 
 -- Több sor egyszerre
-INSERT INTO users (first_name, last_name, email, age) 
-VALUES 
+INSERT INTO users (first_name, last_name, email, age)
+VALUES
     ('Jane', 'Smith', 'jane@example.com', 25),
     ('Bob', 'Johnson', 'bob@example.com', 35);
 
 -- Lekérdezés eredményének beszúrása
 INSERT INTO user_backup (first_name, last_name, email)
-SELECT first_name, last_name, email 
-FROM users 
+SELECT first_name, last_name, email
+FROM users
 WHERE created_at < '2023-01-01';
 ```
 
@@ -190,18 +190,18 @@ WHERE created_at < '2023-01-01';
 
 ```sql
 -- Egyszerű frissítés
-UPDATE users 
-SET email = 'newemail@example.com' 
+UPDATE users
+SET email = 'newemail@example.com'
 WHERE id = 1;
 
 -- Több oszlop frissítése
-UPDATE users 
-SET first_name = 'Johnny', age = 31 
+UPDATE users
+SET first_name = 'Johnny', age = 31
 WHERE id = 1;
 
 -- Feltételes frissítés
-UPDATE orders 
-SET status = 'completed' 
+UPDATE orders
+SET status = 'completed'
 WHERE status = 'pending' AND order_date < CURRENT_DATE - INTERVAL '7 days';
 ```
 
@@ -215,7 +215,7 @@ DELETE FROM users WHERE id = 1;
 DELETE FROM orders WHERE status = 'cancelled';
 
 -- Kapcsolódó táblák alapján törlés
-DELETE FROM users 
+DELETE FROM users
 WHERE id NOT IN (SELECT DISTINCT user_id FROM orders WHERE user_id IS NOT NULL);
 ```
 
@@ -223,29 +223,29 @@ WHERE id NOT IN (SELECT DISTINCT user_id FROM orders WHERE user_id IS NOT NULL);
 
 ```sql
 -- Row number
-SELECT 
-    first_name, 
-    last_name, 
+SELECT
+    first_name,
+    last_name,
     ROW_NUMBER() OVER (ORDER BY age DESC) as row_num
 FROM users;
 
 -- Rank
-SELECT 
-    first_name, 
-    last_name, 
+SELECT
+    first_name,
+    last_name,
     age,
     RANK() OVER (ORDER BY age DESC) as age_rank
 FROM users;
 
 -- Cumulative sum
-SELECT 
+SELECT
     order_date,
     amount,
     SUM(amount) OVER (ORDER BY order_date) as running_total
 FROM orders;
 
 -- Partition by
-SELECT 
+SELECT
     user_id,
     order_date,
     amount,
@@ -297,7 +297,7 @@ CREATE INDEX idx_users_email_upper ON users(UPPER(email));
 ### 2NF (Second Normal Form)
 - 1NF + minden nem-kulcs attribútum teljesen függ a kulcstól
 
-### 3NF (Third Normal Form)  
+### 3NF (Third Normal Form)
 - 2NF + nincs tranzitív függőség
 
 ```sql
@@ -404,11 +404,11 @@ SELECT first_name, last_name FROM young_users;
 WITH RECURSIVE employee_hierarchy AS (
     -- Base case
     SELECT id, first_name, last_name, manager_id, 1 as level
-    FROM employees 
+    FROM employees
     WHERE manager_id IS NULL
-    
+
     UNION ALL
-    
+
     -- Recursive case
     SELECT e.id, e.first_name, e.last_name, e.manager_id, eh.level + 1
     FROM employees e
@@ -441,7 +441,7 @@ CREATE OR REPLACE FUNCTION transfer_money(
 BEGIN
     UPDATE accounts SET balance = balance - amount WHERE id = from_account;
     UPDATE accounts SET balance = balance + amount WHERE id = to_account;
-    
+
     IF NOT FOUND THEN
         RAISE EXCEPTION 'Account not found';
     END IF;
@@ -461,8 +461,8 @@ SELECT * FROM users;  -- 1 query
 SELECT * FROM orders WHERE user_id = ?;  -- N query
 
 -- Jó: JOIN használata
-SELECT u.*, o.* 
-FROM users u 
+SELECT u.*, o.*
+FROM users u
 LEFT JOIN orders o ON u.id = o.user_id;  -- 1 query
 ```
 

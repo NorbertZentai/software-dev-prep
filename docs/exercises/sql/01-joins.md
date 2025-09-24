@@ -14,7 +14,7 @@ CREATE TABLE users (
     registration_date DATE DEFAULT CURRENT_DATE
 );
 
--- Kategóriák tábla  
+-- Kategóriák tábla
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE order_items (
 
 ```sql
 -- Felhasználók
-INSERT INTO users (name, email, city) VALUES 
+INSERT INTO users (name, email, city) VALUES
 ('Kiss János', 'janos@email.com', 'Budapest'),
 ('Nagy Anna', 'anna@email.com', 'Szeged'),
 ('Szabó Péter', 'peter@email.com', 'Debrecen'),
@@ -61,14 +61,14 @@ INSERT INTO users (name, email, city) VALUES
 ('Varga Gábor', 'gabor@email.com', 'Pécs');
 
 -- Kategóriák
-INSERT INTO categories (name, description) VALUES 
+INSERT INTO categories (name, description) VALUES
 ('Elektronika', 'Számítógépek, telefonok, egyéb elektronikai cikkek'),
 ('Könyvek', 'Szépirodalmi és szakkönyvek'),
 ('Ruházat', 'Férfi és női ruházati cikkek'),
 ('Sport', 'Sportszerek és fitnesz eszközök');
 
 -- Termékek
-INSERT INTO products (name, price, category_id, stock_quantity) VALUES 
+INSERT INTO products (name, price, category_id, stock_quantity) VALUES
 ('Laptop HP', 299000, 1, 5),
 ('iPhone 13', 250000, 1, 8),
 ('Java programozás', 8500, 2, 20),
@@ -77,7 +77,7 @@ INSERT INTO products (name, price, category_id, stock_quantity) VALUES
 ('Tablet Samsung', 120000, 1, 7);
 
 -- Rendelések
-INSERT INTO orders (user_id, total_amount, status) VALUES 
+INSERT INTO orders (user_id, total_amount, status) VALUES
 (1, 307500, 'completed'),
 (2, 25000, 'completed'),
 (3, 250000, 'pending'),
@@ -85,9 +85,9 @@ INSERT INTO orders (user_id, total_amount, status) VALUES
 (4, 128500, 'shipped');
 
 -- Rendelési tételek
-INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES 
+INSERT INTO order_items (order_id, product_id, quantity, unit_price) VALUES
 (1, 1, 1, 299000),    -- Kiss János: Laptop
-(1, 5, 1, 8500),      -- Kiss János: Java könyv  
+(1, 5, 1, 8500),      -- Kiss János: Java könyv
 (2, 4, 1, 25000),     -- Nagy Anna: Futócipő
 (3, 2, 1, 250000),    -- Szabó Péter: iPhone
 (4, 5, 1, 3500),      -- Kiss János: Póló
@@ -104,7 +104,7 @@ Listázd ki az összes terméket a kategória nevével együtt!
 
 **Várt eredmény oszlopai:** termék neve, ára, kategória neve
 
-### 1.2 Feladat  
+### 1.2 Feladat
 Mutasd meg a teljesített rendeléseket a megrendelő nevével!
 
 **Várt eredmény oszlopai:** rendelés ID, felhasználó neve, rendelés dátuma, összeg
@@ -123,7 +123,7 @@ SELECT p.name as termek_neve, p.price as ar, c.name as kategoria
 FROM products p
 INNER JOIN categories c ON p.category_id = c.id;
 
--- 1.2 Megoldás  
+-- 1.2 Megoldás
 SELECT o.id as rendeles_id, u.name as felhasznalo, o.order_date, o.total_amount
 FROM orders o
 INNER JOIN users u ON o.user_id = u.id
@@ -132,7 +132,7 @@ WHERE o.status = 'completed';
 -- 1.3 Megoldás
 SELECT p.name as termek, c.name as kategoria, oi.quantity, oi.unit_price
 FROM order_items oi
-INNER JOIN products p ON oi.product_id = p.id  
+INNER JOIN products p ON oi.product_id = p.id
 INNER JOIN categories c ON p.category_id = c.id;
 ```
 </details>
@@ -187,7 +187,7 @@ Számold ki minden felhasználó összes vásárlásának értékét!
 
 **Várt eredmény:** felhasználó neve, összes költés
 
-### 3.2 Feladat  
+### 3.2 Feladat
 Mutasd meg a legdrágább rendelést minden városból!
 
 **Várt eredmény:** város, max rendelés összeg, megrendelő neve
@@ -209,9 +209,9 @@ GROUP BY u.id, u.name
 ORDER BY osszes_koltes DESC;
 
 -- 3.2 Megoldás
-SELECT u.city, MAX(o.total_amount) as max_rendeles, 
-       (SELECT u2.name FROM users u2 
-        JOIN orders o2 ON u2.id = o2.user_id 
+SELECT u.city, MAX(o.total_amount) as max_rendeles,
+       (SELECT u2.name FROM users u2
+        JOIN orders o2 ON u2.id = o2.user_id
         WHERE u2.city = u.city AND o2.total_amount = MAX(o.total_amount)
         LIMIT 1) as megrendelo
 FROM users u
@@ -220,7 +220,7 @@ GROUP BY u.city;
 
 -- 3.3 Megoldás (WITH használatával)
 WITH kategoria_eladasok AS (
-    SELECT c.name as kategoria, p.name as termek, 
+    SELECT c.name as kategoria, p.name as termek,
            SUM(oi.quantity) as eladott_mennyiseg,
            ROW_NUMBER() OVER (PARTITION BY c.name ORDER BY SUM(oi.quantity) DESC) as rn
     FROM categories c
@@ -260,8 +260,8 @@ JOIN categories c ON p.category_id = c.id;
 -- 4.2 Megoldás
 SELECT u.name, o.order_date, o.total_amount,
        SUM(o.total_amount) OVER (
-           PARTITION BY u.id 
-           ORDER BY o.order_date 
+           PARTITION BY u.id
+           ORDER BY o.order_date
            ROWS UNBOUNDED PRECEDING
        ) as futo_osszeg
 FROM users u
@@ -288,7 +288,7 @@ Készíts egy riportot, amely megmutatja:
 - Az összes vásárláshoz képesti százalékos arányt
 
 ### 5.2 Expert feladat
-Találd meg azokat a termékpárokat, amelyeket gyakran rendelnek együtt! 
+Találd meg azokat a termékpárokat, amelyeket gyakran rendelnek együtt!
 (Legalább 2 rendelésben szerepelnek együtt)
 
 <details>
@@ -302,7 +302,7 @@ WITH felhasznalo_kategoria_koltes AS (
            ROW_NUMBER() OVER (PARTITION BY u.id ORDER BY SUM(oi.quantity * oi.unit_price) DESC) as rn
     FROM users u
     JOIN orders o ON u.id = o.user_id
-    JOIN order_items oi ON o.id = oi.order_id  
+    JOIN order_items oi ON o.id = oi.order_id
     JOIN products p ON oi.product_id = p.id
     JOIN categories c ON p.category_id = c.id
     GROUP BY u.id, u.name, c.name
@@ -360,7 +360,7 @@ CREATE INDEX idx_users_city ON users(city);
 
 ### Mit gyakoroltál:
 - ✅ INNER JOIN - csak egyező rekordok
-- ✅ LEFT JOIN - minden rekord a bal oldali táblából  
+- ✅ LEFT JOIN - minden rekord a bal oldali táblából
 - ✅ Többszörös JOIN-ok - 3+ tábla összekötése
 - ✅ Aggregáló függvények GROUP BY-jal
 - ✅ Window Functions - fejlett analitika

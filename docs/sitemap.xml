@@ -7,7 +7,7 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
+
   <!-- Theory sections -->
   <url>
     <loc>https://norbertzzentai.github.io/software-dev-prep/#/theory/java</loc>
@@ -57,7 +57,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <!-- Exercises -->
   <url>
     <loc>https://norbertzzentai.github.io/software-dev-prep/#/exercises/java</loc>
@@ -83,7 +83,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <!-- Quizzes -->
   <url>
     <loc>https://norbertzzentai.github.io/software-dev-prep/#/quiz/java</loc>
@@ -109,7 +109,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
   <!-- Checklists -->
   <url>
     <loc>https://norbertzzentai.github.io/software-dev-prep/#/checklists/interview</loc>
@@ -129,7 +129,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
   <!-- Roadmap -->
   <url>
     <loc>https://norbertzzentai.github.io/software-dev-prep/#/roadmap</loc>

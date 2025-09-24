@@ -14,17 +14,17 @@ Egy osztálynak csak egy felelőssége legyen.
 class User {
     private String name;
     private String email;
-    
+
     // User management
     public void save() {
         // Database save logic
     }
-    
-    // Email functionality  
+
+    // Email functionality
     public void sendEmail(String message) {
         // Email sending logic
     }
-    
+
     // Validation
     public boolean isValid() {
         // Validation logic
@@ -35,7 +35,7 @@ class User {
 class User {
     private String name;
     private String email;
-    
+
     // getters/setters
 }
 
@@ -81,11 +81,11 @@ class PremiumCustomerDiscount implements DiscountStrategy {
 
 class PriceCalculator {
     private DiscountStrategy discountStrategy;
-    
+
     public PriceCalculator(DiscountStrategy strategy) {
         this.discountStrategy = strategy;
     }
-    
+
     public double calculatePrice(double basePrice) {
         double discount = discountStrategy.calculateDiscount(basePrice);
         return basePrice - discount;
@@ -176,7 +176,7 @@ class EmailNotification {
 
 class OrderService {
     private EmailNotification notification; // Konkrét függőség
-    
+
     public void processOrder(Order order) {
         // order processing
         notification.send("Order processed");
@@ -202,11 +202,11 @@ class SMSNotification implements NotificationService {
 
 class OrderService {
     private NotificationService notification; // Absztrakció
-    
+
     public OrderService(NotificationService notification) {
         this.notification = notification;
     }
-    
+
     public void processOrder(Order order) {
         // order processing
         notification.send("Order processed");
@@ -223,19 +223,19 @@ class OrderService {
 public class DatabaseConnection {
     private static DatabaseConnection instance;
     private Connection connection;
-    
+
     private DatabaseConnection() {
         // Private constructor
         this.connection = DriverManager.getConnection("...");
     }
-    
+
     public static synchronized DatabaseConnection getInstance() {
         if (instance == null) {
             instance = new DatabaseConnection();
         }
         return instance;
     }
-    
+
     public Connection getConnection() {
         return connection;
     }
@@ -244,9 +244,9 @@ public class DatabaseConnection {
 // Thread-safe variant
 public class ThreadSafeSingleton {
     private static volatile ThreadSafeSingleton instance;
-    
+
     private ThreadSafeSingleton() {}
-    
+
     public static ThreadSafeSingleton getInstance() {
         if (instance == null) {
             synchronized (ThreadSafeSingleton.class) {
@@ -303,35 +303,35 @@ public class User {
     private String email;
     private int age;
     private String address;
-    
+
     private User(Builder builder) {
         this.name = builder.name;
         this.email = builder.email;
         this.age = builder.age;
         this.address = builder.address;
     }
-    
+
     public static class Builder {
         private String name;
         private String email;
         private int age;
         private String address;
-        
+
         public Builder(String name, String email) {
             this.name = name;
             this.email = email;
         }
-        
+
         public Builder age(int age) {
             this.age = age;
             return this;
         }
-        
+
         public Builder address(String address) {
             this.address = address;
             return this;
         }
-        
+
         public User build() {
             return new User(this);
         }
@@ -364,11 +364,11 @@ interface ModernPrinter {
 // Adapter
 class PrinterAdapter implements ModernPrinter {
     private LegacyPrinter legacyPrinter;
-    
+
     public PrinterAdapter(LegacyPrinter legacyPrinter) {
         this.legacyPrinter = legacyPrinter;
     }
-    
+
     @Override
     public void print(String text) {
         legacyPrinter.printOldFormat(text);
@@ -387,7 +387,7 @@ class SimpleCoffee implements Coffee {
     public String getDescription() {
         return "Simple coffee";
     }
-    
+
     public double getCost() {
         return 2.0;
     }
@@ -395,7 +395,7 @@ class SimpleCoffee implements Coffee {
 
 abstract class CoffeeDecorator implements Coffee {
     protected Coffee coffee;
-    
+
     public CoffeeDecorator(Coffee coffee) {
         this.coffee = coffee;
     }
@@ -405,11 +405,11 @@ class MilkDecorator extends CoffeeDecorator {
     public MilkDecorator(Coffee coffee) {
         super(coffee);
     }
-    
+
     public String getDescription() {
         return coffee.getDescription() + ", milk";
     }
-    
+
     public double getCost() {
         return coffee.getCost() + 0.5;
     }
@@ -419,11 +419,11 @@ class SugarDecorator extends CoffeeDecorator {
     public SugarDecorator(Coffee coffee) {
         super(coffee);
     }
-    
+
     public String getDescription() {
         return coffee.getDescription() + ", sugar";
     }
-    
+
     public double getCost() {
         return coffee.getCost() + 0.2;
     }
@@ -455,21 +455,21 @@ interface Subject {
 class NewsAgency implements Subject {
     private List<Observer> observers = new ArrayList<>();
     private String news;
-    
+
     public void attach(Observer observer) {
         observers.add(observer);
     }
-    
+
     public void detach(Observer observer) {
         observers.remove(observer);
     }
-    
+
     public void notifyObservers(String message) {
         for (Observer observer : observers) {
             observer.update(message);
         }
     }
-    
+
     public void setNews(String news) {
         this.news = news;
         notifyObservers(news);
@@ -478,11 +478,11 @@ class NewsAgency implements Subject {
 
 class NewsChannel implements Observer {
     private String name;
-    
+
     public NewsChannel(String name) {
         this.name = name;
     }
-    
+
     @Override
     public void update(String news) {
         System.out.println(name + " received news: " + news);
@@ -512,15 +512,15 @@ class QuickSort implements SortingStrategy {
 
 class SortingContext {
     private SortingStrategy strategy;
-    
+
     public SortingContext(SortingStrategy strategy) {
         this.strategy = strategy;
     }
-    
+
     public void setStrategy(SortingStrategy strategy) {
         this.strategy = strategy;
     }
-    
+
     public void performSort(int[] array) {
         strategy.sort(array);
     }
@@ -535,7 +535,7 @@ class SortingContext {
 class User {
     private String name;
     private String email;
-    
+
     // getters/setters
 }
 
@@ -551,12 +551,12 @@ class UserView {
 class UserController {
     private User model;
     private UserView view;
-    
+
     public UserController(User model, UserView view) {
         this.model = model;
         this.view = view;
     }
-    
+
     public void updateView() {
         view.displayUser(model.getName(), model.getEmail());
     }
@@ -576,17 +576,17 @@ class DatabaseUserRepository implements UserRepository {
     public void save(User user) {
         // Database save logic
     }
-    
+
     public User findById(Long id) {
         // Database query logic
         return new User();
     }
-    
+
     public List<User> findAll() {
         // Database query logic
         return new ArrayList<>();
     }
-    
+
     public void delete(Long id) {
         // Database delete logic
     }
@@ -594,11 +594,11 @@ class DatabaseUserRepository implements UserRepository {
 
 class UserService {
     private UserRepository userRepository;
-    
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    
+
     public void createUser(User user) {
         // Business logic
         if (user.getEmail() != null && !user.getEmail().isEmpty()) {
@@ -621,10 +621,10 @@ class UserService {
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    
+
     @Autowired
     private UserService userService;
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         try {
@@ -634,7 +634,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-    
+
     @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         User createdUser = userService.create(user);
@@ -644,19 +644,19 @@ public class UserController {
 
 @Service
 public class UserService {
-    
+
     @Autowired
     private UserRepository userRepository;
-    
+
     @Autowired
     private NotificationService notificationService;
-    
+
     public User create(User user) {
         User savedUser = userRepository.save(user);
         notificationService.sendWelcomeEmail(savedUser.getEmail());
         return savedUser;
     }
-    
+
     public User findById(Long id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found: " + id));
@@ -669,21 +669,21 @@ public class UserService {
 // Synchronous communication with RestTemplate
 @Service
 public class OrderService {
-    
+
     @Autowired
     private RestTemplate restTemplate;
-    
+
     public Order createOrder(Order order) {
         // Get user information from User Service
         User user = restTemplate.getForObject(
-            "http://user-service/api/users/" + order.getUserId(), 
+            "http://user-service/api/users/" + order.getUserId(),
             User.class
         );
-        
+
         if (user == null) {
             throw new UserNotFoundException("User not found");
         }
-        
+
         // Create order
         return orderRepository.save(order);
     }
@@ -692,10 +692,10 @@ public class OrderService {
 // Asynchronous communication with RabbitMQ
 @Component
 public class OrderEventPublisher {
-    
+
     @Autowired
     private RabbitTemplate rabbitTemplate;
-    
+
     public void publishOrderCreated(Order order) {
         OrderCreatedEvent event = new OrderCreatedEvent(order.getId(), order.getUserId());
         rabbitTemplate.convertAndSend("order.exchange", "order.created", event);
@@ -716,14 +716,14 @@ public void handleOrderCreated(OrderCreatedEvent event) {
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
-    
+
     // GET /api/products - 200 OK
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productService.findAll();
         return ResponseEntity.ok(products);
     }
-    
+
     // GET /api/products/{id} - 200 OK, 404 Not Found
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable Long id) {
@@ -731,7 +731,7 @@ public class ProductController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
-    
+
     // POST /api/products - 201 Created, 400 Bad Request
     @PostMapping
     public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
@@ -743,7 +743,7 @@ public class ProductController {
             .toUri();
         return ResponseEntity.created(location).body(created);
     }
-    
+
     // PUT /api/products/{id} - 200 OK, 404 Not Found
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
@@ -751,7 +751,7 @@ public class ProductController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
-    
+
     // DELETE /api/products/{id} - 204 No Content, 404 Not Found
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
@@ -783,18 +783,18 @@ public class ProductController {
 ```java
 @Service
 public class ProductService {
-    
+
     @Cacheable(value = "products", key = "#id")
     public Product findById(Long id) {
         // Expensive database operation
         return productRepository.findById(id).orElse(null);
     }
-    
+
     @CacheEvict(value = "products", key = "#product.id")
     public Product update(Product product) {
         return productRepository.save(product);
     }
-    
+
     @CacheEvict(value = "products", allEntries = true)
     public void clearCache() {
         // Clear all cache entries
@@ -805,7 +805,7 @@ public class ProductService {
 @Configuration
 @EnableCaching
 public class CacheConfig {
-    
+
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         RedisCacheManager.Builder builder = RedisCacheManager
@@ -824,7 +824,7 @@ public class CacheConfig {
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -835,7 +835,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-            .sessionManagement(session -> 
+            .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
         return http.build();
@@ -845,7 +845,7 @@ public class SecurityConfig {
 @RestController
 @PreAuthorize("hasRole('USER')")
 public class SecureController {
-    
+
     @GetMapping("/profile")
     @PreAuthorize("hasRole('USER') and #username == authentication.name")
     public UserProfile getProfile(@RequestParam String username) {
@@ -870,16 +870,16 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false, unique = true)
     private String email;
-    
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
@@ -889,7 +889,7 @@ public class User {
 ```java
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
         ErrorResponse error = ErrorResponse.builder()
@@ -899,7 +899,7 @@ public class GlobalExceptionHandler {
             .build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
-    
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -908,14 +908,14 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
             .message("Validation failed")
             .code("VALIDATION_ERROR")
             .details(errors)
             .timestamp(LocalDateTime.now())
             .build();
-            
+
         return ResponseEntity.badRequest().body(errorResponse);
     }
 }

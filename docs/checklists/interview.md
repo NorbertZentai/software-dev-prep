@@ -40,13 +40,13 @@
   ```sql
   -- INNER JOIN: csak egyező rekordok
   SELECT * FROM users u INNER JOIN orders o ON u.id = o.user_id;
-  
+
   -- LEFT JOIN: összes user, még ha nincs is order-je
   SELECT * FROM users u LEFT JOIN orders o ON u.id = o.user_id;
-  
+
   -- RIGHT JOIN: összes order, még ha nincs is user-e
   SELECT * FROM users u RIGHT JOIN orders o ON u.id = o.user_id;
-  
+
   -- FULL OUTER JOIN: mindkét oldal összes rekordja
   SELECT * FROM users u FULL OUTER JOIN orders o ON u.id = o.user_id;
   ```
@@ -63,7 +63,7 @@
   // Probléma: 1 lekérdezés + N darab lazy loading
   List<User> users = userRepository.findAll();
   users.forEach(user -> user.getOrders().size()); // N további lekérdezés
-  
+
   // Megoldás: Fetch join
   @Query("SELECT u FROM User u LEFT JOIN FETCH u.orders")
   List<User> findAllWithOrders();
@@ -209,7 +209,7 @@ Result: "The solution reduced average response time by 60%, eliminated outages c
    POST /shorten
    Body: {url: "https://example.com", customAlias: "optional"}
    Response: {shortUrl: "http://short.ly/abc123"}
-   
+
    GET /{shortUrl}
    Response: 302 redirect to original URL
    ```
@@ -233,7 +233,7 @@ Result: "The solution reduced average response time by 60%, eliminated outages c
 ```
 "I'm very excited about this opportunity and I believe I can bring significant value to the team based on my experience with [relevant technologies/projects].
 
-Based on my research and market rates for similar positions in this area, I was hoping we could discuss a salary range of [X to Y]. 
+Based on my research and market rates for similar positions in this area, I was hoping we could discuss a salary range of [X to Y].
 
 I'm also interested in understanding the complete compensation package including benefits, professional development opportunities, and potential for growth.
 

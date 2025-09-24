@@ -8,12 +8,7 @@
       "id": 1,
       "type": "multiple",
       "question": "Melyik HTML tag szolgál hivatkozások létrehozására?",
-      "options": [
-        "<link>",
-        "<a>",
-        "<href>",
-        "<url>"
-      ],
+      "options": ["<link>", "<a>", "<href>", "<url>"],
       "correct": 1,
       "explanation": "Az <a> (anchor) tag használatos hivatkozások létrehozására. Az href attribútumban adjuk meg a cél URL-t."
     },
@@ -21,12 +16,7 @@
       "id": 2,
       "type": "multiple",
       "question": "Melyik CSS property változtatja meg a szöveg színét?",
-      "options": [
-        "text-color",
-        "font-color",
-        "color",
-        "text-style"
-      ],
+      "options": ["text-color", "font-color", "color", "text-style"],
       "correct": 2,
       "explanation": "A 'color' property állítja be a szöveg színét CSS-ben. Értékként használhatunk színneveket, hex kódokat, RGB vagy HSL értékeket."
     },
@@ -54,12 +44,7 @@
       "id": 5,
       "type": "multiple",
       "question": "Melyik HTTP státuszkód jelzi a sikeres kérést?",
-      "options": [
-        "404",
-        "500",
-        "200",
-        "302"
-      ],
+      "options": ["404", "500", "200", "302"],
       "correct": 2,
       "explanation": "A 200 OK státuszkód jelzi, hogy a HTTP kérés sikeresen teljesült. Ez a leggyakoribb sikeres válasz."
     }

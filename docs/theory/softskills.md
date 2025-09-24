@@ -104,9 +104,9 @@ Senior Developer
 
 #### Daily Standup
 ```
-"Tegnap befejeztem az user authentication feature backend részét. 
-Ma a frontend integrációval foglalkozok és a unit teszteket írom meg. 
-Van egy blocker: nem tudom elérni a testing environment-et, 
+"Tegnap befejeztem az user authentication feature backend részét.
+Ma a frontend integrációval foglalkozok és a unit teszteket írom meg.
+Van egy blocker: nem tudom elérni a testing environment-et,
 szükségem lenne DevOps támogatásra."
 ```
 
@@ -150,21 +150,21 @@ szükségem lenne DevOps támogatásra."
 
 #### Technikai vita esetén:
 ```
-"Értem a Docker melletti érveidet, és valóban jó pontokat hoztál fel 
-a container orchestration kapcsán. 
+"Értem a Docker melletti érveidet, és valóban jó pontokat hoztál fel
+a container orchestration kapcsán.
 
-Az én aggályom főleg a team jelenlegi Kubernetes tapasztalatára 
+Az én aggályom főleg a team jelenlegi Kubernetes tapasztalatára
 vonatkozik - csak két embernek van production experience.
 
-Mit gondolsz arról, ha egy proof of concept-et készítünk mindkét 
+Mit gondolsz arról, ha egy proof of concept-et készítünk mindkét
 megoldással, és mérjük az implementation complexity-t és a learning curve-öt?"
 ```
 
 #### Munka elosztás során:
 ```
-"Látom, hogy mindketten a frontend feladatot szeretnénk, ami érthető. 
-Javaslom, hogy osszuk fel: te foglalkozol a komponens architektúrával 
-és én a state management-tel. 
+"Látom, hogy mindketten a frontend feladatot szeretnénk, ami érthető.
+Javaslom, hogy osszuk fel: te foglalkozol a komponens architektúrával
+és én a state management-tel.
 
 Így mindketten tanulunk, és a projekt is jobban halad. Mit gondolsz?"
 ```
@@ -175,7 +175,7 @@ Javaslom, hogy osszuk fel: te foglalkozol a komponens architektúrával
 ```
 "Jó kérdés! A dependency injection első ránézésre bonyolult lehet.
 
-Gondoljunk rá úgy, mint egy étterem: 
+Gondoljunk rá úgy, mint egy étterem:
 - A szakács (service) nem megy el bevásárolni (dependency)
 - A felszolgáló (framework) hozza a hozzávalókat
 - A szakács csak a főzésre koncentrál
@@ -191,7 +191,7 @@ Szeretnéd, ha együtt végigmennénk egy valós projekten?"
 ```markdown
 # "Testing Strategies That Actually Work"
 
-## Target Audience: 
+## Target Audience:
 Mid-level developers struggling with test maintenance
 
 ## Key Takeaways:
@@ -417,9 +417,9 @@ Rate this retrospective (1-5) and one word feeling
 ```
 "Hi! I'm John from Company X. I really enjoyed your talk on microservices patterns.
 
-I've been working on a similar challenge with service discovery in our Kubernetes environment. 
+I've been working on a similar challenge with service discovery in our Kubernetes environment.
 
-Have you experimented with service mesh solutions like Istio? 
+Have you experimented with service mesh solutions like Istio?
 I'd love to hear your thoughts over coffee if you have a few minutes."
 ```
 
@@ -427,7 +427,7 @@ I'd love to hear your thoughts over coffee if you have a few minutes."
 ```
 "Great article on testing strategies! I especially appreciated the point about testing behavior vs implementation.
 
-In our team, we've seen similar issues with brittle tests. We solved it by introducing contract testing with Pact. 
+In our team, we've seen similar issues with brittle tests. We solved it by introducing contract testing with Pact.
 
 Have you experimented with contract testing? Would be interested in your perspective."
 ```

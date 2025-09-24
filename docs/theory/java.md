@@ -9,7 +9,7 @@ A Java egy objektumorientált, platform-független programozási nyelv, amely 19
 ### JVM, JRE, JDK
 
 - **JVM (Java Virtual Machine)**: A Java bytecode futtatókörnyezete
-- **JRE (Java Runtime Environment)**: JVM + könyvtárak futtatáshoz  
+- **JRE (Java Runtime Environment)**: JVM + könyvtárak futtatáshoz
 - **JDK (Java Development Kit)**: JRE + fejlesztői eszközök
 
 ### Objektumorientált programozás
@@ -20,18 +20,18 @@ A Java egy objektumorientált, platform-független programozási nyelv, amely 19
 public class Person {
     private String name;
     private int age;
-    
+
     // Konstruktor
     public Person(String name, int age) {
         this.name = name;
         this.age = age;
     }
-    
+
     // Getter és Setter metódusok
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -43,12 +43,12 @@ public class Person {
 ```java
 public class Employee extends Person {
     private String jobTitle;
-    
+
     public Employee(String name, int age, String jobTitle) {
         super(name, age); // Szülő konstruktor hívása
         this.jobTitle = jobTitle;
     }
-    
+
     public String getJobTitle() {
         return jobTitle;
     }
@@ -64,11 +64,11 @@ public abstract class Shape {
 
 public class Circle extends Shape {
     private double radius;
-    
+
     public Circle(double radius) {
         this.radius = radius;
     }
-    
+
     @Override
     public double getArea() {
         return Math.PI * radius * radius;
@@ -230,7 +230,7 @@ Comparator<String> shortComparator = String::compareTo;
 ### 2. SOLID alapelvek
 
 - **S**ingle Responsibility Principle
-- **O**pen/Closed Principle  
+- **O**pen/Closed Principle
 - **L**iskov Substitution Principle
 - **I**nterface Segregation Principle
 - **D**ependency Inversion Principle

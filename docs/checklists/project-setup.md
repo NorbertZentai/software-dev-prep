@@ -154,7 +154,7 @@ jobs:
 
 ### 1. Profilok
 - [ ] **application-dev.properties**
-- [ ] **application-test.properties**  
+- [ ] **application-test.properties**
 - [ ] **application-prod.properties**
 
 ### 2. Environment variables

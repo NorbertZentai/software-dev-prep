@@ -8,12 +8,7 @@
       "id": 1,
       "type": "multiple",
       "question": "Melyik SQL parancs szolgál adatok lekérdezésére?",
-      "options": [
-        "GET",
-        "FETCH",
-        "SELECT",
-        "RETRIEVE"
-      ],
+      "options": ["GET", "FETCH", "SELECT", "RETRIEVE"],
       "correct": 2,
       "explanation": "A SELECT parancs az alapvető adatlekérdező utasítás SQL-ben. Segítségével táblákból tudunk adatokat kiválasztani és lekérdezni."
     },
@@ -41,12 +36,7 @@
       "id": 4,
       "type": "multiple",
       "question": "Melyik paranccsal hozunk létre új táblát?",
-      "options": [
-        "NEW TABLE",
-        "CREATE TABLE",
-        "MAKE TABLE",
-        "ADD TABLE"
-      ],
+      "options": ["NEW TABLE", "CREATE TABLE", "MAKE TABLE", "ADD TABLE"],
       "correct": 1,
       "explanation": "A CREATE TABLE paranccsal hozunk létre új táblákat az adatbázisban. Meg kell adnunk a tábla nevét és az oszlopok definícióját."
     },

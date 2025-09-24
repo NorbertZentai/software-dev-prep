@@ -39,27 +39,27 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CalculatorTest {
-    
+
     private Calculator calculator;
-    
+
     @BeforeEach
     void setUp() {
         calculator = new Calculator();
     }
-    
+
     @Test
     void testAddition() {
         // Given - Arrange
         int a = 5;
         int b = 3;
-        
+
         // When - Act
         int result = calculator.add(a, b);
-        
+
         // Then - Assert
         assertEquals(8, result);
     }
-    
+
     @Test
     void testDivisionByZero() {
         // Assert that exception is thrown
@@ -67,7 +67,7 @@ class CalculatorTest {
             calculator.divide(10, 0);
         });
     }
-    
+
     @AfterEach
     void tearDown() {
         calculator = null;
@@ -127,28 +127,28 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
-    
+
     @Mock
     private UserRepository userRepository;
-    
+
     @InjectMocks
     private UserService userService;
-    
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-    
+
     @Test
     void testFindUserById() {
         // Given
         Long userId = 1L;
         User expectedUser = new User("John", "john@example.com");
         when(userRepository.findById(userId)).thenReturn(expectedUser);
-        
+
         // When
         User actualUser = userService.findById(userId);
-        
+
         // Then
         assertEquals(expectedUser, actualUser);
         verify(userRepository).findById(userId);
@@ -231,10 +231,10 @@ void shouldCalculateDiscountForPremiumCustomer() {
     Customer customer = new Customer("Premium");
     Product product = new Product("Laptop", 1000);
     DiscountCalculator calculator = new DiscountCalculator();
-    
+
     // When - Act
     double discount = calculator.calculateDiscount(customer, product);
-    
+
     // Then - Assert
     assertEquals(100, discount); // 10% discount
 }
@@ -248,22 +248,22 @@ void shouldCalculateDiscountForPremiumCustomer() {
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserServiceIntegrationTest {
-    
+
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private TestRestTemplate restTemplate;
-    
+
     @Test
     void testCreateAndFindUser() {
         // Given
         User user = new User("John", "john@example.com");
-        
+
         // When
         User createdUser = userService.save(user);
         User foundUser = userService.findById(createdUser.getId());
-        
+
         // Then
         assertNotNull(foundUser);
         assertEquals("John", foundUser.getName());
@@ -276,19 +276,19 @@ class UserServiceIntegrationTest {
 ```java
 @WebMvcTest(UserController.class)
 class UserControllerTest {
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @MockBean
     private UserService userService;
-    
+
     @Test
     void testGetUser() throws Exception {
         // Given
         User user = new User("John", "john@example.com");
         when(userService.findById(1L)).thenReturn(user);
-        
+
         // When & Then
         mockMvc.perform(get("/api/users/1"))
                 .andExpected(status().isOk())
@@ -304,20 +304,20 @@ class UserControllerTest {
 @SpringBootTest
 @Testcontainers
 class DatabaseIntegrationTest {
-    
+
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13")
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
-    
+
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
-    
+
     @Test
     void testDatabaseOperations() {
         // Real database tests
@@ -347,17 +347,17 @@ class DatabaseIntegrationTest {
 public class UserBuilder {
     private String name = "Default Name";
     private String email = "default@example.com";
-    
+
     public UserBuilder withName(String name) {
         this.name = name;
         return this;
     }
-    
+
     public UserBuilder withEmail(String email) {
         this.email = email;
         return this;
     }
-    
+
     public User build() {
         return new User(name, email);
     }
@@ -375,13 +375,13 @@ User user = new UserBuilder()
 @Nested
 @DisplayName("User validation tests")
 class UserValidationTests {
-    
+
     @Nested
     @DisplayName("When user is valid")
     class WhenUserIsValid {
         @Test void shouldAcceptUser() { }
     }
-    
+
     @Nested
     @DisplayName("When user is invalid")
     class WhenUserIsInvalid {

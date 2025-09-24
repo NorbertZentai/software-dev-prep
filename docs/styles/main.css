@@ -15,7 +15,7 @@
   --accent-danger: #ef4444;
   --border-color: #475569;
   --shadow-color: rgba(0, 0, 0, 0.3);
-  
+
   /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -23,10 +23,12 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
   --space-2xl: 3rem;
-  
+
   /* Typography */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas,
+    'Courier New', monospace;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -34,13 +36,13 @@
   --font-size-xl: 1.25rem;
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
-  
+
   /* Layout */
   --header-height: 4rem;
   --sidebar-width: 280px;
   --border-radius: 0.5rem;
   --border-radius-lg: 0.75rem;
-  
+
   /* Animations */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
@@ -48,7 +50,7 @@
 }
 
 /* Light Mode Override */
-[data-theme="light"] {
+[data-theme='light'] {
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-accent: #e2e8f0;
@@ -60,7 +62,9 @@
 }
 
 /* === RESET & BASE STYLES === */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -83,11 +87,12 @@ body {
   display: grid;
   grid-template-rows: var(--header-height) 1fr auto;
   grid-template-columns: var(--sidebar-width) 1fr;
-  grid-template-areas: 
-    "header header"
-    "sidebar main"
-    "footer footer";
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  grid-template-areas:
+    'header header'
+    'sidebar main'
+    'footer footer';
+  transition: background-color var(--transition-normal),
+    color var(--transition-normal);
 }
 
 /* === ACCESSIBILITY === */
@@ -410,12 +415,12 @@ noscript {
 @media (max-width: 768px) {
   body {
     grid-template-columns: 1fr;
-    grid-template-areas: 
-      "header"
-      "main"
-      "footer";
+    grid-template-areas:
+      'header'
+      'main'
+      'footer';
   }
-  
+
   .sidebar {
     position: fixed;
     top: var(--header-height);
@@ -425,39 +430,39 @@ noscript {
     z-index: 105;
     transition: left var(--transition-normal);
   }
-  
+
   .sidebar.open {
     left: 0;
   }
-  
+
   .sidebar-toggle {
     display: block;
   }
-  
+
   .main-nav {
     display: none;
   }
-  
+
   .header-content {
     gap: var(--space-md);
   }
-  
+
   #search-input {
     width: 150px;
   }
-  
+
   #search-input:focus {
     width: 180px;
   }
-  
+
   .main-content {
     padding: var(--space-lg);
   }
-  
+
   .welcome-screen {
     padding: var(--space-lg) 0;
   }
-  
+
   .quick-actions {
     grid-template-columns: 1fr;
   }
@@ -467,24 +472,24 @@ noscript {
   .header-tools {
     gap: var(--space-sm);
   }
-  
+
   #search-input {
     width: 120px;
     font-size: var(--font-size-xs);
   }
-  
+
   #search-input:focus {
     width: 140px;
   }
-  
+
   .site-title {
     font-size: var(--font-size-lg);
   }
-  
+
   .main-content {
     padding: var(--space-md);
   }
-  
+
   .action-card {
     padding: var(--space-lg);
   }
@@ -603,16 +608,31 @@ noscript {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* === UTILITIES === */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-.hidden { display: none !important; }
-.visible { display: block !important; }
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+.hidden {
+  display: none !important;
+}
+.visible {
+  display: block !important;
+}
 
 /* === HIGH CONTRAST MODE === */
 @media (prefers-contrast: high) {
@@ -642,16 +662,16 @@ noscript {
   .sidebar-toggle {
     display: none !important;
   }
-  
+
   body {
-    grid-template-areas: "main";
+    grid-template-areas: 'main';
     grid-template-columns: 1fr;
   }
-  
+
   .main-content {
     padding: 0;
   }
-  
+
   .content-container {
     max-width: none;
   }

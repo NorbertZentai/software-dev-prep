@@ -46,7 +46,12 @@
       "id": "soft-skills",
       "name": "Soft skillek",
       "color": "#f97316",
-      "tags": ["kommunikáció", "csapatmunka", "problémamegoldás", "időmenedzsment"]
+      "tags": [
+        "kommunikáció",
+        "csapatmunka",
+        "problémamegoldás",
+        "időmenedzsment"
+      ]
     }
   ],
   "difficulty_levels": [

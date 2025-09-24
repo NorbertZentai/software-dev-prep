@@ -403,7 +403,7 @@ Brief description of changes
 
 ## Type of change
 - [ ] Bug fix
-- [ ] New feature  
+- [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
@@ -434,22 +434,22 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Setup Java
       uses: actions/setup-java@v2
       with:
         java-version: '11'
         distribution: 'adopt'
-        
+
     - name: Run tests
       run: ./mvnw test
-      
+
     - name: Generate test report
       run: ./mvnw jacoco:report
-      
+
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
 ```

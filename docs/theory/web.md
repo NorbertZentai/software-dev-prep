@@ -21,19 +21,19 @@
             </ul>
         </nav>
     </header>
-    
+
     <main>
         <article>
             <h1>Cikk címe</h1>
             <p>Cikk tartalma...</p>
         </article>
-        
+
         <aside>
             <h2>Kapcsolódó tartalom</h2>
             <p>Oldalsáv tartalom...</p>
         </aside>
     </main>
-    
+
     <footer>
         <p>&copy; 2025 Weboldal</p>
     </footer>
@@ -48,13 +48,13 @@
 <form action="/submit" method="POST">
     <label for="name">Név:</label>
     <input type="text" id="name" name="name" required>
-    
+
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required>
-    
+
     <label for="message">Üzenet:</label>
     <textarea id="message" name="message" rows="4" cols="50"></textarea>
-    
+
     <button type="submit">Küldés</button>
 </form>
 
@@ -371,21 +371,21 @@ class User {
         this.name = name;
         this.email = email;
     }
-    
+
     greet() {
         return `Hello, I'm ${this.name}`;
     }
-    
+
     // Static method
     static validateEmail(email) {
         return email.includes('@');
     }
-    
+
     // Getter
     get displayName() {
         return this.name.toUpperCase();
     }
-    
+
     // Setter
     set displayName(value) {
         this.name = value.toLowerCase();
@@ -398,7 +398,7 @@ class AdminUser extends User {
         super(name, email);
         this.permissions = permissions;
     }
-    
+
     greet() {
         return `${super.greet()}, I'm an admin`;
     }
@@ -477,11 +477,11 @@ const getUsers = async () => {
                 'Authorization': 'Bearer ' + token
             }
         });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const users = await response.json();
         return users;
     } catch (error) {
@@ -500,11 +500,11 @@ const createUser = async (userData) => {
             },
             body: JSON.stringify(userData)
         });
-        
+
         if (!response.ok) {
             throw new Error('Failed to create user');
         }
-        
+
         return await response.json();
     } catch (error) {
         console.error('Error creating user:', error);
