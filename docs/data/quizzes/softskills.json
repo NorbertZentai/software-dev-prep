@@ -1,0 +1,166 @@
+{
+  "title": "Soft Skills - Kvíz",
+  "topic": "softskills",
+  "level": "intermediate",
+  "questions": [
+    {
+      "id": "soft-q-001",
+      "type": "single",
+      "question": "Mi a Technical Debt lényege?",
+      "choices": [
+        "Pénzügyi kölcsön a cégnél",
+        "Gyors megoldások hosszú távú költsége",
+        "Technológiai beruházás",
+        "Képzési költség"
+      ],
+      "answer": [1],
+      "explanation": "A Technical Debt a gyors, nem optimális megoldások felhalmozódása, ami később refactoring vagy újraírás szükségességét eredményezi.",
+      "tags": ["technical-debt", "code-quality", "maintenance"]
+    },
+    {
+      "id": "soft-q-002",
+      "type": "multi",
+      "question": "Melyek a hatékony code review jellemzői?",
+      "choices": [
+        "Konstruktív kritika",
+        "Gyors feedback",
+        "Konzisztens stílus",
+        "Tudásmegosztás",
+        "Hibakeresés"
+      ],
+      "answer": [0, 1, 2, 3, 4],
+      "explanation": "Hatékony code review: konstruktív kritika, gyors feedback, konzisztens stílus betartása, tudásmegosztás a csapaton belül, és hibák korai felfedezése.",
+      "tags": ["code-review", "collaboration", "quality"]
+    },
+    {
+      "id": "soft-q-003",
+      "type": "single",
+      "question": "Mi a Rubber Duck Debugging lényege?",
+      "choices": [
+        "Debugger eszköz használata",
+        "Páros programozás",
+        "Probléma hangos elmagyarázása",
+        "Unit tesztek írása"
+      ],
+      "answer": [2],
+      "explanation": "Rubber Duck Debugging: a probléma részletes elmagyarázása (akár egy gumikacsa 'számára') gyakran segít megtalálni a megoldást a verbalizálás folyamata során.",
+      "tags": ["debugging", "problem-solving", "techniques"]
+    },
+    {
+      "id": "soft-q-004",
+      "type": "truefalse",
+      "question": "Az Imposter Syndrome csak kezdő fejlesztőknél fordul elő.",
+      "answer": false,
+      "explanation": "Az Imposter Syndrome (csaló szindróma) minden karrierszinten előfordulhat, amikor valaki úgy érzi, nem érdemli meg a pozícióját vagy sikereit.",
+      "tags": ["imposter-syndrome", "psychology", "career"]
+    },
+    {
+      "id": "soft-q-005",
+      "type": "single",
+      "question": "Mi a legfontosabb a hatékony kommunikációban fejlesztő csapatokban?",
+      "choices": [
+        "Technikai részletek",
+        "Tisztaság és egyértelműség",
+        "Gyorsaság",
+        "Formális nyelv használata"
+      ],
+      "answer": [1],
+      "explanation": "A tisztaság és egyértelműség a legfontosabb: mindenki értse ugyanúgy a mondandót, elkerülve a félreértéseket és időpocsékolást.",
+      "tags": ["communication", "clarity", "team-work"]
+    },
+    {
+      "id": "soft-q-006",
+      "type": "multi",
+      "question": "Melyek a jó mentor tulajdonságai?",
+      "choices": [
+        "Türelem",
+        "Aktív hallgatás",
+        "Tudás megosztása",
+        "Konstruktív feedback",
+        "Empátia"
+      ],
+      "answer": [0, 1, 2, 3, 4],
+      "explanation": "Jó mentor: türelmes, aktívan hallgat, szívesen osztja meg tudását, konstruktív visszajelzést ad, és empatikus a mentorált helyzetével.",
+      "tags": ["mentoring", "leadership", "teaching"]
+    },
+    {
+      "id": "soft-q-007",
+      "type": "single",
+      "question": "Mi a Dunning-Kruger effektus a szoftverfejlesztésben?",
+      "choices": [
+        "Túl sok debugger használata",
+        "Kezdők túlbecsülik tudásukat",
+        "Tapasztaltak alábecsülik magukat",
+        "B és C is igaz"
+      ],
+      "answer": [3],
+      "explanation": "A Dunning-Kruger effektus: kevés tudással rendelkezők túlbecsülik képességeiket, míg a szakértők hajlamosak alábecsülni saját tudásukat.",
+      "tags": ["psychology", "self-assessment", "learning"]
+    },
+    {
+      "id": "soft-q-008",
+      "type": "single",
+      "question": "Mi a 'Bus Factor' vagy 'Truck Factor' jelentése?",
+      "choices": [
+        "Teljesítmény metrika",
+        "Hány ember tudását veszítené el a projekt ha valaki távozik",
+        "Code coverage mutató",
+        "Bug severity szint"
+      ],
+      "answer": [1],
+      "explanation": "A Bus/Truck Factor azt mutatja, hány kulcsfontosságú ember távozása tenné működésképtelenné a projektet. Alacsony érték kockázatos.",
+      "tags": ["risk-management", "knowledge-sharing", "team-resilience"]
+    },
+    {
+      "id": "soft-q-009",
+      "type": "truefalse",
+      "question": "A burnout csak túlmunka miatt alakul ki.",
+      "answer": false,
+      "explanation": "Burnout okai: túlmunka, kontroll hiánya, elismerés hiánya, közösség hiánya, igazságtalanság érzése, értékellentét. Nem csak a munka mennyiségről szól.",
+      "tags": ["burnout", "mental-health", "work-life-balance"]
+    },
+    {
+      "id": "soft-q-010",
+      "type": "single",
+      "question": "Mi a leghatékonyabb módja a continuous learning-nek fejlesztőként?",
+      "choices": [
+        "Csak könyvek olvasása",
+        "Csak gyakorlati projektek",
+        "Elméleti és gyakorlati tanulás kombinációja",
+        "Csak videók nézése"
+      ],
+      "answer": [2],
+      "explanation": "A leghatékonyabb tanulás az elméleti tudás és gyakorlati alkalmazás kombinációja: tanulj koncepciókról, majd alkalmazd őket valós projektekben.",
+      "tags": ["continuous-learning", "skill-development", "career-growth"]
+    },
+    {
+      "id": "soft-q-011",
+      "type": "multi",
+      "question": "Melyek a remote work kihívásai fejlesztőkként?",
+      "choices": [
+        "Kommunikáció nehézségei",
+        "Időzóna különbségek",
+        "Izolációs érzés",
+        "Munkahely-otthon határok elmosódása",
+        "Technikai infrastruktúra"
+      ],
+      "answer": [0, 1, 2, 3, 4],
+      "explanation": "Remote work kihívásai: nehezebb kommunikáció, időzóna koordináció, szociális izoláció, work-life balance nehézségek, és stabil internet/eszköz szükséglet.",
+      "tags": ["remote-work", "communication", "work-life-balance"]
+    },
+    {
+      "id": "soft-q-012",
+      "type": "single",
+      "question": "Mi a Conway törvénye?",
+      "choices": [
+        "Kód optimalizálásról szól",
+        "Szervezet struktúrája tükröződik a szoftver architektúrában",
+        "Agilis módszertan alapelve",
+        "Tesztelési stratégia"
+      ],
+      "answer": [1],
+      "explanation": "Conway törvénye: 'A szervezetek olyan rendszereket terveznek, amelyek a szervezet kommunikációs struktúráját másolják.' A team felépítés hatással van a szoftver architektúrára.",
+      "tags": ["conway-law", "organization", "architecture", "team-structure"]
+    }
+  ]
+}

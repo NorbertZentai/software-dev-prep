@@ -220,7 +220,8 @@
     <script src="./scripts/vendor/marked.min.js"></script>
     <script type="module" src="./scripts/app.js"></script>
 
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration - DISABLED FOR DEVELOPMENT -->
+    <!--
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -235,6 +236,10 @@
         })
       }
     </script>
+    -->
+
+    <!-- Main App Script -->
+    <script type="module" src="./scripts/app.js"></script>
 
     <!-- Analytics (Plausible - privacy-friendly) -->
     <script

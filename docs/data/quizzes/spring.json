@@ -1,0 +1,149 @@
+{
+  "title": "Spring Framework - Kvíz",
+  "topic": "spring",
+  "level": "intermediate",
+  "questions": [
+    {
+      "id": "spr-q-001",
+      "type": "single",
+      "question": "Melyik annotáció jelöli a REST kontrollert Spring-ben?",
+      "choices": [
+        "@Controller",
+        "@RestController",
+        "@Service",
+        "@Configuration"
+      ],
+      "answer": [1],
+      "explanation": "A @RestController annotáció kombinálja a @Controller és @ResponseBody annotációkat, automatikusan JSON/XML formátumba konvertálva a visszatérési értékeket.",
+      "tags": ["spring", "rest", "annotations"]
+    },
+    {
+      "id": "spr-q-002",
+      "type": "single",
+      "question": "Mi a Spring Boot Auto Configuration célja?",
+      "choices": [
+        "Automatikus deployment",
+        "Automatikus dependency injection beállítás",
+        "Automatikus teszt futtatás",
+        "Automatikus dokumentáció generálás"
+      ],
+      "answer": [1],
+      "explanation": "Az Auto Configuration automatikusan konfigurálja a Spring alkalmazást a classpath-on található dependency-k alapján, csökkentve a manuális konfigurációs munkát.",
+      "tags": ["spring-boot", "configuration", "automation"]
+    },
+    {
+      "id": "spr-q-003",
+      "type": "multi",
+      "question": "Melyek a Spring Core fő jellemzői?",
+      "choices": [
+        "Dependency Injection",
+        "Aspect-Oriented Programming",
+        "Model-View-Controller",
+        "Inversion of Control"
+      ],
+      "answer": [0, 1, 3],
+      "explanation": "A Spring Core alapvető jellemzői: Dependency Injection (DI), Aspect-Oriented Programming (AOP), és Inversion of Control (IoC). Az MVC egy külön Spring modul.",
+      "tags": ["spring-core", "di", "aop", "ioc"]
+    },
+    {
+      "id": "spr-q-004",
+      "type": "truefalse",
+      "question": "A @Autowired annotáció kötelező minden dependency injection esetén Spring-ben.",
+      "answer": false,
+      "explanation": "Spring 4.3 óta a konstruktor-alapú injection esetén nem kötelező a @Autowired annotáció, ha az osztálynak csak egy konstruktora van.",
+      "tags": ["spring", "autowired", "dependency-injection"]
+    },
+    {
+      "id": "spr-q-005",
+      "type": "single",
+      "question": "Melyik Spring profil aktiválási módszer a leggyakoribb production környezetben?",
+      "choices": [
+        "@Profile annotáció",
+        "application.properties beállítás",
+        "SPRING_PROFILES_ACTIVE environment variable",
+        "Command line argumentum"
+      ],
+      "answer": [2],
+      "explanation": "Production környezetben a SPRING_PROFILES_ACTIVE environment variable használata a legbiztonságosabb és legflexibilisebb módja a profilok aktiválásának.",
+      "tags": ["spring", "profiles", "production", "configuration"]
+    },
+    {
+      "id": "spr-q-006",
+      "type": "single",
+      "question": "Mi a @Transactional annotáció alapértelmezett propagation szintje?",
+      "choices": ["REQUIRED", "REQUIRES_NEW", "SUPPORTS", "MANDATORY"],
+      "answer": [0],
+      "explanation": "A @Transactional annotáció alapértelmezett propagation szintje REQUIRED, ami azt jelenti, hogy meglévő tranzakciót használ, vagy újat hoz létre ha nincs.",
+      "tags": ["spring", "transactions", "propagation"]
+    },
+    {
+      "id": "spr-q-007",
+      "type": "multi",
+      "question": "Melyek érvényes Spring Bean scope-ok?",
+      "choices": [
+        "singleton",
+        "prototype",
+        "request",
+        "session",
+        "application"
+      ],
+      "answer": [0, 1, 2, 3, 4],
+      "explanation": "A Spring támogatja ezeket a bean scope-okat: singleton (alapértelmezett), prototype, request, session és application (web környezetben).",
+      "tags": ["spring", "bean-scopes", "lifecycle"]
+    },
+    {
+      "id": "spr-q-008",
+      "type": "single",
+      "question": "Melyik annotációval jelölhetsz egy metódust aszinkron végrehajtásra Spring-ben?",
+      "choices": ["@Async", "@Background", "@NonBlocking", "@Concurrent"],
+      "answer": [0],
+      "explanation": "A @Async annotációval jelölheted a metódusokat aszinkron végrehajtásra. Ehhez a @EnableAsync konfigurációt is engedélyezned kell.",
+      "tags": ["spring", "async", "concurrency"]
+    },
+    {
+      "id": "spr-q-009",
+      "type": "single",
+      "question": "Mi a Spring Data JPA @Query annotáció célja?",
+      "choices": [
+        "Egyedi SQL lekérdezések definiálása",
+        "Automatikus query generálás tiltása",
+        "Cache konfiguráció",
+        "Transaction boundary beállítása"
+      ],
+      "answer": [0],
+      "explanation": "A @Query annotáció lehetővé teszi egyedi JPQL vagy natív SQL lekérdezések definiálását repository metódusokhoz.",
+      "tags": ["spring-data", "jpa", "query", "database"]
+    },
+    {
+      "id": "spr-q-010",
+      "type": "truefalse",
+      "question": "A Spring Security alapértelmezetten minden endpoint-ot védettnek tekint.",
+      "answer": true,
+      "explanation": "Spring Security alapértelmezetten 'secure by default' filozófiát követ, minden endpoint-ot védettnek tekint, kivéve ha explicit módon engedélyezed őket.",
+      "tags": ["spring-security", "authentication", "authorization"]
+    },
+    {
+      "id": "spr-q-011",
+      "type": "single",
+      "question": "Melyik Spring Boot starter szükséges web alkalmazásokhoz?",
+      "choices": [
+        "spring-boot-starter-web",
+        "spring-boot-starter-mvc",
+        "spring-boot-starter-http",
+        "spring-boot-starter-rest"
+      ],
+      "answer": [0],
+      "explanation": "A spring-boot-starter-web starter tartalmazza a web alkalmazásokhoz szükséges függőségeket, mint a Spring MVC, Tomcat, stb.",
+      "tags": ["spring-boot", "starter", "web", "dependencies"]
+    },
+    {
+      "id": "spr-q-012",
+      "type": "multi",
+      "question": "Melyek a Spring AOP főbb concepts?",
+      "choices": ["Aspect", "Pointcut", "Advice", "Join Point", "Weaving"],
+      "answer": [0, 1, 2, 3, 4],
+      "explanation": "A Spring AOP főbb fogalmai: Aspect (keresztmetsző logika), Pointcut (ahol alkalmazni kell), Advice (mikor alkalmazni), Join Point (végrehajtási pont), és Weaving (aspect integrálása).",
+      "tags": ["spring", "aop", "cross-cutting-concerns"]
+    }
+  ]
+}

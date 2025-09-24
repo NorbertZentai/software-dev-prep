@@ -9,6 +9,19 @@ export class StorageManager {
       STUDY_SESSIONS: 'software_dev_prep_study_sessions'
     };
   }
+
+  // Initialize storage manager
+  init() {
+    console.log('📦 StorageManager initialized');
+    // Initialize default settings if they don't exist
+    if (!localStorage.getItem(this.keys.SETTINGS)) {
+      this.saveSettings({
+        theme: 'auto',
+        language: 'hu',
+        notifications: true
+      });
+    }
+  }
   
   // === Progress Tracking ===
   saveProgress(route, completionPercentage = 100) {
@@ -22,6 +35,16 @@ export class StorageManager {
     
     localStorage.setItem(this.keys.PROGRESS, JSON.stringify(progress));
   }
+
+  markAsRead(route) {
+    this.saveProgress(route, 100);
+    this.logStudySession(route, 'read');
+  }
+
+  markAsCompleted(route) {
+    this.saveProgress(route, 100);
+    this.logStudySession(route, 'completed');
+  }
   
   getProgress(route = null) {
     const progress = JSON.parse(localStorage.getItem(this.keys.PROGRESS) || '{}');
@@ -31,6 +54,39 @@ export class StorageManager {
     }
     
     return progress;
+  }
+
+  getAllProgress() {
+    const progress = this.getProgress();
+    const quizResults = this.getQuizResults();
+    
+    const theoryProgress = {};
+    const exerciseProgress = {};
+    const quizScores = {};
+    
+    Object.entries(progress).forEach(([route, data]) => {
+      if (route.includes('/theory/')) {
+        theoryProgress[route] = data.completionPercentage;
+      } else if (route.includes('/exercises/')) {
+        exerciseProgress[route] = data.completionPercentage; 
+      }
+    });
+    
+    Object.entries(quizResults).forEach(([route, results]) => {
+      if (results.length > 0) {
+        quizScores[route] = Math.max(...results.map(r => r.score));
+      }
+    });
+    
+    return {
+      completedPages: this.getCompletedCount(),
+      totalStudyTime: Math.round(this.getTotalStudyTime() / 60), // convert to hours
+      quizAverage: this.getQuizAverage(),
+      streak: this.getCurrentStreak(),
+      theoryProgress,
+      exerciseProgress, 
+      quizScores
+    };
   }
   
   isCompleted(route) {
@@ -45,7 +101,41 @@ export class StorageManager {
   
   getTotalStudyTime() {
     const sessions = this.getStudySessions();
-    return sessions.reduce((total, session) => total + (session.duration || 0), 0);
+    return sessions.reduce((total, session) => total + (session.duration || 30), 0); // default 30 min
+  }
+
+  getCurrentStreak() {
+    const sessions = this.getStudySessions();
+    if (sessions.length === 0) return 0;
+    
+    // Group sessions by date
+    const sessionsByDate = {};
+    sessions.forEach(session => {
+      const date = new Date(session.timestamp).toDateString();
+      sessionsByDate[date] = true;
+    });
+    
+    const dates = Object.keys(sessionsByDate).sort((a, b) => new Date(b) - new Date(a));
+    
+    let streak = 0;
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    
+    // Start from today or yesterday
+    let currentDate = dates[0] === today ? today : (dates[0] === yesterday ? yesterday : null);
+    if (!currentDate) return 0;
+    
+    // Count consecutive days
+    for (let i = 0; i < dates.length; i++) {
+      const expectedDate = new Date(Date.now() - (i * 86400000)).toDateString();
+      if (dates.includes(expectedDate)) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
   }
   
   // === Quiz Results ===
@@ -121,6 +211,33 @@ export class StorageManager {
   isBookmarked(route) {
     const bookmarks = this.getBookmarks();
     return bookmarks.some(b => b.route === route);
+  }
+
+  // === Favorites (alias for bookmarks) ===
+  addFavorite(route, title, description = '') {
+    return this.addBookmark(route, title, description);
+  }
+
+  removeFavorite(route) {
+    return this.removeBookmark(route);
+  }
+
+  getFavorites() {
+    return this.getBookmarks();
+  }
+
+  isFavorite(route) {
+    return this.isBookmarked(route);
+  }
+
+  toggleFavorite(route, title = '', description = '') {
+    if (this.isFavorite(route)) {
+      this.removeFavorite(route);
+      return false;
+    } else {
+      this.addFavorite(route, title, description);
+      return true;
+    }
   }
   
   // === Study Sessions ===
@@ -323,6 +440,22 @@ export class StorageManager {
     return new Date(Math.max(...allDates));
   }
   
+  // === Settings Management ===
+  saveSettings(settings) {
+    localStorage.setItem(this.keys.SETTINGS, JSON.stringify(settings));
+  }
+  
+  getSettings() {
+    const defaultSettings = {
+      theme: 'auto',
+      language: 'hu',
+      notifications: true
+    };
+    
+    const saved = localStorage.getItem(this.keys.SETTINGS);
+    return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
+  }
+
   // === Clear Data ===
   clearAllData() {
     Object.values(this.keys).forEach(key => {

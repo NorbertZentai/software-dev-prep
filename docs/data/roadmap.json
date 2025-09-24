@@ -1,104 +1,350 @@
-{
-  "roadmap": {
-    "title": "Software Developer Learning Path",
-    "description": "Teljes fejlesztői felkészülési útmutató",
-    "phases": [
-      {
-        "id": "fundamentals",
-        "title": "1. Alapok",
-        "description": "Programozási alapok és eszközök",
-        "duration": "4-6 hét",
-        "skills": [
-          {
-            "id": "java-basics",
-            "name": "Java alapok",
-            "path": "/theory/java",
-            "exercises": "/exercises/java",
-            "quiz": "/quiz/java",
-            "status": "available"
-          },
-          {
-            "id": "git-version-control",
-            "name": "Git verziókezelés",
-            "path": "/theory/git",
-            "exercises": "/exercises/git",
-            "status": "available"
-          },
-          {
-            "id": "sql-basics",
-            "name": "SQL alapok",
-            "path": "/theory/sql",
-            "exercises": "/exercises/sql",
-            "quiz": "/quiz/sql",
-            "status": "available"
-          }
-        ]
-      },
-      {
-        "id": "frameworks",
-        "title": "2. Keretrendszerek",
-        "description": "Spring Framework és modern eszközök",
-        "duration": "6-8 hét",
-        "skills": [
-          {
-            "id": "spring-framework",
-            "name": "Spring Framework",
-            "path": "/theory/spring",
-            "exercises": "/exercises/java",
-            "status": "available"
-          },
-          {
-            "id": "testing",
-            "name": "Tesztelés",
-            "path": "/theory/testing",
-            "exercises": "/exercises/java",
-            "quiz": "/quiz/testing",
-            "status": "available"
-          }
-        ]
-      },
-      {
-        "id": "web-technologies",
-        "title": "3. Web technológiák",
-        "description": "Frontend és backend integrációs ismeretek",
-        "duration": "4-6 hét",
-        "skills": [
-          {
-            "id": "web-fundamentals",
-            "name": "Web alapok",
-            "path": "/theory/web",
-            "exercises": "/exercises/web",
-            "quiz": "/quiz/web",
-            "status": "available"
-          },
-          {
-            "id": "rest-apis",
-            "name": "REST API-k",
-            "path": "/theory/arch",
-            "exercises": "/exercises/arch",
-            "status": "available"
-          }
-        ]
-      },
-      {
-        "id": "architecture",
-        "title": "4. Architektúra",
-        "description": "Szoftver architektúra és tervezési minták",
-        "duration": "3-4 hét",
-        "skills": [
-          {
-            "id": "design-patterns",
-            "name": "Tervezési minták",
-            "path": "/theory/arch",
-            "exercises": "/exercises/arch",
-            "quiz": "/quiz/arch",
-            "status": "available"
-          },
-          {
-            "id": "microservices",
-            "name": "Mikroszolgáltatások",
-            "path": "/theory/arch",
-            "status": "planned"
+{{
+
+  "title": "Software Developer Roadmap",  "title": "Software Developer Learning Path 2025",
+
+  "description": "Komprehenzív tanulási útvonal szoftverfejlesztőknek",  "description": "Átfogó tanulási útvonal modern szoftverfejlesztő karrierhez",
+
+  "phases": [  "totalEstimatedHours": 180,
+
+    {  "modules": [
+
+      "id": "foundation",    {
+
+      "title": "Alapok",      "id": "java-fundamentals",
+
+      "description": "Programozási alapok és eszközök",      "title": "Java Alapok",
+
+      "duration": "2-3 hónap",      "description": "OOP elvek, Collections, Exception handling",
+
+      "color": "#3b82f6",      "route": "#/theory/java",
+
+      "topics": [      "exerciseRoute": "#/exercises/java",
+
+        {      "quizRoute": "#/quiz/java", 
+
+          "id": "java-basics",      "estimatedHours": 12,
+
+          "title": "Java Alapok",      "difficulty": "beginner",
+
+          "description": "OOP, szintaxis, alapvető koncepcók",      "prerequisites": [],
+
+          "route": "theory/java",      "learningGoals": ["JVM működés", "OOP elvek", "Collections Framework", "Exception handling"]
+
+          "estimatedHours": 40,    },
+
+          "difficulty": "beginner",    {
+
+          "prerequisites": [],      "id": "spring-framework",
+
+          "skills": ["Java szintaxis", "OOP elvek", "Változók és típusok"]      "title": "Spring Framework",
+
+        },      "description": "Dependency Injection, Spring Boot, REST API",
+
+        {      "route": "#/theory/spring",
+
+          "id": "git-basics",      "exerciseRoute": "#/exercises/java/02-spring-rest", 
+
+          "title": "Git & Verziókezelés",      "quizRoute": "#/quiz/spring",
+
+          "description": "Verziókezelés alapjai",      "estimatedHours": 18,
+
+          "route": "theory/git",      "difficulty": "intermediate",
+
+          "estimatedHours": 15,      "prerequisites": ["java-fundamentals"],
+
+          "difficulty": "beginner",      "learningGoals": ["Dependency Injection", "Spring Boot", "REST API-k", "Spring Data JPA"]
+
+          "prerequisites": [],    },
+
+          "skills": ["Git parancsok", "Branch kezelés", "Merge konfliktusok"]    {
+
+        }      "id": "testing-fundamentals",
+
+      ]      "title": "Tesztelés",
+
+    },      "description": "Unit testing, TDD, Mock objektumok",
+
+    {      "route": "#/theory/testing",
+
+      "id": "backend",      "exerciseRoute": "#/exercises/java/03-testing",
+
+      "title": "Backend Fejlesztés",      "quizRoute": "#/quiz/testing",
+
+      "description": "Szerveroldali fejlesztés Spring-gel",      "estimatedHours": 14,
+
+      "duration": "3-4 hónap",      "difficulty": "intermediate", 
+
+      "color": "#10b981",      "prerequisites": ["java-fundamentals"],
+
+      "topics": [      "learningGoals": ["Unit testing", "JUnit 5", "Mockito", "TDD workflow"]
+
+        {    },
+
+          "id": "spring-framework",    {
+
+          "title": "Spring Framework",      "id": "database-fundamentals", 
+
+          "description": "Dependency Injection, IoC, AOP",      "title": "SQL & Adatbázisok",
+
+          "route": "theory/spring",      "description": "Relációs adatbázisok, SQL lekérdezések",
+
+          "estimatedHours": 60,      "route": "#/theory/sql",
+
+          "difficulty": "intermediate",      "exerciseRoute": "#/exercises/sql",
+
+          "prerequisites": ["java-basics"],      "quizRoute": "#/quiz/sql",
+
+          "skills": ["Spring Boot", "REST API", "Security"]      "estimatedHours": 16,
+
+        },      "difficulty": "beginner",
+
+        {      "prerequisites": [],
+
+          "id": "database",      "learningGoals": ["SQL CRUD műveletek", "JOIN-ok", "Indexelés", "Tranzakciók"]
+
+          "title": "Adatbázisok & SQL",    },
+
+          "description": "Relációs adatbázisok és SQL",    {
+
+          "route": "theory/sql",      "id": "web-development",
+
+          "estimatedHours": 45,      "title": "Web Development",
+
+          "difficulty": "intermediate",      "description": "HTML, CSS, JavaScript, HTTP protokoll",
+
+          "prerequisites": ["java-basics"],      "route": "#/theory/web",
+
+          "skills": ["SQL lekérdezések", "JPA/Hibernate", "Tranzakciók"]      "exerciseRoute": "#/exercises/web", 
+
+        }      "quizRoute": "#/quiz/web",
+
+      ]      "estimatedHours": 20,
+
+    },      "difficulty": "beginner",
+
+    {      "prerequisites": [],
+
+      "id": "frontend",      "learningGoals": ["HTML/CSS/JS", "HTTP protokoll", "REST API-k", "Modern frameworks"]
+
+      "title": "Frontend Fejlesztés",    },
+
+      "description": "Modern web technológiák",    {
+
+      "duration": "2-3 hónap",      "id": "software-architecture",
+
+      "color": "#f59e0b",      "title": "Szoftver Architektúra", 
+
+      "topics": [      "description": "Design patterns, mikroszolgáltatások",
+
+        {      "route": "#/theory/arch",
+
+          "id": "web-development",      "exerciseRoute": "#/exercises/arch",
+
+          "title": "Web Development",      "quizRoute": "#/quiz/arch",
+
+          "description": "HTML, CSS, JavaScript, React",      "estimatedHours": 24,
+
+          "route": "theory/web",      "difficulty": "advanced",
+
+          "estimatedHours": 50,      "prerequisites": ["java-fundamentals", "spring-framework"],
+
+          "difficulty": "intermediate",      "learningGoals": ["Design patterns", "Mikroszolgáltatások", "Clean Architecture", "Scalability"]
+
+          "prerequisites": ["java-basics"],    },
+
+          "skills": ["HTML/CSS", "JavaScript ES6+", "React", "TypeScript"]    {
+
+        }      "id": "version-control",
+
+      ]      "title": "Git & Verziókezelés",
+
+    },      "description": "Git workflow, branching stratégiák",
+
+    {      "route": "#/theory/git", 
+
+      "id": "advanced",      "exerciseRoute": null,
+
+      "title": "Haladó Témák",      "quizRoute": "#/quiz/git",
+
+      "description": "Rendszerarchitektúra és best practices",      "estimatedHours": 8,
+
+      "duration": "2-3 hónap",      "difficulty": "beginner",
+
+      "color": "#8b5cf6",      "prerequisites": [],
+
+      "topics": [      "learningGoals": ["Git alapparancsok", "Branching", "Merging", "Csapatmunka workflow"]
+
+        {    },
+
+          "id": "architecture",    {
+
+          "title": "Szoftver Architektúra",      "id": "soft-skills",
+
+          "description": "Tervezési minták, mikroszolgáltatások",      "title": "Soft Skills",
+
+          "route": "theory/arch",      "description": "Kommunikáció, csapatmunka, interjú",
+
+          "estimatedHours": 35,      "route": "#/theory/softskills",
+
+          "difficulty": "advanced",      "exerciseRoute": null,
+
+          "prerequisites": ["spring-framework", "database"],      "quizRoute": "#/quiz/softskills", 
+
+          "skills": ["Design Patterns", "Microservices", "API Design"]      "estimatedHours": 10,
+
+        },      "difficulty": "intermediate",
+
+        {      "prerequisites": [],
+
+          "id": "testing",      "learningGoals": ["Kommunikáció", "Csapatmunka", "Problémamegoldás", "Interjú készségek"]
+
+          "title": "Tesztelés",    }
+
+          "description": "Unit, integration és E2E tesztek",  ],
+
+          "route": "theory/testing",  "learningPaths": [
+
+          "estimatedHours": 30,    {
+
+          "difficulty": "intermediate",      "name": "Backend Developer",
+
+          "prerequisites": ["java-basics", "spring-framework"],      "description": "Java backend fejlesztő specializáció",
+
+          "skills": ["JUnit", "Mockito", "Test-driven Development"]      "modules": ["java-fundamentals", "spring-framework", "testing-fundamentals", "database-fundamentals", "software-architecture", "version-control", "soft-skills"],
+
+        }      "estimatedWeeks": 16
+
+      ]    },
+
+    },    {
+
+    {      "name": "Full-stack Developer", 
+
+      "id": "professional",      "description": "Teljes stack fejlesztő track",
+
+      "title": "Professzionális Készségek",      "modules": ["java-fundamentals", "web-development", "spring-framework", "testing-fundamentals", "database-fundamentals", "software-architecture", "version-control", "soft-skills"], 
+
+      "description": "Soft skills és karrierfejlesztés",      "estimatedWeeks": 20
+
+      "duration": "folyamatos",    },
+
+      "color": "#ef4444",    {
+
+      "topics": [      "name": "Quick Interview Prep",
+
+        {      "description": "Interjúra felkészülés 4 hét alatt",
+
+          "id": "soft-skills",      "modules": ["java-fundamentals", "spring-framework", "database-fundamentals", "soft-skills"],
+
+          "title": "Soft Skills",      "estimatedWeeks": 4
+
+          "description": "Kommunikáció, csapatmunka, vezetés",    }
+
+          "route": "theory/softskills",  ]
+
+          "estimatedHours": 20,}
+
+          "difficulty": "beginner",            "id": "testing",
+
+          "prerequisites": [],            "name": "Tesztelés",
+
+          "skills": ["Kommunikáció", "Prezentáció", "Csapatmunka"]            "path": "/theory/testing",
+
+        }            "exercises": "/exercises/java",
+
+      ]            "quiz": "/quiz/testing",
+
+    }            "status": "available"
+
+  ],          }
+
+  "milestones": [        ]
+
+    {      },
+
+      "id": "junior-ready",      {
+
+      "title": "Junior Developer Ready",        "id": "web-technologies",
+
+      "description": "Alapvető készségek elsajátítva",        "title": "3. Web technológiák",
+
+      "requiredTopics": ["java-basics", "git-basics", "spring-framework"],        "description": "Frontend és backend integrációs ismeretek",
+
+      "estimatedWeeks": 12        "duration": "4-6 hét",
+
+    },        "skills": [
+
+    {          {
+
+      "id": "fullstack-basics",            "id": "web-fundamentals",
+
+      "title": "Full-Stack Alapok",            "name": "Web alapok",
+
+      "description": "Backend és frontend alapok",            "path": "/theory/web",
+
+      "requiredTopics": ["java-basics", "spring-framework", "database", "web-development"],            "exercises": "/exercises/web",
+
+      "estimatedWeeks": 20            "quiz": "/quiz/web",
+
+    },            "status": "available"
+
+    {          },
+
+      "id": "senior-ready",          {
+
+      "title": "Senior Developer Path",            "id": "rest-apis",
+
+      "description": "Haladó készségek és architektúra",            "name": "REST API-k",
+
+      "requiredTopics": ["architecture", "testing", "soft-skills"],            "path": "/theory/arch",
+
+      "estimatedWeeks": 32            "exercises": "/exercises/arch",
+
+    }            "status": "available"
+
+  ],          }
+
+  "learningPaths": [        ]
+
+    {      },
+
+      "id": "backend-specialist",      {
+
+      "title": "Backend Specialist",        "id": "architecture",
+
+      "description": "Szerveroldali fejlesztésre specializálódás",        "title": "4. Architektúra",
+
+      "topics": ["java-basics", "git-basics", "spring-framework", "database", "architecture", "testing"]        "description": "Szoftver architektúra és tervezési minták",
+
+    },        "duration": "3-4 hét",
+
+    {        "skills": [
+
+      "id": "fullstack-developer",          {
+
+      "title": "Full-Stack Developer",            "id": "design-patterns",
+
+      "description": "Teljes stack fejlesztő",            "name": "Tervezési minták",
+
+      "topics": ["java-basics", "git-basics", "spring-framework", "database", "web-development", "testing"]            "path": "/theory/arch",
+
+    },            "exercises": "/exercises/arch",
+
+    {            "quiz": "/quiz/arch",
+
+      "id": "quick-start",            "status": "available"
+
+      "title": "Gyors Kezdés",          },
+
+      "description": "Legfontosabb alapok gyorsan",          {
+
+      "topics": ["java-basics", "git-basics", "spring-framework"]            "id": "microservices",
+
+    }            "name": "Mikroszolgáltatások",
+
+  ]            "path": "/theory/arch",
+
+}            "status": "planned"
           }
         ]
       },

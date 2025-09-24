@@ -1,143 +1,833 @@
-# SQL és Adatbázis-kezelés
+# SQL & Database Theory
 
-## Bevezetés
+---
+title: "SQL & Database Theory"
+description: "Master SQL fundamentals, advanced queries, performance optimization, and database design principles"
+difficulty: intermediate
+estimatedMinutes: 180
+lastUpdated: "2024-12-19"
+version: "1.0"
+prerequisites: ["Alapvető programozási ismeretek", "Relációs adatbázis koncepciók"]
+learningGoals:
+  - "SQL alapok: SELECT, JOIN, WHERE, GROUP BY, ORDER BY"
+  - "Tranzakciók és ACID tulajdonságok megértése"
+  - "Index optimalizáció és lekérdezés teljesítmény"
+  - "Normalizáció és adatbázis tervezés"
+  - "Haladó SQL: ablakfüggvények, CTE-k, rekurzív lekérdezések"
+  - "NoSQL vs SQL összehasonlítás"
+starterLinks:
+  - { name: "SQL Fiddle", url: "http://sqlfiddle.com/", icon: "💾" }
+  - { name: "DB Fiddle", url: "https://www.db-fiddle.com/", icon: "🔧" }
+  - { name: "W3Schools SQL", url: "https://www.w3schools.com/sql/", icon: "📚" }
+completion:
+  - "Összetett JOIN műveletek megértése és írása"
+  - "INDEX stratégiák alkalmazása teljesítmény optimalizálásra"
+  - "Tranzakciók és konkurencia kezelés"
+  - "Normalizációs formák alkalmazása"
+  - "Ablakfüggvények használata adatelemzéshez"
+---
 
-Az SQL (Structured Query Language) egy szabványosított nyelv, amely relációs adatbázisok kezelésére szolgál. Lehetővé teszi az adatok lekérdezését, módosítását, és az adatbázis struktúrájának kezelését.
+## 1. SQL Alapok
 
-## Alapfogalmak
-
-### Relációs adatbázis modellje
-
-- **Tábla (Table)**: Adatok tárolásának alapegysége
-- **Sor (Row/Record)**: Egy entitás adatai
-- **Oszlop (Column/Field)**: Egy adatmező
-- **Kulcs (Key)**: Egyedi azonosító
-- **Reláció (Relationship)**: Táblák közötti kapcsolat
-
-### Adattípusok
-
-```sql
--- Szöveges típusok
-VARCHAR(50)     -- Változó hosszú szöveg
-CHAR(10)        -- Fix hosszú szöveg
-TEXT            -- Nagy szöveg
-
--- Numerikus típusok
-INT             -- Egész szám
-DECIMAL(10,2)   -- Decimális szám (10 digit, 2 tizedeshely)
-FLOAT           -- Lebegőpontos szám
-
--- Dátum és idő
-DATE            -- Dátum (YYYY-MM-DD)
-TIMESTAMP       -- Dátum és idő
-TIME            -- Csak idő
-
--- Logikai
-BOOLEAN         -- Igaz/hamis
-```
-
-## DDL (Data Definition Language)
-
-### Tábla létrehozása
+### SELECT Lekérdezések
 
 ```sql
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    age INT CHECK (age >= 0 AND age <= 150),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE orders (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    amount DECIMAL(10,2) NOT NULL,
-    status VARCHAR(20) DEFAULT 'pending',
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Tábla módosítása
-
-```sql
--- Oszlop hozzáadása
-ALTER TABLE users ADD COLUMN phone VARCHAR(20);
-
--- Oszlop módosítása
-ALTER TABLE users ALTER COLUMN email SET NOT NULL;
-
--- Oszlop törlése
-ALTER TABLE users DROP COLUMN age;
-
--- Index létrehozása
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_orders_user_id ON orders(user_id);
-```
-
-## DML (Data Manipulation Language)
-
-### SELECT - Adatok lekérdezése
-
-```sql
--- Alapvető lekérdezés
+-- Alapvető SELECT
 SELECT first_name, last_name, email
-FROM users;
+FROM users
+WHERE age > 25
+ORDER BY last_name;
 
--- Minden oszlop
-SELECT * FROM users;
+-- Aggregációs függvények
+SELECT 
+    COUNT(*) as total_users,
+    AVG(age) as average_age,
+    MAX(created_at) as latest_signup,
+    MIN(age) as youngest_user
+FROM users
+WHERE status = 'active';
 
--- Feltételek
-SELECT * FROM users
-WHERE age > 18 AND email LIKE '%@gmail.com';
-
--- Rendezés
-SELECT * FROM users
-ORDER BY last_name ASC, first_name DESC;
-
--- Korlátozás
-SELECT * FROM users
-LIMIT 10 OFFSET 20;
+-- GROUP BY és HAVING
+SELECT 
+    department,
+    COUNT(*) as employee_count,
+    AVG(salary) as avg_salary
+FROM employees
+GROUP BY department
+HAVING COUNT(*) > 5
+ORDER BY avg_salary DESC;
 ```
 
-### Aggregáló függvények
+### WHERE Feltételek
 
 ```sql
--- Darabszám
-SELECT COUNT(*) FROM users;
-SELECT COUNT(DISTINCT email) FROM users;
+-- Többfajta feltétel
+SELECT * FROM products
+WHERE price BETWEEN 100 AND 500
+  AND category IN ('electronics', 'books')
+  AND name LIKE '%smart%'
+  AND stock_quantity IS NOT NULL;
 
--- Összegzés
-SELECT SUM(amount) FROM orders;
-SELECT AVG(age) FROM users;
-SELECT MIN(order_date), MAX(order_date) FROM orders;
+-- EXISTS és NOT EXISTS
+SELECT c.name, c.email
+FROM customers c
+WHERE EXISTS (
+    SELECT 1 FROM orders o 
+    WHERE o.customer_id = c.id 
+    AND o.created_at > '2024-01-01'
+);
 
--- Csoportosítás
-SELECT status, COUNT(*) as order_count, AVG(amount) as avg_amount
+-- CASE kifejezések
+SELECT 
+    name,
+    price,
+    CASE 
+        WHEN price < 50 THEN 'Cheap'
+        WHEN price BETWEEN 50 AND 200 THEN 'Moderate'
+        ELSE 'Expensive'
+    END as price_category
+FROM products;
+```
+
+## 2. JOIN Műveletek
+
+### JOIN Típusok
+
+```sql
+-- INNER JOIN - csak egyező rekordok
+SELECT 
+    u.name,
+    p.title,
+    p.created_at
+FROM users u
+INNER JOIN posts p ON u.id = p.user_id;
+
+-- LEFT JOIN - minden bal oldali + egyező jobb oldaliak
+SELECT 
+    u.name,
+    COUNT(p.id) as post_count
+FROM users u
+LEFT JOIN posts p ON u.id = p.user_id
+GROUP BY u.id, u.name;
+
+-- RIGHT JOIN - minden jobb oldali + egyező bal oldaliak
+SELECT 
+    c.name as category_name,
+    p.name as product_name
+FROM products p
+RIGHT JOIN categories c ON p.category_id = c.id;
+
+-- FULL OUTER JOIN - minden rekord mindkét oldalról
+SELECT 
+    COALESCE(u.name, 'Unknown') as user_name,
+    COALESCE(p.title, 'No posts') as post_title
+FROM users u
+FULL OUTER JOIN posts p ON u.id = p.user_id;
+```
+
+### Többszörös JOIN-ok
+
+```sql
+SELECT 
+    u.name as customer_name,
+    o.order_date,
+    p.name as product_name,
+    oi.quantity,
+    oi.price
+FROM users u
+JOIN orders o ON u.id = o.customer_id
+JOIN order_items oi ON o.id = oi.order_id
+JOIN products p ON oi.product_id = p.id
+WHERE o.status = 'completed'
+ORDER BY o.order_date DESC;
+```
+
+### Self JOIN
+
+```sql
+-- Hierarchikus adatok - alkalmazottak és vezetőik
+SELECT 
+    e.name as employee,
+    m.name as manager
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.id;
+
+-- Összes párosítás egy táblán belül
+SELECT 
+    u1.name as user1,
+    u2.name as user2
+FROM users u1
+CROSS JOIN users u2
+WHERE u1.id < u2.id;  -- duplikációk elkerülése
+```
+
+## 3. Haladó SQL Funkciók
+
+### Ablakfüggvények (Window Functions)
+
+```sql
+-- ROW_NUMBER() és RANK()
+SELECT 
+    name,
+    salary,
+    department,
+    ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) as row_num,
+    RANK() OVER (PARTITION BY department ORDER BY salary DESC) as salary_rank,
+    DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dense_rank
+FROM employees;
+
+-- LAG és LEAD - előző/következő sor értékei
+SELECT 
+    name,
+    salary,
+    LAG(salary) OVER (ORDER BY salary) as prev_salary,
+    LEAD(salary) OVER (ORDER BY salary) as next_salary,
+    salary - LAG(salary) OVER (ORDER BY salary) as salary_diff
+FROM employees;
+
+-- Futó összeg (Running Total)
+SELECT 
+    order_date,
+    amount,
+    SUM(amount) OVER (ORDER BY order_date ROWS UNBOUNDED PRECEDING) as running_total,
+    AVG(amount) OVER (ORDER BY order_date ROWS 2 PRECEDING) as moving_avg_3
 FROM orders
-GROUP BY status
-HAVING COUNT(*) > 5;
+ORDER BY order_date;
 ```
 
-### JOIN műveletek
+### Common Table Expressions (CTE)
 
 ```sql
--- INNER JOIN
-SELECT u.first_name, u.last_name, o.amount, o.order_date
-FROM users u
-INNER JOIN orders o ON u.id = o.user_id;
+-- Egyszerű CTE
+WITH high_earners AS (
+    SELECT * FROM employees 
+    WHERE salary > 80000
+)
+SELECT 
+    department,
+    COUNT(*) as high_earner_count,
+    AVG(salary) as avg_salary
+FROM high_earners
+GROUP BY department;
 
--- LEFT JOIN
-SELECT u.first_name, u.last_name, COUNT(o.id) as order_count
-FROM users u
-LEFT JOIN orders o ON u.id = o.user_id
-GROUP BY u.id, u.first_name, u.last_name;
+-- Rekurzív CTE - szervezeti hierarchia
+WITH RECURSIVE org_hierarchy AS (
+    -- Base case: top-level managers
+    SELECT id, name, manager_id, 0 as level
+    FROM employees
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    -- Recursive case
+    SELECT e.id, e.name, e.manager_id, oh.level + 1
+    FROM employees e
+    INNER JOIN org_hierarchy oh ON e.manager_id = oh.id
+)
+SELECT * FROM org_hierarchy ORDER BY level, name;
 
--- RIGHT JOIN
-SELECT u.first_name, o.amount
+-- Múltiples CTE-k
+WITH 
+monthly_sales AS (
+    SELECT 
+        DATE_TRUNC('month', order_date) as month,
+        SUM(amount) as total_sales
+    FROM orders
+    GROUP BY DATE_TRUNC('month', order_date)
+),
+avg_monthly AS (
+    SELECT AVG(total_sales) as avg_monthly_sales
+    FROM monthly_sales
+)
+SELECT 
+    ms.month,
+    ms.total_sales,
+    am.avg_monthly_sales,
+    CASE 
+        WHEN ms.total_sales > am.avg_monthly_sales THEN 'Above Average'
+        ELSE 'Below Average'
+    END as performance
+FROM monthly_sales ms
+CROSS JOIN avg_monthly am
+ORDER BY ms.month;
+```
+
+### Sublekérdezések és EXISTS
+
+```sql
+-- Korrelált sublekérdezés
+SELECT 
+    u.name,
+    u.email,
+    (SELECT COUNT(*) FROM posts p WHERE p.user_id = u.id) as post_count
+FROM users u;
+
+-- EXISTS használata
+SELECT name FROM customers c
+WHERE EXISTS (
+    SELECT 1 FROM orders o 
+    WHERE o.customer_id = c.id 
+    AND o.total > 1000
+);
+
+-- NOT IN vs NOT EXISTS különbség
+-- NOT IN probléma NULL értékekkel
+SELECT name FROM customers 
+WHERE id NOT IN (
+    SELECT customer_id FROM orders 
+    WHERE order_date > '2024-01-01'
+    -- Ha customer_id NULL lehet, ez nem a várt eredményt adja!
+);
+
+-- Helyette NOT EXISTS
+SELECT name FROM customers c
+WHERE NOT EXISTS (
+    SELECT 1 FROM orders o 
+    WHERE o.customer_id = c.id 
+    AND o.order_date > '2024-01-01'
+);
+```
+
+## 4. Tranzakciók és ACID
+
+### ACID Tulajdonságok
+
+1. **Atomicity (Atomosság)**: Teljes tranzakció vagy semmi
+2. **Consistency (Konzisztencia)**: Adatbázis érvényes állapotban marad
+3. **Isolation (Izoláció)**: Konkurens tranzakciók nem zavarják egymást
+4. **Durability (Tartósság)**: Befejezett tranzakciók változásai megmaradnak
+
+```sql
+-- Tranzakció példa - pénzátutalás
+BEGIN TRANSACTION;
+
+UPDATE accounts 
+SET balance = balance - 1000 
+WHERE account_id = 'ACC001';
+
+UPDATE accounts 
+SET balance = balance + 1000 
+WHERE account_id = 'ACC002';
+
+-- Ellenőrzés
+IF @@ERROR <> 0 OR (SELECT balance FROM accounts WHERE account_id = 'ACC001') < 0
+BEGIN
+    ROLLBACK TRANSACTION;
+    PRINT 'Tranzakció visszavonva - nincs elegendő egyenleg';
+END
+ELSE
+BEGIN
+    COMMIT TRANSACTION;
+    PRINT 'Átutalás sikeres';
+END
+```
+
+### Isolation Levels
+
+```sql
+-- READ UNCOMMITTED - "dirty reads"
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+BEGIN TRANSACTION;
+SELECT * FROM orders WHERE status = 'pending';
+COMMIT;
+
+-- READ COMMITTED - default legtöbb RDBMS-ben
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+-- REPEATABLE READ - ugyanaz az olvasás konzisztens
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+-- SERIALIZABLE - legnagyobb izoláció
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+```
+
+### Deadlock Kezelése
+
+```sql
+-- Deadlock megelőzés - mindig ugyanabban a sorrendben lock-olni
+-- Tranzakció 1:
+BEGIN TRANSACTION;
+UPDATE table_a SET col1 = 'value1' WHERE id = 1;  -- First table A
+UPDATE table_b SET col2 = 'value2' WHERE id = 1;  -- Then table B
+COMMIT;
+
+-- Tranzakció 2:
+BEGIN TRANSACTION;
+UPDATE table_a SET col1 = 'value3' WHERE id = 2;  -- Same order: A first
+UPDATE table_b SET col2 = 'value4' WHERE id = 2;  -- Then B
+COMMIT;
+```
+
+## 5. Index Optimalizáció
+
+### Index Típusok
+
+```sql
+-- Clustered Index (általában PRIMARY KEY)
+CREATE CLUSTERED INDEX IX_Orders_OrderDate 
+ON Orders (order_date);
+
+-- Non-Clustered Index
+CREATE NONCLUSTERED INDEX IX_Users_Email 
+ON Users (email);
+
+-- Összetett Index
+CREATE INDEX IX_Orders_Customer_Date 
+ON Orders (customer_id, order_date);
+
+-- Covering Index (tartalmazza az összes szükséges oszlopot)
+CREATE INDEX IX_Orders_Covering
+ON Orders (customer_id, order_date)
+INCLUDE (total_amount, status);
+
+-- Partial Index (feltételes)
+CREATE INDEX IX_Active_Users
+ON Users (last_login_date)
+WHERE status = 'active';
+
+-- Funkcionális Index
+CREATE INDEX IX_Users_Lower_Email
+ON Users (LOWER(email));
+```
+
+### Index Használat Optimalizálás
+
+```sql
+-- Jó: Index használat
+SELECT * FROM users WHERE email = 'john@example.com';
+
+-- Rossz: Funkció az oszlopon
+SELECT * FROM users WHERE UPPER(email) = 'JOHN@EXAMPLE.COM';
+-- Helyette:
+CREATE INDEX IX_Users_Upper_Email ON users (UPPER(email));
+
+-- Jó: Összetett index használat (bal oldali prefix)
+SELECT * FROM orders 
+WHERE customer_id = 123 AND order_date > '2024-01-01';
+
+-- Rossz: Nem használja az indexet
+SELECT * FROM orders 
+WHERE order_date > '2024-01-01' AND customer_id = 123;
+-- Ha az index: (customer_id, order_date)
+
+```
+
+### Index Maintenance
+
+```sql
+-- Index fragmentáció ellenőrzése
+SELECT 
+    object_name(i.object_id) AS table_name,
+    i.name AS index_name,
+    avg_fragmentation_in_percent
+FROM sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, NULL) ps
+INNER JOIN sys.indexes i ON ps.object_id = i.object_id
+WHERE avg_fragmentation_in_percent > 10;
+
+-- Index újraépítés
+ALTER INDEX IX_Orders_Customer_Date ON Orders REBUILD;
+
+-- Index újraszervezés (kevésbé intenzív)
+ALTER INDEX IX_Orders_Customer_Date ON Orders REORGANIZE;
+```
+
+## 6. Adatbázis Tervezés és Normalizáció
+
+### Normalizációs Formák
+
+#### 1NF (First Normal Form)
+```sql
+-- Rossz: többértékű attribútumok
+CREATE TABLE employees_bad (
+    id INT,
+    name VARCHAR(100),
+    skills VARCHAR(500)  -- "Java,Python,SQL" - nem 1NF
+);
+
+-- Jó: 1NF
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+CREATE TABLE employee_skills (
+    employee_id INT,
+    skill VARCHAR(100),
+    PRIMARY KEY (employee_id, skill),
+    FOREIGN KEY (employee_id) REFERENCES employees(id)
+);
+```
+
+#### 2NF (Second Normal Form)
+```sql
+-- Rossz: részleges függőség
+CREATE TABLE order_items_bad (
+    order_id INT,
+    product_id INT,
+    product_name VARCHAR(100),  -- csak product_id-tól függ
+    quantity INT,
+    price DECIMAL(10,2),
+    PRIMARY KEY (order_id, product_id)
+);
+
+-- Jó: 2NF
+CREATE TABLE products (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    unit_price DECIMAL(10,2)
+);
+
+CREATE TABLE order_items (
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    price DECIMAL(10,2),
+    PRIMARY KEY (order_id, product_id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+```
+
+#### 3NF (Third Normal Form)
+```sql
+-- Rossz: tranzitív függőség
+CREATE TABLE employees_bad (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    department_id INT,
+    department_name VARCHAR(100),  -- department_id → department_name
+    department_location VARCHAR(100)  -- department_id → department_location
+);
+
+-- Jó: 3NF
+CREATE TABLE departments (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    location VARCHAR(100)
+);
+
+CREATE TABLE employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    department_id INT,
+    FOREIGN KEY (department_id) REFERENCES departments(id)
+);
+```
+
+### Denormalizáció és Teljesítmény
+
+```sql
+-- Néha a denormalizáció előnyös teljesítmény szempontjából
+CREATE TABLE order_summary (
+    order_id INT PRIMARY KEY,
+    customer_name VARCHAR(100),     -- denormalizált
+    total_amount DECIMAL(10,2),     -- kalkulált érték
+    item_count INT,                 -- kalkulált érték
+    order_date DATE,
+    INDEX IX_order_date (order_date),
+    INDEX IX_customer_name (customer_name)
+);
+
+-- Materializált view alternatíva
+CREATE MATERIALIZED VIEW customer_order_stats AS
+SELECT 
+    c.id as customer_id,
+    c.name,
+    COUNT(o.id) as total_orders,
+    SUM(o.total_amount) as lifetime_value,
+    MAX(o.order_date) as last_order_date
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id
+GROUP BY c.id, c.name;
+```
+
+## 7. Teljesítmény Optimalizáció
+
+### Query Optimalizáció Stratégiák
+
+```sql
+-- 1. Szelektív WHERE feltételek először
+-- Jó:
+SELECT * FROM orders o
+JOIN customers c ON o.customer_id = c.id
+WHERE o.order_date > '2024-01-01'  -- szelektív feltétel
+  AND c.status = 'premium';
+
+-- 2. EXISTS helyett IN
+-- Lassabb:
+SELECT * FROM customers
+WHERE id IN (
+    SELECT customer_id FROM orders 
+    WHERE order_date > '2024-01-01'
+);
+
+-- Gyorsabb:
+SELECT * FROM customers c
+WHERE EXISTS (
+    SELECT 1 FROM orders o
+    WHERE o.customer_id = c.id 
+    AND o.order_date > '2024-01-01'
+);
+
+-- 3. UNION ALL vs UNION (ha duplikátumok nem számítanak)
+SELECT name FROM customers WHERE region = 'North'
+UNION ALL  -- Gyorsabb, nincs duplikátum eltávolítás
+SELECT name FROM prospects WHERE region = 'North';
+```
+
+### Batch Műveletek
+
+```sql
+-- Nagyobb adatok batch-ekben való feldolgozása
+DECLARE @batch_size INT = 1000;
+DECLARE @rows_affected INT = @batch_size;
+
+WHILE @rows_affected = @batch_size
+BEGIN
+    UPDATE TOP(@batch_size) old_table 
+    SET processed = 1
+    WHERE processed = 0;
+    
+    SET @rows_affected = @@ROWCOUNT;
+    
+    -- Kis szünet a többi folyamat számára
+    WAITFOR DELAY '00:00:01';
+END
+```
+
+## 8. NoSQL vs SQL Összehasonlítás
+
+### Mikor használjunk SQL-t?
+
+✅ **SQL előnyei:**
+- ACID tulajdonságok
+- Komplex relációk
+- Érett ökoszisztéma
+- Standardizált nyelv
+- Erős konzisztencia
+
+```sql
+-- Komplex üzleti logika SQL-ben
+WITH customer_metrics AS (
+    SELECT 
+        c.id,
+        c.name,
+        COUNT(o.id) as order_count,
+        SUM(o.total) as lifetime_value,
+        AVG(oi.quantity) as avg_items_per_order
+    FROM customers c
+    LEFT JOIN orders o ON c.id = o.customer_id
+    LEFT JOIN order_items oi ON o.id = oi.order_id
+    WHERE o.created_at >= '2024-01-01'
+    GROUP BY c.id, c.name
+)
+SELECT 
+    name,
+    CASE 
+        WHEN lifetime_value > 5000 THEN 'VIP'
+        WHEN order_count > 10 THEN 'Regular'
+        ELSE 'New'
+    END as customer_segment
+FROM customer_metrics
+ORDER BY lifetime_value DESC;
+```
+
+### Mikor használjunk NoSQL-t?
+
+✅ **NoSQL előnyei:**
+- Horizontális skálázódás
+- Rugalmas séma
+- Nagy teljesítmény egyszerű műveletekhez
+- JSON/dokumentum alapú adatok
+
+```javascript
+// MongoDB példa - rugalmas séma
+db.products.insertOne({
+    name: "Smartphone",
+    category: "electronics",
+    price: 699.99,
+    specs: {
+        screen: "6.1 inch",
+        storage: "128GB",
+        camera: ["12MP main", "12MP ultra-wide"]
+    },
+    reviews: [
+        { rating: 5, comment: "Great phone!" },
+        { rating: 4, comment: "Good battery life" }
+    ],
+    tags: ["mobile", "smartphone", "ios"],
+    inStock: true
+});
+
+// Gyors keresés
+db.products.find({ 
+    category: "electronics", 
+    price: { $lt: 800 },
+    inStock: true 
+});
+```
+
+## 9. Best Practices és Gyakori Hibák
+
+### SQL Best Practices
+
+```sql
+-- 1. Explicit JOIN szintaxis
+-- Jó:
+SELECT u.name, p.title
 FROM users u
-RIGHT JOIN orders o ON u.id = o.user_id;
+INNER JOIN posts p ON u.id = p.user_id;
+
+-- Rossz (implicit join):
+SELECT u.name, p.title
+FROM users u, posts p
+WHERE u.id = p.user_id;
+
+-- 2. Aliasok konzisztens használata
+SELECT 
+    u.name as user_name,
+    p.title as post_title,
+    p.created_at as publication_date
+FROM users u
+JOIN posts p ON u.id = p.user_id;
+
+-- 3. NULL értékek explicit kezelése
+SELECT 
+    name,
+    COALESCE(phone, 'N/A') as phone_number,
+    CASE 
+        WHEN email IS NOT NULL THEN email
+        ELSE 'No email provided'
+    END as email_address
+FROM contacts;
+```
+
+### Gyakori Hibák Elkerülése
+
+```sql
+-- 1. N+1 query probléma
+-- Rossz: minden user-hez külön query
+-- Jó: egy JOIN-nal
+SELECT 
+    u.name,
+    COUNT(p.id) as post_count
+FROM users u
+LEFT JOIN posts p ON u.id = p.user_id
+GROUP BY u.id, u.name;
+
+-- 2. SELECT * kerülése nagy táblákban
+-- Rossz:
+SELECT * FROM large_table WHERE condition = 'value';
+
+-- Jó:
+SELECT id, name, status FROM large_table WHERE condition = 'value';
+
+-- 3. Proper indexing checking
+-- Mindig ellenőrizzük a query plan-t
+EXPLAIN (ANALYZE, BUFFERS) 
+SELECT * FROM orders 
+WHERE customer_id = 123 AND order_date > '2024-01-01';
+```
+
+## 10. Gyakorlati Feladatok és Interview Kérdések
+
+### Tipikus Interview Kérdések
+
+**1. Mi a különbség az INNER és LEFT JOIN között?**
+```sql
+-- INNER JOIN: csak egyező rekordok
+SELECT c.name, o.id
+FROM customers c
+INNER JOIN orders o ON c.id = o.customer_id;
+
+-- LEFT JOIN: minden customer + egyező orders
+SELECT c.name, o.id
+FROM customers c
+LEFT JOIN orders o ON c.id = o.customer_id;
+```
+
+**2. Hogyan találod meg a második legmagasabb fizetést?**
+```sql
+-- Módszer 1: Window function
+SELECT DISTINCT salary
+FROM (
+    SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rank
+    FROM employees
+) ranked
+WHERE rank = 2;
+
+-- Módszer 2: Subquery
+SELECT MAX(salary) as second_highest
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees);
+```
+
+**3. Hogyan törölnéd a duplikált rekordokat?**
+```sql
+-- CTE és ROW_NUMBER használata
+WITH duplicates AS (
+    SELECT 
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY email, name 
+            ORDER BY id
+        ) as row_num
+    FROM users
+)
+DELETE FROM duplicates WHERE row_num > 1;
+```
+
+**4. Írj query-t a futó összeghez (running total)**
+```sql
+SELECT 
+    order_date,
+    amount,
+    SUM(amount) OVER (
+        ORDER BY order_date 
+        ROWS UNBOUNDED PRECEDING
+    ) as running_total
+FROM orders
+ORDER BY order_date;
+```
+
+### Komplex Gyakorlati Példák
+
+```sql
+-- E-commerce analytics példa
+WITH monthly_stats AS (
+    SELECT 
+        DATE_TRUNC('month', o.created_at) as month,
+        COUNT(DISTINCT o.customer_id) as unique_customers,
+        COUNT(o.id) as total_orders,
+        SUM(o.total) as revenue,
+        AVG(o.total) as avg_order_value
+    FROM orders o
+    WHERE o.status = 'completed'
+    GROUP BY DATE_TRUNC('month', o.created_at)
+),
+growth_rates AS (
+    SELECT 
+        month,
+        unique_customers,
+        total_orders,
+        revenue,
+        avg_order_value,
+        LAG(revenue) OVER (ORDER BY month) as prev_month_revenue,
+        (revenue - LAG(revenue) OVER (ORDER BY month)) / 
+        LAG(revenue) OVER (ORDER BY month) * 100 as revenue_growth_pct
+    FROM monthly_stats
+)
+SELECT 
+    month,
+    unique_customers,
+    total_orders,
+    revenue,
+    ROUND(avg_order_value, 2) as avg_order_value,
+    ROUND(revenue_growth_pct, 2) as revenue_growth_percentage
+FROM growth_rates
+ORDER BY month;
+```
+
+Ez a részletes SQL Theory tartalom lefedi az összes fontos területet a alapoktól a haladó technikákig, teljesítmény optimalizálással és gyakorlati példákkal kiegészítve.
 
 -- FULL OUTER JOIN
 SELECT u.first_name, o.amount

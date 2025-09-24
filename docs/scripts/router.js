@@ -22,17 +22,35 @@ export class Router {
       '#/theory/git': () => this.renderMarkdown('./theory/git.md', 'Git & Verziókezelés'),
       '#/theory/softskills': () => this.renderMarkdown('./theory/softskills.md', 'Soft Skills'),
       
-      // Exercise routes
-      '#/exercises/java': () => this.renderMarkdown('./exercises/java/01-oop-basics.md', 'Java Gyakorlatok'),
-      '#/exercises/sql': () => this.renderMarkdown('./exercises/sql/01-joins.md', 'SQL Gyakorlatok'),
-      '#/exercises/web': () => this.renderMarkdown('./exercises/web/01-es6-basics.md', 'Web Gyakorlatok'),
-      '#/exercises/arch': () => this.renderMarkdown('./exercises/arch/01-rest-vs-grpc.md', 'Architektúra Gyakorlatok'),
+      // Exercise list routes  
+      '#/exercises/java': () => this.renderList('./data/indexes/exercises-java.json', 'Java Gyakorlatok'),
+      '#/exercises/sql': () => this.renderList('./data/indexes/exercises-sql.json', 'SQL Gyakorlatok'), 
+      '#/exercises/web': () => this.renderList('./data/indexes/exercises-web.json', 'Web Gyakorlatok'),
+      '#/exercises/arch': () => this.renderList('./data/indexes/exercises-arch.json', 'Architektúra Gyakorlatok'),
+      
+      // Exercise detail routes
+      '#/exercises/java/01-oop-basics': () => this.renderMarkdown('./exercises/java/01-oop-basics.md', 'OOP Alapok'),
+      '#/exercises/java/02-spring-rest': () => this.renderMarkdown('./exercises/java/02-spring-rest.md', 'Spring REST API'),
+      '#/exercises/java/03-testing': () => this.renderMarkdown('./exercises/java/03-testing.md', 'Unit Testing'),
+      '#/exercises/sql/01-joins': () => this.renderMarkdown('./exercises/sql/01-joins.md', 'SQL JOIN Műveletek'),
+      '#/exercises/sql/02-index-tuning': () => this.renderMarkdown('./exercises/sql/02-index-tuning.md', 'Index Optimalizálás'),
+      '#/exercises/sql/03-transactions': () => this.renderMarkdown('./exercises/sql/03-transactions.md', 'Tranzakció Kezelés'),
+      '#/exercises/web/01-es6-basics': () => this.renderMarkdown('./exercises/web/01-es6-basics.md', 'ES6+ JavaScript'),
+      '#/exercises/web/02-react-ts': () => this.renderMarkdown('./exercises/web/02-react-ts.md', 'React + TypeScript'),
+      '#/exercises/web/03-accessibility': () => this.renderMarkdown('./exercises/web/03-accessibility.md', 'Web Accessibility'),
+      '#/exercises/arch/01-rest-vs-grpc': () => this.renderMarkdown('./exercises/arch/01-rest-vs-grpc.md', 'REST vs gRPC'),
+      '#/exercises/arch/02-message-queues': () => this.renderMarkdown('./exercises/arch/02-message-queues.md', 'Message Queues'),
+      '#/exercises/arch/03-circuit-breaker': () => this.renderMarkdown('./exercises/arch/03-circuit-breaker.md', 'Circuit Breaker'),
       
       // Quiz routes
-      '#/quiz/java': () => this.runQuiz('./data/quizzes/java.json', 'Java & Spring Teszt'),
-      '#/quiz/sql': () => this.runQuiz('./data/quizzes/sql.json', 'SQL Teszt'),
-      '#/quiz/web': () => this.runQuiz('./data/quizzes/web.json', 'Web Development Teszt'),
-      '#/quiz/arch': () => this.runQuiz('./data/quizzes/arch.json', 'Architektúra Teszt'),
+      '#/quiz/java': () => this.runQuiz('./data/quizzes/java.json', 'Java Kvíz'),
+      '#/quiz/spring': () => this.runQuiz('./data/quizzes/spring.json', 'Spring Kvíz'),
+      '#/quiz/testing': () => this.runQuiz('./data/quizzes/testing.json', 'Testing Kvíz'),
+      '#/quiz/sql': () => this.runQuiz('./data/quizzes/sql.json', 'SQL Kvíz'),
+      '#/quiz/web': () => this.runQuiz('./data/quizzes/web.json', 'Web Kvíz'),
+      '#/quiz/arch': () => this.runQuiz('./data/quizzes/arch.json', 'Architektúra Kvíz'),
+      '#/quiz/git': () => this.runQuiz('./data/quizzes/git.json', 'Git Kvíz'),
+      '#/quiz/softskills': () => this.runQuiz('./data/quizzes/softskills.json', 'Soft Skills Kvíz'),
       
       // Checklist routes
       '#/checklists/interview': () => this.renderMarkdown('./checklists/interview.md', 'Interjú Kérdések'),
@@ -42,30 +60,43 @@ export class Router {
       // Special routes
       '#/roadmap': () => this.renderRoadmap(),
       '#/search': () => this.renderSearchResults(),
+      '#/favorites': () => this.renderFavorites(),
+      '#/progress': () => this.renderProgress(),
     };
   }
   
   init() {
+    console.log('🔄 Router initializing...');
+    
     // Handle hash changes
-    window.addEventListener('hashchange', () => this.handleRoute());
+    window.addEventListener('hashchange', () => {
+      console.log('📍 Hash changed to:', window.location.hash);
+      this.handleRoute();
+    });
     
     // Handle initial route
+    console.log('🏠 Initial route:', window.location.hash || 'default');
     this.handleRoute();
   }
   
   handleRoute() {
     const hash = window.location.hash || '#/theory/java';
+    console.log('🎯 Handling route:', hash);
     this.currentRoute = hash;
     
     const handler = this.routes[hash];
+    console.log('🔍 Route handler found:', !!handler);
+    
     if (handler) {
       try {
+        console.log('▶️ Executing route handler for:', hash);
         handler();
       } catch (error) {
-        console.error('Route handler error:', error);
+        console.error('❌ Route handler error:', error);
         this.renderError('Hiba történt az oldal betöltése során.');
       }
     } else {
+      console.warn('⚠️ No handler found for route:', hash);
       this.renderNotFound();
     }
     
@@ -95,6 +126,103 @@ export class Router {
       console.error('Quiz error:', error);
       this.renderError(`Nem sikerült betölteni a kvízt: ${jsonPath}`);
     }
+  }
+
+  async renderList(indexPath, title) {
+    try {
+      const response = await fetch(indexPath);
+      if (!response.ok) throw new Error(`List index not found: ${indexPath}`);
+      
+      const items = await response.json();
+      const appEl = document.getElementById('app');
+      
+      appEl.innerHTML = `
+        <div class="content">
+          <header class="page-header">
+            <h1>${title}</h1>
+            <p class="page-subtitle">${items.length} elem elérhető</p>
+          </header>
+          
+          <div class="card-grid">
+            ${items.map(item => `
+              <div class="card" data-route="${item.route}">
+                <div class="card-header">
+                  <h3 class="card-title">${item.title}</h3>
+                  <div class="card-badges">
+                    <span class="badge badge-${item.difficulty}">${this.translateDifficulty(item.difficulty)}</span>
+                    <span class="badge badge-time">⏱️ ${item.estimatedMinutes}p</span>
+                  </div>
+                </div>
+                
+                <div class="card-body">
+                  <div class="card-goals">
+                    <strong>Célok:</strong>
+                    <ul>
+                      ${item.goals.slice(0, 3).map(goal => `<li>${goal}</li>`).join('')}
+                      ${item.goals.length > 3 ? `<li class="more">+${item.goals.length - 3} további...</li>` : ''}
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="card-footer">
+                  <button class="btn-favorite" onclick="this.toggleFavorite('${item.route}')" title="Kedvencekhez">
+                    ☆
+                  </button>
+                  <a href="${item.route}" class="btn btn-primary">Megnyitás →</a>
+                </div>
+                
+                <div class="card-progress" style="display: none;">
+                  <div class="progress-bar" style="width: 0%"></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="list-actions">
+            <button onclick="window.history.back()" class="btn btn-secondary">← Vissza</button>
+            <button onclick="this.exportProgress()" class="btn btn-outline">💾 Progress Export</button>
+          </div>
+        </div>
+      `;
+      
+      // Update progress indicators
+      this.updateProgressIndicators();
+      
+    } catch (error) {
+      console.error('List render error:', error);
+      this.renderError(`Nem sikerült betölteni a listát: ${indexPath}`);
+    }
+  }
+
+  translateDifficulty(difficulty) {
+    const translations = {
+      'beginner': 'Kezdő',
+      'intermediate': 'Haladó', 
+      'advanced': 'Szakértő'
+    };
+    return translations[difficulty] || difficulty;
+  }
+
+  updateProgressIndicators() {
+    // Update progress bars based on stored progress
+    document.querySelectorAll('.card[data-route]').forEach(card => {
+      const route = card.getAttribute('data-route');
+      const progress = this.storage.getProgress(route);
+      const progressBar = card.querySelector('.progress-bar');
+      const progressContainer = card.querySelector('.card-progress');
+      
+      if (progress > 0) {
+        progressContainer.style.display = 'block';
+        progressBar.style.width = `${progress}%`;
+      }
+      
+      // Update favorite status
+      const favoriteBtn = card.querySelector('.btn-favorite');
+      if (this.storage.isFavorite(route)) {
+        favoriteBtn.textContent = '★';
+        favoriteBtn.classList.add('active');
+      }
+    });
   }
   
   async renderRoadmap() {
@@ -176,6 +304,163 @@ export class Router {
         window.searchManager?.performSearch(query);
       }, 100);
     }
+  }
+
+  renderFavorites() {
+    const favorites = this.storage.getFavorites();
+    const appEl = document.getElementById('app');
+    
+    appEl.innerHTML = `
+      <div class="content">
+        <header class="page-header">
+          <h1>⭐ Kedvencek</h1>
+          <p class="page-subtitle">${favorites.length} kedvenc elem</p>
+        </header>
+        
+        ${favorites.length === 0 ? `
+          <div class="empty-state">
+            <div class="empty-icon">📚</div>
+            <h3>Még nincsenek kedvenceid</h3>
+            <p>Jelölj be érdekes oldalakat a ⭐ gombbal!</p>
+            <a href="#/theory/java" class="btn btn-primary">Böngészés kezdése</a>
+          </div>
+        ` : `
+          <div class="card-grid">
+            ${favorites.map(item => `
+              <div class="card" data-route="${item.route}">
+                <div class="card-header">
+                  <h3 class="card-title">${item.title}</h3>
+                  <div class="card-badges">
+                    <span class="badge badge-${item.difficulty || 'intermediate'}">${this.translateDifficulty(item.difficulty || 'intermediate')}</span>
+                  </div>
+                </div>
+                
+                <div class="card-footer">
+                  <button class="btn-favorite active" onclick="this.toggleFavorite('${item.route}')" title="Kedvencekből eltávolítás">
+                    ★
+                  </button>
+                  <a href="${item.route}" class="btn btn-primary">Megnyitás →</a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `;
+  }
+
+  renderProgress() {
+    const progressData = this.storage.getAllProgress();
+    const appEl = document.getElementById('app');
+    
+    appEl.innerHTML = `
+      <div class="content">
+        <header class="page-header">
+          <h1>📊 Tanulási Statisztikák</h1>
+          <p class="page-subtitle">A teljesítményed áttekintése</p>
+        </header>
+        
+        <div class="stats-overview">
+          <div class="stat-card">
+            <div class="stat-number">${progressData.completedPages}</div>
+            <div class="stat-label">Befejezett oldal</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${progressData.totalStudyTime}h</div>
+            <div class="stat-label">Tanulási idő</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${progressData.quizAverage}%</div>
+            <div class="stat-label">Kvíz átlag</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">${progressData.streak}</div>
+            <div class="stat-label">Napi sorozat</div>
+          </div>
+        </div>
+        
+        <div class="progress-sections">
+          <section class="progress-section">
+            <h3>📖 Elmélet</h3>
+            <div class="progress-items">
+              ${Object.entries(progressData.theoryProgress).map(([route, progress]) => `
+                <div class="progress-item">
+                  <span class="item-title">${this.getPageTitle(route)}</span>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: ${progress}%"></div>
+                    <span class="progress-text">${progress}%</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+          
+          <section class="progress-section">
+            <h3>💻 Gyakorlatok</h3>
+            <div class="progress-items">
+              ${Object.entries(progressData.exerciseProgress).map(([route, progress]) => `
+                <div class="progress-item">
+                  <span class="item-title">${this.getPageTitle(route)}</span>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: ${progress}%"></div>
+                    <span class="progress-text">${progress}%</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+          
+          <section class="progress-section">
+            <h3>🧠 Kvízek</h3>
+            <div class="progress-items">
+              ${Object.entries(progressData.quizScores).map(([route, score]) => `
+                <div class="progress-item">
+                  <span class="item-title">${this.getPageTitle(route)}</span>
+                  <div class="quiz-score ${score >= 80 ? 'excellent' : score >= 60 ? 'good' : 'needs-work'}">
+                    ${score}% (${this.getScoreLabel(score)})
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+        </div>
+        
+        <div class="progress-actions">
+          <button onclick="this.exportProgress()" class="btn btn-primary">📥 Export Progress</button>
+          <button onclick="this.importProgress()" class="btn btn-secondary">📤 Import Progress</button>
+          <button onclick="this.resetProgress()" class="btn btn-danger">🗑️ Reset Progress</button>
+        </div>
+      </div>
+    `;
+  }
+
+  getPageTitle(route) {
+    const routeTitles = {
+      '#/theory/java': 'Java Alapok',
+      '#/theory/spring': 'Spring Framework', 
+      '#/theory/testing': 'Tesztelés',
+      '#/theory/sql': 'SQL & Adatbázis',
+      '#/theory/web': 'Web Development',
+      '#/theory/arch': 'Architektúra',
+      '#/theory/git': 'Git & Verziókezelés',
+      '#/theory/softskills': 'Soft Skills',
+      '#/quiz/java': 'Java Kvíz',
+      '#/quiz/spring': 'Spring Kvíz',
+      '#/quiz/testing': 'Testing Kvíz',
+      '#/quiz/sql': 'SQL Kvíz',
+      '#/quiz/web': 'Web Kvíz',
+      '#/quiz/arch': 'Architektúra Kvíz',
+      '#/quiz/git': 'Git Kvíz',
+      '#/quiz/softskills': 'Soft Skills Kvíz'
+    };
+    return routeTitles[route] || route.split('/').pop();
+  }
+
+  getScoreLabel(score) {
+    if (score >= 90) return 'Kiváló';
+    if (score >= 80) return 'Jó';
+    if (score >= 60) return 'Megfelelő';
+    return 'Fejlesztendő';
   }
   
   renderError(message) {

@@ -1,0 +1,150 @@
+{
+  "title": "Git & Verziókezelés - Kvíz",
+  "topic": "git",
+  "level": "beginner",
+  "questions": [
+    {
+      "id": "git-q-001",
+      "type": "single",
+      "question": "Mi a git init parancs célja?",
+      "choices": [
+        "Meglévő repository klónozása",
+        "Új git repository létrehozása",
+        "Commit visszavonása",
+        "Branch létrehozása"
+      ],
+      "answer": [1],
+      "explanation": "A git init parancs inicializál egy új Git repository-t az aktuális könyvtárban, létrehozva a .git mappát.",
+      "tags": ["git", "initialization", "repository"]
+    },
+    {
+      "id": "git-q-002",
+      "type": "single",
+      "question": "Melyik parancs mutatja a working directory állapotát?",
+      "choices": ["git log", "git status", "git diff", "git show"],
+      "answer": [1],
+      "explanation": "A git status parancs mutatja a working directory és staging area állapotát, beleértve a módosított, hozzáadott és nem követett fájlokat.",
+      "tags": ["git", "status", "working-directory"]
+    },
+    {
+      "id": "git-q-003",
+      "type": "multi",
+      "question": "Melyek a Git három fő területe?",
+      "choices": [
+        "Working Directory",
+        "Staging Area",
+        "Repository",
+        "Remote",
+        "Branch"
+      ],
+      "answer": [0, 1, 2],
+      "explanation": "A Git három fő területe: Working Directory (munkakönyvtár), Staging Area (index), és Repository (helyi repo). Remote és Branch másféle koncepciók.",
+      "tags": ["git", "areas", "workflow"]
+    },
+    {
+      "id": "git-q-004",
+      "type": "single",
+      "question": "Melyik parancs hoz létre új branch-et és vált rá egyben?",
+      "choices": [
+        "git branch new-branch",
+        "git checkout new-branch",
+        "git checkout -b new-branch",
+        "git switch new-branch"
+      ],
+      "answer": [2],
+      "explanation": "A git checkout -b new-branch parancs egyszerre hoz létre új branch-et és vált rá. A git switch -c new-branch is ugyanezt teszi az újabb Git verziókban.",
+      "tags": ["git", "branch", "checkout", "creation"]
+    },
+    {
+      "id": "git-q-005",
+      "type": "truefalse",
+      "question": "A git add . parancs minden fájlt hozzáad a staging area-hoz, beleértve a .gitignore-ban listázottakat is.",
+      "answer": false,
+      "explanation": "A git add . minden módosított és új fájlt hozzáad a staging area-hoz, KIVÉVE a .gitignore fájlban felsoroltakat.",
+      "tags": ["git", "staging", "gitignore"]
+    },
+    {
+      "id": "git-q-006",
+      "type": "single",
+      "question": "Mi a git merge és git rebase közötti fő különbség?",
+      "choices": [
+        "Nincs különbség",
+        "Merge linearizálja a históriát, rebase nem",
+        "Rebase linearizálja a históriát, merge nem",
+        "Merge gyorsabb, rebase biztonságosabb"
+      ],
+      "answer": [2],
+      "explanation": "A git rebase linearizálja a commit históriát azáltal, hogy újraírja a commit-okat, míg a git merge megőrzi az eredeti branching struktúrát.",
+      "tags": ["git", "merge", "rebase", "history"]
+    },
+    {
+      "id": "git-q-007",
+      "type": "single",
+      "question": "Melyik parancs segít konfliktusok feloldásában?",
+      "choices": ["git resolve", "git fix", "git mergetool", "git conflict"],
+      "answer": [2],
+      "explanation": "A git mergetool elindít egy vizuális merge tool-t, ami segít a konfliktusok feloldásában. Manuálisan is lehet szerkeszteni a fájlokat.",
+      "tags": ["git", "conflicts", "merge", "tools"]
+    },
+    {
+      "id": "git-q-008",
+      "type": "multi",
+      "question": "Melyek jó commit message karakterisztikák?",
+      "choices": [
+        "Rövid és tömör",
+        "Imperatív mód",
+        "Mit és miért tartalmaz",
+        "Angol nyelven",
+        "50 karakter alatt a summary"
+      ],
+      "answer": [0, 1, 2, 4],
+      "explanation": "Jó commit message: rövid és tömör, imperatív módban ('Add feature' nem 'Added feature'), tartalmazza a mit és miért információt, 50 karakter alatti summary. A nyelv projekt-függő.",
+      "tags": ["git", "commit-message", "best-practices"]
+    },
+    {
+      "id": "git-q-009",
+      "type": "single",
+      "question": "Mi a git stash parancs célja?",
+      "choices": [
+        "Fájlok törlése",
+        "Változások ideiglenes mentése",
+        "Branch létrehozása",
+        "Remote repository beállítása"
+      ],
+      "answer": [1],
+      "explanation": "A git stash ideiglenesen elmenti a még nem commit-olt változásokat, lehetővé téve a branch váltást vagy más műveletek elvégzését.",
+      "tags": ["git", "stash", "temporary", "storage"]
+    },
+    {
+      "id": "git-q-010",
+      "type": "truefalse",
+      "question": "A git reset --hard visszaállítja a working directory-t és elveszti a nem commit-olt változásokat.",
+      "answer": true,
+      "explanation": "A git reset --hard veszélyes parancs, mert visszaállítja a working directory-t és staging area-t is, elveszítve az összes nem commit-olt változást.",
+      "tags": ["git", "reset", "destructive", "caution"]
+    },
+    {
+      "id": "git-q-011",
+      "type": "single",
+      "question": "Melyik parancs mutatja a fájlok módosításainak részleteit?",
+      "choices": ["git status", "git diff", "git log", "git show"],
+      "answer": [1],
+      "explanation": "A git diff parancs mutatja a fájlok tartalmában bekövetkezett változásokat sor szinten. git show egy adott commit változásait mutatja.",
+      "tags": ["git", "diff", "changes", "details"]
+    },
+    {
+      "id": "git-q-012",
+      "type": "single",
+      "question": "Mi a .gitignore fájl célja?",
+      "choices": [
+        "Fájlok titkosítása",
+        "Git konfigurációs beállítások",
+        "Fájlok kizárása a verziókövetésből",
+        "Commit sablonok tárolása"
+      ],
+      "answer": [2],
+      "explanation": "A .gitignore fájl meghatározza, mely fájlokat és mappákat kell kizárni a Git verziókövetésből, például build artifactokat, log fájlokat, stb.",
+      "tags": ["git", "gitignore", "exclusion", "configuration"]
+    }
+  ]
+}

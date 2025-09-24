@@ -1,16 +1,180 @@
 # Java Alapok
 
-## Bevezetés
+## Rövid összefoglaló
 
-A Java egy objektumorientált, platform-független programozási nyelv, amely 1995-ben jelent meg. A "Write Once, Run Anywhere" (WORA) filozófiával készült, ami azt jelenti, hogy a Java kód bárhol futtatható, ahol elérhető a Java Virtual Machine (JVM).
+A Java egy objektumorientált, platform-független programozási nyelv, amely a "write once, run anywhere" (egyszer írj, bárhol futtasd) elvre épül. A Java Virtual Machine (JVM) segítségével a lefordított bytecode bármely operációs rendszeren futtatható. A Java erős típusossága, automatikus memóriakezelése és gazdag ökoszisztémája teszi népszerűvé vállalati alkalmazások fejlesztésében. Fő buktatói közé tartozik a verbose syntax és a teljesítmény overhead a natív nyelvekhez képest.
 
-## Alapvető fogalmak
+## Fogalmak
 
-### JVM, JRE, JDK
+- **JVM (Java Virtual Machine)** – A Java bytecode futtatási környezete, amely platform-függetlenséget biztosít.
+- **JDK (Java Development Kit)** – Fejlesztői eszközkészlet, amely tartalmazza a JVM-et, fordítót és eszközöket.
+- **JRE (Java Runtime Environment)** – Futtatási környezet, csak a JVM-et és alapvető osztálykönyvtárakat tartalmaz.
+- **Bytecode** – A Java fordító által generált köztes kód, amit a JVM értelmez.
+- **Garbage Collector** – Automatikus memóriakezelő rendszer, amely felszabadítja a nem használt objektumokat.
+- **Class** – Objektum sablon, amely definiálja az adatokat és metódusokat.
+- **Interface** – Szerződés, amely meghatározza, mely metódusokat kell implementálni.
+- **Package** – Névtér mechanizmus a kapcsolódó osztályok csoportosítására.
+- **Exception** – Futásidejű hibák kezelésére szolgáló mechanizmus.
+- **Collections Framework** – Beépített adatstruktúrák és algoritmusok (List, Set, Map).
+- **Thread** – Párhuzamos végrehajtási egység a multithreading támogatásához.
+- **Stream API** – Funkcionális stílusú adatfeldolgozás Java 8-tól.
 
-- **JVM (Java Virtual Machine)**: A Java bytecode futtatókörnyezete
-- **JRE (Java Runtime Environment)**: JVM + könyvtárak futtatáshoz
-- **JDK (Java Development Kit)**: JRE + fejlesztői eszközök
+## Interjúkérdések
+
+- **Mi a különbség a JDK, JRE és JVM között?** — *JDK fejlesztéshez, JRE futtatáshoz, JVM a bytecode futtatási környezete.*
+
+- **Hogyan működik a Garbage Collection Java-ban?** — *Automatikusan felszabadítja a nem referált objektumokat, különböző algoritmusokkal (Serial, Parallel, G1).*
+
+- **Mi az autoboxing és unboxing?** — *Primitív típusok automatikus konverziója wrapper osztályokká és vissza.*
+
+- **Mik az equals() és hashCode() szabályai?** — *Ha equals() true, hashCode() egyenlő kell legyen. HashCode konzisztens legyen equals()-el.*
+
+- **Mi a különbség final, finally és finalize között?** — *final - konstans/öröklés tiltás, finally - try-catch blokk után mindig fut, finalize - GC előtti cleanup.*
+
+- **Hogyan működnek a Java Streams?** — *Lazy evaluation, intermediate és terminal műveletek láncolt végrehajtása.*
+
+- **Mi a különbség abstract class és interface között?** — *Abstract class lehet konstruktor és implementáció, interface csak szerződés (Java 8-tól default metódusok).*
+
+- **Mik a checked és unchecked exception-ök?** — *Checked - compile-time ellenőrzés (IOException), unchecked - runtime (RuntimeException).*
+
+- **Hogyan működik a String pool?** — *String literálok egy közös memóriaterületen tárolódnak, ugyanaz a szöveg egy objektum.*
+
+- **Mi a lambda expression és hogyan használod?** — *Rövid névtelen funkció szintaxis, főleg Stream API-val és funkcionális interfészekkel.*
+
+- **Mik a generics előnyei?** — *Típusbiztonság compile-time-ban, kód újrafelhasználhatóság, ClassCastException elkerülése.*
+
+- **Hogyan implementálnál Singleton pattern-t Java-ban?** — *Enum-mal legbiztonságosabb, vagy synchronized lazy initialization, vagy eager initialization.*
+
+## Példák
+
+### Példa 1 – Alapvető OOP minta
+
+```java
+public class BankAccount {
+    private double balance;
+    private final String accountNumber;
+    
+    public BankAccount(String accountNumber, double initialBalance) {
+        this.accountNumber = accountNumber;
+        this.balance = initialBalance;
+    }
+    
+    public void deposit(double amount) {
+        if (amount > 0) {
+            this.balance += amount;
+        } else {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
+    }
+    
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            this.balance -= amount;
+        } else {
+            throw new IllegalArgumentException("Invalid withdrawal amount");
+        }
+    }
+    
+    public double getBalance() {
+        return balance;
+    }
+    
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+}
+```
+
+### Példa 2 – Gyakori hiba: equals() és hashCode() nem konzisztens
+
+```java
+// HIBÁS IMPLEMENTÁCIÓ
+public class Person {
+    private String name;
+    private int age;
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Person person = (Person) obj;
+        return Objects.equals(name, person.name);  // Csak név alapján
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age);  // HIBA: név + kor alapján
+    }
+}
+
+// HELYES IMPLEMENTÁCIÓ
+public class Person {
+    private String name;
+    private int age;
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Person person = (Person) obj;
+        return Objects.equals(name, person.name) && age == person.age;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age);  // Mindkét mező
+    }
+}
+```
+
+## Gyakorlati feladat (mini)
+
+1. Hozz létre egy `Vehicle` abstract osztályt `brand`, `model` mezőkkel
+2. Implementálj `Car` és `Motorcycle` leszármazott osztályokat
+3. Adj hozzá `Comparable<Vehicle>` interfészt ár alapú rendezéshez
+4. Írj unit testeket JUnit-tal a főbb metódusokra
+5. Használj Stream API-t járművek szűrésére és rendezésére
+
+*Kapcsolódó gyakorlati feladat: [OOP Alapok Java-ban](/exercises/java/01-oop-basics)*
+
+## Kapcsolódó témák
+
+- [Spring Framework](/theory/spring) - Dependency Injection és enterprise fejlesztés
+- [Tesztelés](/theory/testing) - JUnit és Mockito használata
+- [Java Gyakorlatok](/exercises/java) - Hands-on coding feladatok
+
+## További olvasmányok
+
+- [Oracle Java Documentation](https://docs.oracle.com/javase/) - Hivatalos dokumentáció
+- [Effective Java by Joshua Bloch](https://www.oreilly.com/library/view/effective-java/9780134686097/) - Best practices
+- [Java: The Complete Reference](https://www.oracle.com/java/technologies/javase/javase-tech-doc.html) - Részletes referencia
+- [Baeldung Java Tutorials](https://www.baeldung.com/java-tutorial) - Gyakorlati példák
+- [OpenJDK Project](https://openjdk.org/) - Nyílt forráskódú Java implementáció
+- **Primitive**: int, double, boolean, char - stack-en tárolva, érték szerinti átadás
+- **Reference**: Object, String, Arrays - heap-en tárolva, referencia szerinti átadás
+- **Autoboxing/Unboxing**: int ↔ Integer automatikus konverzió
+
+### Garbage Collection
+- **Automatikus memóriakezelés**: Nem referált objektumok automatikus törlése
+- **Generational GC**: Young (Eden, Survivor), Old Generation optimalizáció
+- **GC Algorithms**: Serial, Parallel, G1, ZGC - különböző teljesítmény karakterisztikák
+
+## Gyakori kérdések
+
+**Mi a különbség == és equals() között?**
+A == referenciákat hasonlít össze (ugyanaz az objektum?), az equals() tartalmat (logikailag egyenlő?). String esetén mindig equals()-t használj.
+
+**Mikor használj StringBuilder vs String concatenation?**
+String immutable, concat új objektumot hoz létre. StringBuilder mutálható buffer - loops-ban és sok concatenation esetén hatékonyabb.
+
+**Mi az interface vs abstract class különbség?**
+Interface: multiple inheritance, csak konstansok és default/static metódusok. Abstract class: single inheritance, lehet instance változó és konstruktor.
+
+**Hogyan működik a try-with-resources?**
+Automatikusan lezárja az AutoCloseable resource-okat, még exception esetén is. Tisztább kód, nincs finally block szükséglet.
+
+**Mi a static kulcsszó szerepe?**
+Class-hoz tartozik, nem instance-hoz. Static method nem férhet hozzá instance változókhoz. Static block class loading-kor fut le egyszer.
 
 ### Objektumorientált programozás
 

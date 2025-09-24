@@ -1,0 +1,66 @@
+[
+  {
+    "path": "./theory/java.md",
+    "title": "Java Alapok",
+    "difficulty": "beginner", 
+    "estimatedMinutes": 20,
+    "goals": ["JVM működés", "OOP elvek", "Collections", "Exception handling"],
+    "route": "#/theory/java"
+  },
+  {
+    "path": "./theory/spring.md", 
+    "title": "Spring Framework",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 25,
+    "goals": ["Dependency Injection", "Spring Boot", "REST APIs", "Data JPA"],
+    "route": "#/theory/spring"
+  },
+  {
+    "path": "./theory/testing.md",
+    "title": "Tesztelés",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 20,
+    "goals": ["Unit testing", "Integration testing", "TDD", "Mocking"],
+    "route": "#/theory/testing"
+  },
+  {
+    "path": "./theory/sql.md",
+    "title": "SQL & Adatbázis",
+    "difficulty": "beginner",
+    "estimatedMinutes": 22,
+    "goals": ["CRUD műveletek", "JOIN-ok", "Indexelés", "Normalizálás"],
+    "route": "#/theory/sql"
+  },
+  {
+    "path": "./theory/web.md",
+    "title": "Web Development", 
+    "difficulty": "beginner",
+    "estimatedMinutes": 18,
+    "goals": ["HTML/CSS/JS", "HTTP protokoll", "REST API-k", "Modern frameworks"],
+    "route": "#/theory/web"
+  },
+  {
+    "path": "./theory/arch.md",
+    "title": "Szoftver Architektúra",
+    "difficulty": "advanced",
+    "estimatedMinutes": 30,
+    "goals": ["Design patterns", "Microservices", "Scalability", "Clean Architecture"],
+    "route": "#/theory/arch"
+  },
+  {
+    "path": "./theory/git.md",
+    "title": "Git & Verziókezelés",
+    "difficulty": "beginner",
+    "estimatedMinutes": 15,
+    "goals": ["Git workflow", "Branching", "Merging", "Best practices"],
+    "route": "#/theory/git"
+  },
+  {
+    "path": "./theory/softskills.md", 
+    "title": "Soft Skills",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 12,
+    "goals": ["Kommunikáció", "Csapatmunka", "Problémamegoldás", "Interjú készségek"],
+    "route": "#/theory/softskills"
+  }
+]

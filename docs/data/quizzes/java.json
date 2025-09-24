@@ -1,62 +1,61 @@
 {
-  "title": "Java alapok kvíz",
-  "description": "Java programozási alapismeretek tesztelése",
-  "category": "programming",
+  "title": "Java Alapok Kvíz",
+  "description": "Teszteld a Java programozási tudásod az alapokból",
   "difficulty": "beginner",
+  "estimatedTime": 15,
   "questions": [
     {
       "id": 1,
       "type": "multiple",
-      "question": "Melyik kulcsszó szolgál új objektum létrehozására Java-ban?",
-      "options": ["create", "new", "make", "object"],
+      "question": "Melyik a helyes módja egy Java osztály definiálásának?",
+      "options": [
+        "class MyClass { }",
+        "public class MyClass { }",
+        "Class MyClass { }",
+        "define class MyClass { }"
+      ],
       "correct": 1,
-      "explanation": "A 'new' kulcsszó használatos új objektumok létrehozására Java-ban. Ez az operátor memóriát foglal le az objektum számára és meghívja a konstruktort."
+      "explanation": "A 'public class MyClass { }' a helyes szintaxis. A 'class' kulcsszó kötelező, és gyakran használjuk a 'public' láthatósági módosítót."
     },
     {
       "id": 2,
-      "type": "multiple",
-      "question": "Mi a különbség a == és az equals() között Java-ban?",
-      "options": [
-        "Nincs különbség, ugyanazt csinálják",
-        "A == referenciákat, az equals() értékeket hasonlít össze",
-        "A == gyorsabb, az equals() pontosabb",
-        "A == csak primitívekhez használható"
-      ],
-      "correct": 1,
-      "explanation": "A == operátor referenciákat hasonlít össze (ugyanaz az objektum-e), míg az equals() metódus az objektumok tartalmát hasonlítja össze."
+      "type": "true-false",
+      "question": "Java-ban minden primitív típus kezdőértéke 0 vagy false.",
+      "correct": true,
+      "explanation": "Igaz. A primitív típusok (int, boolean, stb.) automatikusan kezdőértéket kapnak: számok 0-t, boolean false-t."
     },
     {
       "id": 3,
-      "type": "true-false",
-      "question": "A Java egy interpretált nyelv.",
-      "correct": false,
-      "explanation": "A Java egy hibrid nyelv. A Java kód bytecode-ra kompilálódik, amelyet aztán a JVM interpretál vagy just-in-time (JIT) kompilál."
+      "type": "multiple",
+      "question": "Melyik NEM primitív típus Java-ban?",
+      "options": [
+        "int",
+        "boolean",
+        "String",
+        "char"
+      ],
+      "correct": 2,
+      "explanation": "A String egy objektum típus, nem primitív. Az int, boolean és char mind primitív típusok."
     },
     {
       "id": 4,
-      "type": "multiple",
-      "question": "Melyik NEM SOLID alapelv?",
-      "options": [
-        "Single Responsibility Principle",
-        "Open/Closed Principle",
-        "Don't Repeat Yourself",
-        "Dependency Inversion Principle"
-      ],
-      "correct": 2,
-      "explanation": "A DRY (Don't Repeat Yourself) nem része a SOLID alapelveknek. A SOLID: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion."
+      "type": "true-false",
+      "question": "A main() metódusnak kötelezően public és static módosítókkal kell rendelkeznie.",
+      "correct": true,
+      "explanation": "Igaz. A main() metódusnak 'public static void main(String[] args)' szignatúrával kell rendelkeznie."
     },
     {
       "id": 5,
       "type": "multiple",
-      "question": "Mi történik, ha egy metódusban nem kezeljük le a checked exception-t?",
+      "question": "Mi történik, ha egy objektumra nincs több hivatkozás?",
       "options": [
-        "A program lefagy",
-        "Compilation error",
-        "Runtime exception keletkezik",
-        "A program automatikusan lekezeli"
+        "Semmi, a memóriában marad",
+        "Automatikusan törlődik a Garbage Collector által",
+        "Hibát dob a program",
+        "Null értéket kap"
       ],
       "correct": 1,
-      "explanation": "A checked exception-öket kötelező lekezelnünk (try-catch) vagy továbbdobnunk (throws). Ha nem tesszük meg, compilation error lesz."
+      "explanation": "A Garbage Collector automatikusan felszabadítja azokat az objektumokat, amelyekre nincs több hivatkozás."
     }
   ]
 }

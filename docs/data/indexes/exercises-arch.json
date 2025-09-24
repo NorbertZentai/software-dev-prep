@@ -1,0 +1,26 @@
+[
+  {
+    "path": "./exercises/arch/01-rest-vs-grpc.md",
+    "title": "REST vs gRPC Mikroszolgáltatás Kommunikáció",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 45,
+    "goals": ["REST API design", "gRPC proto definitions", "Performance comparison", "Service mesh integration", "API versioning"],
+    "route": "#/exercises/arch/01-rest-vs-grpc"
+  },
+  {
+    "path": "./exercises/arch/02-message-queues.md",
+    "title": "Message Queue Patterns",
+    "difficulty": "advanced",
+    "estimatedMinutes": 50,
+    "goals": ["Kafka", "Event-Driven Architecture", "Message Patterns", "Dead Letter Queue"],
+    "route": "#/exercises/arch/02-message-queues"
+  },
+  {
+    "path": "./exercises/arch/03-circuit-breaker.md",
+    "title": "Circuit Breaker Pattern",
+    "difficulty": "advanced", 
+    "estimatedMinutes": 35,
+    "goals": ["Resilience Patterns", "Hystrix", "Fault Tolerance", "Monitoring"],
+    "route": "#/exercises/arch/03-circuit-breaker"
+  }
+]

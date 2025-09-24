@@ -1,480 +1,182 @@
 # Spring Framework
 
-## Bevezetés
+## Rövid összefoglaló
 
-A Spring Framework egy átfogó programozási és konfigurációs modell modern Java-alapú vállalati alkalmazásokhoz. A framework fő célja a komplex vállalati alkalmazások fejlesztésének egyszerűsítése.
+A Spring Framework egy átfogó Java-alapú enterprise alkalmazásfejlesztési keretrendszer, amelynek középpontjában a Dependency Injection (DI) és az Aspect-Oriented Programming (AOP) áll. A Spring Boot révén egyszerűsíti a konfigurációt és gyors fejlesztést tesz lehetővé. Modern mikroszolgáltatás architektúrák alapja, REST API-k, adatbázis-kezelés és biztonság terén nyújt komplex megoldásokat. Fő buktatók: túl sok "Spring mágia", memória footprint és a tanulási görbe meredeksége.
 
-## Alapfogalmak
+## Fogalmak
 
-### Dependency Injection (DI)
+- **Dependency Injection (DI)** – Objektum függőségek külső forrásból történő bepréselése, nem objektum saját maga hozza létre.
+- **Inversion of Control (IoC)** – A vezérlés megfordítása: container irányítja az objektum életciklust, nem az alkalmazás.
+- **ApplicationContext** – Spring container, amely kezeli a bean-eket és DI-t biztosítja.
+- **Bean** – Spring által menedzselt objektum, amelynek életciklusát a container vezérli.
+- **@Component, @Service, @Repository** – Stereotip annotációk bean-ek regisztrálására.
+- **@Autowired** – Automatikus dependency injection annotáció, típus alapján köti össze.
+- **Spring Boot** – Convention-over-configuration megközelítés, gyors indulás auto-konfigurációval.
+- **Spring MVC** – Model-View-Controller pattern implementáció web alkalmazásokhoz.
+- **@RestController** – REST API végpontokat definiáló osztály annotáció.
+- **Spring Data JPA** – Repository pattern implementáció JPA-val, query metódusok generálása.
+- **@Transactional** – Adatbázis tranzakció kezelése deklaratív módon.
+- **Spring Security** – Átfogó biztonság: autentikáció, autorizáció, CSRF védelem.
 
-A Dependency Injection a Spring keretrendszer alapkövét képezi. Lehetővé teszi, hogy az objektumok függőségeit a Spring konténer menedzselje.
+## Interjúkérdések
+
+- **Mi a Dependency Injection és miért hasznos?** — *Objektum függőségeket külső forrásból adjuk meg, loose coupling, könnyebb tesztelés és karbantartás.*
+
+- **Mi a különbség @Component, @Service és @Repository között?** — *Szemantikai különbség, @Component generikus, @Service business logic, @Repository adathozzáférés (plus exception translation).*
+
+- **Hogyan működik a @Autowired?** — *Típus alapján keres bean-t a Spring context-ben, konstruktor/setter/field injection lehetséges.*
+
+- **Mi a Spring Boot auto-configuration?** — *Classpath alapján automatikusan konfigurál bean-eket, @EnableAutoConfiguration révén, felülbírálható.*
+
+- **Mik a Spring bean scope-ok?** — *singleton (default), prototype, request, session, application - meghatározzák az objektum létrehozási stratégiát.*
+
+- **Mi a @Transactional működése?** — *Proxy-based AOP, method szintű tranzakció kezelés, rollback csak runtime exception-re (default).*
+
+- **Hogyan kezeli a Spring a circular dependency-t?** — *Setter injection esetén proxy-kkal megoldja, konstruktor injection esetén BeanCurrentlyInCreationException.*
+
+- **Mi a különbség @RequestMapping és @GetMapping között?** — *@RequestMapping általános (minden HTTP method), @GetMapping csak GET kérésekre.*
+
+- **Hogyan működik a Spring Security authentication?** — *Filter chain, AuthenticationManager, UserDetailsService, SecurityContext tárolás.*
+
+- **Mi a Spring Data JPA repository interface varázslat?** — *Method name parsing (findByFirstName), query generálás runtime-ban proxy segítségével.*
+
+- **Mik a Spring Boot Starter-ek?** — *Pre-configured dependency csomagok, pl. spring-boot-starter-web tartalmazza Tomcat-et, Spring MVC-t.*
+
+- **Hogyan kezeled a environment-specific konfigurációt?** — *application.properties/yml, @Profile annotation, Spring Boot külső konfigurációs hierarchia.*
+
+## Példák
+
+### Példa 1 – Alapvető Dependency Injection
 
 ```java
 @Service
 public class UserService {
-
+    
     private final UserRepository userRepository;
-
-    // Constructor injection (ajánlott)
-    public UserService(UserRepository userRepository) {
+    private final EmailService emailService;
+    
+    // Constructor injection (recommended)
+    public UserService(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
-
-    public User findById(Long id) {
-        return userRepository.findById(id);
-    }
-}
-```
-
-### Inversion of Control (IoC)
-
-Az IoC Container a Spring szíve, amely kezeli az objektumok életciklusát és függőségeit.
-
-```java
-@Configuration
-public class AppConfig {
-
-    @Bean
-    public UserService userService(UserRepository userRepository) {
-        return new UserService(userRepository);
-    }
-
-    @Bean
-    public UserRepository userRepository() {
-        return new JpaUserRepository();
+    
+    @Transactional
+    public User createUser(CreateUserRequest request) {
+        User user = new User(request.getEmail(), request.getName());
+        User savedUser = userRepository.save(user);
+        
+        // Send welcome email
+        emailService.sendWelcomeEmail(savedUser.getEmail());
+        
+        return savedUser;
     }
 }
-```
 
-## Spring Boot
-
-### Alapok
-
-Spring Boot egy opinionated keretrendszer, amely minimalizálja a konfigurációt és gyors alkalmazásfejlesztést tesz lehetővé.
-
-```java
-@SpringBootApplication
-public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByEmailContaining(String emailPart);
+    
+    @Query("SELECT u FROM User u WHERE u.active = true AND u.createdAt > :since")
+    List<User> findActiveUsersSince(@Param("since") LocalDateTime since);
 }
-```
 
-### Auto-configuration
-
-Spring Boot automatikusan konfigurálja az alkalmazást a classpath alapján.
-
-```java
-// application.properties
-server.port=8080
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.jpa.hibernate.ddl-auto=create-drop
-```
-
-## Spring MVC
-
-### REST Controller
-
-```java
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-
+    
     private final UserService userService;
-
+    
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        User user = userService.findById(id);
-        return ResponseEntity.ok(user);
-    }
-
+    
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid UserDto userDto) {
-        User user = userService.create(userDto);
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserRequest request) {
+        User user = userService.createUser(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
-        User user = userService.update(id, userDto);
-        return ResponseEntity.ok(user);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        return userService.findById(id)
+            .map(user -> ResponseEntity.ok(user))
+            .orElse(ResponseEntity.notFound().build());
     }
 }
 ```
 
-### Request Mapping
+### Példa 2 – Gyakori hiba: Circular Dependency
 
 ```java
-@RequestMapping(value = "/users", method = RequestMethod.GET)
-public List<User> getUsers() {
-    return userService.findAll();
-}
-
-// Rövidebb verzió
-@GetMapping("/users")
-public List<User> getUsers() {
-    return userService.findAll();
-}
-```
-
-## Spring Data JPA
-
-### Repository interfészek
-
-```java
-public interface UserRepository extends JpaRepository<User, Long> {
-
-    // Query methods
-    List<User> findByLastName(String lastName);
-
-    Optional<User> findByEmail(String email);
-
-    @Query("SELECT u FROM User u WHERE u.age > ?1")
-    List<User> findUsersOlderThan(int age);
-
-    @Query(value = "SELECT * FROM users WHERE email = ?1", nativeQuery = true)
-    User findByEmailNative(String email);
-}
-```
-
-### Entity osztályok
-
-```java
-@Entity
-@Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(unique = true)
-    private String email;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Order> orders = new ArrayList<>();
-
-    // Constructors, getters, setters
-}
-```
-
-## Validáció
-
-### Bean Validation
-
-```java
-public class UserDto {
-
-    @NotBlank(message = "A keresztnév kötelező")
-    @Size(min = 2, max = 50, message = "A keresztnév 2-50 karakter között kell legyen")
-    private String firstName;
-
-    @NotBlank(message = "A vezetéknév kötelező")
-    private String lastName;
-
-    @Email(message = "Érvényes email címet adj meg")
-    @NotBlank(message = "Az email cím kötelező")
-    private String email;
-
-    @Min(value = 18, message = "Minimum 18 évesnek kell lenni")
-    @Max(value = 120, message = "Maximum 120 éves lehet")
-    private Integer age;
-
-    // Getters and setters
-}
-```
-
-### Custom Validator
-
-```java
-@Target({ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = HungarianPhoneValidator.class)
-public @interface HungarianPhone {
-    String message() default "Érvénytelen magyar telefonszám";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
-}
-
-public class HungarianPhoneValidator implements ConstraintValidator<HungarianPhone, String> {
-
-    @Override
-    public boolean isValid(String phone, ConstraintValidatorContext context) {
-        if (phone == null) return true;
-        return phone.matches("^\\+36[1-9][0-9]{8}$");
+// HIBÁS - Circular dependency constructor injection-nel
+@Service
+public class OrderService {
+    private final PaymentService paymentService;
+    
+    public OrderService(PaymentService paymentService) {  // HIBA
+        this.paymentService = paymentService;
     }
 }
-```
 
-## Exception Handling
-
-### Global Exception Handler
-
-```java
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
-        ErrorResponse error = new ErrorResponse("USER_NOT_FOUND", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-            errors.put(error.getField(), error.getDefaultMessage()));
-
-        ErrorResponse error = new ErrorResponse("VALIDATION_ERROR", "Érvénytelen adatok", errors);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+@Service 
+public class PaymentService {
+    private final OrderService orderService;
+    
+    public PaymentService(OrderService orderService) {  // HIBA
+        this.orderService = orderService;
     }
 }
-```
 
-## Security
-
-### Spring Security alapbeállítás
-
-```java
-@EnableWebSecurity
-@Configuration
-public class SecurityConfig {
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("USER")
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
-
-        return http.build();
-    }
-}
-```
-
-### JWT Authentication
-
-```java
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-
-    @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
-        // Authentication logic
-        String token = jwtService.generateToken(user);
-        return ResponseEntity.ok(new TokenResponse(token));
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
-        // Token refresh logic
-        String newToken = jwtService.refreshToken(request.getRefreshToken());
-        return ResponseEntity.ok(new TokenResponse(newToken));
-    }
-}
-```
-
-## Testing
-
-### Unit Testing
-
-```java
-@ExtendWith(MockitoExtension.class)
-class UserServiceTest {
-
-    @Mock
-    private UserRepository userRepository;
-
-    @InjectMocks
-    private UserService userService;
-
-    @Test
-    void shouldFindUserById() {
-        // Given
-        Long userId = 1L;
-        User expectedUser = new User("John", "Doe", "john@example.com");
-        when(userRepository.findById(userId)).thenReturn(Optional.of(expectedUser));
-
-        // When
-        User actualUser = userService.findById(userId);
-
-        // Then
-        assertThat(actualUser).isEqualTo(expectedUser);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenUserNotFound() {
-        // Given
-        Long userId = 999L;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThrows(UserNotFoundException.class, () -> userService.findById(userId));
-    }
-}
-```
-
-### Integration Testing
-
-```java
-@SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@TestPropertySource(locations = "classpath:application-test.properties")
-class UserControllerIntegrationTest {
-
+// MEGOLDÁS 1: Setter injection használata
+@Service
+public class OrderService {
+    private PaymentService paymentService;
+    
     @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Test
-    void shouldCreateUser() {
-        // Given
-        UserDto userDto = new UserDto("John", "Doe", "john@example.com", 30);
-
-        // When
-        ResponseEntity<User> response = restTemplate.postForEntity("/api/users", userDto, User.class);
-
-        // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody().getEmail()).isEqualTo("john@example.com");
-    }
-}
-```
-
-## Configuration Properties
-
-```java
-@ConfigurationProperties(prefix = "app")
-@Data
-public class AppProperties {
-
-    private String name;
-    private String version;
-    private Security security = new Security();
-
-    @Data
-    public static class Security {
-        private String secretKey;
-        private int tokenExpiration = 3600;
-    }
-}
-```
-
-```yaml
-# application.yml
-app:
-  name: User Management System
-  version: 1.0.0
-  security:
-    secret-key: ${JWT_SECRET:default-secret}
-    token-expiration: 7200
-```
-
-## Profiles
-
-```java
-@Profile("dev")
-@Configuration
-public class DevConfig {
-
-    @Bean
-    public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-            .setType(EmbeddedDatabaseType.H2)
-            .build();
+    public void setPaymentService(PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
 }
 
-@Profile("prod")
-@Configuration
-public class ProdConfig {
-
-    @Bean
-    public DataSource dataSource() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://localhost/mydb");
-        return new HikariDataSource(config);
+// MEGOLDÁS 2: @Lazy annotation
+@Service
+public class OrderService {
+    private final PaymentService paymentService;
+    
+    public OrderService(@Lazy PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
+}
+
+// MEGOLDÁS 3: Refactor - közös service kiemelése
+@Service
+public class BusinessLogicService {
+    // Common logic here
 }
 ```
 
-## Actuator (Monitoring)
+## Gyakorlati feladat (mini)
 
-```java
-@Component
-public class CustomHealthIndicator implements HealthIndicator {
+1. Hozz létre Spring Boot alkalmazást `@SpringBootApplication`-nel
+2. Implementálj `Product` entitást JPA-val és H2 adatbázist
+3. Írj `ProductRepository` interface-t Spring Data JPA-val
+4. Készíts `ProductController` REST API-t CRUD műveletekhez
+5. Adj hozzá validációt `@Valid` és Bean Validation annotációkkal
 
-    @Override
-    public Health health() {
-        // Custom health check logic
-        boolean isHealthy = checkExternalService();
+*Kapcsolódó gyakorlati feladat: [Spring REST API](/exercises/java/02-spring-rest)*
 
-        if (isHealthy) {
-            return Health.up()
-                .withDetail("service", "External API")
-                .withDetail("status", "Available")
-                .build();
-        } else {
-            return Health.down()
-                .withDetail("service", "External API")
-                .withDetail("error", "Service unavailable")
-                .build();
-        }
-    }
-}
-```
+## Kapcsolódó témák
 
-## Best Practices
+- [Java Alapok](/theory/java) - OOP alapok és Collections
+- [Tesztelés](/theory/testing) - Spring Test és @MockBean
+- [SQL & Adatbázis](/theory/sql) - JPA mapping és query optimalizálás
 
-### 1. Dependency Injection
-- Használj constructor injection-t
-- Kerüld a field injection-t
-- Használj final mezőket
+## További olvasmányok
 
-### 2. Exception Handling
-- Használj custom exception-öket
-- Implementálj global exception handler-t
-- Adj vissza értelmes hibaüzeneteket
-
-### 3. Security
-- Mindig validáld a bejövő adatokat
-- Használj HTTPS-t production környezetben
-- Implementálj proper authentication és authorization-t
-
-### 4. Testing
-- Írj unit és integration teszteket
-- Használj test profiles-t
-- Mock-old a külső függőségeket
-
-## Következő lépések
-
-- [Tesztelés](./testing.md)
-- [Spring gyakorlatok](../exercises/java/)
-- [Architektúra](./arch.md)
-
----
-
-*Ez az anyag a Spring Framework alapjait és a Spring Boot használatát tárgyalja. További részletekért látogass el a gyakorlati fejezetekhez!*
+- [Spring Framework Documentation](https://spring.io/projects/spring-framework) - Hivatalos dokumentáció
+- [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) - Boot specifikus guide
+- [Baeldung Spring Tutorials](https://www.baeldung.com/spring-tutorial) - Gyakorlati példák
+- [Spring in Action](https://www.manning.com/books/spring-in-action-sixth-edition) - Craig Walls könyve
+- [Spring Security Reference](https://spring.io/projects/spring-security) - Biztonsági aspektusok

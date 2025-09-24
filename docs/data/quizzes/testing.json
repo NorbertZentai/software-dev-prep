@@ -1,0 +1,161 @@
+{
+  "title": "Szoftver Tesztelés - Kvíz",
+  "topic": "testing",
+  "level": "intermediate",
+  "questions": [
+    {
+      "id": "test-q-001",
+      "type": "single",
+      "question": "Mi a Test-Driven Development (TDD) első lépése?",
+      "choices": [
+        "Implementáció írása",
+        "Red teszt írása",
+        "Refactoring",
+        "Dokumentáció készítése"
+      ],
+      "answer": [1],
+      "explanation": "A TDD ciklus Red-Green-Refactor: először egy failing teszt (Red), majd a legegyszerűbb implementáció (Green), végül refactoring.",
+      "tags": ["tdd", "testing", "methodology"]
+    },
+    {
+      "id": "test-q-002",
+      "type": "multi",
+      "question": "Melyek a jó unit teszt jellemzői (FIRST principles)?",
+      "choices": [
+        "Fast",
+        "Independent",
+        "Repeatable",
+        "Self-Validating",
+        "Timely"
+      ],
+      "answer": [0, 1, 2, 3, 4],
+      "explanation": "A FIRST principles: Fast (gyors), Independent (független), Repeatable (megismételhető), Self-Validating (önérvényesítő), Timely (időszerű).",
+      "tags": ["unit-testing", "best-practices", "first-principles"]
+    },
+    {
+      "id": "test-q-003",
+      "type": "single",
+      "question": "Mi a különbség a Mock és Stub között?",
+      "choices": [
+        "Nincs különbség",
+        "Mock ellenőrzi a hívásokat, Stub csak válaszokat ad",
+        "Stub ellenőrzi a hívásokat, Mock csak válaszokat ad",
+        "Mock async, Stub sync"
+      ],
+      "answer": [1],
+      "explanation": "Mock objektumok ellenőrzik, hogy megfelelően hívták-e meg őket (behavior verification), míg a Stub objektumok csak előre definiált válaszokat adnak vissza (state verification).",
+      "tags": ["mocking", "stubbing", "test-doubles"]
+    },
+    {
+      "id": "test-q-004",
+      "type": "truefalse",
+      "question": "Az integration tesztek gyorsabbak mint a unit tesztek.",
+      "answer": false,
+      "explanation": "Az integration tesztek lassabbak, mert több komponenst tesztelnek együtt, gyakran külső erőforrásokat (DB, hálózat) is használnak.",
+      "tags": ["integration-testing", "performance", "test-types"]
+    },
+    {
+      "id": "test-q-005",
+      "type": "single",
+      "question": "Melyik testing pattern írja le az Arrange-Act-Assert szerkezetet?",
+      "choices": [
+        "AAA Pattern",
+        "Given-When-Then",
+        "Setup-Execute-Verify",
+        "Mindegyik ugyanazt jelenti"
+      ],
+      "answer": [3],
+      "explanation": "Az AAA Pattern (Arrange-Act-Assert), Given-When-Then (BDD), és Setup-Execute-Verify mind ugyanazt a tesztstruktúrát írják le, különböző kontextusokban.",
+      "tags": ["test-structure", "aaa-pattern", "bdd"]
+    },
+    {
+      "id": "test-q-006",
+      "type": "single",
+      "question": "Mi a Code Coverage célja?",
+      "choices": [
+        "Megmondja, hogy hány sorban van hiba",
+        "Megmutatja, a kód hány százalékát fedik le a tesztek",
+        "Automatikusan javítja a hibákat",
+        "Optimalizálja a kód teljesítményét"
+      ],
+      "answer": [1],
+      "explanation": "A Code Coverage azt méri, hogy a tesztek által végrehajtott kód milyen százalékát fedik le az összes kódnak. Ez egy hasznos metrika, de nem garancia a jó tesztekre.",
+      "tags": ["code-coverage", "metrics", "quality-assurance"]
+    },
+    {
+      "id": "test-q-007",
+      "type": "multi",
+      "question": "Melyek a tesztpiramis szintjei?",
+      "choices": [
+        "Unit tesztek",
+        "Integration tesztek",
+        "End-to-End tesztek",
+        "Manual tesztek",
+        "Performance tesztek"
+      ],
+      "answer": [0, 1, 2],
+      "explanation": "A klasszikus tesztpiramis három szintje: Unit tesztek (alap, sok), Integration tesztek (közép, közepes), End-to-End tesztek (teteje, kevés).",
+      "tags": ["test-pyramid", "test-strategy", "automation"]
+    },
+    {
+      "id": "test-q-008",
+      "type": "single",
+      "question": "Mi a Behavior-Driven Development (BDD) fő célja?",
+      "choices": [
+        "Gyorsabb kód írás",
+        "Üzleti követelmények és tesztek közötti híd",
+        "Automatikus bug javítás",
+        "Teljesítmény optimalizálás"
+      ],
+      "answer": [1],
+      "explanation": "A BDD célja, hogy a teszteket üzleti nyelven írják meg (Given-When-Then), így az üzleti és fejlesztő csapat között jobb kommunikációt biztosít.",
+      "tags": ["bdd", "requirements", "communication"]
+    },
+    {
+      "id": "test-q-009",
+      "type": "truefalse",
+      "question": "A flaky teszt egy olyan teszt, ami néha sikeres, néha sikertelen, anélkül hogy a kód változna.",
+      "answer": true,
+      "explanation": "A flaky tesztek nem determinisztikusak, általában időzítési problémák, külső függőségek vagy nem megfelelő teszt izolációs miatt.",
+      "tags": ["flaky-tests", "reliability", "test-quality"]
+    },
+    {
+      "id": "test-q-010",
+      "type": "single",
+      "question": "Melyik JUnit 5 annotáció fut minden teszt előtt?",
+      "choices": ["@BeforeAll", "@BeforeEach", "@Setup", "@PreTest"],
+      "answer": [1],
+      "explanation": "@BeforeEach annotáció minden teszt metódus előtt lefut. @BeforeAll csak egyszer fut az összes teszt előtt.",
+      "tags": ["junit5", "annotations", "test-lifecycle"]
+    },
+    {
+      "id": "test-q-011",
+      "type": "single",
+      "question": "Mi a Property-Based Testing (QuickCheck-style) fő jellemzője?",
+      "choices": [
+        "Konkrét test case-ek írása",
+        "Automatikus test adat generálás",
+        "UI tesztelés",
+        "Database tesztelés"
+      ],
+      "answer": [1],
+      "explanation": "Property-based testing automatikusan generál sokféle test adatot, és ellenőrzi, hogy bizonyos tulajdonságok (properties) mindig teljesülnek-e.",
+      "tags": ["property-based-testing", "test-generation", "quickcheck"]
+    },
+    {
+      "id": "test-q-012",
+      "type": "multi",
+      "question": "Melyek a Selenium WebDriver fő komponensei?",
+      "choices": [
+        "WebDriver API",
+        "Browser Drivers",
+        "Selenium Grid",
+        "Selenium IDE",
+        "WebElement"
+      ],
+      "answer": [0, 1, 2, 4],
+      "explanation": "Selenium WebDriver fő komponensei: WebDriver API (programozói interface), Browser Drivers (böngésző specifikus), Selenium Grid (párhuzamos futtatás), WebElement (DOM elemek). Selenium IDE egy külön eszköz.",
+      "tags": ["selenium", "webdriver", "e2e-testing", "automation"]
+    }
+  ]
+}
