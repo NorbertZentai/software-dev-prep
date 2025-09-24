@@ -2,13 +2,13 @@
   {
     "path": "./theory/java.md",
     "title": "Java Alapok",
-    "difficulty": "beginner", 
+    "difficulty": "beginner",
     "estimatedMinutes": 20,
     "goals": ["JVM működés", "OOP elvek", "Collections", "Exception handling"],
     "route": "#/theory/java"
   },
   {
-    "path": "./theory/spring.md", 
+    "path": "./theory/spring.md",
     "title": "Spring Framework",
     "difficulty": "intermediate",
     "estimatedMinutes": 25,
@@ -33,10 +33,15 @@
   },
   {
     "path": "./theory/web.md",
-    "title": "Web Development", 
+    "title": "Web Development",
     "difficulty": "beginner",
     "estimatedMinutes": 18,
-    "goals": ["HTML/CSS/JS", "HTTP protokoll", "REST API-k", "Modern frameworks"],
+    "goals": [
+      "HTML/CSS/JS",
+      "HTTP protokoll",
+      "REST API-k",
+      "Modern frameworks"
+    ],
     "route": "#/theory/web"
   },
   {
@@ -44,7 +49,12 @@
     "title": "Szoftver Architektúra",
     "difficulty": "advanced",
     "estimatedMinutes": 30,
-    "goals": ["Design patterns", "Microservices", "Scalability", "Clean Architecture"],
+    "goals": [
+      "Design patterns",
+      "Microservices",
+      "Scalability",
+      "Clean Architecture"
+    ],
     "route": "#/theory/arch"
   },
   {
@@ -56,11 +66,16 @@
     "route": "#/theory/git"
   },
   {
-    "path": "./theory/softskills.md", 
+    "path": "./theory/softskills.md",
     "title": "Soft Skills",
     "difficulty": "intermediate",
     "estimatedMinutes": 12,
-    "goals": ["Kommunikáció", "Csapatmunka", "Problémamegoldás", "Interjú készségek"],
+    "goals": [
+      "Kommunikáció",
+      "Csapatmunka",
+      "Problémamegoldás",
+      "Interjú készségek"
+    ],
     "route": "#/theory/softskills"
   }
 ]

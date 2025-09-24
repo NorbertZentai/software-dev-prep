@@ -28,12 +28,7 @@
       "id": 3,
       "type": "multiple",
       "question": "Melyik NEM primitív típus Java-ban?",
-      "options": [
-        "int",
-        "boolean",
-        "String",
-        "char"
-      ],
+      "options": ["int", "boolean", "String", "char"],
       "correct": 2,
       "explanation": "A String egy objektum típus, nem primitív. Az int, boolean és char mind primitív típusok."
     },

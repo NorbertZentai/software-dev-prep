@@ -4,7 +4,12 @@
     "title": "SQL JOIN Műveletek",
     "difficulty": "intermediate",
     "estimatedMinutes": 35,
-    "goals": ["INNER/LEFT/RIGHT JOIN", "Subqueries", "Performance", "Index használat"],
+    "goals": [
+      "INNER/LEFT/RIGHT JOIN",
+      "Subqueries",
+      "Performance",
+      "Index használat"
+    ],
     "route": "#/exercises/sql/01-joins"
   },
   {
@@ -12,7 +17,12 @@
     "title": "Index Optimalizálás",
     "difficulty": "advanced",
     "estimatedMinutes": 40,
-    "goals": ["B-tree indexek", "Execution plan", "Query tuning", "Composite indexes"],
+    "goals": [
+      "B-tree indexek",
+      "Execution plan",
+      "Query tuning",
+      "Composite indexes"
+    ],
     "route": "#/exercises/sql/02-index-tuning"
   },
   {
@@ -20,7 +30,12 @@
     "title": "Tranzakció Kezelés",
     "difficulty": "intermediate",
     "estimatedMinutes": 30,
-    "goals": ["ACID tulajdonságok", "Isolation levels", "Deadlock prevention", "Rollback"],
+    "goals": [
+      "ACID tulajdonságok",
+      "Isolation levels",
+      "Deadlock prevention",
+      "Rollback"
+    ],
     "route": "#/exercises/sql/03-transactions"
   }
 ]

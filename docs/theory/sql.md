@@ -39,7 +39,7 @@ WHERE age > 25
 ORDER BY last_name;
 
 -- Aggregációs függvények
-SELECT 
+SELECT
     COUNT(*) as total_users,
     AVG(age) as average_age,
     MAX(created_at) as latest_signup,
@@ -48,7 +48,7 @@ FROM users
 WHERE status = 'active';
 
 -- GROUP BY és HAVING
-SELECT 
+SELECT
     department,
     COUNT(*) as employee_count,
     AVG(salary) as avg_salary
@@ -72,16 +72,16 @@ WHERE price BETWEEN 100 AND 500
 SELECT c.name, c.email
 FROM customers c
 WHERE EXISTS (
-    SELECT 1 FROM orders o 
-    WHERE o.customer_id = c.id 
+    SELECT 1 FROM orders o
+    WHERE o.customer_id = c.id
     AND o.created_at > '2024-01-01'
 );
 
 -- CASE kifejezések
-SELECT 
+SELECT
     name,
     price,
-    CASE 
+    CASE
         WHEN price < 50 THEN 'Cheap'
         WHEN price BETWEEN 50 AND 200 THEN 'Moderate'
         ELSE 'Expensive'
@@ -95,7 +95,7 @@ FROM products;
 
 ```sql
 -- INNER JOIN - csak egyező rekordok
-SELECT 
+SELECT
     u.name,
     p.title,
     p.created_at
@@ -103,7 +103,7 @@ FROM users u
 INNER JOIN posts p ON u.id = p.user_id;
 
 -- LEFT JOIN - minden bal oldali + egyező jobb oldaliak
-SELECT 
+SELECT
     u.name,
     COUNT(p.id) as post_count
 FROM users u
@@ -111,14 +111,14 @@ LEFT JOIN posts p ON u.id = p.user_id
 GROUP BY u.id, u.name;
 
 -- RIGHT JOIN - minden jobb oldali + egyező bal oldaliak
-SELECT 
+SELECT
     c.name as category_name,
     p.name as product_name
 FROM products p
 RIGHT JOIN categories c ON p.category_id = c.id;
 
 -- FULL OUTER JOIN - minden rekord mindkét oldalról
-SELECT 
+SELECT
     COALESCE(u.name, 'Unknown') as user_name,
     COALESCE(p.title, 'No posts') as post_title
 FROM users u
@@ -128,7 +128,7 @@ FULL OUTER JOIN posts p ON u.id = p.user_id;
 ### Többszörös JOIN-ok
 
 ```sql
-SELECT 
+SELECT
     u.name as customer_name,
     o.order_date,
     p.name as product_name,
@@ -146,14 +146,14 @@ ORDER BY o.order_date DESC;
 
 ```sql
 -- Hierarchikus adatok - alkalmazottak és vezetőik
-SELECT 
+SELECT
     e.name as employee,
     m.name as manager
 FROM employees e
 LEFT JOIN employees m ON e.manager_id = m.id;
 
 -- Összes párosítás egy táblán belül
-SELECT 
+SELECT
     u1.name as user1,
     u2.name as user2
 FROM users u1
@@ -167,7 +167,7 @@ WHERE u1.id < u2.id;  -- duplikációk elkerülése
 
 ```sql
 -- ROW_NUMBER() és RANK()
-SELECT 
+SELECT
     name,
     salary,
     department,
@@ -177,7 +177,7 @@ SELECT
 FROM employees;
 
 -- LAG és LEAD - előző/következő sor értékei
-SELECT 
+SELECT
     name,
     salary,
     LAG(salary) OVER (ORDER BY salary) as prev_salary,
@@ -186,7 +186,7 @@ SELECT
 FROM employees;
 
 -- Futó összeg (Running Total)
-SELECT 
+SELECT
     order_date,
     amount,
     SUM(amount) OVER (ORDER BY order_date ROWS UNBOUNDED PRECEDING) as running_total,
@@ -200,10 +200,10 @@ ORDER BY order_date;
 ```sql
 -- Egyszerű CTE
 WITH high_earners AS (
-    SELECT * FROM employees 
+    SELECT * FROM employees
     WHERE salary > 80000
 )
-SELECT 
+SELECT
     department,
     COUNT(*) as high_earner_count,
     AVG(salary) as avg_salary
@@ -216,9 +216,9 @@ WITH RECURSIVE org_hierarchy AS (
     SELECT id, name, manager_id, 0 as level
     FROM employees
     WHERE manager_id IS NULL
-    
+
     UNION ALL
-    
+
     -- Recursive case
     SELECT e.id, e.name, e.manager_id, oh.level + 1
     FROM employees e
@@ -227,9 +227,9 @@ WITH RECURSIVE org_hierarchy AS (
 SELECT * FROM org_hierarchy ORDER BY level, name;
 
 -- Múltiples CTE-k
-WITH 
+WITH
 monthly_sales AS (
-    SELECT 
+    SELECT
         DATE_TRUNC('month', order_date) as month,
         SUM(amount) as total_sales
     FROM orders
@@ -239,11 +239,11 @@ avg_monthly AS (
     SELECT AVG(total_sales) as avg_monthly_sales
     FROM monthly_sales
 )
-SELECT 
+SELECT
     ms.month,
     ms.total_sales,
     am.avg_monthly_sales,
-    CASE 
+    CASE
         WHEN ms.total_sales > am.avg_monthly_sales THEN 'Above Average'
         ELSE 'Below Average'
     END as performance
@@ -256,7 +256,7 @@ ORDER BY ms.month;
 
 ```sql
 -- Korrelált sublekérdezés
-SELECT 
+SELECT
     u.name,
     u.email,
     (SELECT COUNT(*) FROM posts p WHERE p.user_id = u.id) as post_count
@@ -265,16 +265,16 @@ FROM users u;
 -- EXISTS használata
 SELECT name FROM customers c
 WHERE EXISTS (
-    SELECT 1 FROM orders o 
-    WHERE o.customer_id = c.id 
+    SELECT 1 FROM orders o
+    WHERE o.customer_id = c.id
     AND o.total > 1000
 );
 
 -- NOT IN vs NOT EXISTS különbség
 -- NOT IN probléma NULL értékekkel
-SELECT name FROM customers 
+SELECT name FROM customers
 WHERE id NOT IN (
-    SELECT customer_id FROM orders 
+    SELECT customer_id FROM orders
     WHERE order_date > '2024-01-01'
     -- Ha customer_id NULL lehet, ez nem a várt eredményt adja!
 );
@@ -282,8 +282,8 @@ WHERE id NOT IN (
 -- Helyette NOT EXISTS
 SELECT name FROM customers c
 WHERE NOT EXISTS (
-    SELECT 1 FROM orders o 
-    WHERE o.customer_id = c.id 
+    SELECT 1 FROM orders o
+    WHERE o.customer_id = c.id
     AND o.order_date > '2024-01-01'
 );
 ```
@@ -301,12 +301,12 @@ WHERE NOT EXISTS (
 -- Tranzakció példa - pénzátutalás
 BEGIN TRANSACTION;
 
-UPDATE accounts 
-SET balance = balance - 1000 
+UPDATE accounts
+SET balance = balance - 1000
 WHERE account_id = 'ACC001';
 
-UPDATE accounts 
-SET balance = balance + 1000 
+UPDATE accounts
+SET balance = balance + 1000
 WHERE account_id = 'ACC002';
 
 -- Ellenőrzés
@@ -364,15 +364,15 @@ COMMIT;
 
 ```sql
 -- Clustered Index (általában PRIMARY KEY)
-CREATE CLUSTERED INDEX IX_Orders_OrderDate 
+CREATE CLUSTERED INDEX IX_Orders_OrderDate
 ON Orders (order_date);
 
 -- Non-Clustered Index
-CREATE NONCLUSTERED INDEX IX_Users_Email 
+CREATE NONCLUSTERED INDEX IX_Users_Email
 ON Users (email);
 
 -- Összetett Index
-CREATE INDEX IX_Orders_Customer_Date 
+CREATE INDEX IX_Orders_Customer_Date
 ON Orders (customer_id, order_date);
 
 -- Covering Index (tartalmazza az összes szükséges oszlopot)
@@ -402,11 +402,11 @@ SELECT * FROM users WHERE UPPER(email) = 'JOHN@EXAMPLE.COM';
 CREATE INDEX IX_Users_Upper_Email ON users (UPPER(email));
 
 -- Jó: Összetett index használat (bal oldali prefix)
-SELECT * FROM orders 
+SELECT * FROM orders
 WHERE customer_id = 123 AND order_date > '2024-01-01';
 
 -- Rossz: Nem használja az indexet
-SELECT * FROM orders 
+SELECT * FROM orders
 WHERE order_date > '2024-01-01' AND customer_id = 123;
 -- Ha az index: (customer_id, order_date)
 
@@ -416,7 +416,7 @@ WHERE order_date > '2024-01-01' AND customer_id = 123;
 
 ```sql
 -- Index fragmentáció ellenőrzése
-SELECT 
+SELECT
     object_name(i.object_id) AS table_name,
     i.name AS index_name,
     avg_fragmentation_in_percent
@@ -529,7 +529,7 @@ CREATE TABLE order_summary (
 
 -- Materializált view alternatíva
 CREATE MATERIALIZED VIEW customer_order_stats AS
-SELECT 
+SELECT
     c.id as customer_id,
     c.name,
     COUNT(o.id) as total_orders,
@@ -556,7 +556,7 @@ WHERE o.order_date > '2024-01-01'  -- szelektív feltétel
 -- Lassabb:
 SELECT * FROM customers
 WHERE id IN (
-    SELECT customer_id FROM orders 
+    SELECT customer_id FROM orders
     WHERE order_date > '2024-01-01'
 );
 
@@ -564,7 +564,7 @@ WHERE id IN (
 SELECT * FROM customers c
 WHERE EXISTS (
     SELECT 1 FROM orders o
-    WHERE o.customer_id = c.id 
+    WHERE o.customer_id = c.id
     AND o.order_date > '2024-01-01'
 );
 
@@ -583,12 +583,12 @@ DECLARE @rows_affected INT = @batch_size;
 
 WHILE @rows_affected = @batch_size
 BEGIN
-    UPDATE TOP(@batch_size) old_table 
+    UPDATE TOP(@batch_size) old_table
     SET processed = 1
     WHERE processed = 0;
-    
+
     SET @rows_affected = @@ROWCOUNT;
-    
+
     -- Kis szünet a többi folyamat számára
     WAITFOR DELAY '00:00:01';
 END
@@ -608,7 +608,7 @@ END
 ```sql
 -- Komplex üzleti logika SQL-ben
 WITH customer_metrics AS (
-    SELECT 
+    SELECT
         c.id,
         c.name,
         COUNT(o.id) as order_count,
@@ -620,9 +620,9 @@ WITH customer_metrics AS (
     WHERE o.created_at >= '2024-01-01'
     GROUP BY c.id, c.name
 )
-SELECT 
+SELECT
     name,
-    CASE 
+    CASE
         WHEN lifetime_value > 5000 THEN 'VIP'
         WHEN order_count > 10 THEN 'Regular'
         ELSE 'New'
@@ -659,10 +659,10 @@ db.products.insertOne({
 });
 
 // Gyors keresés
-db.products.find({ 
-    category: "electronics", 
+db.products.find({
+    category: "electronics",
     price: { $lt: 800 },
-    inStock: true 
+    inStock: true
 });
 ```
 
@@ -683,7 +683,7 @@ FROM users u, posts p
 WHERE u.id = p.user_id;
 
 -- 2. Aliasok konzisztens használata
-SELECT 
+SELECT
     u.name as user_name,
     p.title as post_title,
     p.created_at as publication_date
@@ -691,10 +691,10 @@ FROM users u
 JOIN posts p ON u.id = p.user_id;
 
 -- 3. NULL értékek explicit kezelése
-SELECT 
+SELECT
     name,
     COALESCE(phone, 'N/A') as phone_number,
-    CASE 
+    CASE
         WHEN email IS NOT NULL THEN email
         ELSE 'No email provided'
     END as email_address
@@ -707,7 +707,7 @@ FROM contacts;
 -- 1. N+1 query probléma
 -- Rossz: minden user-hez külön query
 -- Jó: egy JOIN-nal
-SELECT 
+SELECT
     u.name,
     COUNT(p.id) as post_count
 FROM users u
@@ -723,8 +723,8 @@ SELECT id, name, status FROM large_table WHERE condition = 'value';
 
 -- 3. Proper indexing checking
 -- Mindig ellenőrizzük a query plan-t
-EXPLAIN (ANALYZE, BUFFERS) 
-SELECT * FROM orders 
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT * FROM orders
 WHERE customer_id = 123 AND order_date > '2024-01-01';
 ```
 
@@ -765,10 +765,10 @@ WHERE salary < (SELECT MAX(salary) FROM employees);
 ```sql
 -- CTE és ROW_NUMBER használata
 WITH duplicates AS (
-    SELECT 
+    SELECT
         *,
         ROW_NUMBER() OVER (
-            PARTITION BY email, name 
+            PARTITION BY email, name
             ORDER BY id
         ) as row_num
     FROM users
@@ -778,11 +778,11 @@ DELETE FROM duplicates WHERE row_num > 1;
 
 **4. Írj query-t a futó összeghez (running total)**
 ```sql
-SELECT 
+SELECT
     order_date,
     amount,
     SUM(amount) OVER (
-        ORDER BY order_date 
+        ORDER BY order_date
         ROWS UNBOUNDED PRECEDING
     ) as running_total
 FROM orders
@@ -794,7 +794,7 @@ ORDER BY order_date;
 ```sql
 -- E-commerce analytics példa
 WITH monthly_stats AS (
-    SELECT 
+    SELECT
         DATE_TRUNC('month', o.created_at) as month,
         COUNT(DISTINCT o.customer_id) as unique_customers,
         COUNT(o.id) as total_orders,
@@ -805,18 +805,18 @@ WITH monthly_stats AS (
     GROUP BY DATE_TRUNC('month', o.created_at)
 ),
 growth_rates AS (
-    SELECT 
+    SELECT
         month,
         unique_customers,
         total_orders,
         revenue,
         avg_order_value,
         LAG(revenue) OVER (ORDER BY month) as prev_month_revenue,
-        (revenue - LAG(revenue) OVER (ORDER BY month)) / 
+        (revenue - LAG(revenue) OVER (ORDER BY month)) /
         LAG(revenue) OVER (ORDER BY month) * 100 as revenue_growth_pct
     FROM monthly_stats
 )
-SELECT 
+SELECT
     month,
     unique_customers,
     total_orders,

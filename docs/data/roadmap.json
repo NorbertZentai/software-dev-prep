@@ -20,7 +20,7 @@
 
       "topics": [      "exerciseRoute": "#/exercises/java",
 
-        {      "quizRoute": "#/quiz/java", 
+        {      "quizRoute": "#/quiz/java",
 
           "id": "java-basics",      "estimatedHours": 12,
 
@@ -42,7 +42,7 @@
 
         {      "route": "#/theory/spring",
 
-          "id": "git-basics",      "exerciseRoute": "#/exercises/java/02-spring-rest", 
+          "id": "git-basics",      "exerciseRoute": "#/exercises/java/02-spring-rest",
 
           "title": "Git & Verziókezelés",      "quizRoute": "#/quiz/spring",
 
@@ -72,7 +72,7 @@
 
       "description": "Szerveroldali fejlesztés Spring-gel",      "estimatedHours": 14,
 
-      "duration": "3-4 hónap",      "difficulty": "intermediate", 
+      "duration": "3-4 hónap",      "difficulty": "intermediate",
 
       "color": "#10b981",      "prerequisites": ["java-fundamentals"],
 
@@ -82,7 +82,7 @@
 
           "id": "spring-framework",    {
 
-          "title": "Spring Framework",      "id": "database-fundamentals", 
+          "title": "Spring Framework",      "id": "database-fundamentals",
 
           "description": "Dependency Injection, IoC, AOP",      "title": "SQL & Adatbázisok",
 
@@ -114,7 +114,7 @@
 
           "prerequisites": ["java-basics"],      "route": "#/theory/web",
 
-          "skills": ["SQL lekérdezések", "JPA/Hibernate", "Tranzakciók"]      "exerciseRoute": "#/exercises/web", 
+          "skills": ["SQL lekérdezések", "JPA/Hibernate", "Tranzakciók"]      "exerciseRoute": "#/exercises/web",
 
         }      "quizRoute": "#/quiz/web",
 
@@ -132,7 +132,7 @@
 
       "duration": "2-3 hónap",      "id": "software-architecture",
 
-      "color": "#f59e0b",      "title": "Szoftver Architektúra", 
+      "color": "#f59e0b",      "title": "Szoftver Architektúra",
 
       "topics": [      "description": "Design patterns, mikroszolgáltatások",
 
@@ -160,7 +160,7 @@
 
     },      "description": "Git workflow, branching stratégiák",
 
-    {      "route": "#/theory/git", 
+    {      "route": "#/theory/git",
 
       "id": "advanced",      "exerciseRoute": null,
 
@@ -188,7 +188,7 @@
 
           "difficulty": "advanced",      "exerciseRoute": null,
 
-          "prerequisites": ["spring-framework", "database"],      "quizRoute": "#/quiz/softskills", 
+          "prerequisites": ["spring-framework", "database"],      "quizRoute": "#/quiz/softskills",
 
           "skills": ["Design Patterns", "Microservices", "API Design"]      "estimatedHours": 10,
 
@@ -218,11 +218,11 @@
 
     },    {
 
-    {      "name": "Full-stack Developer", 
+    {      "name": "Full-stack Developer",
 
       "id": "professional",      "description": "Teljes stack fejlesztő track",
 
-      "title": "Professzionális Készségek",      "modules": ["java-fundamentals", "web-development", "spring-framework", "testing-fundamentals", "database-fundamentals", "software-architecture", "version-control", "soft-skills"], 
+      "title": "Professzionális Készségek",      "modules": ["java-fundamentals", "web-development", "spring-framework", "testing-fundamentals", "database-fundamentals", "software-architecture", "version-control", "soft-skills"],
 
       "description": "Soft skills és karrierfejlesztés",      "estimatedWeeks": 20
 

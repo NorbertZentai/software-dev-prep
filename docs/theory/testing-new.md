@@ -52,40 +52,40 @@ A szoftvertesztelés a kód minőségének és helyességének biztosítására 
 ```java
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-    
+
     @Mock
     private UserRepository userRepository;
-    
-    @Mock  
+
+    @Mock
     private EmailService emailService;
-    
+
     @InjectMocks
     private UserService userService;
-    
+
     @Test
     @DisplayName("Should create user and send welcome email")
     void shouldCreateUserAndSendWelcomeEmail() {
         // Arrange
         CreateUserRequest request = new CreateUserRequest("john@example.com", "John Doe");
         User savedUser = new User(1L, "john@example.com", "John Doe");
-        
+
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
-        
+
         // Act
         User result = userService.createUser(request);
-        
+
         // Assert
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getEmail()).isEqualTo("john@example.com");
         assertThat(result.getName()).isEqualTo("John Doe");
-        
-        verify(userRepository).save(argThat(user -> 
+
+        verify(userRepository).save(argThat(user ->
             user.getEmail().equals("john@example.com") &&
             user.getName().equals("John Doe")
         ));
         verify(emailService).sendWelcomeEmail("john@example.com");
     }
-    
+
     @Test
     @DisplayName("Should throw exception when email already exists")
     void shouldThrowExceptionWhenEmailExists() {
@@ -93,13 +93,13 @@ class UserServiceTest {
         CreateUserRequest request = new CreateUserRequest("existing@example.com", "Jane Doe");
         when(userRepository.save(any(User.class)))
             .thenThrow(new UserAlreadyExistsException("Email already exists"));
-        
+
         // Act & Assert
         UserAlreadyExistsException exception = assertThrows(
             UserAlreadyExistsException.class,
             () -> userService.createUser(request)
         );
-        
+
         assertThat(exception.getMessage()).contains("Email already exists");
         verify(emailService, never()).sendWelcomeEmail(anyString());
     }
@@ -118,13 +118,13 @@ void badTest() {
     when(userValidator.validate(any())).thenReturn(true);
     when(auditLogger.log(anyString())).thenReturn(true);
     when(cacheManager.evict(anyString())).thenReturn(true);
-    
+
     User savedUser = new User(1L, "test@example.com", "Test User");
     when(userRepository.save(any())).thenReturn(savedUser);
-    
+
     // Act
     userService.createUser(request);
-    
+
     // Assert - túl sok implementation detail
     verify(userRepository).findByEmail("test@example.com");
     verify(passwordEncoder).encode("password123");
@@ -140,19 +140,19 @@ void goodTest() {
     // Arrange - csak lényeges mockek
     when(userRepository.save(any(User.class)))
         .thenReturn(new User(1L, "test@example.com", "Test User"));
-    
+
     // Act
     User result = userService.createUser(
         new CreateUserRequest("test@example.com", "Test User", "password123")
     );
-    
+
     // Assert - outcome focus
     assertThat(result.getId()).isNotNull();
     assertThat(result.getEmail()).isEqualTo("test@example.com");
     assertThat(result.getName()).isEqualTo("Test User");
-    
+
     // Verify only critical interactions
-    verify(userRepository).save(argThat(user -> 
+    verify(userRepository).save(argThat(user ->
         user.getEmail().equals("test@example.com")));
 }
 ```

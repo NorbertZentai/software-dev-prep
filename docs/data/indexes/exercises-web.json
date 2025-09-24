@@ -12,7 +12,12 @@
     "title": "React + TypeScript",
     "difficulty": "intermediate",
     "estimatedMinutes": 50,
-    "goals": ["React Hooks", "TypeScript types", "Component patterns", "State management"],
+    "goals": [
+      "React Hooks",
+      "TypeScript types",
+      "Component patterns",
+      "State management"
+    ],
     "route": "#/exercises/web/02-react-ts"
   },
   {
@@ -20,7 +25,12 @@
     "title": "Web Accessibility (a11y)",
     "difficulty": "intermediate",
     "estimatedMinutes": 40,
-    "goals": ["ARIA labels", "Keyboard navigation", "Screen readers", "WCAG compliance"],
+    "goals": [
+      "ARIA labels",
+      "Keyboard navigation",
+      "Screen readers",
+      "WCAG compliance"
+    ],
     "route": "#/exercises/web/03-accessibility"
   }
 ]

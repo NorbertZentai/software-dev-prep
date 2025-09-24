@@ -59,12 +59,12 @@ completion:
                 <h1>Article Title</h1>
                 <p>Published on <time datetime="2024-12-19">December 19, 2024</time></p>
             </header>
-            
+
             <section>
                 <h2>Introduction</h2>
                 <p>Article content goes here...</p>
             </section>
-            
+
             <aside>
                 <h3>Related Links</h3>
                 <ul>
@@ -78,11 +78,11 @@ completion:
     <!-- Text inputs with validation -->
     <div class="form-group">
         <label for="email">Email Address</label>
-        <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            required 
+        <input
+            type="email"
+            id="email"
+            name="email"
+            required
             autocomplete="email"
             aria-describedby="email-error"
         />
@@ -92,11 +92,11 @@ completion:
     <!-- Number input -->
     <div class="form-group">
         <label for="age">Age</label>
-        <input 
-            type="number" 
-            id="age" 
-            name="age" 
-            min="18" 
+        <input
+            type="number"
+            id="age"
+            name="age"
+            min="18"
             max="100"
             aria-describedby="age-help"
         />
@@ -106,9 +106,9 @@ completion:
     <!-- Date input -->
     <div class="form-group">
         <label for="birthdate">Birth Date</label>
-        <input 
-            type="date" 
-            id="birthdate" 
+        <input
+            type="date"
+            id="birthdate"
             name="birthdate"
             max="2006-01-01"
         />
@@ -128,10 +128,10 @@ completion:
     <!-- File upload -->
     <div class="form-group">
         <label for="avatar">Profile Picture</label>
-        <input 
-            type="file" 
-            id="avatar" 
-            name="avatar" 
+        <input
+            type="file"
+            id="avatar"
+            name="avatar"
             accept="image/*"
             aria-describedby="avatar-help"
         />
@@ -152,7 +152,7 @@ completion:
     display: grid;
     grid-template-columns: 200px 1fr 100px;
     grid-template-rows: auto 1fr auto;
-    grid-template-areas: 
+    grid-template-areas:
         "sidebar header header"
         "sidebar main aside"
         "footer footer footer";
@@ -161,12 +161,12 @@ completion:
 }
 
 /* Grid Items */
-.header { 
+.header {
     grid-area: header;
     background: #3498db;
 }
 
-.main { 
+.main {
     grid-area: main;
     background: #ecf0f1;
 }
@@ -175,7 +175,7 @@ completion:
 @media (max-width: 768px) {
     .grid-container {
         grid-template-columns: 1fr;
-        grid-template-areas: 
+        grid-template-areas:
             "header"
             "main"
             "aside"
@@ -310,11 +310,11 @@ const apiCall = async (endpoint, options = {}) => {
             },
             ...options
         });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         return await response.json();
     } catch (error) {
         console.error('API call failed:', error);
@@ -329,16 +329,16 @@ const apiCall = async (endpoint, options = {}) => {
 // Classes
 class User {
     #balance = 0; // Private field
-    
+
     constructor(name, email) {
         this.name = name;
         this.email = email;
     }
-    
+
     greet() {
         return `Hello, I'm ${this.name}`;
     }
-    
+
     static validateEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
@@ -513,8 +513,8 @@ interface ButtonProps {
 
 const Button: FC<ButtonProps> = ({ children, variant = 'primary', onClick }) => {
     return (
-        <button 
-            className={`btn btn-${variant}`} 
+        <button
+            className={`btn btn-${variant}`}
             onClick={onClick}
         >
             {children}
@@ -547,7 +547,7 @@ function List<T>({ items, renderItem }: ListProps<T>) {
 // Lazy loading with Intersection Observer
 const lazyLoadImages = () => {
     const images = document.querySelectorAll('img[data-src]');
-    
+
     const imageObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -557,7 +557,7 @@ const lazyLoadImages = () => {
             }
         });
     });
-    
+
     images.forEach(img => imageObserver.observe(img));
 };
 

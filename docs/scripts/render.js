@@ -11,14 +11,13 @@ export class MarkdownRenderer {
 
       const markdown = await response.text()
       const { frontmatter, content } = this.parseFrontmatter(markdown)
-      
+
       const appEl = document.getElementById('app')
       appEl.innerHTML = this.renderContent(content, title, frontmatter)
-      
+
       // Setup interactive features
       this.setupCodeHighlighting()
       this.setupProgressTracking(filePath)
-      
     } catch (error) {
       console.error('Markdown rendering error:', error)
       this.renderError(title, error)
@@ -32,11 +31,11 @@ export class MarkdownRenderer {
   parseFrontmatter(markdown) {
     const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
     const match = markdown.match(frontmatterRegex)
-    
+
     if (match) {
       const frontmatterText = match[1]
       const content = match[2]
-      
+
       try {
         const frontmatter = this.parseFrontmatterYAML(frontmatterText)
         return { frontmatter, content }
@@ -45,43 +44,48 @@ export class MarkdownRenderer {
         return { frontmatter: {}, content: markdown }
       }
     }
-    
+
     return { frontmatter: {}, content: markdown }
   }
 
   parseFrontmatterYAML(yamlText) {
     const result = {}
     const lines = yamlText.split('\n')
-    
+
     for (let line of lines) {
       line = line.trim()
       if (!line || line.startsWith('#')) continue
-      
+
       const colonIndex = line.indexOf(':')
       if (colonIndex === -1) continue
-      
+
       const key = line.substring(0, colonIndex).trim()
       let value = line.substring(colonIndex + 1).trim()
-      
+
       // Remove quotes
-      if ((value.startsWith('"') && value.endsWith('"')) || 
-          (value.startsWith("'") && value.endsWith("'"))) {
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      ) {
         value = value.slice(1, -1)
       }
-      
+
       // Handle arrays - simplified parsing for goals, etc.
       if (value.startsWith('[') && value.endsWith(']')) {
-        value = value.slice(1, -1).split(',').map(item => item.trim().replace(/"/g, ''))
+        value = value
+          .slice(1, -1)
+          .split(',')
+          .map((item) => item.trim().replace(/"/g, ''))
       }
-      
+
       // Handle numbers
       if (!isNaN(value) && value !== '') {
         value = Number(value)
       }
-      
+
       result[key] = value
     }
-    
+
     return result
   }
 
@@ -105,66 +109,88 @@ export class MarkdownRenderer {
 
   renderMetaHeader(title, frontmatter) {
     if (!frontmatter.title && !title) return ''
-    
+
     const displayTitle = frontmatter.title || title
-    
+
     return `
       <header class="page-meta-header">
         <h1 class="page-title">${displayTitle}</h1>
-        
-        ${frontmatter.difficulty || frontmatter.estimatedMinutes || frontmatter.goals ? `
+
+        ${
+          frontmatter.difficulty ||
+          frontmatter.estimatedMinutes ||
+          frontmatter.goals
+            ? `
           <div class="meta-badges">
-            ${frontmatter.difficulty ? `
+            ${
+              frontmatter.difficulty
+                ? `
               <span class="badge badge-${frontmatter.difficulty}">
                 ${this.translateDifficulty(frontmatter.difficulty)}
               </span>
-            ` : ''}
-            
-            ${frontmatter.estimatedMinutes ? `
+            `
+                : ''
+            }
+
+            ${
+              frontmatter.estimatedMinutes
+                ? `
               <span class="badge badge-time">
                 ⏱️ ${frontmatter.estimatedMinutes} perc
               </span>
-            ` : ''}
+            `
+                : ''
+            }
           </div>
-        ` : ''}
-        
-        ${frontmatter.goals && frontmatter.goals.length ? `
+        `
+            : ''
+        }
+
+        ${
+          frontmatter.goals && frontmatter.goals.length
+            ? `
           <div class="learning-goals">
             <h3>🎯 Tanulási célok</h3>
             <ul class="goals-list">
-              ${frontmatter.goals.map(goal => `<li>${goal}</li>`).join('')}
+              ${frontmatter.goals.map((goal) => `<li>${goal}</li>`).join('')}
             </ul>
           </div>
-        ` : ''}
-        
-        ${frontmatter.starter ? this.renderStarterLinks(frontmatter.starter) : ''}
+        `
+            : ''
+        }
+
+        ${
+          frontmatter.starter
+            ? this.renderStarterLinks(frontmatter.starter)
+            : ''
+        }
       </header>
     `
   }
 
   renderStarterLinks(starter) {
     const links = []
-    
+
     if (starter.stackblitz) {
       links.push(`<a href="${starter.stackblitz}" target="_blank" class="starter-link stackblitz">
         <span class="link-icon">⚡</span> StackBlitz
       </a>`)
     }
-    
+
     if (starter.codesandbox) {
-      links.push(`<a href="${starter.codesandbox}" target="_blank" class="starter-link codesandbox">  
+      links.push(`<a href="${starter.codesandbox}" target="_blank" class="starter-link codesandbox">
         <span class="link-icon">📦</span> CodeSandbox
       </a>`)
     }
-    
+
     if (starter.dbfiddle) {
       links.push(`<a href="${starter.dbfiddle}" target="_blank" class="starter-link dbfiddle">
-        <span class="link-icon">🗄️</span> DB Fiddle  
+        <span class="link-icon">🗄️</span> DB Fiddle
       </a>`)
     }
-    
+
     if (links.length === 0) return ''
-    
+
     return `
       <div class="starter-links">
         <h4>🚀 Gyors kezdés:</h4>
@@ -179,7 +205,9 @@ export class MarkdownRenderer {
     return `
       <div class="content-actions">
         <button onclick="window.history.back()" class="btn btn-secondary">← Vissza</button>
-        <button onclick="this.toggleBookmark('${frontmatter.title || 'page'}')" class="btn btn-outline">🔖 Mentés</button>
+        <button onclick="this.toggleBookmark('${
+          frontmatter.title || 'page'
+        }')" class="btn btn-outline">🔖 Mentés</button>
         <button onclick="this.markAsCompleted()" class="btn btn-primary">✅ Késznek jelölöm</button>
       </div>
     `
@@ -197,24 +225,28 @@ export class MarkdownRenderer {
       'Megválaszoltam az ellenőrző kérdéseket',
       'Gyakoroltam a javasolt feladatokkal',
       'Kapcsolódó dokumentációt is átnéztem',
-      'Készen állok az interjú kérdésekre'
+      'Készen állok az interjú kérdésekre',
     ]
-    
+
     return `
       <div class="completion-checklist">
         <h3>✅ Ellenőrző lista</h3>
         <p>Készen állsz? Jelöld be, amit elvégeztél:</p>
-        
+
         <div class="checklist">
-          ${checklistItems.map((item, index) => `
+          ${checklistItems
+            .map(
+              (item, index) => `
             <label class="checklist-item">
               <input type="checkbox" data-checklist="${index}">
               <span class="checkmark"></span>
               <span class="item-text">${item}</span>
             </label>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
-        
+
         <div class="checklist-actions">
           <button onclick="this.checkAllItems()" class="btn btn-outline">Minden kijelölése</button>
           <button onclick="this.saveChecklistProgress()" class="btn btn-primary">Mentés</button>
@@ -225,9 +257,9 @@ export class MarkdownRenderer {
 
   translateDifficulty(difficulty) {
     const translations = {
-      'beginner': 'Kezdő',
-      'intermediate': 'Haladó', 
-      'advanced': 'Szakértő'
+      beginner: 'Kezdő',
+      intermediate: 'Haladó',
+      advanced: 'Szakértő',
     }
     return translations[difficulty] || difficulty
   }
@@ -271,7 +303,10 @@ export class MarkdownRenderer {
         })
       }
 
-      if (block.parentNode && !block.parentNode.querySelector('.copy-code-btn')) {
+      if (
+        block.parentNode &&
+        !block.parentNode.querySelector('.copy-code-btn')
+      ) {
         block.parentNode.style.position = 'relative'
         block.parentNode.appendChild(copyBtn)
       }
@@ -285,9 +320,10 @@ export class MarkdownRenderer {
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
         const scrollPercent = Math.round(
-          (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100
+          (window.scrollY / (document.body.scrollHeight - window.innerHeight)) *
+            100
         )
-        
+
         if (scrollPercent >= 80) {
           // Mark as read when 80% scrolled
           const route = window.location.hash
@@ -295,7 +331,7 @@ export class MarkdownRenderer {
             window.storageManager.markAsRead(route)
           }
         }
-        
+
         // Update progress indicator
         const progressBar = document.querySelector('.reading-progress')
         if (progressBar) {
@@ -303,9 +339,9 @@ export class MarkdownRenderer {
         }
       }, 100)
     }
-    
+
     window.addEventListener('scroll', trackScrollProgress)
-    
+
     // Add reading progress bar
     if (!document.querySelector('.reading-progress-container')) {
       const progressContainer = document.createElement('div')

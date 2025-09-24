@@ -53,12 +53,12 @@ A Java egy objektumorientált, platform-független programozási nyelv, amely a 
 public class BankAccount {
     private double balance;
     private final String accountNumber;
-    
+
     public BankAccount(String accountNumber, double initialBalance) {
         this.accountNumber = accountNumber;
         this.balance = initialBalance;
     }
-    
+
     public void deposit(double amount) {
         if (amount > 0) {
             this.balance += amount;
@@ -66,7 +66,7 @@ public class BankAccount {
             throw new IllegalArgumentException("Amount must be positive");
         }
     }
-    
+
     public void withdraw(double amount) {
         if (amount > 0 && amount <= balance) {
             this.balance -= amount;
@@ -74,11 +74,11 @@ public class BankAccount {
             throw new IllegalArgumentException("Invalid withdrawal amount");
         }
     }
-    
+
     public double getBalance() {
         return balance;
     }
-    
+
     public String getAccountNumber() {
         return accountNumber;
     }
@@ -92,7 +92,7 @@ public class BankAccount {
 public class Person {
     private String name;
     private int age;
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -100,7 +100,7 @@ public class Person {
         Person person = (Person) obj;
         return Objects.equals(name, person.name);  // Csak név alapján
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(name, age);  // HIBA: név + kor alapján
@@ -111,7 +111,7 @@ public class Person {
 public class Person {
     private String name;
     private int age;
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -119,7 +119,7 @@ public class Person {
         Person person = (Person) obj;
         return Objects.equals(name, person.name) && age == person.age;
     }
-    
+
     @Override
     public int hashCode() {
         return Objects.hash(name, age);  // Mindkét mező

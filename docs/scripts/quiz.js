@@ -33,15 +33,15 @@ export class QuizEngine {
 
   // Start quiz method expected by router
   async start(quizPath, title) {
-    console.log('🎯 Starting quiz:', quizPath);
-    
+    console.log('🎯 Starting quiz:', quizPath)
+
     try {
-      const quiz = await this.loadQuiz(quizPath);
-      this.renderFullQuiz(quiz);
-      this.setupQuizHandlers();
+      const quiz = await this.loadQuiz(quizPath)
+      this.renderFullQuiz(quiz)
+      this.setupQuizHandlers()
     } catch (error) {
-      console.error('Quiz start error:', error);
-      throw error;
+      console.error('Quiz start error:', error)
+      throw error
     }
   }
 
@@ -405,84 +405,85 @@ export class QuizEngine {
 
   // Full quiz rendering and setup
   renderFullQuiz(quiz) {
-    const app = document.getElementById('app');
-    app.innerHTML = this.renderQuizStart(quiz);
+    const app = document.getElementById('app')
+    app.innerHTML = this.renderQuizStart(quiz)
   }
 
   setupQuizHandlers() {
     // Setup start quiz button
-    const startBtn = document.getElementById('start-quiz-btn');
+    const startBtn = document.getElementById('start-quiz-btn')
     if (startBtn) {
       startBtn.addEventListener('click', () => {
-        this.startQuiz();
-      });
+        this.startQuiz()
+      })
     }
   }
 
   startQuiz() {
-    if (!this.currentQuiz) return;
-    
-    this.currentQuestion = 0;
-    this.answers = [];
-    this.startTime = Date.now();
-    this.showQuestion();
+    if (!this.currentQuiz) return
+
+    this.currentQuestion = 0
+    this.answers = []
+    this.startTime = Date.now()
+    this.showQuestion()
   }
 
   showQuestion() {
-    const app = document.getElementById('app');
-    app.innerHTML = this.renderQuestion(this.currentQuestion);
-    
+    const app = document.getElementById('app')
+    app.innerHTML = this.renderQuestion(this.currentQuestion)
+
     // Setup answer handlers
-    this.setupAnswerHandlers();
+    this.setupAnswerHandlers()
   }
 
   setupAnswerHandlers() {
     // Setup multiple choice handlers
-    const options = document.querySelectorAll('.quiz-option');
-    options.forEach(option => {
+    const options = document.querySelectorAll('.quiz-option')
+    options.forEach((option) => {
       option.addEventListener('click', () => {
         // Remove previous selections
-        options.forEach(opt => opt.classList.remove('selected'));
-        option.classList.add('selected');
-        
+        options.forEach((opt) => opt.classList.remove('selected'))
+        option.classList.add('selected')
+
         // Store answer
-        const answer = option.dataset.value;
-        this.answers[this.currentQuestion] = answer;
-        
+        const answer = option.dataset.value
+        this.answers[this.currentQuestion] = answer
+
         // Enable next button
-        const nextBtn = document.getElementById('next-question');
-        if (nextBtn) nextBtn.disabled = false;
-      });
-    });
+        const nextBtn = document.getElementById('next-question')
+        if (nextBtn) nextBtn.disabled = false
+      })
+    })
 
     // Setup true/false handlers
-    const trueBtn = document.getElementById('answer-true');
-    const falseBtn = document.getElementById('answer-false');
-    
+    const trueBtn = document.getElementById('answer-true')
+    const falseBtn = document.getElementById('answer-false')
+
     if (trueBtn && falseBtn) {
-      [trueBtn, falseBtn].forEach(btn => {
+      ;[trueBtn, falseBtn].forEach((btn) => {
         btn.addEventListener('click', () => {
-          [trueBtn, falseBtn].forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-          
-          this.answers[this.currentQuestion] = btn.id === 'answer-true' ? 'true' : 'false';
-          
-          const nextBtn = document.getElementById('next-question');
-          if (nextBtn) nextBtn.disabled = false;
-        });
-      });
+          ;[trueBtn, falseBtn].forEach((b) => b.classList.remove('selected'))
+          btn.classList.add('selected')
+
+          this.answers[this.currentQuestion] =
+            btn.id === 'answer-true' ? 'true' : 'false'
+
+          const nextBtn = document.getElementById('next-question')
+          if (nextBtn) nextBtn.disabled = false
+        })
+      })
     }
 
     // Setup navigation
-    const nextBtn = document.getElementById('next-question');
-    const prevBtn = document.getElementById('prev-question');
-    
+    const nextBtn = document.getElementById('next-question')
+    const prevBtn = document.getElementById('prev-question')
+
     if (nextBtn) {
-      nextBtn.addEventListener('click', () => this.nextQuestion());
+      nextBtn.addEventListener('click', () => this.nextQuestion())
     }
-    
+
     if (prevBtn) {
-      prevBtn.addEventListener('click', () => this.prevQuestion());
+      prevBtn.addEventListener('click', () => this.prevQuestion())
     }
   }
 }

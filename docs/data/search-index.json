@@ -10,12 +10,18 @@
       "estimatedMinutes": 20
     },
     {
-      "route": "#/theory/spring", 
+      "route": "#/theory/spring",
       "title": "Spring Framework",
       "excerpt": "Enterprise Java alkalmazás keretrendszer. Dependency Injection, Spring Boot, REST API, Spring Data JPA, Spring Security.",
-      "tags": ["spring", "spring-boot", "dependency-injection", "rest-api", "jpa"],
+      "tags": [
+        "spring",
+        "spring-boot",
+        "dependency-injection",
+        "rest-api",
+        "jpa"
+      ],
       "category": "theory",
-      "difficulty": "intermediate", 
+      "difficulty": "intermediate",
       "estimatedMinutes": 25
     },
     {
@@ -29,7 +35,7 @@
     },
     {
       "route": "#/theory/sql",
-      "title": "SQL & Adatbázis", 
+      "title": "SQL & Adatbázis",
       "excerpt": "Relációs adatbázisok, SQL lekérdezések, JOIN műveletek, indexelés, tranzakciók és normalizálás.",
       "tags": ["sql", "database", "join", "index", "transaction"],
       "category": "theory",
@@ -41,7 +47,7 @@
       "title": "Web Development",
       "excerpt": "HTML, CSS, JavaScript, HTTP protokoll, REST API-k, modern frontend keretrendszerek áttekintése.",
       "tags": ["web", "html", "css", "javascript", "http", "rest"],
-      "category": "theory", 
+      "category": "theory",
       "difficulty": "beginner",
       "estimatedMinutes": 18
     },
@@ -49,7 +55,12 @@
       "route": "#/theory/arch",
       "title": "Szoftver Architektúra",
       "excerpt": "Design patterns, mikroszolgáltatások, Clean Architecture, skálázhatóság és rendszer tervezési minták.",
-      "tags": ["architecture", "design-patterns", "microservices", "scalability"],
+      "tags": [
+        "architecture",
+        "design-patterns",
+        "microservices",
+        "scalability"
+      ],
       "category": "theory",
       "difficulty": "advanced",
       "estimatedMinutes": 30
@@ -60,7 +71,7 @@
       "excerpt": "Git workflow, branching stratégiák, merging, konfliktus feloldás és csapatmunka best practices.",
       "tags": ["git", "version-control", "branching", "workflow"],
       "category": "theory",
-      "difficulty": "beginner", 
+      "difficulty": "beginner",
       "estimatedMinutes": 15
     },
     {
@@ -86,7 +97,7 @@
       "title": "Spring REST API",
       "excerpt": "REST Controller implementation, JSON API, exception handling és Spring Boot konfigurálás.",
       "tags": ["spring", "rest-api", "spring-boot", "json", "controller"],
-      "category": "exercise", 
+      "category": "exercise",
       "difficulty": "intermediate",
       "estimatedMinutes": 45
     },
@@ -101,7 +112,7 @@
     },
     {
       "route": "#/exercises/sql/01-joins",
-      "title": "SQL JOIN Műveletek", 
+      "title": "SQL JOIN Műveletek",
       "excerpt": "INNER, LEFT, RIGHT JOIN implementáció, subquery-k, performance optimalizálás és index használat.",
       "tags": ["sql", "join", "inner-join", "left-join", "subquery"],
       "category": "exercise",
@@ -122,7 +133,7 @@
       "title": "Tranzakció Kezelés",
       "excerpt": "ACID tulajdonságok, isolation level-ek, deadlock prevention és rollback mechanizmusok.",
       "tags": ["sql", "transaction", "acid", "isolation", "deadlock"],
-      "category": "exercise", 
+      "category": "exercise",
       "difficulty": "intermediate",
       "estimatedMinutes": 30
     },
@@ -130,23 +141,35 @@
       "route": "#/exercises/web/01-es6-basics",
       "title": "ES6+ JavaScript Alapok",
       "excerpt": "Arrow functions, destructuring, modules, async/await és modern JavaScript syntaxok practice.",
-      "tags": ["javascript", "es6", "arrow-functions", "destructuring", "async-await"],
+      "tags": [
+        "javascript",
+        "es6",
+        "arrow-functions",
+        "destructuring",
+        "async-await"
+      ],
       "category": "exercise",
-      "difficulty": "beginner", 
+      "difficulty": "beginner",
       "estimatedMinutes": 25
     },
     {
       "route": "#/exercises/web/02-react-ts",
       "title": "React + TypeScript",
       "excerpt": "React Hooks implementáció, TypeScript types, component patterns és state management.",
-      "tags": ["react", "typescript", "hooks", "components", "state-management"],
+      "tags": [
+        "react",
+        "typescript",
+        "hooks",
+        "components",
+        "state-management"
+      ],
       "category": "exercise",
       "difficulty": "intermediate",
       "estimatedMinutes": 50
     },
     {
       "route": "#/exercises/web/03-accessibility",
-      "title": "Web Accessibility (a11y)", 
+      "title": "Web Accessibility (a11y)",
       "excerpt": "ARIA labels, keyboard navigation, screen reader támogatás és WCAG compliance implementáció.",
       "tags": ["accessibility", "aria", "wcag", "a11y", "keyboard-navigation"],
       "category": "exercise",
@@ -166,7 +189,13 @@
       "route": "#/exercises/arch/02-message-queues",
       "title": "Message Queue Patterns",
       "excerpt": "Kafka implementation, Event-Driven Architecture, message patterns és dead letter queue kezelés.",
-      "tags": ["architecture", "kafka", "message-queue", "event-driven", "messaging"],
+      "tags": [
+        "architecture",
+        "kafka",
+        "message-queue",
+        "event-driven",
+        "messaging"
+      ],
       "category": "exercise",
       "difficulty": "advanced",
       "estimatedMinutes": 50
@@ -175,9 +204,15 @@
       "route": "#/exercises/arch/03-circuit-breaker",
       "title": "Circuit Breaker Pattern",
       "excerpt": "Resilience patterns implementáció, Hystrix, fault tolerance és monitoring rendszerek.",
-      "tags": ["architecture", "circuit-breaker", "resilience", "fault-tolerance", "monitoring"],
+      "tags": [
+        "architecture",
+        "circuit-breaker",
+        "resilience",
+        "fault-tolerance",
+        "monitoring"
+      ],
       "category": "exercise",
-      "difficulty": "advanced", 
+      "difficulty": "advanced",
       "estimatedMinutes": 35
     },
     {
@@ -191,9 +226,15 @@
     },
     {
       "route": "#/quiz/spring",
-      "title": "Spring Kvíz", 
+      "title": "Spring Kvíz",
       "excerpt": "Spring Framework, Dependency Injection, Spring Boot és Spring Data JPA tudás felmérés.",
-      "tags": ["quiz", "spring", "spring-boot", "dependency-injection", "spring-data"],
+      "tags": [
+        "quiz",
+        "spring",
+        "spring-boot",
+        "dependency-injection",
+        "spring-data"
+      ],
       "category": "quiz",
       "difficulty": "intermediate",
       "estimatedMinutes": 10
@@ -204,7 +245,7 @@
       "excerpt": "Unit testing, JUnit 5, Mockito, TDD és testing best practices comprehensive kvíz.",
       "tags": ["quiz", "testing", "junit", "mockito", "tdd"],
       "category": "quiz",
-      "difficulty": "intermediate", 
+      "difficulty": "intermediate",
       "estimatedMinutes": 8
     },
     {
@@ -226,10 +267,16 @@
       "estimatedMinutes": 8
     },
     {
-      "route": "#/quiz/arch", 
+      "route": "#/quiz/arch",
       "title": "Architektúra Kvíz",
       "excerpt": "Design patterns, mikroszolgáltatások, Clean Architecture és system design principles teszt.",
-      "tags": ["quiz", "architecture", "design-patterns", "microservices", "system-design"],
+      "tags": [
+        "quiz",
+        "architecture",
+        "design-patterns",
+        "microservices",
+        "system-design"
+      ],
       "category": "quiz",
       "difficulty": "advanced",
       "estimatedMinutes": 12
@@ -239,7 +286,7 @@
       "title": "Git Kvíz",
       "excerpt": "Git parancsok, branching, merging, conflict resolution és verziókezelés workflow teszt.",
       "tags": ["quiz", "git", "version-control", "branching", "workflow"],
-      "category": "quiz", 
+      "category": "quiz",
       "difficulty": "beginner",
       "estimatedMinutes": 6
     },
@@ -254,7 +301,7 @@
     },
     {
       "route": "#/roadmap",
-      "title": "Tanulási Roadmap", 
+      "title": "Tanulási Roadmap",
       "excerpt": "Strukturált tanulási útvonal teljes software developer felkészüléshez időbecslésekkel.",
       "tags": ["roadmap", "learning-path", "study-plan", "career"],
       "category": "special",

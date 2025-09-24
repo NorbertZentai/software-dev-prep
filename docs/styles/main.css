@@ -534,27 +534,27 @@
     grid-template-columns: 1fr;
     gap: var(--space-md);
   }
-  
+
   .page-meta-header {
     padding: var(--space-lg);
   }
-  
+
   .page-title {
     font-size: var(--font-size-2xl);
   }
-  
+
   .goals-list {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-overview {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .starter-buttons {
     flex-direction: column;
   }
-  
+
   .starter-link {
     justify-content: center;
   }
