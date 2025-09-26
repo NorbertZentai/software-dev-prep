@@ -503,6 +503,33 @@ export class StorageManager {
       : defaultSettings
   }
 
+  // === Concept Reading Progress ===
+  markConceptRead(filePath, conceptAnchor, isRead = true) {
+    const conceptKey = `concept_${filePath}_${conceptAnchor}`
+    const progress = this.getProgress() || {}
+    if (isRead) {
+      progress[conceptKey] = {
+        route: conceptKey,
+        completionPercentage: 100,
+        lastVisited: new Date().toISOString(),
+        visits: 1,
+      }
+    } else {
+      delete progress[conceptKey]
+    }
+    localStorage.setItem(this.keys.PROGRESS, JSON.stringify(progress))
+  }
+
+  isConceptRead(filePath, conceptAnchor) {
+    const conceptKey = `concept_${filePath}_${conceptAnchor}`
+    const progress = this.getProgress()
+    return (
+      progress &&
+      progress[conceptKey] &&
+      progress[conceptKey].completionPercentage >= 100
+    )
+  }
+
   // === Clear Data ===
   clearAllData() {
     Object.values(this.keys).forEach((key) => {

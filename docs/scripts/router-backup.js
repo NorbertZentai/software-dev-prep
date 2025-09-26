@@ -1,34 +1,80 @@
 // === Hash-based Router ===
-import { QuizEngine } from './quiz.js'
-import { MarkdownRenderer } from './render.js'
-import { StorageManager } from './storage.js'
+import { renderTheoryPage } from './render.js';
 
-export class Router {
-  constructor() {
-    this.renderer = new MarkdownRenderer()
-    this.quizEngine = new QuizEngine()
-    this.storage = new StorageManager()
-    this.currentRoute = null
+// Route handlers
+const routes = {
+  // Theory routes using new renderTheoryPage function
+  '#/theory/java': () => renderTheoryPage('./theory/java.md'),
+  '#/theory/spring': () => renderTheoryPage('./theory/spring.md'),
+  '#/theory/testing': () => renderTheoryPage('./theory/testing.md'),
+  '#/theory/sql': () => renderTheoryPage('./theory/sql.md'),
+  '#/theory/web': () => renderTheoryPage('./theory/web.md'),
+  '#/theory/arch': () => renderTheoryPage('./theory/arch.md'),
+  '#/theory/git': () => renderTheoryPage('./theory/git.md'),
+  '#/theory/softskills': () => renderTheoryPage('./theory/softskills.md'),
+};
 
-    // Define all routes
-    this.routes = {
-      // Theory routes - new concept-based format
-      '#/theory/java': () =>
-        this.renderTheoryPage('./theory/java.md', 'Java Alapok'),
-      '#/theory/spring': () =>
-        this.renderTheoryPage('./theory/spring.md', 'Spring Framework'),
-      '#/theory/testing': () =>
-        this.renderTheoryPage('./theory/testing.md', 'Tesztelés'),
-      '#/theory/sql': () =>
-        this.renderTheoryPage('./theory/sql.md', 'SQL & Adatbázis'),
-      '#/theory/web': () =>
-        this.renderTheoryPage('./theory/web.md', 'Web Development'),
-      '#/theory/arch': () =>
-        this.renderTheoryPage('./theory/arch.md', 'Architektúra'),
-      '#/theory/git': () =>
-        this.renderTheoryPage('./theory/git.md', 'Git & Verziókezelés'),
-      '#/theory/softskills': () =>
-        this.renderTheoryPage('./theory/softskills.md', 'Soft Skills'),
+// Router initialization
+function initRouter() {
+  // Handle initial load
+  handleRoute();
+  
+  // Listen for hash changes
+  window.addEventListener('hashchange', handleRoute);
+  
+  // Listen for popstate (back/forward buttons)
+  window.addEventListener('popstate', handleRoute);
+}
+
+function handleRoute() {
+  const hash = window.location.hash || '#/';
+  const route = routes[hash];
+  
+  // Update body data attribute for CSS styling
+  document.body.setAttribute('data-route', hash);
+  
+  if (route) {
+    route();
+  } else {
+    // Default/home route
+    showHomePage();
+  }
+}
+
+function showHomePage() {
+  const sidebar = document.getElementById('theory-sidebar');
+  const content = document.getElementById('theory-content');
+  
+  sidebar.classList.add('hidden');
+  content.innerHTML = `
+    <div class="welcome-screen">
+      <h1>🎯 Üdvözöl a Software Developer Prep felkészítő platformon!</h1>
+      <p>
+        Válassz a bal oldali menüből, vagy használd a navigációs linkeket.
+      </p>
+      <div class="quick-actions">
+        <a href="#/roadmap" class="action-card">
+          <h3>🗺️ Tanulási Roadmap</h3>
+          <p>Tervezd meg a felkészülési útvonalad</p>
+        </a>
+        <a href="#/theory/java" class="action-card">
+          <h3>📚 Kezdj az elmélettel</h3>
+          <p>Java alapok és Spring Framework</p>
+        </a>
+        <a href="#/quiz/java" class="action-card">
+          <h3>🧩 Teszteld a tudásod</h3>
+          <p>Interaktív kvízek minden témához</p>
+        </a>
+      </div>
+    </div>`;
+}
+
+// Initialize router when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initRouter);
+} else {
+  initRouter();
+}
 
       // Exercise list routes
       '#/exercises/java': () =>

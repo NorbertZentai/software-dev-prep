@@ -6,58 +6,300 @@ A Java egy objektumorientált, platform-független programozási nyelv, amely a 
 
 ## Fogalmak
 
-- **JVM (Java Virtual Machine)** – A Java bytecode futtatási környezete, amely platform-függetlenséget biztosít.
-- **JDK (Java Development Kit)** – Fejlesztői eszközkészlet, amely tartalmazza a JVM-et, fordítót és eszközöket.
-- **JRE (Java Runtime Environment)** – Futtatási környezet, csak a JVM-et és alapvető osztálykönyvtárakat tartalmaz.
-- **Bytecode** – A Java fordító által generált köztes kód, amit a JVM értelmez.
-- **Garbage Collector** – Automatikus memóriakezelő rendszer, amely felszabadítja a nem használt objektumokat.
-- **Class** – Objektum sablon, amely definiálja az adatokat és metódusokat.
-- **Interface** – Szerződés, amely meghatározza, mely metódusokat kell implementálni.
-- **Package** – Névtér mechanizmus a kapcsolódó osztályok csoportosítására.
-- **Exception** – Futásidejű hibák kezelésére szolgáló mechanizmus.
-- **Collections Framework** – Beépített adatstruktúrák és algoritmusok (List, Set, Map).
-- **Thread** – Párhuzamos végrehajtási egység a multithreading támogatásához.
-- **Stream API** – Funkcionális stílusú adatfeldolgozás Java 8-tól.
+### JVM (Java Virtual Machine)
+A Java bytecode futtatási környezete, amely platform-függetlenséget biztosít. A JVM értelmezi a bytecode-ot és natív gépi kódra fordítja futás közben (Just-In-Time compilation).
 
-## Interjúkérdések
+**Példa:**
+```bash
+# Java forráskód fordítása bytecode-dá
+javac HelloWorld.java    # -> HelloWorld.class (bytecode)
 
-- **Mi a különbség a JDK, JRE és JVM között?** — *JDK fejlesztéshez, JRE futtatáshoz, JVM a bytecode futtatási környezete.*
+# Bytecode futtatása JVM-en
+java HelloWorld         # JVM értelmezi a bytecode-ot
+```
 
-- **Hogyan működik a Garbage Collection Java-ban?** — *Automatikusan felszabadítja a nem referált objektumokat, különböző algoritmusokkal (Serial, Parallel, G1).*
+Magyarázat: A JVM biztosítja, hogy ugyanaz a .class fájl Windows, Linux és macOS rendszereken is futjon anélkül, hogy újrafordítanánk.
 
-- **Mi az autoboxing és unboxing?** — *Primitív típusok automatikus konverziója wrapper osztályokká és vissza.*
+### JDK (Java Development Kit)
+Fejlesztői eszközkészlet, amely tartalmazza a JVM-et, fordítót (javac) és fejlesztői eszközöket. Minden Java fejlesztéshez szükséges.
 
-- **Mik az equals() és hashCode() szabályai?** — *Ha equals() true, hashCode() egyenlő kell legyen. HashCode konzisztens legyen equals()-el.*
+**Példa:**
+```bash
+# JDK tartalmazza ezeket az eszközöket:
+javac    # Java compiler
+java     # Java runtime
+javadoc  # Documentation generator
+jar      # Archive tool
+```
 
-- **Mi a különbség final, finally és finalize között?** — *final - konstans/öröklés tiltás, finally - try-catch blokk után mindig fut, finalize - GC előtti cleanup.*
+Magyarázat: JDK = JRE + fejlesztői eszközök. Ha csak futtatni akarod a Java programokat, elég a JRE, de fejlesztéshez JDK kell.
 
-- **Hogyan működnek a Java Streams?** — *Lazy evaluation, intermediate és terminal műveletek láncolt végrehajtása.*
+### JRE (Java Runtime Environment)
+Futtatási környezet, csak a JVM-et és alapvető osztálykönyvtárakat tartalmaz. Csak Java alkalmazások futtatására alkalmas.
 
-- **Mi a különbség abstract class és interface között?** — *Abstract class lehet konstruktor és implementáció, interface csak szerződés (Java 8-tól default metódusok).*
+**Példa:**
+```java
+// Ez a program csak JRE-vel is futtatható
+public class SimpleApp {
+    public static void main(String[] args) {
+        System.out.println("Hello World!");
+    }
+}
+```
 
-- **Mik a checked és unchecked exception-ök?** — *Checked - compile-time ellenőrzés (IOException), unchecked - runtime (RuntimeException).*
+Magyarázat: JRE nem tartalmazza a javac fordítót, ezért új .java fájlokat nem tudsz lefordítani vele.
 
-- **Hogyan működik a String pool?** — *String literálok egy közös memóriaterületen tárolódnak, ugyanaz a szöveg egy objektum.*
+### Bytecode
+A Java fordító által generált köztes kód, amit a JVM értelmez. Platform-független bináris formátum.
 
-- **Mi a lambda expression és hogyan használod?** — *Rövid névtelen funkció szintaxis, főleg Stream API-val és funkcionális interfészekkel.*
+**Példa:**
+```java
+// Java forráskód
+public class Example {
+    public static void main(String[] args) {
+        int x = 42;
+        System.out.println(x);
+    }
+}
 
-- **Mik a generics előnyei?** — *Típusbiztonság compile-time-ban, kód újrafelhasználhatóság, ClassCastException elkerülése.*
+// Bytecode (javap -c Example kimenet részlete):
+// iconst_42      // Push 42 onto stack
+// istore_1       // Store in local variable 1
+// getstatic      // Get System.out reference
+// iload_1        // Load variable 1
+// invokevirtual  // Call println method
+```
 
-- **Hogyan implementálnál Singleton pattern-t Java-ban?** — *Enum-mal legbiztonságosabb, vagy synchronized lazy initialization, vagy eager initialization.*
+Magyarázat: A bytecode stack-alapú instrukciók sorozata, amit a JVM hajtja végre.
 
-## Példák
+### Garbage Collector
+Automatikus memóriakezelő rendszer, amely felszabadítja a nem használt objektumokat. Különböző algoritmusokat használhat (Serial, Parallel, G1).
 
-### Példa 1 – Alapvető OOP minta
+**Példa:**
+```java
+public class GCExample {
+    public static void main(String[] args) {
+        // Objektumok létrehozása
+        String str1 = new String("Hello");
+        String str2 = new String("World");
 
+        // str1 referencia felülírása
+        str1 = null; // "Hello" objektum GC kandidát lesz
+
+        // GC kényszerítése (nem ajánlott production-ben)
+        System.gc();
+    }
+}
+```
+
+Magyarázat: A GC automatikusan felszabadítja azokat az objektumokat, amelyekre nincs több referencia.
+
+### Class
+Objektum sablon, amely definiálja az adatokat (mezők) és metódusokat. Az objektumok egy osztály példányai.
+
+**Példa:**
 ```java
 public class BankAccount {
+    // Mezők (instance variables)
     private double balance;
     private final String accountNumber;
 
+    // Konstruktor
     public BankAccount(String accountNumber, double initialBalance) {
         this.accountNumber = accountNumber;
         this.balance = initialBalance;
     }
+
+    // Metódusok
+    public void deposit(double amount) {
+        if (amount > 0) {
+            this.balance += amount;
+        }
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+}
+```
+
+Magyarázat: A BankAccount osztály egy sablon, amiből konkrét számlaobjektumokat hozhatunk létre.
+
+### Interface
+Szerződés, amely meghatározza, mely metódusokat kell implementálni. Java 8-tól tartalmazhat default és static metódusokat is.
+
+**Példa:**
+```java
+// Interface definíció
+public interface Drawable {
+    void draw(); // abstract method
+
+    // Default method (Java 8+)
+    default void print() {
+        System.out.println("Printing...");
+    }
+}
+
+// Interface implementáció
+public class Circle implements Drawable {
+    @Override
+    public void draw() {
+        System.out.println("Drawing a circle");
+    }
+}
+```
+
+Magyarázat: Az interface biztosítja, hogy minden implementáló osztály rendelkezzen a meghatározott metódusokkal.
+
+### Package
+Névtér mechanizmus a kapcsolódó osztályok csoportosítására. Segíti a kód szervezését és névütközések elkerülését.
+
+**Példa:**
+```java
+// com/example/model/User.java
+package com.example.model;
+
+public class User {
+    private String name;
+}
+
+// com/example/service/UserService.java
+package com.example.service;
+
+import com.example.model.User;
+
+public class UserService {
+    public void processUser(User user) {
+        // ...
+    }
+}
+```
+
+Magyarázat: A package szerkezet tükrözi a könyvtárszerkezetet és logikusan csoportosítja az osztályokat.
+
+### Exception
+Futásidejű hibák kezelésére szolgáló mechanizmus. Checked és unchecked típusokra osztható.
+
+**Példa:**
+```java
+public class ExceptionExample {
+    public void readFile(String filename) throws IOException {
+        // Checked exception - kötelező kezelni
+        FileReader file = new FileReader(filename);
+    }
+
+    public void divide(int a, int b) {
+        if (b == 0) {
+            // Unchecked exception - runtime error
+            throw new IllegalArgumentException("Division by zero");
+        }
+        int result = a / b;
+    }
+}
+```
+
+Magyarázat: Az exception mechanizmus lehetővé teszi a hibák strukturált kezelését try-catch blokkok segítségével.
+
+### Collections Framework
+Beépített adatstruktúrák és algoritmusok (List, Set, Map). Egységes interfészt biztosít különböző adatstruktúrákhoz.
+
+**Példa:**
+```java
+import java.util.*;
+
+public class CollectionsExample {
+    public static void main(String[] args) {
+        // List - rendezett, duplikátumokat enged
+        List<String> names = new ArrayList<>();
+        names.add("Anna");
+        names.add("Béla");
+        names.add("Anna"); // duplikátum OK
+
+        // Set - egyedi elemek
+        Set<String> uniqueNames = new HashSet<>(names);
+        System.out.println(uniqueNames); // [Anna, Béla]
+
+        // Map - kulcs-érték párok
+        Map<String, Integer> ages = new HashMap<>();
+        ages.put("Anna", 25);
+        ages.put("Béla", 30);
+    }
+}
+```
+
+Magyarázat: A Collections Framework egységes API-t biztosít különböző adatstruktúrákhoz, algoritmusokkal együtt.
+
+### Thread
+Párhuzamos végrehajtási egység a multithreading támogatásához. Lehetővé teszi egyidejű feladatvégrehajtást.
+
+**Példa:**
+```java
+public class ThreadExample {
+    public static void main(String[] args) {
+        // Thread létrehozása Runnable-lel
+        Thread worker = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                System.out.println("Worker: " + i);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        worker.start(); // Thread indítása
+
+        // Main thread folytatása
+        System.out.println("Main thread continues...");
+    }
+}
+```
+
+Magyarázat: A Thread lehetővé teszi párhuzamos végrehajtást, de figyelni kell a thread-safety-re és szinkronizációra.
+
+### Stream API
+Funkcionális stílusú adatfeldolgozás Java 8-tól. Lehetővé teszi adatok deklaratív feldolgozását lazy evaluation-nel.
+
+**Példa:**
+```java
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class StreamExample {
+    public static void main(String[] args) {
+        List<String> names = Arrays.asList("Anna", "Béla", "Cecil", "Dóra", "Albert");
+
+        // Funkcionális adatfeldolgozás
+        List<String> result = names.stream()
+            .filter(name -> name.startsWith("A"))     // Szűrés
+            .map(String::toUpperCase)                  // Transzformáció
+            .sorted()                                  // Rendezés
+            .collect(Collectors.toList());             // Gyűjtés
+
+        System.out.println(result); // [ALBERT, ANNA]
+
+        // Aggregáció
+        long count = names.stream()
+            .filter(name -> name.length() > 4)
+            .count();
+
+        System.out.println("Long names: " + count); // 2
+    }
+}
+```
+
+Magyarázat: A Stream API lazy evaluation-t használ - a műveletek csak a terminal operation (pl. collect) hívásakor hajtódnak végre.
+
+### OOP Alapelvek
+
+#### Encapsulation (Enkapszuláció)
+Az objektum belső állapotának elrejtése és csak definiált interfészeken keresztüli hozzáférés biztosítása.
+
+**Példa:**
+```java
+public class BankAccount {
+    private double balance; // private - nem érhető el kívülről
 
     public void deposit(double amount) {
         if (amount > 0) {
@@ -67,26 +309,96 @@ public class BankAccount {
         }
     }
 
-    public void withdraw(double amount) {
-        if (amount > 0 && amount <= balance) {
-            this.balance -= amount;
-        } else {
-            throw new IllegalArgumentException("Invalid withdrawal amount");
-        }
-    }
-
     public double getBalance() {
-        return balance;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
+        return balance; // controlled access
     }
 }
 ```
 
-### Példa 2 – Gyakori hiba: equals() és hashCode() nem konzisztens
+Magyarázat: A balance mező private, csak a definiált metódusokon keresztül érhető el, így biztosítva az adatok integritását.
 
+#### Inheritance (Öröklődés)
+Új osztályok létrehozása meglévő osztályok alapján, ahol a gyermek osztály örökli a szülő tulajdonságait és metódusait.
+
+**Példa:**
+```java
+public class Vehicle {
+    protected String brand;
+    protected int year;
+
+    public void start() {
+        System.out.println("Vehicle started");
+    }
+}
+
+public class Car extends Vehicle {
+    private int doors;
+
+    public Car(String brand, int year, int doors) {
+        this.brand = brand; // örökölt mező
+        this.year = year;   // örökölt mező
+        this.doors = doors;
+    }
+
+    @Override
+    public void start() {
+        System.out.println("Car engine started");
+    }
+}
+```
+
+Magyarázat: A Car osztály örökli a Vehicle tulajdonságait és felüldefiniálhatja a metódusokat.
+
+#### Polymorphism (Polimorfizmus)
+Ugyanazon interfész különböző implementációi, ahol futásidőben dől el, melyik konkrét implementáció hívódik meg.
+
+**Példa:**
+```java
+public abstract class Shape {
+    public abstract double getArea();
+}
+
+public class Circle extends Shape {
+    private double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+}
+
+public class Rectangle extends Shape {
+    private double width, height;
+
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    public double getArea() {
+        return width * height;
+    }
+}
+
+// Polimorfikus használat
+public class ShapeCalculator {
+    public void printArea(Shape shape) {
+        System.out.println("Area: " + shape.getArea()); // futásidőben dől el melyik getArea() hívódik
+    }
+}
+```
+
+Magyarázat: Ugyanaz a `Shape` referencia különböző típusú objektumokra mutathat, és futásidőben dől el, melyik implementáció hívódik.
+
+###Equals és HashCode
+Ha felüldefiniáljuk az equals() metódust, kötelező a hashCode() metódust is felüldefiniálni, hogy konzisztensek legyenek.
+
+**Példa:**
 ```java
 // HIBÁS IMPLEMENTÁCIÓ
 public class Person {
@@ -127,6 +439,155 @@ public class Person {
 }
 ```
 
+Magyarázat: Az equals() és hashCode() szabálya: ha két objektum equals()-el egyenlő, akkor hashCode()-uk is egyenlő kell legyen.
+
+### Lambda Expressions
+Rövid névtelen funkciók, amelyek főleg funkcionális interfészekkel és Stream API-val használatosak Java 8-tól.
+
+**Példa:**
+```java
+import java.util.*;
+import java.util.function.*;
+
+public class LambdaExample {
+    public static void main(String[] args) {
+        List<String> names = Arrays.asList("Anna", "Béla", "Cecil");
+
+        // Régi módszer - Anonymous Inner Class
+        names.sort(new Comparator<String>() {
+            @Override
+            public int compare(String a, String b) {
+                return a.compareTo(b);
+            }
+        });
+
+        // Lambda expression
+        names.sort((a, b) -> a.compareTo(b));
+
+        // Method reference (még rövidebb)
+        names.sort(String::compareTo);
+
+        // Funkcionális interfészek használata
+        Predicate<String> startsWithA = name -> name.startsWith("A");
+        Function<String, Integer> getLength = String::length;
+        Consumer<String> printer = System.out::println;
+
+        names.stream()
+            .filter(startsWithA)
+            .map(getLength)
+            .forEach(System.out::println);
+    }
+}
+```
+
+Magyarázat: A lambda kifejezések tömör szintaxist biztosítanak funkcionális interfészek implementálásához.
+
+### Generics
+Típusparaméterek használata az osztályokban és metódusokban, amely fordítási idejű típusbiztonságot és kód újrafelhasználhatóságot biztosít.
+
+**Példa:**
+```java
+// Generikus osztály
+public class Box<T> {
+    private T content;
+
+    public void put(T item) {
+        this.content = item;
+    }
+
+    public T get() {
+        return content;
+    }
+}
+
+// Generikus metódus
+public class Utility {
+    public static <T> void swap(T[] array, int i, int j) {
+        T temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
+// Használat
+public class GenericsExample {
+    public static void main(String[] args) {
+        Box<String> stringBox = new Box<>();
+        stringBox.put("Hello");
+        String value = stringBox.get(); // No casting needed!
+
+        Box<Integer> intBox = new Box<>();
+        intBox.put(42);
+        // intBox.put("Hello"); // Compile error!
+
+        String[] names = {"Anna", "Béla"};
+        Utility.swap(names, 0, 1);
+    }
+}
+```
+
+Magyarázat: A generics típusbiztonságot nyújtanak fordítási időben és eliminálják a explicit casting szükségességét.
+
+### Autoboxing és Unboxing
+Primitív típusok automatikus konverziója wrapper osztályokká (autoboxing) és vissza (unboxing).
+
+**Példa:**
+```java
+public class AutoboxingExample {
+    public static void main(String[] args) {
+        // Autoboxing - primitív -> wrapper
+        int primitive = 42;
+        Integer wrapper = primitive;  // Automatically: Integer.valueOf(primitive)
+
+        // Unboxing - wrapper -> primitív
+        Integer wrapperInt = 100;
+        int backToPrimitive = wrapperInt;  // Automatically: wrapperInt.intValue()
+
+        // Collections csak objektumokat tárolhatnak
+        List<Integer> numbers = new ArrayList<>();
+        numbers.add(1);        // autoboxing: numbers.add(Integer.valueOf(1))
+        numbers.add(2);
+        numbers.add(3);
+
+        int sum = 0;
+        for (Integer num : numbers) {
+            sum += num;        // unboxing: sum += num.intValue()
+        }
+
+        // Vigyázat: null pointer exception lehetősége
+        Integer nullWrapper = null;
+        // int danger = nullWrapper;  // NullPointerException!
+    }
+}
+```
+
+Magyarázat: Az autoboxing/unboxing kényelmes, de figyelni kell a null értékekre és a teljesítmény hatásokra.
+
+## Interjúkérdések
+
+- **Mi a különbség a JDK, JRE és JVM között?** — *JDK fejlesztéshez, JRE futtatáshoz, JVM a bytecode futtatási környezete.*
+
+- **Hogyan működik a Garbage Collection Java-ban?** — *Automatikusan felszabadítja a nem referált objektumokat, különböző algoritmusokkal (Serial, Parallel, G1).*
+
+- **Mi az autoboxing és unboxing?** — *Primitív típusok automatikus konverziója wrapper osztályokká és vissza.*
+
+- **Mik az equals() és hashCode() szabályai?** — *Ha equals() true, hashCode() egyenlő kell legyen. HashCode konzisztens legyen equals()-el.*
+
+- **Mi a különbség final, finally és finalize között?** — *final - konstans/öröklés tiltás, finally - try-catch blokk után mindig fut, finalize - GC előtti cleanup.*
+
+- **Hogyan működnek a Java Streams?** — *Lazy evaluation, intermediate és terminal műveletek láncolt végrehajtása.*
+
+- **Mi a különbség abstract class és interface között?** — *Abstract class lehet konstruktor és implementáció, interface csak szerződés (Java 8-tól default metódusok).*
+
+- **Mik a checked és unchecked exception-ök?** — *Checked - compile-time ellenőrzés (IOException), unchecked - runtime (RuntimeException).*
+
+- **Hogyan működik a String pool?** — *String literálok egy közös memóriaterületen tárolódnak, ugyanaz a szöveg egy objektum.*
+
+- **Mi a lambda expression és hogyan használod?** — *Rövid névtelen funkció szintaxis, főleg Stream API-val és funkcionális interfészekkel.*
+
+- **Mik a generics előnyei?** — *Típusbiztonság compile-time-ban, kód újrafelhasználhatóság, ClassCastException elkerülése.*
+
+- **Hogyan implementálnál Singleton pattern-t Java-ban?** — *Enum-mal legbiztonságosabb, vagy synchronized lazy initialization, vagy eager initialization.*
 ## Gyakorlati feladat (mini)
 
 1. Hozz létre egy `Vehicle` abstract osztályt `brand`, `model` mezőkkel
@@ -150,295 +611,3 @@ public class Person {
 - [Java: The Complete Reference](https://www.oracle.com/java/technologies/javase/javase-tech-doc.html) - Részletes referencia
 - [Baeldung Java Tutorials](https://www.baeldung.com/java-tutorial) - Gyakorlati példák
 - [OpenJDK Project](https://openjdk.org/) - Nyílt forráskódú Java implementáció
-- **Primitive**: int, double, boolean, char - stack-en tárolva, érték szerinti átadás
-- **Reference**: Object, String, Arrays - heap-en tárolva, referencia szerinti átadás
-- **Autoboxing/Unboxing**: int ↔ Integer automatikus konverzió
-
-### Garbage Collection
-- **Automatikus memóriakezelés**: Nem referált objektumok automatikus törlése
-- **Generational GC**: Young (Eden, Survivor), Old Generation optimalizáció
-- **GC Algorithms**: Serial, Parallel, G1, ZGC - különböző teljesítmény karakterisztikák
-
-## Gyakori kérdések
-
-**Mi a különbség == és equals() között?**
-A == referenciákat hasonlít össze (ugyanaz az objektum?), az equals() tartalmat (logikailag egyenlő?). String esetén mindig equals()-t használj.
-
-**Mikor használj StringBuilder vs String concatenation?**
-String immutable, concat új objektumot hoz létre. StringBuilder mutálható buffer - loops-ban és sok concatenation esetén hatékonyabb.
-
-**Mi az interface vs abstract class különbség?**
-Interface: multiple inheritance, csak konstansok és default/static metódusok. Abstract class: single inheritance, lehet instance változó és konstruktor.
-
-**Hogyan működik a try-with-resources?**
-Automatikusan lezárja az AutoCloseable resource-okat, még exception esetén is. Tisztább kód, nincs finally block szükséglet.
-
-**Mi a static kulcsszó szerepe?**
-Class-hoz tartozik, nem instance-hoz. Static method nem férhet hozzá instance változókhoz. Static block class loading-kor fut le egyszer.
-
-### Objektumorientált programozás
-
-#### 1. Osztályok és objektumok
-
-```java
-public class Person {
-    private String name;
-    private int age;
-
-    // Konstruktor
-    public Person(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
-
-    // Getter és Setter metódusok
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-}
-```
-
-#### 2. Öröklődés (Inheritance)
-
-```java
-public class Employee extends Person {
-    private String jobTitle;
-
-    public Employee(String name, int age, String jobTitle) {
-        super(name, age); // Szülő konstruktor hívása
-        this.jobTitle = jobTitle;
-    }
-
-    public String getJobTitle() {
-        return jobTitle;
-    }
-}
-```
-
-#### 3. Polimorfizmus
-
-```java
-public abstract class Shape {
-    public abstract double getArea();
-}
-
-public class Circle extends Shape {
-    private double radius;
-
-    public Circle(double radius) {
-        this.radius = radius;
-    }
-
-    @Override
-    public double getArea() {
-        return Math.PI * radius * radius;
-    }
-}
-```
-
-#### 4. Enkapszuláció
-
-Az osztály belső állapotának elrejtése és csak definiált interfészeken keresztüli hozzáférés biztosítása.
-
-## Adattípusok
-
-### Primitív típusok
-
-| Típus | Méret | Tartomány | Alapértelmezett |
-|-------|-------|-----------|-----------------|
-| byte | 8 bit | -128 to 127 | 0 |
-| short | 16 bit | -32,768 to 32,767 | 0 |
-| int | 32 bit | -2³¹ to 2³¹-1 | 0 |
-| long | 64 bit | -2⁶³ to 2⁶³-1 | 0L |
-| float | 32 bit | IEEE 754 | 0.0f |
-| double | 64 bit | IEEE 754 | 0.0d |
-| boolean | 1 bit | true/false | false |
-| char | 16 bit | Unicode | '\u0000' |
-
-### Reference típusok
-
-- **String**: szöveg kezelése
-- **Arrays**: tömbök
-- **Objects**: objektumok
-
-## Vezérlési szerkezetek
-
-### Feltételes utasítások
-
-```java
-if (condition) {
-    // kód
-} else if (anotherCondition) {
-    // kód
-} else {
-    // kód
-}
-
-// Ternary operátor
-String result = (age >= 18) ? "felnőtt" : "kiskorú";
-```
-
-### Ciklusok
-
-```java
-// For ciklus
-for (int i = 0; i < 10; i++) {
-    System.out.println(i);
-}
-
-// Enhanced for ciklus
-int[] numbers = {1, 2, 3, 4, 5};
-for (int number : numbers) {
-    System.out.println(number);
-}
-
-// While ciklus
-while (condition) {
-    // kód
-}
-
-// Do-while ciklus
-do {
-    // kód
-} while (condition);
-```
-
-## Exception Handling
-
-### Try-catch-finally
-
-```java
-try {
-    // Potenciálisan hibás kód
-    int result = 10 / 0;
-} catch (ArithmeticException e) {
-    System.out.println("Nullával osztás hiba: " + e.getMessage());
-} catch (Exception e) {
-    System.out.println("Általános hiba: " + e.getMessage());
-} finally {
-    // Mindig lefut
-    System.out.println("Cleanup kód");
-}
-```
-
-### Checked vs Unchecked Exceptions
-
-- **Checked**: Fordítási időben ellenőrzött (IOException, SQLException)
-- **Unchecked**: Futási időben jelentkezik (RuntimeException, NullPointerException)
-
-## Collections Framework
-
-### Főbb interfészek
-
-- **List**: Rendezett, indexelt gyűjtemény (ArrayList, LinkedList)
-- **Set**: Egyedi elemek gyűjteménye (HashSet, TreeSet)
-- **Map**: Kulcs-érték párok (HashMap, TreeMap)
-
-```java
-// List példa
-List<String> names = new ArrayList<>();
-names.add("Anna");
-names.add("Béla");
-
-// Set példa
-Set<Integer> uniqueNumbers = new HashSet<>();
-uniqueNumbers.add(1);
-uniqueNumbers.add(2);
-
-// Map példa
-Map<String, Integer> ages = new HashMap<>();
-ages.put("Anna", 25);
-ages.put("Béla", 30);
-```
-
-## Stream API (Java 8+)
-
-```java
-List<String> names = Arrays.asList("Anna", "Béla", "Cecil", "Dóra");
-
-List<String> result = names.stream()
-    .filter(name -> name.startsWith("A"))
-    .map(String::toUpperCase)
-    .collect(Collectors.toList());
-```
-
-## Lambda kifejezések
-
-```java
-// Régi módszer
-Comparator<String> oldComparator = new Comparator<String>() {
-    @Override
-    public int compare(String a, String b) {
-        return a.compareTo(b);
-    }
-};
-
-// Lambda kifejezéssel
-Comparator<String> newComparator = (a, b) -> a.compareTo(b);
-
-// Még rövidebb
-Comparator<String> shortComparator = String::compareTo;
-```
-
-## Best Practices
-
-### 1. Naming conventions
-- Osztályok: PascalCase (Person, BankAccount)
-- Metódusok és változók: camelCase (getName, totalAmount)
-- Konstansok: UPPER_SNAKE_CASE (MAX_SIZE, DEFAULT_VALUE)
-
-### 2. SOLID alapelvek
-
-- **S**ingle Responsibility Principle
-- **O**pen/Closed Principle
-- **L**iskov Substitution Principle
-- **I**nterface Segregation Principle
-- **D**ependency Inversion Principle
-
-### 3. Clean Code
-
-```java
-// Rossz
-public void processData(List<String> d) {
-    for (String s : d) {
-        if (s.length() > 5) {
-            System.out.println(s.toUpperCase());
-        }
-    }
-}
-
-// Jó
-public void printLongNamesInUpperCase(List<String> names) {
-    for (String name : names) {
-        if (isNameLong(name)) {
-            System.out.println(name.toUpperCase());
-        }
-    }
-}
-
-private boolean isNameLong(String name) {
-    return name.length() > 5;
-}
-```
-
-## Gyakori hibák
-
-1. **NullPointerException**: null referencia használata
-2. **Memory leaks**: objektumok nem megfelelő felszabadítása
-3. **String concatenation**: StringBuilder használata ciklusokban
-4. **== vs equals()**: referencia vs tartalom összehasonlítás
-5. **Resource management**: try-with-resources használata
-
-## Következő lépések
-
-- [Spring Framework](./spring.md)
-- [Tesztelés Java-ban](./testing.md)
-- [Java gyakorlatok](../exercises/java/)
-
----
-
-*Ez az anyag a Java alapjait tárgyalja. A részletesebb témákért tekintsd meg a kapcsolódó gyakorlatokat és kvízeket!*
