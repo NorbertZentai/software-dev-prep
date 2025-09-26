@@ -175,6 +175,9 @@ export class Router {
     // Update page title
     this.updatePageTitle(route)
 
+    // Update active navigation link
+    this.updateActiveNavigation(route)
+
     // Manage TOC toggle button visibility
     this.manageTocToggle(route)
 
@@ -696,6 +699,27 @@ export class Router {
 
     const title = routeTitles[hash] || 'Software Developer Prep'
     document.title = `${title} - Software Developer Prep`
+  }
+
+  updateActiveNavigation(route) {
+    // Remove active class from all navigation links
+    const allNavLinks = document.querySelectorAll('.nav-group a')
+    allNavLinks.forEach((link) => {
+      link.classList.remove('active')
+      link.removeAttribute('aria-current')
+    })
+
+    // Find and activate the current link
+    const currentLink = document.querySelector(`a[href="${route}"]`)
+    if (currentLink) {
+      currentLink.classList.add('active')
+      currentLink.setAttribute('aria-current', 'page')
+    }
+
+    // Trigger active menu manager update if available
+    if (window.activeMenuManager) {
+      window.activeMenuManager.refresh()
+    }
   }
 
   // Public method for programmatic navigation

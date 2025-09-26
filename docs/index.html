@@ -178,6 +178,11 @@
     </aside>
 
     <main id="app" class="main-content">
+      <!-- Theory-specific layout elements -->
+      <aside id="theory-sidebar" class="theory-toc hidden"></aside>
+      <section id="theory-content" class="theory-main"></section>
+
+      <!-- Default welcome screen -->
       <div class="welcome-screen">
         <h1>🎯 Üdvözöl a Software Developer Prep felkészítő platformon!</h1>
         <p>
@@ -247,6 +252,12 @@
       }
     </script>
     -->
+
+    <!-- Theme Management -->
+    <script type="module" src="./scripts/theme.js"></script>
+
+    <!-- Active Menu Management -->
+    <script type="module" src="./scripts/active-menu.js"></script>
 
     <!-- Main App Script -->
     <script type="module" src="./scripts/app.js"></script>

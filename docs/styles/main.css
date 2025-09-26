@@ -2,19 +2,19 @@
 
 /* CSS Custom Properties (Variables) */
 :root {
-  /* Color Scheme - Dark Mode Default */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-accent: #334155;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  /* Color Scheme - Light Mode Default */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-accent: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
   --accent-primary: #3b82f6;
   --accent-secondary: #10b981;
   --accent-warning: #f59e0b;
   --accent-danger: #ef4444;
-  --border-color: #475569;
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
 
   /* Spacing */
   --space-xs: 0.25rem;
@@ -46,6 +46,19 @@
   /* Transition durations */
   --transition-fast: 150ms ease-in-out;
   --transition-normal: 250ms ease-in-out;
+}
+
+/* Dark theme */
+[data-theme='dark'] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-accent: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #475569;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
 
 /* === CARD GRID LAYOUTS === */
 .card-grid {
@@ -191,7 +204,11 @@
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
   transition: width var(--transition-normal);
   border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
 }
@@ -358,7 +375,7 @@
   border-color: var(--accent-primary);
 }
 
-.checklist-item input[type="checkbox"] {
+.checklist-item input[type='checkbox'] {
   margin: 0;
   transform: scale(1.2);
 }
@@ -393,7 +410,11 @@
 
 .reading-progress {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
   width: 0%;
   transition: width 0.1s ease;
 }
@@ -480,7 +501,11 @@
 
 .progress-bar-container .progress-bar .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
 }
 
 .progress-text {
@@ -1183,7 +1208,7 @@ noscript {
   box-sizing: border-box;
 }
 
-.theory-sidebar {
+#theory-sidebar {
   background: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--border-color);
@@ -1194,30 +1219,16 @@ noscript {
   height: calc(100vh - var(--header-height) - 2 * var(--space-md));
   flex-shrink: 0;
   z-index: 10;
-}
-
-.theory-sidebar .toc {
   padding: var(--space-lg);
-  height: 100%;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-color) transparent;
+  overflow-x: hidden;
 }
 
-.theory-sidebar .toc::-webkit-scrollbar {
-  width: 6px;
+#theory-sidebar.hidden {
+  display: none;
 }
 
-.theory-sidebar .toc::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.theory-sidebar .toc::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 3px;
-}
-
-.theory-content {
+#theory-content {
   position: fixed;
   top: calc(var(--header-height) + var(--space-md));
   left: calc(var(--sidebar-width) + 280px + 3 * var(--space-lg));
@@ -1230,6 +1241,15 @@ noscript {
   overflow-y: auto;
   overflow-x: hidden;
   max-width: none;
+}
+
+/* Theory TOC Styles */
+.theory-toc h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+  border-bottom: 2px solid var(--accent-primary);
+  padding-bottom: var(--space-sm);
 }
 
 /* TOC Styles */
@@ -1247,6 +1267,7 @@ noscript {
 #toc-search {
   width: 100%;
   padding: var(--space-sm);
+  margin-bottom: var(--space-md);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   background: var(--bg-primary);
@@ -1267,7 +1288,7 @@ noscript {
 .toc-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: var(--space-md) 0 0 0;
 }
 
 .toc-list li {
@@ -1275,32 +1296,29 @@ noscript {
 }
 
 .toc-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: block;
   width: 100%;
-  padding: var(--space-sm);
-  border: none;
-  border-radius: var(--border-radius);
-  background: transparent;
+  padding: var(--space-sm) var(--space-md);
   color: var(--text-secondary);
   text-decoration: none;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  line-height: 1.4;
   font-size: var(--font-size-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-normal);
 }
 
 .toc-link:hover {
   background: var(--bg-accent);
   color: var(--text-primary);
+  transform: translateX(4px);
 }
 
 .toc-link.active {
   background: var(--accent-primary);
   color: white;
-  border-left: 3px solid var(--accent-secondary);
   font-weight: 600;
+  border-left: 4px solid var(--accent-secondary);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
 .toc-link:focus {
@@ -1345,7 +1363,11 @@ noscript {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
   border-radius: 2px;
   transition: width 0.3s ease;
 }
@@ -1363,7 +1385,11 @@ noscript {
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 var(--space-md) 0;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1618,3 +1644,50 @@ noscript {
   .content-container {
     max-width: none;
   }
+}
+
+/* === ENHANCED ACTIVE NAVIGATION STYLES === */
+/* Robust active state for sidebar navigation */
+.sidebar .nav-group a.active,
+.sidebar .nav-group a[aria-current='page'],
+.sidebar .nav-group a[aria-current='true'] {
+  color: var(--accent-primary) !important;
+  background-color: var(--bg-accent) !important;
+  font-weight: 500 !important;
+  position: relative;
+}
+
+/* Maintain active state styling on hover */
+.sidebar .nav-group a.active:hover,
+.sidebar .nav-group a[aria-current='page']:hover,
+.sidebar .nav-group a[aria-current='true']:hover {
+  color: var(--accent-primary) !important;
+  background-color: var(--bg-accent) !important;
+  transform: translateX(4px);
+}
+
+/* Enhanced active state for theory TOC */
+.theory-toc .toc-link.active,
+.theory-toc .toc-link[aria-current='true'],
+.theory-toc .toc-link[aria-current='location'],
+.theory-sidebar .toc-link.active,
+.theory-sidebar .toc-link[aria-current='true'],
+.theory-sidebar .toc-link[aria-current='location'] {
+  background: var(--accent-primary) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-left: 4px solid var(--accent-secondary) !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Maintain active state styling on hover for TOC */
+.theory-toc .toc-link.active:hover,
+.theory-toc .toc-link[aria-current='true']:hover,
+.theory-toc .toc-link[aria-current='location']:hover,
+.theory-sidebar .toc-link.active:hover,
+.theory-sidebar .toc-link[aria-current='true']:hover,
+.theory-sidebar .toc-link[aria-current='location']:hover {
+  background: var(--accent-primary) !important;
+  color: white !important;
+  transform: translateX(4px);
+}

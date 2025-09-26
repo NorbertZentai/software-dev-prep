@@ -41,6 +41,31 @@ export class MarkdownRenderer {
   }
 
   cleanupTheoryPage() {
+    const appEl = document.getElementById('app')
+    const sidebar = document.getElementById('theory-sidebar')
+    const tocToggle = document.getElementById('toc-toggle')
+    const welcomeScreen = document.querySelector('.welcome-screen')
+
+    // Remove theory layout
+    appEl?.classList.remove('theory-active')
+    sidebar?.classList.add('hidden')
+
+    // Hide mobile TOC toggle
+    if (tocToggle) {
+      tocToggle.style.display = 'none'
+    }
+
+    // Show welcome screen again
+    if (welcomeScreen) {
+      welcomeScreen.style.display = 'block'
+    }
+
+    // Clear content
+    if (sidebar) sidebar.innerHTML = ''
+    const contentEl = document.getElementById('theory-content')
+    if (contentEl) contentEl.innerHTML = ''
+
+    // Cleanup scroll spy
     if (this.scrollSpyObserver) {
       this.scrollSpyObserver.disconnect()
       this.scrollSpyObserver = null
@@ -389,15 +414,47 @@ export class MarkdownRenderer {
     try {
       this.cleanupTheoryPage()
       const { frontmatter, content } = this.parseFrontmatter(markdown)
-      const concepts = this.extractConceptsFromMd(content)
+      const { mainTitle, concepts } = this.extractConceptsFromMd(content)
 
       const appEl = document.getElementById('app')
-      this.setAppLayout('theory', appEl)
-      appEl.innerHTML = this.buildTheoryPageLayout(concepts, title, frontmatter)
+      const sidebar = document.getElementById('theory-sidebar')
+      const contentEl = document.getElementById('theory-content')
+      const welcomeScreen = document.querySelector('.welcome-screen')
+
+      // Hide welcome screen and activate theory layout
+      if (welcomeScreen) {
+        welcomeScreen.style.display = 'none'
+      }
+      appEl.classList.add('theory-active')
+      sidebar.classList.remove('hidden')
+
+      // Build and populate sidebar TOC
+      sidebar.innerHTML = this.buildTheorySidebar(concepts)
+
+      // Build and populate content with main title + articles
+      contentEl.innerHTML = this.buildTheoryContent(
+        concepts,
+        mainTitle || title,
+        frontmatter
+      )
 
       // Setup interactive features
       this.setupTheoryPageFeatures(concepts, filePath)
       this.setupProgressTracking(filePath)
+
+      // Show mobile TOC toggle
+      const tocToggle = document.getElementById('toc-toggle')
+      if (tocToggle) {
+        tocToggle.style.display = 'block'
+      }
+
+      // Update active menu states after theory page is fully loaded
+      if (window.activeMenuManager) {
+        window.activeMenuManager.updateTheoryTOCAfterLoad()
+      }
+
+      // Handle initial scroll position
+      this.handleInitialScroll(concepts)
     } catch (error) {
       console.error('Theory page rendering error:', error)
       this.renderError(title, error)
@@ -408,27 +465,19 @@ export class MarkdownRenderer {
     const lines = markdown.split('\n')
     const concepts = []
     let current = null
-    let inConcepts = false
+    let mainTitle = ''
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
 
-      // Check if we're in the concepts section
-      if (line.trim() === '## Fogalmak') {
-        inConcepts = true
+      // Extract main title (first # heading)
+      if (!mainTitle && line.startsWith('# ')) {
+        mainTitle = line.replace(/^#\s+/, '').trim()
         continue
       }
 
-      // Stop processing when we hit the next major section
-      if (
-        inConcepts &&
-        line.startsWith('## ') &&
-        line.trim() !== '## Fogalmak'
-      ) {
-        break
-      }
-
-      if (inConcepts && line.startsWith('### ')) {
+      // Process ### headings as concepts
+      if (line.startsWith('### ')) {
         // Save previous concept if exists
         if (current) {
           concepts.push(current)
@@ -438,15 +487,18 @@ export class MarkdownRenderer {
         const title = line.replace(/^###\s+/, '').trim()
         const anchor = title
           .toLowerCase()
-          .replace(/[^a-záéíóöőúüű0-9\s]/gi, '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9\s]/g, '')
           .replace(/\s+/g, '-')
+          .replace(/^-+|-+$/g, '')
 
         current = {
           title,
           anchor,
           content: '',
         }
-      } else if (current && inConcepts) {
+      } else if (current) {
         current.content += line + '\n'
       }
     }
@@ -456,7 +508,7 @@ export class MarkdownRenderer {
       concepts.push(current)
     }
 
-    return concepts
+    return { mainTitle, concepts }
   }
 
   buildTheoryPageLayout(concepts, title, frontmatter) {
@@ -477,50 +529,61 @@ export class MarkdownRenderer {
 
   buildTheorySidebar(concepts) {
     return `
-      <div class="toc">
-        <div class="toc-header">
-          <h3>Fogalmak</h3>
-          <input id="toc-search" placeholder="Keresés..." type="text" />
-        </div>
+      <div class="theory-toc">
+        <h3>📖 Fogalmak</h3>
+        <input id="toc-search" placeholder="Keresés fogalmak között..." type="text" />
         <ul class="toc-list">
           ${concepts
             .map(
               (concept) => `
-            <li>
-              <button class="toc-link" data-anchor="${concept.anchor}" tabindex="0" type="button">
-                <span class="concept-title">${concept.title}</span>
-                <span class="concept-status">○</span>
-              </button>
+            <li class="toc-item">
+              <a class="toc-link" href="#${concept.anchor}" data-anchor="${concept.anchor}">
+                ${concept.title}
+              </a>
             </li>
           `
             )
             .join('')}
         </ul>
-        <div class="toc-footer">
-          <div class="reading-progress">
-            <span id="progress-text">0 / ${concepts.length} fogalom</span>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-      </div>`
+      </div>
+    `
   }
 
   buildTheoryContent(concepts, title, frontmatter) {
-    const introSection = this.buildIntroSection(title, frontmatter)
+    // Main title section
+    const titleSection = `
+      <header class="theory-header">
+        <h1>${title}</h1>
+        ${
+          frontmatter?.summary
+            ? `<p class="theory-summary">${frontmatter.summary}</p>`
+            : ''
+        }
+      </header>
+    `
+
+    // Generate articles from concepts
     const conceptArticles = concepts
-      .map((concept) => this.buildConceptArticle(concept))
+      .map((concept) => {
+        const processedContent = this.marked
+          ? this.marked.parse(concept.content.trim())
+          : concept.content.trim()
+
+        return `
+          <article id="${concept.anchor}" class="concept-article">
+            <h3>${concept.title}</h3>
+            <div class="concept-body">
+              ${processedContent}
+            </div>
+          </article>
+        `
+      })
       .join('')
 
     return `
-      ${introSection}
+      ${titleSection}
       <div class="concepts-container">
         ${conceptArticles}
-      </div>
-      <div class="theory-navigation">
-        <button id="prev-concept" class="btn btn-secondary" disabled>← Előző</button>
-        <button id="next-concept" class="btn btn-primary">Következő →</button>
       </div>
     `
   }
@@ -562,29 +625,52 @@ export class MarkdownRenderer {
     this.setupTocSearch(concepts)
     this.setupReadingProgress(concepts, filePath)
 
-    // New advanced features
+    // Setup interactive features
     this.wireTocLinks()
     this.attachScrollSpy()
     this.enableTocKeyboardNav()
     this.setupMobileTocToggle()
+  }
 
-    // Set initial active TOC based on URL hash
+  handleInitialScroll(concepts) {
+    // Handle URL hash for deep linking
     const hashParts = window.location.hash.split('#')
     const deepAnchor =
       hashParts.length > 2 ? hashParts[hashParts.length - 1] : ''
 
-    if (deepAnchor) {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (deepAnchor) {
+        // Scroll to specific concept
         this.setActiveToc(deepAnchor)
         this.updateTheoryHash(deepAnchor)
-
         const target = document.getElementById(deepAnchor)
-        target?.scrollIntoView({ behavior: 'auto', block: 'start' })
-      }, 100)
-    } else if (concepts.length > 0) {
-      // Set first concept as active if no hash
-      setTimeout(() => this.setActiveToc(concepts[0].anchor), 100)
-    }
+
+        if (target) {
+          const theoryContent = document.getElementById('theory-content')
+          const isFirstConcept =
+            concepts.length > 0 && concepts[0].anchor === deepAnchor
+
+          if (isFirstConcept) {
+            // First concept: scroll to top to show title
+            theoryContent?.scrollTo({ top: 0, behavior: 'auto' })
+          } else {
+            // Other concepts: scroll with margin
+            const targetRect = target.getBoundingClientRect()
+            const contentRect = theoryContent?.getBoundingClientRect()
+            if (theoryContent && contentRect) {
+              const relativeTop =
+                targetRect.top - contentRect.top + theoryContent.scrollTop - 60
+              theoryContent.scrollTo({ top: relativeTop, behavior: 'auto' })
+            }
+          }
+        }
+      } else if (concepts.length > 0) {
+        // No hash: set first concept active but show title
+        this.setActiveToc(concepts[0].anchor)
+        const theoryContent = document.getElementById('theory-content')
+        theoryContent?.scrollTo({ top: 0, behavior: 'auto' })
+      }
+    }, 100)
   }
 
   setupTocSearch(concepts) {
@@ -781,21 +867,38 @@ export class MarkdownRenderer {
   }
 
   setActiveToc(anchor) {
-    const sidebar = document.querySelector('.theory-sidebar')
+    // Try both possible sidebar containers
+    const sidebar =
+      document.querySelector('.theory-sidebar') ||
+      document.querySelector('.theory-toc')
     if (!sidebar) return
 
-    sidebar
-      .querySelectorAll('.toc-link.active')
-      .forEach((link) => link.classList.remove('active'))
+    // Remove active from all TOC links in both containers
+    document
+      .querySelectorAll('.theory-sidebar .toc-link, .theory-toc .toc-link')
+      .forEach((link) => {
+        link.classList.remove('active')
+        link.removeAttribute('aria-current')
+      })
 
-    const activeLink = sidebar.querySelector(
-      `.toc-link[data-anchor="${anchor}"]`
+    // Find the active link in either container
+    const activeLink = document.querySelector(
+      `.theory-sidebar .toc-link[data-anchor="${anchor}"], .theory-toc .toc-link[data-anchor="${anchor}"]`
     )
 
     if (activeLink) {
       activeLink.classList.add('active')
+      activeLink.setAttribute('aria-current', 'location')
       this.scrollSidebarLinkIntoView(anchor)
       this.currentActiveConcept = anchor
+
+      // Update URL hash
+      this.updateTheoryHash(anchor)
+
+      // Trigger active menu manager update if available
+      if (window.activeMenuManager) {
+        window.activeMenuManager.refresh()
+      }
     }
   }
 
@@ -937,17 +1040,50 @@ export class MarkdownRenderer {
   }
 
   wireTocLinks() {
-    document.querySelectorAll('.theory-sidebar .toc-link').forEach((link) => {
+    document.querySelectorAll('#theory-sidebar .toc-link').forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault()
         e.stopPropagation()
 
-        const anchor = link.getAttribute('data-anchor')
+        // Get anchor from href or data-anchor
+        const href = link.getAttribute('href')
+        const anchor = href ? href.slice(1) : link.getAttribute('data-anchor')
         const target = document.getElementById(anchor)
 
         if (!target) return
 
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        const theoryContent = document.getElementById('theory-content')
+        if (theoryContent) {
+          // Check if this is the first concept (first article in theory-content)
+          const firstConcept = theoryContent.querySelector('article[id]')
+          const isFirstConcept = firstConcept && firstConcept.id === anchor
+
+          if (isFirstConcept) {
+            // If it's the first concept, scroll to the very top to show the title
+            // Use window scroll to ensure we get to the absolute top
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth',
+            })
+            // Also scroll theory-content to top
+            theoryContent.scrollTop = 0
+          } else {
+            // For other concepts, scroll with 60px space above
+            const targetRect = target.getBoundingClientRect()
+            const contentRect = theoryContent.getBoundingClientRect()
+            const relativeTop =
+              targetRect.top - contentRect.top + theoryContent.scrollTop - 60
+
+            theoryContent.scrollTo({
+              top: relativeTop,
+              behavior: 'smooth',
+            })
+          }
+        } else {
+          // Fallback to standard scroll if theory-content not found
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+
         this.setActiveToc(anchor)
         this.updateTheoryHash(anchor)
 
