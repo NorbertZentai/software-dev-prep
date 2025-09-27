@@ -6,6 +6,30 @@ export class MarkdownRenderer {
     this.scrollSpyScrollHandler = null
     this.scrollSpyScrollTargets = []
     this.currentActiveConcept = null
+    
+    // Configure marked renderer for {#slug} syntax
+    this.setupMarkedRenderer()
+  }
+
+  setupMarkedRenderer() {
+    if (!this.marked) return
+    
+    // Configure marked with custom renderer for headings
+    const renderer = new this.marked.Renderer()
+    
+    // Override heading renderer to handle {#anchor} syntax
+    renderer.heading = (text, level) => {
+      // Ensure text is a string
+      const textStr = typeof text === 'string' ? text : String(text)
+      const { title, anchor } = this.parseHeadingWithAnchor(textStr)
+      return `<h${level} id="${anchor}">${title}</h${level}>\n`
+    }
+    
+    this.marked.setOptions({
+      renderer: renderer,
+      breaks: true,
+      gfm: true
+    })
   }
 
   async render(filePath, title = '') {
@@ -490,16 +514,10 @@ export class MarkdownRenderer {
           concepts.push(current)
         }
 
-        // Start new concept
-        const title = line.replace(/^###\s+/, '').trim()
-        let anchor = title
-          .toLowerCase()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .replace(/[^a-z0-9\s]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/^-+|-+$/g, '')
-
+        // Start new concept - parse {#slug} syntax
+        const fullTitle = line.replace(/^###\s+/, '').trim()
+        const { title, anchor } = this.parseHeadingWithAnchor(fullTitle)
+        
         // Ensure unique anchors
         let uniqueAnchor = anchor
         let counter = 2
@@ -525,6 +543,29 @@ export class MarkdownRenderer {
     }
 
     return { mainTitle, concepts }
+  }
+
+  parseHeadingWithAnchor(headingText) {
+    // Ensure input is a string
+    const textStr = typeof headingText === 'string' ? headingText : String(headingText)
+    
+    // Check if heading has explicit {#anchor} syntax
+    const anchorMatch = textStr.match(/^(.+?)\s*\{#([^}]+)\}\s*$/)
+    
+    if (anchorMatch) {
+      // Extract clean title and explicit anchor
+      const title = anchorMatch[1].trim()
+      const anchor = anchorMatch[2].trim()
+      return { title, anchor }
+    } else {
+      // No explicit anchor, generate one from title
+      const title = textStr.trim()
+      const anchor = title
+        .toLowerCase()
+        .replace(/[^a-z0-9áéíóöőúüű\s-]/g, '')
+        .replace(/\s+/g, '-')
+      return { title, anchor }
+    }
   }
 
   buildTheoryPageLayout(concepts, title, frontmatter) {

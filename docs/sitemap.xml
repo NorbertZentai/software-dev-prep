@@ -28,14 +28,8 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://norbertzzentai.github.io/software-dev-prep/#/theory/sql</loc>
-    <lastmod>2025-09-23</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://norbertzzentai.github.io/software-dev-prep/#/theory/web</loc>
-    <lastmod>2025-09-23</lastmod>
+    <loc>https://norbertzzentai.github.io/software-dev-prep/#/theory/git</loc>
+    <lastmod>2024-12-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

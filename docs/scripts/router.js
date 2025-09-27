@@ -27,8 +27,6 @@ export class Router {
         this.renderTheoryPage('./theory/arch.md', 'Architektúra'),
       '#/theory/git': () =>
         this.renderTheoryPage('./theory/git.md', 'Git & Verziókezelés'),
-      '#/theory/softskills': () =>
-        this.renderTheoryPage('./theory/softskills.md', 'Soft Skills'),
 
       // Exercise list routes
       '#/exercises/java': () =>
@@ -114,8 +112,6 @@ export class Router {
       '#/quiz/arch': () =>
         this.runQuiz('./data/quizzes/arch.json', 'Architektúra Kvíz'),
       '#/quiz/git': () => this.runQuiz('./data/quizzes/git.json', 'Git Kvíz'),
-      '#/quiz/softskills': () =>
-        this.runQuiz('./data/quizzes/softskills.json', 'Soft Skills Kvíz'),
 
       // Checklist routes
       '#/checklists/interview': () =>
@@ -134,16 +130,12 @@ export class Router {
   }
 
   init() {
-    console.log('🔄 Router initializing...')
-
     // Handle hash changes
     window.addEventListener('hashchange', () => {
-      console.log('📍 Hash changed to:', window.location.hash)
       this.handleRoute()
     })
 
     // Handle initial route
-    console.log('🏠 Initial route:', window.location.hash || 'default')
     this.handleRoute()
   }
 
@@ -151,17 +143,12 @@ export class Router {
     const fullHash = window.location.hash || '#/theory/java'
     const route = this.normalizeRoute(fullHash)
 
-    console.log('🎯 Handling route:', fullHash)
-    console.log('🧭 Normalized route:', route)
-
     this.currentRoute = route
 
     const handler = this.routes[route]
-    console.log('🔍 Route handler found:', !!handler)
 
     if (handler) {
       try {
-        console.log('▶️ Executing route handler for:', route)
         handler()
       } catch (error) {
         console.error('❌ Route handler error:', error)
@@ -614,7 +601,6 @@ export class Router {
       '#/theory/web': 'Web Development',
       '#/theory/arch': 'Architektúra',
       '#/theory/git': 'Git & Verziókezelés',
-      '#/theory/softskills': 'Soft Skills',
       '#/quiz/java': 'Java Kvíz',
       '#/quiz/spring': 'Spring Kvíz',
       '#/quiz/testing': 'Testing Kvíz',
@@ -622,7 +608,6 @@ export class Router {
       '#/quiz/web': 'Web Kvíz',
       '#/quiz/arch': 'Architektúra Kvíz',
       '#/quiz/git': 'Git Kvíz',
-      '#/quiz/softskills': 'Soft Skills Kvíz',
     }
     return routeTitles[route] || route.split('/').pop()
   }
@@ -682,7 +667,6 @@ export class Router {
       '#/theory/web': 'Web Development',
       '#/theory/arch': 'Architektúra',
       '#/theory/git': 'Git & Verziókezelés',
-      '#/theory/softskills': 'Soft Skills',
       '#/exercises/java': 'Java Gyakorlatok',
       '#/exercises/sql': 'SQL Gyakorlatok',
       '#/exercises/web': 'Web Gyakorlatok',

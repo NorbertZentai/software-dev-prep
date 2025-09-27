@@ -33,8 +33,6 @@ export class QuizEngine {
 
   // Start quiz method expected by router
   async start(quizPath, title) {
-    console.log('🎯 Starting quiz:', quizPath)
-
     try {
       const quiz = await this.loadQuiz(quizPath)
       this.renderFullQuiz(quiz)

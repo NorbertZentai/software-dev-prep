@@ -22,8 +22,6 @@ class App {
   }
 
   setupApp() {
-    console.log('🚀 Software Developer Prep App starting...')
-
     // Initialize theme first (for UI consistency)
     this.themeManager.init()
 
@@ -44,8 +42,6 @@ class App {
 
     // Track page views for analytics
     this.trackPageView()
-
-    console.log('✅ App initialized successfully')
   }
 
   initSidebar() {
@@ -86,31 +82,47 @@ class App {
   }
 
   initSearch() {
-    const searchInput = document.getElementById('search-input')
-    if (searchInput) {
-      // Basic search functionality - will be enhanced with Lunr.js later
-      searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.trim()
-        if (query.length > 2) {
-          this.performSearch(query)
-        }
-      })
+    const searchBtn = document.getElementById('globalSearchBtn')
+    const searchModal = document.getElementById('globalSearchModal')
+    const searchInput = document.getElementById('globalSearchInput')
+    const searchResults = document.getElementById('globalSearchResults')
+    const searchClose = document.getElementById('globalSearchClose')
 
-      searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault()
-          const query = e.target.value.trim()
-          if (query) {
-            this.performSearch(query)
-          }
-        }
-      })
-    }
+    if (!searchBtn || !searchModal || !searchInput || !searchResults)
+      return
+
+    // Open search modal
+    searchBtn.addEventListener('click', () => {
+      searchModal.style.display = 'flex'
+      searchInput.focus()
+    })
+
+    // Close search modal
+    searchClose.addEventListener('click', () => {
+      searchModal.style.display = 'none'
+      searchInput.value = ''
+      searchResults.innerHTML = ''
+    })
+
+    // Search on input
+    let searchTimeout
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout)
+      const query = e.target.value.trim()
+
+      if (query.length < 2) {
+        searchResults.innerHTML = ''
+        return
+      }
+
+      searchTimeout = setTimeout(async () => {
+        await this.performSearch(query, searchResults)
+      }, 300)
+    })
   }
 
   performSearch(query) {
     // Placeholder for search functionality
-    console.log('Searching for:', query)
     // Future implementation with Lunr.js or similar
   }
 

@@ -912,7 +912,6 @@ Implementálj egy komplett Git workflow-t egy csapat projekthez:
 - [Tesztelés](/theory/testing) – Git hooks, automated testing
 - [Szoftver Architektúra](/theory/arch) – Code review, collaboration patterns
 - [Frontend](/theory/frontend) – Modern build tools, version management
-- [Soft Skills](/theory/softskills) – Team collaboration, code review culture
 
 ## További olvasmányok
 

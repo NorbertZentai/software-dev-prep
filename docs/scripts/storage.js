@@ -12,7 +12,6 @@ export class StorageManager {
 
   // Initialize storage manager
   init() {
-    console.log('📦 StorageManager initialized')
     // Initialize default settings if they don't exist
     if (!localStorage.getItem(this.keys.SETTINGS)) {
       this.saveSettings({

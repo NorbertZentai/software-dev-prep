@@ -75,15 +75,6 @@
       "estimatedMinutes": 15
     },
     {
-      "route": "#/theory/softskills",
-      "title": "Soft Skills",
-      "excerpt": "Kommunikáció, csapatmunka, problémamegoldás, interjú készségek és karrierfejlesztés.",
-      "tags": ["soft-skills", "communication", "teamwork", "interview"],
-      "category": "theory",
-      "difficulty": "intermediate",
-      "estimatedMinutes": 12
-    },
-    {
       "route": "#/exercises/java/01-oop-basics",
       "title": "OOP Alapok Java-ban",
       "excerpt": "Objektumorientált programozás elvei practice-ben: encapsulation, inheritance, polymorphism implementáció.",
@@ -288,16 +279,7 @@
       "tags": ["quiz", "git", "version-control", "branching", "workflow"],
       "category": "quiz",
       "difficulty": "beginner",
-      "estimatedMinutes": 6
-    },
-    {
-      "route": "#/quiz/softskills",
-      "title": "Soft Skills Kvíz",
-      "excerpt": "Kommunikáció, csapatmunka, problémamegoldás és interjú helyzetek assessment.",
-      "tags": ["quiz", "soft-skills", "communication", "teamwork", "interview"],
-      "category": "quiz",
-      "difficulty": "intermediate",
-      "estimatedMinutes": 8
+      "estimatedMinutes": 10
     },
     {
       "route": "#/roadmap",

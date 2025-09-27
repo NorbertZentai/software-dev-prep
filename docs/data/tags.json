@@ -41,17 +41,6 @@
       "name": "Eszközök",
       "color": "#84cc16",
       "tags": ["git", "docker", "ci-cd", "ide", "debugging"]
-    },
-    {
-      "id": "soft-skills",
-      "name": "Soft skillek",
-      "color": "#f97316",
-      "tags": [
-        "kommunikáció",
-        "csapatmunka",
-        "problémamegoldás",
-        "időmenedzsment"
-      ]
     }
   ],
   "difficulty_levels": [

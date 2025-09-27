@@ -64,18 +64,5 @@
     "estimatedMinutes": 15,
     "goals": ["Git workflow", "Branching", "Merging", "Best practices"],
     "route": "#/theory/git"
-  },
-  {
-    "path": "./theory/softskills.md",
-    "title": "Soft Skills",
-    "difficulty": "intermediate",
-    "estimatedMinutes": 12,
-    "goals": [
-      "Kommunikáció",
-      "Csapatmunka",
-      "Problémamegoldás",
-      "Interjú készségek"
-    ],
-    "route": "#/theory/softskills"
   }
 ]
