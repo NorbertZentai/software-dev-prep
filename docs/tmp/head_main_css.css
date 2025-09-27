@@ -43,14 +43,9 @@
   --border-radius: 0.5rem;
   --border-radius-lg: 0.75rem;
 
-  /* Transition durations (slower, smoother) */
-  --transition-fast: 250ms cubic-bezier(0.22, 1, 0.36, 1);
-  --transition-normal: 400ms cubic-bezier(0.22, 1, 0.36, 1);
-  --transition-slow: 550ms cubic-bezier(0.22, 1, 0.36, 1);
-
-  /* Inline theory toolbar metrics */
-  --inline-toolbar-height: 56px;
-  --inline-toolbar-gap: 12px;
+  /* Transition durations */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
 }
 
 /* Dark theme */
@@ -90,8 +85,7 @@
 }
 
 .card-header {
-    margin-bottom: var(--inline-toolbar-gap);
-    box-shadow: 0 4px 14px var(--shadow-color);
+  margin-bottom: var(--space-md);
 }
 
 .card-title {
@@ -215,7 +209,7 @@
     var(--accent-primary),
     var(--accent-secondary)
   );
-  transition: width var(--transition-slow);
+  transition: width var(--transition-normal);
   border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
 }
 
@@ -824,7 +818,7 @@ body {
 .nav-group a:focus {
   color: var(--text-primary);
   background-color: var(--bg-accent);
-  transform: translateX(2px);
+  transform: translateX(4px);
 }
 
 .nav-group a.active {
@@ -988,7 +982,7 @@ noscript {
     width: var(--sidebar-width);
     height: calc(100vh - var(--header-height));
     z-index: 105;
-    transition: left var(--transition-slow);
+    transition: left var(--transition-normal);
   }
 
   .sidebar.open {
@@ -1233,16 +1227,12 @@ noscript {
 #theory-sidebar.hidden {
   display: none;
 }
-@media (min-width: 769px) {
-  /* On desktop, the theory sidebar should always be visible when on theory pages */
-  body.is-theory #theory-sidebar.hidden { display: block; }
-}
 
 #theory-content {
   position: fixed;
   top: calc(var(--header-height) + var(--space-md));
-  left: calc(var(--sidebar-width) + 280px + 2 * var(--space-lg));
-  right: var(--space-md);
+  left: calc(var(--sidebar-width) + 280px + 3 * var(--space-lg));
+  right: var(--space-lg);
   height: calc(100vh - var(--header-height) - 2 * var(--space-md));
   background: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
@@ -1251,109 +1241,6 @@ noscript {
   overflow-y: auto;
   overflow-x: hidden;
   max-width: none;
-  transition: top var(--transition-slow), left var(--transition-slow), right var(--transition-slow), padding var(--transition-slow);
-}
-
-/* Inline toolbar above content (desktop collapsed state) */
-@media (min-width: 1024px) {
-  .theory-inline-toolbar {
-    position: fixed;
-    top: calc(var(--header-height) + var(--space-sm));
-    left: calc(var(--sidebar-width) + 280px + 2 * var(--space-lg));
-    right: var(--space-md);
-    z-index: 15;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    margin-bottom: var(--space-md);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
-    /* Hidden by default; animate in when collapsed */
-    max-height: 0;
-    opacity: 0;
-    padding: 0 var(--space-md);
-    border-width: 0;
-    overflow: hidden;
-    pointer-events: none;
-    transition: max-height var(--transition-slow), opacity var(--transition-slow), padding var(--transition-slow), border-width var(--transition-slow);
-  }
-  body.theory-collapsed .theory-inline-toolbar {
-    max-height: var(--inline-toolbar-height);
-    opacity: 1;
-    padding: var(--space-sm) var(--space-lg);
-    border-width: 1px;
-    pointer-events: auto;
-    /* Place into the freed space above content */
-    position: fixed;
-    left: calc(var(--sidebar-width) + var(--space-sm));
-    right: var(--space-sm);
-    top: calc(var(--header-height) + var(--space-sm));
-  }
-  .theory-inline-toolbar .btn.icon {
-    border: 1px solid var(--border-color);
-    background: var(--bg-primary);
-    border-radius: var(--border-radius);
-    width: 40px; height: 40px;
-    display: inline-flex; align-items: center; justify-content: center;
-    cursor: pointer;
-  }
-  .theory-inline-toolbar input[type="text"] {
-    border: 1px solid var(--border-color);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    border-radius: var(--border-radius);
-    padding: 8px 10px;
-    min-width: 220px;
-  }
-
-  /* Inline dropdown menu */
-  .theory-inline-menu {
-    position: fixed;
-    top: calc(var(--header-height) + var(--inline-toolbar-height) + var(--inline-toolbar-gap));
-    left: calc(var(--sidebar-width) + 280px + 2 * var(--space-lg));
-    right: var(--space-md);
-    z-index: 14;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: var(--space-md);
-    max-height: 40vh;
-    overflow: auto;
-    box-shadow: 0 6px 20px var(--shadow-color);
-  }
-  .theory-inline-menu.hidden { display: none; }
-  .theory-inline-menu .theory-toc { border: 0; padding: 0; }
-
-  /* When collapsed and menu open, align menu under the fixed toolbar */
-  body.theory-collapsed #theory-inline-menu.open {
-    position: fixed;
-    left: calc(var(--sidebar-width) + var(--space-sm));
-    right: var(--space-sm);
-    top: calc(var(--header-height) + var(--inline-toolbar-height) + var(--inline-toolbar-gap));
-  }
-}
-
-/* Collapsed desktop: animate left TOC out and use inline toolbar */
-@media (min-width: 1024px) {
-  /* Sidebar animation */
-  #theory-sidebar {
-    transition: opacity var(--transition-slow), transform var(--transition-slow);
-  }
-  body.theory-collapsed #theory-sidebar {
-    opacity: 0;
-    transform: translateX(-12px) scale(0.98);
-    pointer-events: none;
-  }
-  /* Content shift + downward offset to make room for inline toolbar */
-  #theory-content { transition: left var(--transition-slow), top var(--transition-slow), right var(--transition-slow), padding var(--transition-slow); }
-  body.theory-collapsed #theory-content {
-    left: calc(var(--sidebar-width) + var(--space-sm));
-    right: var(--space-sm);
-    top: calc(var(--header-height) + var(--space-md) + var(--inline-toolbar-height) + var(--inline-toolbar-gap));
-    padding: var(--space-lg);
-  }
 }
 
 /* Theory TOC Styles */
@@ -1423,7 +1310,7 @@ noscript {
 .toc-link:hover {
   background: var(--bg-accent);
   color: var(--text-primary);
-  transform: translateX(2px);
+  transform: translateX(4px);
 }
 
 .toc-link.active,
@@ -1723,10 +1610,6 @@ noscript {
   .theory-navigation .btn {
     width: 100%;
   }
-
-  /* Hide desktop inline toolbar/menu on mobile */
-  .theory-inline-toolbar,
-  .theory-inline-menu { display: none !important; }
 }
 
 /* === REDUCED MOTION === */
@@ -1804,422 +1687,4 @@ noscript {
   background: var(--accent-primary) !important;
   color: white !important;
   transform: translateX(4px);
-}
-
-/* =====================================================
-   MOBILE DRAWER OVERRIDES (append-only, ≤768px)
-   - Keep mobile behavior while desktop matches HEAD
-   ===================================================== */
-
-/* Hide header toggles by default (desktop baseline) */
-#theory-drawer-toggle,
-.theory-drawer-toggle,
-#global-nav-toggle,
-#toc-toggle {
-  display: none;
-}
-
-/* Base overlay hidden by default */
-.theory-drawer-overlay, /* backward compat */
-.drawer-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  backdrop-filter: blur(2px);
-  pointer-events: none;
-}
-.theory-drawer-overlay.active,
-.drawer-overlay.active {
-  display: block;
-  pointer-events: auto;
-}
-
-/* Mobile-only rules */
-@media (max-width: 768px) {
-  /* Show toggle on theory routes */
-  #theory-drawer-toggle,
-  .theory-drawer-toggle,
-  #global-nav-toggle,
-  #toc-toggle {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 1001;
-    background: transparent;
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: var(--space-sm);
-    width: 48px;
-    height: 48px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    touch-action: manipulation;
-    overflow: hidden; /* prevent label overflow */
-    white-space: nowrap;
-  }
-
-  .theory-drawer-toggle:hover,
-  .theory-drawer-toggle:focus {
-    background: var(--bg-accent);
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-  }
-
-  .theory-drawer-toggle[aria-expanded="true"] {
-    background: var(--accent-primary);
-    color: #fff;
-    border-color: var(--accent-primary);
-  }
-
-  /* Hide regular sidebar on theory pages for mobile */
-  body.is-theory .sidebar { display: none; }
-  body.is-theory .main-nav { display: none; }
-  body.is-theory .header-tools #search-input { display: none; }
-
-  /* Generic drawer panels */
-  .drawer.left {
-    position: fixed;
-    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    left: -100%;
-    width: 85vw;
-    max-width: 320px;
-    height: calc(100vh - var(--header-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-    z-index: 1001;
-    background: var(--bg-secondary);
-    border-right: 2px solid var(--border-color);
-  /* Keep outer container non-scrollable so rounded corner clips scrollbar */
-  overflow: hidden;
-    -webkit-overflow-scrolling: touch;
-  transition: left var(--transition-slow, 300ms);
-    /* Outer padding removed to avoid double-padding with cloned .sidebar-content */
-    padding: 0;
-    /* Match right drawer rounding on exposed edge */
-    border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
-  }
-  .drawer.left.open { left: 0; box-shadow: 4px 0 20px var(--shadow-color); }
-
-  .drawer.right {
-    position: fixed;
-    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    right: -100%;
-    left: auto !important;
-    width: 85vw;
-    max-width: 320px;
-    height: calc(100vh - var(--header-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-    z-index: 1001;
-    background: var(--bg-secondary);
-    border-left: 2px solid var(--border-color);
-  /* Keep outer container non-scrollable so rounded corner clips scrollbar */
-  overflow: hidden;
-    -webkit-overflow-scrolling: touch;
-  transition: right var(--transition-slow, 300ms);
-    padding: 0;
-    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
-  }
-  .drawer.right.open { right: 0; box-shadow: -4px 0 20px var(--shadow-color); }
-
-  /* Drawer panel - right side off-canvas (overrides desktop #theory-sidebar) */
-  #theory-sidebar.theory-drawer.right {
-    position: fixed;
-    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
-    right: -100%;
-    left: auto !important;
-    width: 85vw;
-    max-width: 320px;
-    height: calc(100vh - var(--header-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-    z-index: 1001;
-    background: var(--bg-secondary);
-    border-left: 2px solid var(--border-color);
-    border-right: none;
-  /* Keep outer container non-scrollable so rounded corner clips scrollbar */
-  overflow: hidden;
-    -webkit-overflow-scrolling: touch;
-  transition: right var(--transition-slow, 300ms);
-    padding: 0;
-    box-shadow: none;
-    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
-  }
-
-  #theory-sidebar.theory-drawer.right.open {
-    right: 0;
-    box-shadow: -4px 0 20px var(--shadow-color);
-  }
-
-  /* Drawer content */
-  .theory-drawer h3 {
-    color: var(--accent-primary);
-    font-size: var(--font-size-lg);
-    margin-bottom: var(--space-md);
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--space-sm);
-  }
-
-  /* Add consistent inner padding for both drawers */
-  #global-nav .sidebar-content,
-  #theory-sidebar .theory-toc,
-  #theory-sidebar .sidebar-content {
-    padding: var(--space-lg);
-    height: 100%;
-    max-height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-gutter: stable both-edges;
-  }
-
-  .theory-drawer .toc-link {
-    padding: var(--space-sm) var(--space-md);
-    margin-bottom: var(--space-xs);
-    border-radius: var(--border-radius);
-    transition: all var(--transition-fast);
-    display: flex;
-    align-items: center;
-    min-height: 44px; /* mobile tap target */
-    touch-action: manipulation;
-  }
-
-  .theory-drawer .toc-link:hover { background: var(--bg-accent); transform: none; }
-  .theory-drawer .toc-link.active { background: var(--accent-primary); color: #fff; font-weight: 600; }
-
-  /* Theory content adjustments on mobile */
-  /* Content full width on theory pages */
-  .theory-content {
-    margin: 0;
-    padding: var(--space-lg);
-    padding-left: max(var(--space-lg), env(safe-area-inset-left));
-    padding-right: max(var(--space-lg), env(safe-area-inset-right));
-    border-radius: 0;
-    border: none;
-    background: var(--bg-primary);
-    width: 100%;
-    box-sizing: border-box;
-    min-height: calc(100vh - var(--header-height));
-    line-height: 1.7;
-  }
-
-  /* Override fixed positioning from desktop for mobile flow */
-  #theory-content.theory-content {
-    position: static;
-    top: auto;
-    left: auto;
-    right: auto;
-    height: auto;
-    max-width: 100%;
-    padding: clamp(12px, 2.5vw, 20px);
-  }
-
-  /* Body scroll lock while drawer open */
-  body.drawer-open {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-  }
-
-  /* Hide legacy floating TOC toggle in favor of header toggles */
-  .toc-toggle { display: none !important; }
-
-  /* Hard guard against horizontal overflow on mobile */
-  * { min-width: 0; }
-  .content-container, .concept-article, .card { overflow-wrap: anywhere; word-break: break-word; }
-  img, svg, video, iframe { max-width: 100%; height: auto; display: block; }
-
-  /* Code/table scrolling helpers */
-  .content-container .table-scroll, .concept-body .table-scroll {
-    overflow-x: auto;
-    margin: var(--space-md) 0;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* TOC submenu collapsed by default (if present) */
-  .toc-group > ul { display: none; }
-  .toc-group[aria-expanded="true"] > ul { display: block; }
-  .toc-group-toggle {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    border: 0;
-    padding: 8px 4px;
-    min-height: 44px;
-    color: var(--text-primary);
-  }
-
-  /* --- Minimal mobile overrides (append-only) --- */
-  .toc-toggle { display: none !important; }
-  /* Hide the left-center floating hamburger on mobile */
-  .sidebar-toggle { display: none !important; }
-  /* Left drawer */
-  #global-nav.drawer.left { left: -100%; }
-  #global-nav.drawer.left.open { left: 0; }
-  /* Right drawer */
-  #theory-sidebar.drawer.right { right: -100%; left: auto !important; }
-  #theory-sidebar.drawer.right.open { right: 0; }
-  /* Full width content on theory pages */
-  #theory-content.theory-content {
-    position: static;
-    top: auto; left: auto; right: auto;
-    height: auto; max-width: 100%;
-    padding: clamp(12px, 2.5vw, 20px);
-  }
-  /* Overlay and z-index guards */
-  .drawer-overlay { z-index: 1000; }
-  #global-nav, #theory-sidebar { z-index: 1001; }
-
-  /* ===================== */
-  /* Global drawer styling */
-  /* Match Fogalmak look   */
-  /* ===================== */
-
-  /* Header style inside the drawer */
-  #global-nav .sidebar-content > h3 {
-    color: var(--accent-primary);
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    margin: 0 0 var(--space-md) 0;
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: var(--space-sm);
-  }
-
-  /* Section headings */
-  #global-nav .nav-group { margin-bottom: var(--space-xl); }
-  #global-nav .nav-group h4 {
-    margin: 0 0 var(--space-sm) 0;
-    color: var(--text-secondary);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    opacity: 0.9;
-  }
-
-  /* Pill-like links to match TOC look */
-  #global-nav .nav-group a {
-    display: block;
-    width: 100%;
-    padding: var(--space-md) var(--space-lg);
-    color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: var(--border-radius-lg);
-    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
-    line-height: 1.35;
-    font-size: var(--font-size-base);
-    border: 1px solid transparent;
-    margin-bottom: var(--space-sm);
-    background: transparent;
-  }
-
-  #global-nav .nav-group a:hover,
-  #global-nav .nav-group a:focus {
-    background: var(--bg-accent);
-    color: var(--text-primary);
-    transform: none; /* override sidebar hover shift */
-    outline: none;
-    border-color: var(--border-color);
-  }
-
-  /* Active state mirroring TOC */
-  #global-nav .nav-group a.active,
-  #global-nav .nav-group a[aria-current="page"],
-  #global-nav .nav-group a[aria-current="true"] {
-    background: var(--accent-primary);
-    color: #fff;
-    font-weight: 600;
-    border-left: 4px solid var(--accent-secondary);
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-    border-color: transparent; /* keep borders clean on active */
-    transform: none;
-  }
-
-  #global-nav .nav-group a.active:hover,
-  #global-nav .nav-group a[aria-current="page"]:hover {
-    background: var(--accent-primary);
-    color: #fff;
-    transform: none;
-  }
-}
-
-/* Small phones */
-@media (max-width: 480px) {
-  .theory-drawer { width: 95vw; max-width: none; }
-  .theory-content { padding: var(--space-md); }
-}
-
-/* Ensure the header toggles stay hidden on desktop */
-@media (min-width: 1024px) {
-  #theory-drawer-toggle.theory-drawer-toggle,
-  #global-nav-toggle,
-  #toc-toggle { display: none !important; }
-}
-
-/* =============================================
-   DESKTOP THEORY AUTO-COLLAPSE (≥1024px only)
-   - Adds optional collapsed rail state without
-     changing default HEAD visuals unless the
-     body.theory-collapsed class is applied by JS
-   ============================================= */
-@media (min-width: 1024px) {
-  :root {
-    --toc-wide: 280px;
-    --toc-rail: 56px;
-  }
-
-  /* Keep default widths unless collapsed */
-  #theory-sidebar { width: var(--toc-wide); }
-
-  body.theory-collapsed #theory-sidebar {
-    width: var(--toc-rail);
-    overflow: hidden;
-  }
-
-  /* Hide non-essential text/content inside sidebar when collapsed */
-  body.theory-collapsed #theory-sidebar .toc-header,
-  body.theory-collapsed #theory-sidebar .toc-text,
-  body.theory-collapsed #theory-sidebar #toc-search,
-  body.theory-collapsed #theory-sidebar .toc-list .toc-link span,
-  body.theory-collapsed #theory-sidebar .toc-footer {
-    display: none !important;
-  }
-
-  /* Widen content area when collapsed */
-  body.theory-collapsed #theory-content {
-    max-width: none;
-    left: calc(var(--sidebar-width) + var(--space-lg));
-    right: var(--space-md);
-  }
-
-  /* When sidebar temporarily expands on hover/focus, restore original left offset */
-  body.theory-collapsed #theory-sidebar:hover + #theory-content,
-  body.theory-collapsed #theory-sidebar:focus-within + #theory-content {
-    left: calc(var(--sidebar-width) + 280px + 3 * var(--space-lg));
-    right: var(--space-lg);
-  }
-
-  /* Hover/focus temporarily expands for accessibility */
-  body.theory-collapsed #theory-sidebar:hover,
-  body.theory-collapsed #theory-sidebar:focus-within {
-    width: var(--toc-wide);
-  }
-
-  /* Smooth but respectful transitions */
-  @media (prefers-reduced-motion: no-preference) {
-    #theory-sidebar { transition: width 200ms ease; }
-  }
-}
-
-/* Respect user motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .theory-drawer, .theory-drawer-toggle, .theory-drawer-overlay {
-    transition: none !important; animation: none !important;
-  }
 }

@@ -79,7 +79,7 @@
 
     <!-- Preload critical resources -->
     <link rel="preload" href="./styles/main.css" as="style" />
-    <link rel="preload" href="./scripts/app.js" as="script" />
+    <link rel="preload" href="./scripts/app.js" as="script" crossorigin="anonymous" />
 
     <!-- Icons and Manifest -->
     <link rel="icon" href="./assets/logo.svg" type="image/svg+xml" />
@@ -112,32 +112,56 @@
     </script>
   </head>
   <body>
-    <header class="topbar">
-      <div class="header-content">
-        <div class="logo-section">
-          <img
-            src="./assets/logo.svg"
-            alt="Software Dev Prep Logo"
-            class="logo"
-          />
-          <h1 class="site-title">Software Dev Prep</h1>
-        </div>
-        <nav class="main-nav">
-          <a href="#/theory/java" class="nav-link">📚 Elmélet</a>
-          <a href="#/exercises/java" class="nav-link">💻 Gyakorlat</a>
-          <a href="#/quiz/java" class="nav-link">🧩 Kvíz</a>
-          <a href="#/roadmap" class="nav-link">🗺️ Roadmap</a>
-        </nav>
-        <div class="header-tools">
-          <input id="search-input" placeholder="🔍 Keresés..." />
-          <button id="theme-toggle" class="theme-btn" title="Sötét/Világos mód">
-            🌙
-          </button>
-        </div>
-      </div>
-    </header>
+  <header class="topbar">
+    <div class="header-content">
+      <div class="logo-section">
+        <!-- Global Mobile Drawer Toggle (left) -->
+        <button
+          id="global-nav-toggle"
+          class="theory-drawer-toggle"
+          aria-controls="global-nav"
+          aria-expanded="false"
+          aria-label="Főmenü megnyitása"
+          style="display: none;"
+          title="Főmenü megnyitása"
+        >
+          ☰
+        </button>
 
-    <aside class="sidebar" id="sidebar">
+        <img
+          src="./assets/logo.svg"
+          alt="Software Dev Prep Logo"
+          class="logo"
+        />
+        <h1 class="site-title">Software Dev Prep</h1>
+      </div>
+      
+      <nav class="main-nav">
+        <a href="#/theory/java" class="nav-link">📚 Elmélet</a>
+        <a href="#/exercises/java" class="nav-link">💻 Gyakorlat</a>
+        <a href="#/quiz/java" class="nav-link">🧩 Kvíz</a>
+        <a href="#/roadmap" class="nav-link">🗺️ Roadmap</a>
+      </nav>
+      <div class="header-tools">
+        <input id="search-input" placeholder="🔍 Keresés..." />
+        <button id="theme-toggle" class="theme-btn" title="Sötét/Világos mód">
+          🌙
+        </button>
+        <!-- TOC Mobile Drawer Toggle (right, theory routes only) -->
+        <button
+          id="toc-toggle"
+          class="theory-drawer-toggle"
+          aria-controls="theory-sidebar"
+          aria-expanded="false"
+          aria-label="Fogalmak menü megnyitása"
+          style="display: none;"
+          title="Fogalmak megnyitása"
+        >
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>    <aside class="sidebar" id="sidebar">
       <div class="sidebar-content">
         <h3>📖 Navigáció</h3>
         <div class="nav-group">
@@ -174,12 +198,16 @@
           <a href="#/checklists/db-cheatsheet">📋 SQL Cheatsheet</a>
         </div>
       </div>
-    </aside>
+  </aside>
+
+  <!-- Global mobile navigation drawer (left) -->
+  <aside id="global-nav" class="drawer left hidden" role="navigation" aria-label="Főmenü"></aside>
 
     <main id="app" class="main-content">
-      <!-- Theory-specific layout elements -->
-      <aside id="theory-sidebar" class="theory-toc hidden"></aside>
-      <section id="theory-content" class="theory-main"></section>
+      <!-- Unified drawer overlay for mobile -->
+      <div id="drawer-overlay" class="drawer-overlay" aria-hidden="true" role="presentation"></div>
+      <aside id="theory-sidebar" class="theory-drawer hidden" role="navigation" aria-label="Fogalmak navigáció" aria-modal="false"></aside>
+      <section id="theory-content" class="theory-content"></section>
 
       <!-- Default welcome screen -->
       <div class="welcome-screen">
@@ -209,19 +237,9 @@
       </noscript>
     </main>
 
-    <button id="sidebar-toggle" class="sidebar-toggle" title="Oldalsáv ki/be">
-      ☰
-    </button>
+    
 
-    <!-- Theory TOC Toggle for Mobile -->
-    <button
-      id="toc-toggle"
-      class="toc-toggle"
-      title="Fogalmak menü ki/be"
-      style="display: none"
-    >
-      📝
-    </button>
+    <!-- Removed legacy floating TOC toggle (now in header) -->
 
     <footer class="footer">
       <p>
@@ -231,8 +249,7 @@
       </p>
     </footer>
 
-    <script src="./scripts/vendor/marked.min.js"></script>
-    <script type="module" src="./scripts/app.js"></script>
+  <script src="./scripts/vendor/marked.min.js"></script>
 
     <!-- Service Worker Registration - DISABLED FOR DEVELOPMENT -->
     <!--
@@ -252,14 +269,17 @@
     </script>
     -->
 
-    <!-- Theme Management -->
-    <script type="module" src="./scripts/theme.js"></script>
+  <!-- Theme Management -->
+  <script type="module" src="./scripts/theme.js"></script>
 
-    <!-- Active Menu Management -->
-    <script type="module" src="./scripts/active-menu.js"></script>
+  <!-- Active Menu Management -->
+  <script type="module" src="./scripts/active-menu.js"></script>
 
-    <!-- Main App Script -->
-    <script type="module" src="./scripts/app.js"></script>
+  <!-- Desktop Theory Auto-Collapse -->
+  <script type="module" src="./scripts/theory-desktop.js"></script>
+
+  <!-- Main App Script (single include) -->
+  <script type="module" src="./scripts/app.js"></script>
 
     <!-- Analytics (Plausible - privacy-friendly) -->
     <script

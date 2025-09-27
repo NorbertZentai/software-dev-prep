@@ -67,27 +67,37 @@ export class MarkdownRenderer {
   cleanupTheoryPage() {
     const appEl = document.getElementById('app')
     const sidebar = document.getElementById('theory-sidebar')
-    const tocToggle = document.getElementById('toc-toggle')
+    const contentEl = document.getElementById('theory-content')
     const welcomeScreen = document.querySelector('.welcome-screen')
 
-    // Remove theory layout
-    appEl?.classList.remove('theory-active')
-    sidebar?.classList.add('hidden')
-
-    // Hide mobile TOC toggle
-    if (tocToggle) {
-      tocToggle.style.display = 'none'
+    // Remove theory layout classes
+    document.body.classList.remove('theory-active', 'is-theory')
+    
+    // Reset sidebar and content
+    if (sidebar) {
+      sidebar.className = 'theory-drawer hidden'
+      sidebar.innerHTML = ''
+    }
+    if (contentEl) {
+      contentEl.className = 'theory-content'
+      contentEl.innerHTML = ''
     }
 
-    // Show welcome screen again
+    // Clear any existing theory layout
+    const existingTheoryLayout = appEl?.querySelector('.theory-layout')
+    if (existingTheoryLayout) {
+      existingTheoryLayout.remove()
+    }
+
+    // Show welcome screen
     if (welcomeScreen) {
       welcomeScreen.style.display = 'block'
     }
 
-    // Clear content
-    if (sidebar) sidebar.innerHTML = ''
-    const contentEl = document.getElementById('theory-content')
-    if (contentEl) contentEl.innerHTML = ''
+    // Update drawer visibility
+    if (window.theoryMobileDrawer) {
+      window.theoryMobileDrawer.updateDrawerVisibility()
+    }
 
     // Cleanup scroll spy properly
     this.cleanupScrollSpy()
@@ -160,9 +170,12 @@ export class MarkdownRenderer {
   }
 
   renderContent(markdown, title = '', frontmatter = {}) {
-    const html = this.marked
+    let html = this.marked
       ? this.marked.parse(markdown)
       : this.escapeHtml(markdown)
+      
+    // Wrap tables in scroll containers
+    html = this.wrapTablesForScroll(html)
 
     return `
       <div class="content-container">
@@ -437,8 +450,26 @@ export class MarkdownRenderer {
       if (welcomeScreen) {
         welcomeScreen.style.display = 'none'
       }
-      appEl.classList.add('theory-active')
-      sidebar.classList.remove('hidden')
+      
+      // Activate theory layout
+      appEl.classList.add('theory-layout')
+      
+      // On mobile, keep the theory sidebar hidden until the header toggle opens it.
+      // On desktop, show it as part of the layout.
+      const isMobile = window.matchMedia('(max-width: 768px)').matches
+      if (isMobile) {
+        sidebar.classList.add('theory-drawer', 'drawer', 'right')
+        // Ensure it stays hidden initially; theory-mobile.js will open it via toggle
+        sidebar.classList.add('hidden')
+      } else {
+        // Desktop: visible, non-drawer
+        sidebar.classList.remove('hidden')
+        sidebar.classList.remove('drawer', 'right')
+        sidebar.classList.remove('theory-drawer')
+      }
+      
+      // Mark body as theory active for responsive CSS
+      document.body.classList.add('theory-active', 'is-theory')
 
       // Build and populate sidebar TOC
       sidebar.innerHTML = this.buildTheorySidebar(concepts)
@@ -454,10 +485,11 @@ export class MarkdownRenderer {
       this.setupTheoryPageFeatures(concepts, filePath)
       this.setupProgressTracking(filePath)
 
-      // Show mobile TOC toggle
-      const tocToggle = document.getElementById('toc-toggle')
-      if (tocToggle) {
-        tocToggle.style.display = 'block'
+      // Update drawer visibility for mobile
+      if (window.theoryMobileDrawer) {
+        window.theoryMobileDrawer.updateDrawerVisibility()
+        window.theoryMobileDrawer.setupAnchorNavigation()
+        window.theoryMobileDrawer.handleHashNavigation()
       }
 
       // Update active menu states after theory page is fully loaded
@@ -467,6 +499,10 @@ export class MarkdownRenderer {
 
       // Handle initial scroll position
       this.handleInitialScroll(concepts)
+      
+  // Notify listeners that theory content is ready (for mobile TOC binding)
+  window.dispatchEvent(new CustomEvent('theory:content:ready'))
+      
     } catch (error) {
       console.error('Theory page rendering error:', error)
       this.renderError(title, error)
@@ -609,6 +645,17 @@ export class MarkdownRenderer {
   buildTheoryContent(concepts, title, frontmatter) {
     // Main title section
     const titleSection = `
+      <div id="theory-inline-toolbar" class="theory-inline-toolbar">
+        <div class="toolbar-left">
+          <button id="theory-inline-menu-toggle" class="btn icon" aria-controls="theory-inline-menu" aria-expanded="false" title="Fogalmak menü">
+            ☰
+          </button>
+        </div>
+        <div class="toolbar-right">
+          <input id="theory-inline-search" placeholder="Keresés..." type="text" />
+        </div>
+      </div>
+      <div id="theory-inline-menu" class="theory-inline-menu hidden" role="dialog" aria-modal="false" aria-labelledby="theory-inline-menu-toggle"></div>
       <header class="theory-header">
         <h1>${title}</h1>
         ${
@@ -622,13 +669,16 @@ export class MarkdownRenderer {
     // Generate articles from concepts
     const conceptArticles = concepts
       .map((concept) => {
-        const processedContent = this.marked
+        let processedContent = this.marked
           ? this.marked.parse(concept.content.trim())
           : concept.content.trim()
 
+        // Wrap tables in scroll containers for responsive design
+        processedContent = this.wrapTablesForScroll(processedContent)
+
         return `
           <article id="${concept.anchor}" class="concept-article">
-            <h3 id="${concept.anchor}" class="concept-title">${concept.title}</h3>
+            <h3 class="concept-title">${concept.title}</h3>
             <div class="concept-body">
               ${processedContent}
             </div>
@@ -643,6 +693,12 @@ export class MarkdownRenderer {
         ${conceptArticles}
       </div>
     `
+  }
+
+  // Wrap tables in scroll containers for responsive design
+  wrapTablesForScroll(htmlContent) {
+    return htmlContent.replace(/<table/g, '<div class="table-scroll"><table')
+                     .replace(/<\/table>/g, '</table></div>')
   }
 
   buildIntroSection(title, frontmatter) {
@@ -687,6 +743,7 @@ export class MarkdownRenderer {
     this.attachScrollSpy()
     this.enableTocKeyboardNav()
     this.setupMobileTocToggle()
+    this.setupInlineToolbar(concepts)
 
     // Setup deep link handling
     this.setupDeepLinkHandling()
@@ -701,13 +758,17 @@ export class MarkdownRenderer {
       if (targetId) {
         const target = document.getElementById(targetId)
         const scrollContainer = document.querySelector('#theory-content')
+        const isWindowScroll = !scrollContainer || getComputedStyle(scrollContainer).overflowY === 'visible' || (scrollContainer.scrollHeight <= scrollContainer.clientHeight)
         
-        if (target && scrollContainer) {
+        if (target) {
           const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
-          scrollContainer.scrollTo({
-            top: target.offsetTop - headerHeight - 8,
-            behavior: 'smooth'
-          })
+          const top = Math.max(0, target.offsetTop - headerHeight - 8)
+          const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+          if (isWindowScroll) {
+            window.scrollTo({ top, behavior })
+          } else if (scrollContainer) {
+            scrollContainer.scrollTo({ top, behavior })
+          }
           this.setActiveNavigationItem(targetId)
         }
       }
@@ -734,20 +795,26 @@ export class MarkdownRenderer {
         // Scroll to specific concept with proper offset
         const target = document.getElementById(deepAnchor)
         const scrollContainer = document.querySelector('#theory-content')
+        const isWindowScroll = !scrollContainer || getComputedStyle(scrollContainer).overflowY === 'visible' || (scrollContainer.scrollHeight <= scrollContainer.clientHeight)
         
-        if (target && scrollContainer) {
+        if (target) {
           const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
-          scrollContainer.scrollTo({
-            top: target.offsetTop - headerHeight - 8,
-            behavior: 'auto'
-          })
+          const top = Math.max(0, target.offsetTop - headerHeight - 8)
+          if (isWindowScroll) {
+            window.scrollTo({ top, behavior: 'auto' })
+          } else if (scrollContainer) {
+            scrollContainer.scrollTo({ top, behavior: 'auto' })
+          }
           this.setActiveNavigationItem(deepAnchor)
         }
       } else if (concepts.length > 0) {
         // No hash: set first concept active
         this.setActiveNavigationItem(concepts[0].anchor)
         const scrollContainer = document.querySelector('#theory-content')
-        if (scrollContainer) {
+        const isWindowScroll = !scrollContainer || getComputedStyle(scrollContainer).overflowY === 'visible' || (scrollContainer.scrollHeight <= scrollContainer.clientHeight)
+        if (isWindowScroll) {
+          window.scrollTo({ top: 0, behavior: 'auto' })
+        } else if (scrollContainer) {
           scrollContainer.scrollTop = 0
         }
       }
@@ -968,51 +1035,80 @@ export class MarkdownRenderer {
 
     // Find the actual scroll container and headings
     const scrollContainer = document.querySelector('#theory-content')
-    const headings = Array.from(document.querySelectorAll('#theory-content h3[id]'))
+    // Observe concept articles which carry the anchor IDs
+    const articles = Array.from(document.querySelectorAll('#theory-content article[id]'))
 
-    if (!scrollContainer || !headings.length) {
-      console.warn('ScrollSpy: No scroll container or headings found')
+    if (!articles.length) {
+      console.warn('ScrollSpy: No scroll headings found')
       return
     }
+
+    // Determine whether window handles scrolling (mobile) or the container (desktop)
+    const isWindowScroll =
+      !scrollContainer ||
+      getComputedStyle(scrollContainer).overflowY === 'visible' ||
+      scrollContainer.scrollHeight <= scrollContainer.clientHeight
 
     // Get sticky header height for proper offset calculation
     const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
     const rootMargin = `-${headerHeight}px 0px -60% 0px`
 
-    // Create IntersectionObserver with proper root
-    this.scrollSpyObserver = new IntersectionObserver(
-      (entries) => {
-        // Find the most visible heading
-        let activeHeading = null
-        let maxVisibility = 0
+    // Helper: compute active article based on geometry relative to header offset
+    const pickActiveByGeometry = () => {
+      const headerH = document.querySelector('.topbar')?.offsetHeight || 0
+      const threshold = headerH + 1
+      let candidate = null
+      let minPositiveTop = Infinity
+      let bestAbove = null
+      let maxNegativeTop = -Infinity
 
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > maxVisibility) {
-            maxVisibility = entry.intersectionRatio
-            activeHeading = entry.target
+      const containerTop = isWindowScroll ? 0 : (scrollContainer?.getBoundingClientRect().top || 0)
+      articles.forEach((art) => {
+        const top = art.getBoundingClientRect().top - containerTop
+        const relTop = top // relative to container/window top
+        const delta = relTop - threshold
+        if (delta >= 0) {
+          // below or at threshold: prefer closest below threshold
+          if (delta < minPositiveTop) {
+            minPositiveTop = delta
+            candidate = art
           }
-        })
+        } else {
+          // above threshold: keep the one closest above
+          if (delta > maxNegativeTop) {
+            maxNegativeTop = delta
+            bestAbove = art
+          }
+        }
+      })
 
-        // If we have an active heading, update the navigation
-        if (activeHeading?.id && this.currentActiveConcept !== activeHeading.id) {
-          this.setActiveNavigationItem(activeHeading.id)
-          this.updateTheoryHash(activeHeading.id)
+      const best = candidate || bestAbove || null
+      return best?.id || null
+    }
+
+    // Create IntersectionObserver with proper root; on any entry, recompute globally
+    this.scrollSpyObserver = new IntersectionObserver(
+      () => {
+        const bestId = pickActiveByGeometry()
+        if (bestId && this.currentActiveConcept !== bestId) {
+          this.setActiveNavigationItem(bestId)
+          this.updateTheoryHash(bestId)
         }
       },
       {
-        root: scrollContainer,
+        root: isWindowScroll ? null : scrollContainer,
         rootMargin: rootMargin,
-        threshold: [0, 0.1, 0.5, 1]
+        threshold: [0, 0.01, 0.1, 0.3, 0.5, 1]
       }
     )
 
-    // Observe all headings
-    headings.forEach(heading => {
-      this.scrollSpyObserver.observe(heading)
+    // Observe all concept articles
+    articles.forEach(article => {
+      this.scrollSpyObserver.observe(article)
     })
 
     // Set initial active state
-    this.setInitialActiveState(headings, scrollContainer, headerHeight)
+    this.setInitialActiveState(articles, scrollContainer, headerHeight, isWindowScroll)
   }
 
   cleanupScrollSpy() {
@@ -1039,16 +1135,14 @@ export class MarkdownRenderer {
 
   setActiveNavigationItem(headingId) {
     // Remove active state from all TOC links
-    const allTocLinks = document.querySelectorAll('.theory-toc .toc-link, .theory-sidebar .toc-link')
+    const allTocLinks = document.querySelectorAll('.theory-toc .toc-link, .theory-sidebar .toc-link, #theory-inline-menu .toc-link')
     allTocLinks.forEach(link => {
       link.classList.remove('active')
       link.removeAttribute('aria-current')
     })
 
     // Set active state on the matching link
-    const activeLink = document.querySelector(
-      `.theory-toc .toc-link[data-anchor="${headingId}"], .theory-sidebar .toc-link[data-anchor="${headingId}"]`
-    )
+  const activeLink = document.querySelector(`.theory-toc .toc-link[data-anchor="${headingId}"], .theory-sidebar .toc-link[data-anchor="${headingId}"], #theory-inline-menu .toc-link[data-anchor="${headingId}"]`)
 
     if (activeLink) {
       activeLink.classList.add('active')
@@ -1060,34 +1154,38 @@ export class MarkdownRenderer {
     }
   }
 
-  setInitialActiveState(headings, scrollContainer, headerHeight) {
+  setInitialActiveState(articles, scrollContainer, headerHeight, isWindowScroll = false) {
     // Check URL hash for deep linking
     const hashParts = window.location.hash.split('#')
     const targetId = hashParts.length > 2 ? hashParts[2] : null
 
-    if (targetId && headings.find(h => h.id === targetId)) {
+    if (targetId && articles.find(a => a.id === targetId)) {
       // Deep link: scroll to target and set active
       const target = document.getElementById(targetId)
       if (target) {
-        scrollContainer.scrollTo({
-          top: target.offsetTop - headerHeight - 8,
-          behavior: 'auto' // No animation on initial load
-        })
+        const top = Math.max(0, target.offsetTop - headerHeight - 8)
+        if (isWindowScroll) {
+          window.scrollTo({ top, behavior: 'auto' })
+        } else if (scrollContainer) {
+          scrollContainer.scrollTo({ top, behavior: 'auto' })
+        }
         this.setActiveNavigationItem(targetId)
       }
     } else {
-      // No deep link: find the first visible heading
-      const firstVisibleHeading = headings.find(heading => {
-        const rect = heading.getBoundingClientRect()
+      // No deep link: find the first visible article
+      let firstVisible = null
+      if (isWindowScroll) {
+        firstVisible = articles.find(article => article.getBoundingClientRect().top >= headerHeight + 1)
+      } else if (scrollContainer) {
         const containerRect = scrollContainer.getBoundingClientRect()
-        return rect.top >= containerRect.top + headerHeight
-      })
+        firstVisible = articles.find(article => article.getBoundingClientRect().top >= containerRect.top + headerHeight + 1)
+      }
 
-      if (firstVisibleHeading) {
-        this.setActiveNavigationItem(firstVisibleHeading.id)
-      } else if (headings.length > 0) {
+      if (firstVisible) {
+        this.setActiveNavigationItem(firstVisible.id)
+      } else if (articles.length > 0) {
         // Fallback to first heading
-        this.setActiveNavigationItem(headings[0].id)
+        this.setActiveNavigationItem(articles[0].id)
       }
     }
   }
@@ -1108,8 +1206,9 @@ export class MarkdownRenderer {
 
 
   wireTocLinks() {
-    document.querySelectorAll('#theory-sidebar .toc-link, .theory-sidebar .toc-link').forEach((link) => {
+    document.querySelectorAll('#theory-sidebar .toc-link, .theory-sidebar .toc-link, #theory-inline-menu .toc-link').forEach((link) => {
       link.addEventListener('click', (e) => {
+        // Prevent default to avoid any native jump-to-top
         e.preventDefault()
         e.stopPropagation()
 
@@ -1118,22 +1217,34 @@ export class MarkdownRenderer {
         const anchor = href ? href.slice(1) : link.getAttribute('data-anchor')
         const target = document.getElementById(anchor)
         const scrollContainer = document.querySelector('#theory-content')
+        const isWindowScroll = !scrollContainer || getComputedStyle(scrollContainer).overflowY === 'visible' || (scrollContainer.scrollHeight <= scrollContainer.clientHeight)
 
-        if (!target || !scrollContainer) return
+        if (!target) return
 
         // Get sticky header height for offset calculation
         const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
         const offset = 8 // Additional padding
 
         // Scroll to target with proper offset
-        scrollContainer.scrollTo({
-          top: target.offsetTop - headerHeight - offset,
-          behavior: 'smooth'
-        })
+        const top = Math.max(0, target.offsetTop - headerHeight - offset)
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+        if (isWindowScroll) {
+          window.scrollTo({ top, behavior })
+        } else {
+          scrollContainer.scrollTo({ top, behavior })
+        }
 
-        // Update active state immediately
-        this.setActiveNavigationItem(anchor)
-        this.updateTheoryHash(anchor)
+        // Update active state and hash after scroll with appropriate delay
+        const delay = behavior === 'auto' ? 0 : 300 // Wait for smooth scroll to complete
+        setTimeout(() => {
+          this.setActiveNavigationItem(anchor)
+          this.updateTheoryHash(anchor)
+          
+          // Trigger desktop auto-collapse re-evaluation after navigation
+          window.dispatchEvent(new CustomEvent('theory:navigation:complete', {
+            detail: { anchor: anchor, target: target }
+          }))
+        }, delay)
 
         // Close mobile sidebar if open
         if (window.innerWidth <= 768) {
@@ -1142,7 +1253,69 @@ export class MarkdownRenderer {
 
           const toggleBtn = document.getElementById('toc-toggle')
           toggleBtn?.setAttribute('aria-expanded', 'false')
+        } else {
+          // Desktop inline menu close after navigation
+          const inlineMenu = document.getElementById('theory-inline-menu')
+          const inlineToggle = document.getElementById('theory-inline-menu-toggle')
+          if (inlineMenu && inlineToggle) {
+            inlineMenu.classList.add('hidden')
+            inlineMenu.classList.remove('open')
+            inlineToggle.setAttribute('aria-expanded','false')
+          }
         }
+      })
+    })
+  }
+
+  setupInlineToolbar(concepts) {
+    const toolbar = document.getElementById('theory-inline-toolbar')
+    const menu = document.getElementById('theory-inline-menu')
+    const toggle = document.getElementById('theory-inline-menu-toggle')
+    const search = document.getElementById('theory-inline-search')
+    if (!toolbar || !menu || !toggle || !search) return
+
+    // Populate inline menu with same TOC markup
+    if (!menu.getAttribute('data-populated')) {
+      const tocHtml = this.buildTheorySidebar(concepts)
+      // Extract only the inner list portion for compact menu
+      const tmp = document.createElement('div')
+      tmp.innerHTML = tocHtml
+      const toc = tmp.querySelector('.theory-toc')
+      menu.innerHTML = ''
+      if (toc) menu.appendChild(toc)
+      menu.setAttribute('data-populated', 'true')
+      // Rewire TOC links inside inline menu
+      this.wireTocLinks()
+    }
+
+    // Toggle behavior (desktop only)
+    const handleToggle = (e) => {
+      if (window.matchMedia('(min-width: 1024px)').matches && document.body.classList.contains('theory-collapsed')) {
+        e.preventDefault()
+        const isOpen = menu.classList.contains('open')
+        menu.classList.toggle('open', !isOpen)
+        menu.classList.toggle('hidden', isOpen)
+        toggle.setAttribute('aria-expanded', (!isOpen).toString())
+      }
+    }
+    toggle.addEventListener('click', handleToggle)
+
+    // Click-outside to close
+    document.addEventListener('click', (e) => {
+      if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.classList.remove('open'); menu.classList.add('hidden')
+        toggle.setAttribute('aria-expanded','false')
+      }
+    })
+
+    // Search filter for inline menu
+    search.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase()
+      menu.querySelectorAll('.toc-link').forEach((link) => {
+        const li = link.closest('li')
+        if (!li) return
+        const title = link.textContent.toLowerCase()
+        li.style.display = title.includes(q) ? '' : 'none'
       })
     })
   }

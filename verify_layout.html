@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Verification Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Desktop/Mobile Layout Verification</h1>
+    
+    <div class="test-section">
+        <h2>Desktop Test (1280×800)</h2>
+        <p>Expected: 2-column theory layout, ~280px sidebar, no drawer toggle visible</p>
+        <iframe id="desktopFrame" src="./index.html" style="width: 1280px; height: 600px; transform: scale(0.8); transform-origin: 0 0;"></iframe>
+        <div id="desktopResult" class="test-result">Loading...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Mobile Test (375×667)</h2>
+        <p>Expected: Single column, drawer toggle visible, off-canvas drawer</p>
+        <iframe id="mobileFrame" src="./index.html" style="width: 375px; height: 600px;"></iframe>
+        <div id="mobileResult" class="test-result">Loading...</div>
+    </div>
+
+    <script>
+        function testLayout() {
+            const desktopFrame = document.getElementById('desktopFrame');
+            const mobileFrame = document.getElementById('mobileFrame');
+            const desktopResult = document.getElementById('desktopResult');
+            const mobileResult = document.getElementById('mobileResult');
+
+            setTimeout(() => {
+                try {
+                    // Test desktop layout
+                    const desktopDoc = desktopFrame.contentDocument;
+                    const theorySidebar = desktopDoc.querySelector('#theory-sidebar');
+                    const theoryDrawerToggle = desktopDoc.querySelector('.theory-drawer-toggle');
+                    const theoryContent = desktopDoc.querySelector('#theory-content');
+                    
+                    let desktopTests = [];
+                    
+                    if (theorySidebar) {
+                        const sidebarStyles = window.getComputedStyle(theorySidebar);
+                        const isVisible = sidebarStyles.display !== 'none';
+                        const hasFixedPosition = sidebarStyles.position === 'fixed';
+                        const hasCorrectWidth = parseInt(sidebarStyles.width) >= 260 && parseInt(sidebarStyles.width) <= 300;
+                        
+                        desktopTests.push({
+                            test: 'Theory sidebar visible',
+                            pass: isVisible,
+                            details: `display: ${sidebarStyles.display}`
+                        });
+                        
+                        desktopTests.push({
+                            test: 'Theory sidebar positioned correctly',
+                            pass: hasFixedPosition,
+                            details: `position: ${sidebarStyles.position}`
+                        });
+                        
+                        desktopTests.push({
+                            test: 'Theory sidebar has correct width',
+                            pass: hasCorrectWidth,
+                            details: `width: ${sidebarStyles.width}`
+                        });
+                    } else {
+                        desktopTests.push({
+                            test: 'Theory sidebar exists',
+                            pass: false,
+                            details: 'Element not found'
+                        });
+                    }
+                    
+                    if (theoryDrawerToggle) {
+                        const toggleStyles = window.getComputedStyle(theoryDrawerToggle);
+                        const isHidden = toggleStyles.display === 'none';
+                        
+                        desktopTests.push({
+                            test: 'Theory drawer toggle hidden on desktop',
+                            pass: isHidden,
+                            details: `display: ${toggleStyles.display}`
+                        });
+                    }
+                    
+                    const passedDesktop = desktopTests.filter(t => t.pass).length;
+                    const totalDesktop = desktopTests.length;
+                    
+                    desktopResult.innerHTML = `
+                        <strong>Desktop Results: ${passedDesktop}/${totalDesktop} tests passed</strong><br>
+                        ${desktopTests.map(t => 
+                            `<span style="color: ${t.pass ? 'green' : 'red'}">${t.pass ? '✓' : '✗'} ${t.test}: ${t.details}</span>`
+                        ).join('<br>')}
+                    `;
+                    desktopResult.className = `test-result ${passedDesktop === totalDesktop ? 'pass' : 'fail'}`;
+                    
+                } catch (error) {
+                    desktopResult.innerHTML = `<strong>Desktop Test Error:</strong> ${error.message}`;
+                    desktopResult.className = 'test-result fail';
+                }
+                
+                try {
+                    // Test mobile layout
+                    const mobileDoc = mobileFrame.contentDocument;
+                    const mobileDrawerToggle = mobileDoc.querySelector('.theory-drawer-toggle');
+                    const theoryDrawer = mobileDoc.querySelector('.theory-drawer');
+                    
+                    let mobileTests = [];
+                    
+                    if (mobileDrawerToggle) {
+                        const toggleStyles = window.getComputedStyle(mobileDrawerToggle);
+                        const isVisible = toggleStyles.display !== 'none';
+                        
+                        mobileTests.push({
+                            test: 'Theory drawer toggle visible on mobile',
+                            pass: isVisible,
+                            details: `display: ${toggleStyles.display}`
+                        });
+                    } else {
+                        mobileTests.push({
+                            test: 'Theory drawer toggle exists',
+                            pass: false,
+                            details: 'Element not found'
+                        });
+                    }
+                    
+                    if (theoryDrawer) {
+                        const drawerStyles = window.getComputedStyle(theoryDrawer);
+                        const hasCorrectPositioning = drawerStyles.position === 'fixed';
+                        const hasCorrectWidth = drawerStyles.width.includes('85vw') || parseInt(drawerStyles.width) >= 300;
+                        
+                        mobileTests.push({
+                            test: 'Theory drawer positioned correctly',
+                            pass: hasCorrectPositioning,
+                            details: `position: ${drawerStyles.position}`
+                        });
+                        
+                        mobileTests.push({
+                            test: 'Theory drawer has mobile width',
+                            pass: hasCorrectWidth,
+                            details: `width: ${drawerStyles.width}`
+                        });
+                    }
+                    
+                    const passedMobile = mobileTests.filter(t => t.pass).length;
+                    const totalMobile = mobileTests.length;
+                    
+                    mobileResult.innerHTML = `
+                        <strong>Mobile Results: ${passedMobile}/${totalMobile} tests passed</strong><br>
+                        ${mobileTests.map(t => 
+                            `<span style="color: ${t.pass ? 'green' : 'red'}">${t.pass ? '✓' : '✗'} ${t.test}: ${t.details}</span>`
+                        ).join('<br>')}
+                    `;
+                    mobileResult.className = `test-result ${passedMobile === totalMobile ? 'pass' : 'fail'}`;
+                    
+                } catch (error) {
+                    mobileResult.innerHTML = `<strong>Mobile Test Error:</strong> ${error.message}`;
+                    mobileResult.className = 'test-result fail';
+                }
+            }, 2000);
+        }
+        
+        window.addEventListener('load', testLayout);
+    </script>
+</body>
+</html>

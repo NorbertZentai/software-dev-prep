@@ -163,10 +163,23 @@ export class Router {
     this.updatePageTitle(route)
 
     // Update active navigation link
-    this.updateActiveNavigation(route)
+  this.updateActiveNavigation(route)
 
     // Manage TOC toggle button visibility
     this.manageTocToggle(route)
+
+    // Ensure theory sidebar is hidden by default on mobile to avoid flash on refresh
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+    const theorySidebar = document.getElementById('theory-sidebar')
+    if (theorySidebar) {
+      if (isMobile) {
+        theorySidebar.classList.add('hidden')
+        theorySidebar.classList.remove('open')
+      } else {
+        // Desktop: make sure it's visible and not treated as a drawer
+        theorySidebar.classList.remove('hidden', 'open', 'drawer', 'right')
+      }
+    }
 
     // Close sidebar on mobile after navigation
     if (window.innerWidth <= 1024) {
@@ -177,17 +190,21 @@ export class Router {
   normalizeRoute(hash) {
     if (!hash) return hash
 
+    // Keep only the base route (before any deep anchor)
     const secondHashIndex = hash.indexOf('#', 1)
-    if (secondHashIndex === -1) return hash
-
-    return hash.substring(0, secondHashIndex)
+    if (secondHashIndex !== -1) {
+      return hash.substring(0, secondHashIndex)
+    }
+    // Strip any trailing slash differences for robustness
+    return hash.replace(/\/$/, '')
   }
 
   manageTocToggle(hash) {
     const tocToggle = document.getElementById('toc-toggle')
     if (tocToggle) {
       const isTheoryPage = hash.startsWith('#/theory')
-      tocToggle.style.display = isTheoryPage ? 'block' : 'none'
+      const isMobile = window.matchMedia('(max-width: 768px)').matches
+      tocToggle.style.display = isTheoryPage && isMobile ? 'block' : 'none'
 
       // Reset TOC state when leaving theory pages
       if (!isTheoryPage) {
@@ -693,12 +710,16 @@ export class Router {
       link.removeAttribute('aria-current')
     })
 
-    // Find and activate the current link
-    const currentLink = document.querySelector(`a[href="${route}"]`)
-    if (currentLink) {
-      currentLink.classList.add('active')
-      currentLink.setAttribute('aria-current', 'page')
-    }
+    // Normalize route and find ALL links that match (both original sidebar and cloned drawer)
+    const base = route ? route.replace(/\/$/, '') : ''
+    const currentLinks = Array.from(document.querySelectorAll('.nav-group a')).filter(a => {
+      const href = a.getAttribute('href') || ''
+      return href.replace(/\/$/, '') === base
+    })
+    currentLinks.forEach((link) => {
+      link.classList.add('active')
+      link.setAttribute('aria-current', 'page')
+    })
 
     // Trigger active menu manager update if available
     if (window.activeMenuManager) {

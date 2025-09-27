@@ -2,6 +2,7 @@
 import { Router } from './router.js'
 import { StorageManager } from './storage.js'
 import { ThemeManager } from './theme.js'
+import './theory-mobile.js' // Initialize theory mobile drawer
 
 class App {
   constructor() {
@@ -30,6 +31,21 @@ class App {
 
     // Initialize sidebar functionality
     this.initSidebar()
+
+  // Initialize mobile global drawer (left)
+  this.initGlobalMobileDrawer()
+
+  // Safety: ensure theory right drawer is hidden on mobile at startup
+  try {
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+    const theorySidebar = document.getElementById('theory-sidebar')
+    const overlay = document.getElementById('drawer-overlay')
+    if (isMobile && theorySidebar) {
+      theorySidebar.classList.add('hidden')
+      theorySidebar.classList.remove('open')
+      overlay?.classList.remove('active')
+    }
+  } catch {}
 
     // Initialize search functionality
     this.initSearch()
@@ -79,6 +95,167 @@ class App {
         }
       })
     }
+  }
+
+  initGlobalMobileDrawer() {
+    const mql = window.matchMedia('(max-width: 768px)')
+    const toggle = document.getElementById('global-nav-toggle')
+    const drawer = document.getElementById('global-nav')
+    const overlay = document.getElementById('drawer-overlay')
+    if (!toggle || !drawer || !overlay) return
+
+    let isOpen = false
+    let trapBound = null
+
+    // Clone sidebar content into the mobile drawer once
+    const ensureDrawerContent = () => {
+      if (drawer.getAttribute('data-populated') === 'true') return
+      const source = document.querySelector('#sidebar .sidebar-content') || document.getElementById('sidebar')
+      if (source) {
+        const wrapper = document.createElement('div')
+        wrapper.className = 'sidebar-content'
+        wrapper.innerHTML = source.innerHTML
+        drawer.innerHTML = ''
+        drawer.appendChild(wrapper)
+        drawer.setAttribute('data-populated', 'true')
+
+        // Delegate: close drawer after navigation link click on mobile
+        drawer.addEventListener('click', (e) => {
+          const link = e.target.closest('a[href]')
+          if (!link) return
+          // Set active state immediately for visual feedback
+          try {
+            const href = link.getAttribute('href') || ''
+            if (window.router) window.router.updateActiveNavigation(window.router.normalizeRoute ? window.router.normalizeRoute(href) : href)
+          } catch {}
+          setTimeout(() => {
+            if (mql.matches && isOpen) close()
+            // After navigation, force a refresh of active states
+            if (window.router && typeof window.router.updateActiveNavigation === 'function') {
+              const base = (window.location.hash || '').replace(/(#.*)$/,'')
+              window.router.updateActiveNavigation(base)
+            } else {
+              // Fallback: dispatch hashchange to trigger router
+              window.dispatchEvent(new HashChangeEvent('hashchange'))
+            }
+          }, 50)
+        })
+      }
+    }
+
+    const ensureRightVisibility = () => {
+      // Show header toggles on mobile only
+      const isTheory = window.location.hash.startsWith('#/theory/')
+      const tocToggle = document.getElementById('toc-toggle')
+      if (mql.matches) {
+        toggle.style.display = 'inline-flex'
+        if (tocToggle) tocToggle.style.display = isTheory ? 'inline-flex' : 'none'
+      } else {
+        toggle.style.display = 'none'
+        if (tocToggle) tocToggle.style.display = 'none'
+      }
+    }
+
+    const lockBody = () => {
+      // Avoid double-locking
+      if (!document.body.classList.contains('drawer-open')) {
+        const scrollY = window.scrollY || window.pageYOffset || 0
+        document.body.dataset.scrollY = String(scrollY)
+        document.body.style.top = `-${scrollY}px`
+        document.body.classList.add('drawer-open')
+        document.body.style.overflow = 'hidden'
+        document.body.style.position = 'fixed'
+        document.body.style.width = '100%'
+      }
+    }
+    const unlockBody = () => {
+      const saved = parseInt(document.body.dataset.scrollY || '0', 10)
+      document.body.classList.remove('drawer-open')
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.top = ''
+      delete document.body.dataset.scrollY
+      // Restore scroll position instantly (override global smooth)
+      const html = document.documentElement
+      const prevBehavior = html.style.scrollBehavior
+      html.style.scrollBehavior = 'auto'
+      if (!Number.isNaN(saved)) {
+        window.scrollTo({ top: saved, left: 0, behavior: 'auto' })
+      }
+      // Restore previous behavior in next tick
+      setTimeout(() => { html.style.scrollBehavior = prevBehavior || '' }, 0)
+    }
+
+    const trapFocus = (e) => {
+      if (!isOpen || e.key !== 'Tab') return
+      const focusables = drawer.querySelectorAll('a, button, input, [tabindex]:not([tabindex="-1"])')
+      if (!focusables.length) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      const active = document.activeElement
+      if (e.shiftKey) {
+        if (active === first || !drawer.contains(active)) { e.preventDefault(); last.focus() }
+      } else {
+        if (active === last || !drawer.contains(active)) { e.preventDefault(); first.focus() }
+      }
+    }
+
+    const open = () => {
+      if (!mql.matches) return
+      // Close theory drawer if open (mutual exclusion)
+      const theoryDrawer = document.getElementById('theory-sidebar')
+      if (theoryDrawer && theoryDrawer.classList.contains('open')) {
+        theoryDrawer.classList.remove('open')
+        theoryDrawer.classList.add('hidden')
+      }
+      // Ensure the drawer has content before opening
+      ensureDrawerContent()
+      isOpen = true
+      drawer.classList.add('open'); drawer.classList.remove('hidden')
+      overlay.classList.add('active'); toggle.setAttribute('aria-expanded', 'true')
+      lockBody()
+      trapBound = trapBound || trapFocus
+      document.addEventListener('keydown', trapBound)
+      // Update active highlighting to current route when opening
+      try {
+        const getBaseRoute = () => {
+          const h = window.location.hash || ''
+          const i = h.indexOf('#', 1)
+          return i !== -1 ? h.substring(0, i) : h.replace(/\/$/, '')
+        }
+        if (window.router && typeof window.router.updateActiveNavigation === 'function') {
+          window.router.updateActiveNavigation(window.router.currentRoute || getBaseRoute())
+        }
+      } catch {}
+      // For accessibility, focus the drawer container (not the first link) to avoid misleading focus highlight
+      setTimeout(() => {
+        drawer.setAttribute('tabindex', '-1')
+        try { drawer.focus({ preventScroll: true }) } catch { drawer.focus() }
+      }, 80)
+    }
+
+    const close = () => {
+      isOpen = false
+      drawer.classList.remove('open'); drawer.classList.add('hidden')
+      overlay.classList.remove('active'); toggle.setAttribute('aria-expanded', 'false')
+      unlockBody()
+      if (trapBound) document.removeEventListener('keydown', trapBound)
+      try { toggle.focus({ preventScroll: true }) } catch { toggle.focus() }
+    }
+
+    toggle.addEventListener('click', (e) => {
+      e.preventDefault()
+      if (!mql.matches) return
+      isOpen ? close() : open()
+    })
+
+    overlay.addEventListener('click', () => { if (mql.matches && isOpen) close() })
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mql.matches && isOpen) close() })
+    mql.addEventListener('change', () => { if (!mql.matches && isOpen) close(); ensureRightVisibility() })
+    window.addEventListener('hashchange', ensureRightVisibility)
+    document.addEventListener('theory:drawer:closed', ensureRightVisibility)
+    ensureRightVisibility()
   }
 
   initSearch() {
@@ -172,4 +349,8 @@ class App {
 }
 
 // Initialize app when script loads
-new App()
+const appInstance = new App()
+// Expose router for cross-module refresh needs (limited scope)
+if (appInstance && appInstance.router) {
+  window.router = appInstance.router
+}
