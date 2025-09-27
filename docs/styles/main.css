@@ -1313,7 +1313,8 @@ noscript {
   transform: translateX(4px);
 }
 
-.toc-link.active {
+.toc-link.active,
+.toc-link[aria-current="true"] {
   background: var(--accent-primary);
   color: white;
   font-weight: 600;
@@ -1669,10 +1670,8 @@ noscript {
 /* Enhanced active state for theory TOC */
 .theory-toc .toc-link.active,
 .theory-toc .toc-link[aria-current='true'],
-.theory-toc .toc-link[aria-current='location'],
 .theory-sidebar .toc-link.active,
-.theory-sidebar .toc-link[aria-current='true'],
-.theory-sidebar .toc-link[aria-current='location'] {
+.theory-sidebar .toc-link[aria-current='true'] {
   background: var(--accent-primary) !important;
   color: white !important;
   font-weight: 600 !important;
@@ -1683,10 +1682,8 @@ noscript {
 /* Maintain active state styling on hover for TOC */
 .theory-toc .toc-link.active:hover,
 .theory-toc .toc-link[aria-current='true']:hover,
-.theory-toc .toc-link[aria-current='location']:hover,
 .theory-sidebar .toc-link.active:hover,
-.theory-sidebar .toc-link[aria-current='true']:hover,
-.theory-sidebar .toc-link[aria-current='location']:hover {
+.theory-sidebar .toc-link[aria-current='true']:hover {
   background: var(--accent-primary) !important;
   color: white !important;
   transform: translateX(4px);

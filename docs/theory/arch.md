@@ -1,258 +1,680 @@
 # Szoftver Architektúra
 
-## Bevezetés
+## Rövid összefoglaló
 
-A szoftver architektúra egy rendszer alapvető szervezési elveit és szerkezetét határozza meg. Jó architektúra nélkül még a legjobb kód is káosszá válhat idővel.
+A szoftver architektúra a rendszerek szerkezeti és szervezési elveit határozza meg, amelyek hosszú távon biztosítják a fenntarthatóságot, skálázhatóságot és megbízhatóságot. Modern architektúrák mikroszolgáltatás alapúak, használnak rétegezett felépítést (layered architecture), port-adapter mintákat és bounded context koncepciókat. Az idempotencia és aszinkron üzenetkezelés alapvető elvek, amelyeket cache-eléssel és resiliency mechanizmusokkal (retry, circuit breaker) egészítünk ki. Megfigyelhetőség (observability) kulcsfontosságú a hibakereséshez. Fő buktatók: overengineering, chatty services és monolitikus adatbázis-használat.
 
-## SOLID Alapelvek
+## Fogalmak
 
-### 1. Single Responsibility Principle (SRP)
-Egy osztálynak csak egy felelőssége legyen.
+### Monolit
+Egyetlen deployolható egység, amely minden üzleti logikát, adatkezelést és interfészt tartalmaz. Egyszerűbb fejlesztés, de nehezebb skálázni és karbantartani.
 
+**Példa:**
 ```java
-// Rossz példa - több felelősség
-class User {
-    private String name;
-    private String email;
-
-    // User management
-    public void save() {
-        // Database save logic
+// Monolitikus alkalmazás struktúra
+@SpringBootApplication
+public class MonolithicECommerceApplication {
+    // Minden komponens egy alkalmazásban
+    
+    @RestController
+    class OrderController {
+        @GetMapping("/orders")
+        public List<Order> getOrders() { /* ... */ }
     }
-
-    // Email functionality
-    public void sendEmail(String message) {
-        // Email sending logic
+    
+    @RestController
+    class ProductController {
+        @GetMapping("/products")
+        public List<Product> getProducts() { /* ... */ }
     }
-
-    // Validation
-    public boolean isValid() {
-        // Validation logic
+    
+    @RestController
+    class UserController {
+        @GetMapping("/users")
+        public List<User> getUsers() { /* ... */ }
     }
-}
-
-// Jó példa - szétválasztott felelősségek
-class User {
-    private String name;
-    private String email;
-
-    // getters/setters
-}
-
-class UserRepository {
-    public void save(User user) {
-        // Database save logic
-    }
-}
-
-class EmailService {
-    public void sendEmail(User user, String message) {
-        // Email sending logic
-    }
-}
-
-class UserValidator {
-    public boolean isValid(User user) {
-        // Validation logic
+    
+    // Közös adatbázis minden funkcióhoz
+    @Repository
+    class DatabaseRepository {
+        // orders, products, users táblák ugyanabban a DB-ben
     }
 }
 ```
 
-### 2. Open/Closed Principle (OCP)
-Az osztályok legyenek nyitottak a bővítésre, de zártak a módosításra.
+Magyarázat: Minden funkció egy alkalmazásban van, közös adatbázissal és deployment egységgel.
 
+### Mikroszolgáltatások (Microservices) {#mikroszolgaltatasok-microservices}
+Kisebb, független komponensek, amelyek egy-egy üzleti képességet valósítanak meg. Saját adatbázis, független deploy, technológiai diverzitás.
+
+**Példa:**
 ```java
-// Jó példa - Strategy pattern használata
+// User Service - független alkalmazás
+@SpringBootApplication
+public class UserServiceApplication {
+    @RestController
+    class UserController {
+        @GetMapping("/users/{id}")
+        public User getUser(@PathVariable Long id) {
+            return userService.findById(id);
+        }
+    }
+}
+
+// Order Service - külön alkalmazás
+@SpringBootApplication
+public class OrderServiceApplication {
+    @RestController
+    class OrderController {
+        @PostMapping("/orders")
+        public Order createOrder(@RequestBody CreateOrderRequest request) {
+            // HTTP hívás a User Service-hez
+            User user = restTemplate.getForObject(
+                "http://user-service/users/" + request.getUserId(), 
+                User.class
+            );
+            return orderService.createOrder(request, user);
+        }
+    }
+}
+
+// Product Service - szintén külön
+@SpringBootApplication
+public class ProductServiceApplication {
+    // Saját adatbázis, független fejlesztés és deploy
+}
+```
+
+Magyarázat: Minden szolgáltatás külön fut, saját adatbázissal és API-val kommunikálnak egymással.
+
+### Rétegek (Layered Architecture) {#retegek-layered-architecture}
+Logikai rétegek: prezentáció, üzleti logika, adatkezelés. Segíti a separation of concerns elvét.
+
+**Példa:**
+```java
+// Presentation Layer
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    private final UserService userService;
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
+        UserDTO user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+    
+    @PostMapping
+    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequest request) {
+        UserDTO createdUser = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+}
+
+// Business Logic Layer
+@Service
+@Transactional
+public class UserService {
+    private final UserRepository userRepository;
+    private final EmailService emailService;
+    
+    public UserDTO createUser(CreateUserRequest request) {
+        // Business logic validation
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistsException();
+        }
+        
+        User user = new User(request.getName(), request.getEmail());
+        User savedUser = userRepository.save(user);
+        
+        // Business logic - send welcome email
+        emailService.sendWelcomeEmail(savedUser.getEmail());
+        
+        return UserMapper.toDTO(savedUser);
+    }
+}
+
+// Data Access Layer
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    boolean existsByEmail(String email);
+    Optional<User> findByEmail(String email);
+}
+```
+
+Magyarázat: Minden réteg csak az alatta lévő rétegre támaszkodik, tiszta elválasztás a felelősségek között.
+
+### Port–Adapter (Hexagonal) {#port-adapter-hexagonal}
+Az alkalmazás magját (core) adapterek kapcsolják össze külső rendszerekkel (pl. adatbázis, API, UI).
+
+**Példa:**
+```java
+// Domain Core - Port (Interface)
+public interface UserRepository {
+    User save(User user);
+    Optional<User> findById(Long id);
+}
+
+public interface NotificationService {
+    void sendNotification(String message, String recipient);
+}
+
+// Domain Service (Core Logic)
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
+    
+    // Csak port interfészektől függ
+    public UserService(UserRepository userRepository, NotificationService notificationService) {
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
+    }
+    
+    public User createUser(String name, String email) {
+        User user = new User(name, email);
+        User savedUser = userRepository.save(user);
+        notificationService.sendNotification("Welcome!", email);
+        return savedUser;
+    }
+}
+
+// Adapter - Database Implementation
+@Repository
+public class JpaUserRepository implements UserRepository {
+    private final JpaUserRepositoryInterface jpaRepo;
+    
+    @Override
+    public User save(User user) {
+        UserEntity entity = UserMapper.toEntity(user);
+        UserEntity savedEntity = jpaRepo.save(entity);
+        return UserMapper.toDomain(savedEntity);
+    }
+}
+
+// Adapter - Email Implementation  
+@Component
+public class EmailNotificationService implements NotificationService {
+    @Override
+    public void sendNotification(String message, String recipient) {
+        // SMTP email sending logic
+        emailClient.sendEmail(recipient, message);
+    }
+}
+```
+
+Magyarázat: A core üzleti logika független a külső technológiáktól, adaptereken keresztül kapcsolódik hozzájuk.
+
+### Bounded Context {#bounded-context}
+Domain Driven Design (DDD) fogalom: egy adott üzleti terület logikailag elkülönített része.
+
+**Példa:**
+```java
+// User Management Context
+package com.ecommerce.user;
+public class User {
+    private Long id;
+    private String name;
+    private String email;
+    private UserStatus status;
+}
+
+// Order Management Context - másik User fogalom
+package com.ecommerce.order;
+public class User {
+    private Long userId;
+    private String shippingAddress;
+    private PaymentMethod preferredPayment;
+    // Itt csak a rendeléshez szükséges adatok
+}
+
+// Inventory Context - megint más User reprezentáció
+package com.ecommerce.inventory;
+public class User {
+    private Long userId;
+    private UserType type; // retail, wholesale
+    private DiscountLevel discountLevel;
+}
+```
+
+Magyarázat: Minden bounded context-ben a User fogalma más jelentéssel bír, a kontextusnak megfelelően.
+
+### Idempotencia {#idempotencia}
+Ugyanaz a művelet többszöri végrehajtása nem változtatja meg az eredményt (pl. HTTP PUT).
+
+**Példa:**
+```java
+@RestController
+public class PaymentController {
+    
+    // Idempotent operation - ugyanazzal az idempotency key-vel
+    @PostMapping("/payments")
+    public ResponseEntity<Payment> processPayment(
+            @RequestBody PaymentRequest request,
+            @RequestHeader("Idempotency-Key") String idempotencyKey) {
+        
+        // Ellenőrizzük, hogy már feldolgoztuk-e ezt a key-t
+        Optional<Payment> existingPayment = paymentService.findByIdempotencyKey(idempotencyKey);
+        if (existingPayment.isPresent()) {
+            // Ugyanazt az eredményt adjuk vissza, nem duplikálunk
+            return ResponseEntity.ok(existingPayment.get());
+        }
+        
+        // Első alkalommal dolgozzuk fel
+        Payment payment = paymentService.processPayment(request, idempotencyKey);
+        return ResponseEntity.status(HttpStatus.CREATED).body(payment);
+    }
+    
+    // PUT operations are naturally idempotent
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        // Többszöri hívás ugyanazt az eredményt adja
+        User updatedUser = userService.updateUser(id, user);
+        return ResponseEntity.ok(updatedUser);
+    }
+}
+```
+
+Magyarázat: Idempotent műveletek biztonságosan újra végrehajthatók hálózati hibák vagy timeout esetén.
+
+### Aszinkron üzenetkezelés {#aszinkron-uzenetkezeles}
+Komponensek közötti kommunikáció események, üzenetsorok (RabbitMQ, Kafka) segítségével.
+
+**Példa:**
+```java
+// Event Publisher
+@Service
+public class OrderService {
+    
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+    
+    public Order createOrder(CreateOrderRequest request) {
+        Order order = new Order(request);
+        Order savedOrder = orderRepository.save(order);
+        
+        // Aszinkron esemény kibocsátás
+        OrderCreatedEvent event = new OrderCreatedEvent(
+            savedOrder.getId(), 
+            savedOrder.getUserId(), 
+            savedOrder.getItems()
+        );
+        
+        rabbitTemplate.convertAndSend("order.exchange", "order.created", event);
+        
+        return savedOrder;
+    }
+}
+
+// Event Consumer - Inventory Service
+@Component
+public class InventoryEventHandler {
+    
+    @RabbitListener(queues = "inventory.order.queue")
+    public void handleOrderCreated(OrderCreatedEvent event) {
+        // Készlet frissítése aszinkron módon
+        for (OrderItem item : event.getItems()) {
+            inventoryService.reserveStock(item.getProductId(), item.getQuantity());
+        }
+        
+        // Ha sikeres, újabb eseményt küldünk
+        stockReservedPublisher.publishStockReserved(event.getOrderId());
+    }
+}
+
+// Event Consumer - Notification Service  
+@Component
+public class NotificationEventHandler {
+    
+    @RabbitListener(queues = "notification.order.queue")
+    public void handleOrderCreated(OrderCreatedEvent event) {
+        // Email küldése aszinkron módon
+        User user = userService.findById(event.getUserId());
+        emailService.sendOrderConfirmation(user.getEmail(), event.getOrderId());
+    }
+}
+```
+
+Magyarázat: Az Order Service nem blokkolódik a készlet és értesítés műveletek miatt, azok aszinkron futnak.
+
+### Cache {#cache}
+Gyakran használt adatok gyors elérése memóriából (pl. Redis, Memcached).
+
+**Példa:**
+```java
+@Service
+public class ProductService {
+    
+    @Autowired
+    private ProductRepository productRepository;
+    
+    @Autowired
+    private RedisTemplate<String, Product> redisTemplate;
+    
+    public Product getProductById(Long id) {
+        // 1. Próbáljuk cache-ből
+        String cacheKey = "product:" + id;
+        Product cachedProduct = redisTemplate.opsForValue().get(cacheKey);
+        
+        if (cachedProduct != null) {
+            return cachedProduct; // Cache hit
+        }
+        
+        // 2. Ha nincs cache-ben, adatbázisból
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(id));
+        
+        // 3. Cache-be mentjük (TTL: 1 óra)
+        redisTemplate.opsForValue().set(cacheKey, product, Duration.ofHours(1));
+        
+        return product;
+    }
+    
+    // Spring Cache Annotation approach
+    @Cacheable(value = "products", key = "#id")
+    public Product getProductByIdCached(Long id) {
+        return productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException(id));
+    }
+    
+    @CacheEvict(value = "products", key = "#product.id")
+    public Product updateProduct(Product product) {
+        return productRepository.save(product);
+    }
+}
+```
+
+Magyarázat: Cache jelentősen csökkenti az adatbázis terhelést és javítja a response time-ot.
+
+### Resiliency (Hibatűrés) {#resiliency-hibatures}
+Hibatűrés: retry, circuit breaker, fallback mechanizmusok.
+
+**Példa:**
+```java
+// Retry mechanizmus
+@Service
+public class ExternalApiService {
+    
+    @Retryable(value = {Exception.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
+    public ApiResponse callExternalService(String request) {
+        // Hálózati hívás, ami sikertelen lehet
+        return restTemplate.postForObject("/external-api", request, ApiResponse.class);
+    }
+    
+    @Recover
+    public ApiResponse recover(Exception ex, String request) {
+        // Ha minden retry sikertelen, fallback válasz
+        return new ApiResponse("Service temporarily unavailable");
+    }
+}
+
+// Circuit Breaker pattern implementáció
+@Component
+public class CircuitBreakerService {
+    
+    private final CircuitBreaker circuitBreaker;
+    
+    public CircuitBreakerService() {
+        this.circuitBreaker = CircuitBreaker.ofDefaults("externalService");
+        circuitBreaker.getEventPublisher()
+            .onStateTransition(event -> 
+                log.info("Circuit breaker state transition: {}", event.getStateTransition()));
+    }
+    
+    public String callServiceWithCircuitBreaker() {
+        return circuitBreaker.executeSupplier(() -> {
+            // Külső szolgáltatás hívása
+            return externalApiClient.getData();
+        });
+    }
+}
+
+// Bulkhead pattern - resource isolation
+@Configuration
+public class ExecutorConfig {
+    
+    @Bean("userServiceExecutor")
+    public Executor userServiceExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("user-service-");
+        return executor;
+    }
+    
+    @Bean("orderServiceExecutor") 
+    public Executor orderServiceExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(200);
+        executor.setThreadNamePrefix("order-service-");
+        return executor;
+    }
+}
+```
+
+Magyarázat: Resiliency minták biztosítják, hogy a rendszer működjön külső szolgáltatások hibái esetén is.
+
+### Observability (Megfigyelhetőség) {#observability-megfigyelhetoseg}
+Rendszer megfigyelhetősége: logging, metrics, tracing.
+
+**Példa:**
+```java
+// Structured Logging
+@RestController
+public class UserController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        // Structured log with context
+        logger.info("Getting user - userId: {}, timestamp: {}", 
+            id, Instant.now());
+        
+        try {
+            User user = userService.findById(id);
+            logger.info("User found successfully - userId: {}, userName: {}", 
+                id, user.getName());
+            return ResponseEntity.ok(user);
+        } catch (UserNotFoundException e) {
+            logger.warn("User not found - userId: {}, error: {}", 
+                id, e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+}
+
+// Custom Metrics with Micrometer
+@Service
+public class OrderService {
+    
+    private final Counter orderCreatedCounter;
+    private final Timer orderProcessingTimer;
+    
+    public OrderService(MeterRegistry meterRegistry) {
+        this.orderCreatedCounter = Counter.builder("orders.created")
+            .description("Number of orders created")
+            .register(meterRegistry);
+            
+        this.orderProcessingTimer = Timer.builder("orders.processing.time")
+            .description("Order processing time")
+            .register(meterRegistry);
+    }
+    
+    public Order createOrder(CreateOrderRequest request) {
+        return orderProcessingTimer.recordCallable(() -> {
+            Order order = processOrder(request);
+            orderCreatedCounter.increment(
+                Tags.of("status", order.getStatus().toString())
+            );
+            return order;
+        });
+    }
+}
+
+// Distributed Tracing with Sleuth
+@Service
+@Slf4j
+public class PaymentService {
+    
+    @NewSpan("payment-processing")
+    public PaymentResult processPayment(@SpanTag("amount") BigDecimal amount, 
+                                       @SpanTag("userId") Long userId) {
+        
+        log.info("Processing payment for user {} amount {}", userId, amount);
+        
+        // Trace context automatically propagated to downstream calls
+        BankResponse response = bankApiClient.chargeCard(amount);
+        
+        return new PaymentResult(response.getTransactionId(), response.getStatus());
+    }
+}
+```
+
+Magyarázat: Observability segít gyorsan azonosítani és diagnosztizálni a problémákat production-ben.
+
+## Kódrészletek és minták
+
+### SOLID Alapelvek
+
+**SRP – Single Responsibility Principle**
+```java
+// HIBÁS - több felelősség egy osztályban
+class User {
+    private String name;
+    private String email;
+    
+    public void save() { /* adatbázis művelet */ }
+    public void sendEmail(String msg) { /* email küldés */ }
+    public boolean validate() { /* validáció */ }
+}
+
+// HELYES - szétválasztott felelősségek
+class User {
+    private String name;
+    private String email;
+    // csak data holder
+}
+
+class UserRepository {
+    public void save(User user) { /* adatbázis művelet */ }
+}
+
+class EmailService {
+    public void sendEmail(User user, String msg) { /* email küldés */ }
+}
+
+class UserValidator {
+    public boolean validate(User user) { /* validáció */ }
+}
+```
+
+**OCP – Open/Closed Principle**
+```java
 interface DiscountStrategy {
     double calculateDiscount(double amount);
 }
 
-class RegularCustomerDiscount implements DiscountStrategy {
-    public double calculateDiscount(double amount) {
-        return amount * 0.05; // 5% kedvezmény
-    }
+class RegularDiscount implements DiscountStrategy {
+    public double calculateDiscount(double amount) { return amount * 0.05; }
 }
 
-class PremiumCustomerDiscount implements DiscountStrategy {
-    public double calculateDiscount(double amount) {
-        return amount * 0.1; // 10% kedvezmény
-    }
+class PremiumDiscount implements DiscountStrategy {
+    public double calculateDiscount(double amount) { return amount * 0.1; }
 }
 
 class PriceCalculator {
-    private DiscountStrategy discountStrategy;
-
-    public PriceCalculator(DiscountStrategy strategy) {
-        this.discountStrategy = strategy;
-    }
-
-    public double calculatePrice(double basePrice) {
-        double discount = discountStrategy.calculateDiscount(basePrice);
-        return basePrice - discount;
-    }
+    private DiscountStrategy strategy;
+    public PriceCalculator(DiscountStrategy strategy) { this.strategy = strategy; }
+    public double calculate(double base) { return base - strategy.calculateDiscount(base); }
 }
 ```
 
-### 3. Liskov Substitution Principle (LSP)
-Az alosztályok helyettesíthetők legyenek a szülő osztályukkal.
-
+**LSP – Liskov Substitution Principle**
 ```java
-abstract class Bird {
-    abstract void eat();
+abstract class Bird { abstract void eat(); }
+
+class Sparrow extends Bird { 
+    void eat() { /* ... */ } 
+    void fly() { /* ... */ }
 }
 
-class Sparrow extends Bird {
-    void eat() { /* sparrow eating */ }
-    void fly() { /* sparrow flying */ }
+class Penguin extends Bird { 
+    void eat() { /* ... */ } 
+    // Pingvin nem implementálja a repülést - helyes LSP
 }
 
-class Penguin extends Bird {
-    void eat() { /* penguin eating */ }
-    // Pingvin nem tud repülni - helyes LSP
-}
-
-// Jobb megoldás
-interface Flyable {
-    void fly();
-}
-
-class Sparrow extends Bird implements Flyable {
-    void eat() { /* eating */ }
-    void fly() { /* flying */ }
-}
-
-class Penguin extends Bird {
-    void eat() { /* eating */ }
-    // Nem implementálja a Flyable-t
-}
+// Jobb megközelítés
+interface Flyable { void fly(); }
+class Sparrow extends Bird implements Flyable { /* ... */ }
+class Penguin extends Bird { /* ... */ } // Nem flyable
 ```
 
-### 4. Interface Segregation Principle (ISP)
-Ne függjünk olyan interfészektől, amelyeket nem használunk.
-
+**ISP – Interface Segregation Principle**
 ```java
-// Rossz példa - "fat interface"
-interface Worker {
-    void work();
-    void eat();
-    void sleep();
-}
+// HIBÁS - "fat interface"
+interface Worker { void work(); void eat(); void sleep(); }
 
-// Jó példa - szeparált interfészek
-interface Workable {
-    void work();
-}
+// HELYES - szeparált interfészek
+interface Workable { void work(); }
+interface Eatable { void eat(); }
+interface Sleepable { void sleep(); }
 
-interface Eatable {
-    void eat();
-}
-
-interface Sleepable {
-    void sleep();
-}
-
-class Human implements Workable, Eatable, Sleepable {
-    public void work() { /* work */ }
-    public void eat() { /* eat */ }
-    public void sleep() { /* sleep */ }
-}
-
-class Robot implements Workable {
-    public void work() { /* work */ }
-    // Robot nem eszik és nem alszik
-}
+class Human implements Workable, Eatable, Sleepable { /* ... */ }
+class Robot implements Workable { /* csak dolgozik */ }
 ```
 
-### 5. Dependency Inversion Principle (DIP)
-Függjünk az absztrakcióktól, ne a konkrét implementációktól.
-
+**DIP – Dependency Inversion Principle**
 ```java
-// Rossz példa - konkrét függőség
-class EmailNotification {
-    public void send(String message) {
-        // Email küldés
-    }
-}
-
-class OrderService {
-    private EmailNotification notification; // Konkrét függőség
-
-    public void processOrder(Order order) {
-        // order processing
-        notification.send("Order processed");
-    }
-}
-
-// Jó példa - absztrakciótól függés
-interface NotificationService {
-    void send(String message);
-}
+interface NotificationService { void send(String msg); }
 
 class EmailNotification implements NotificationService {
-    public void send(String message) {
-        // Email küldés
-    }
+    public void send(String msg) { /* email */ }
 }
 
 class SMSNotification implements NotificationService {
-    public void send(String message) {
-        // SMS küldés
-    }
+    public void send(String msg) { /* SMS */ }
 }
 
 class OrderService {
-    private NotificationService notification; // Absztrakció
-
+    private NotificationService notification; // absztrakció!
+    
     public OrderService(NotificationService notification) {
         this.notification = notification;
     }
-
+    
     public void processOrder(Order order) {
-        // order processing
         notification.send("Order processed");
     }
 }
 ```
 
-## Design Patterns
+### Design Patterns
 
-### Creational Patterns
-
-#### Singleton
+**Singleton**
 ```java
 public class DatabaseConnection {
     private static DatabaseConnection instance;
-    private Connection connection;
-
-    private DatabaseConnection() {
-        // Private constructor
-        this.connection = DriverManager.getConnection("...");
-    }
-
+    private DatabaseConnection() {}
+    
     public static synchronized DatabaseConnection getInstance() {
-        if (instance == null) {
-            instance = new DatabaseConnection();
-        }
+        if (instance == null) instance = new DatabaseConnection();
         return instance;
-    }
-
-    public Connection getConnection() {
-        return connection;
     }
 }
 
-// Thread-safe variant
+// Thread-safe, lazy loading
 public class ThreadSafeSingleton {
     private static volatile ThreadSafeSingleton instance;
-
     private ThreadSafeSingleton() {}
-
+    
     public static ThreadSafeSingleton getInstance() {
         if (instance == null) {
             synchronized (ThreadSafeSingleton.class) {
-                if (instance == null) {
-                    instance = new ThreadSafeSingleton();
-                }
+                if (instance == null) instance = new ThreadSafeSingleton();
             }
         }
         return instance;
@@ -260,33 +682,18 @@ public class ThreadSafeSingleton {
 }
 ```
 
-#### Factory Pattern
+**Factory**
 ```java
-interface Animal {
-    void makeSound();
-}
-
-class Dog implements Animal {
-    public void makeSound() {
-        System.out.println("Woof!");
-    }
-}
-
-class Cat implements Animal {
-    public void makeSound() {
-        System.out.println("Meow!");
-    }
-}
+interface Animal { void makeSound(); }
+class Dog implements Animal { public void makeSound() { System.out.println("Woof!"); } }
+class Cat implements Animal { public void makeSound() { System.out.println("Meow!"); } }
 
 class AnimalFactory {
     public static Animal createAnimal(String type) {
-        switch (type.toLowerCase()) {
-            case "dog":
-                return new Dog();
-            case "cat":
-                return new Cat();
-            default:
-                throw new IllegalArgumentException("Unknown animal type: " + type);
+        switch (type) {
+            case "dog": return new Dog();
+            case "cat": return new Cat();
+            default: throw new IllegalArgumentException("Unknown: " + type);
         }
     }
 }
@@ -296,635 +703,466 @@ Animal dog = AnimalFactory.createAnimal("dog");
 dog.makeSound(); // "Woof!"
 ```
 
-#### Builder Pattern
+**Builder**
 ```java
 public class User {
-    private String name;
-    private String email;
+    private String name, email;
     private int age;
-    private String address;
-
-    private User(Builder builder) {
-        this.name = builder.name;
-        this.email = builder.email;
-        this.age = builder.age;
-        this.address = builder.address;
-    }
-
+    
+    private User(Builder b) { name = b.name; email = b.email; age = b.age; }
+    
     public static class Builder {
-        private String name;
-        private String email;
-        private int age;
-        private String address;
-
-        public Builder(String name, String email) {
-            this.name = name;
-            this.email = email;
-        }
-
-        public Builder age(int age) {
-            this.age = age;
-            return this;
-        }
-
-        public Builder address(String address) {
-            this.address = address;
-            return this;
-        }
-
-        public User build() {
-            return new User(this);
-        }
+        private String name, email; private int age;
+        
+        public Builder(String name, String email) { this.name = name; this.email = email; }
+        public Builder age(int age) { this.age = age; return this; }
+        public User build() { return new User(this); }
     }
 }
 
 // Használat
-User user = new User.Builder("John Doe", "john@example.com")
+User user = new User.Builder("John", "john@example.com")
     .age(25)
-    .address("123 Main St")
     .build();
 ```
 
-### Structural Patterns
-
-#### Adapter Pattern
+**Adapter**
 ```java
-// Külső könyvtár, amit nem módosíthatunk
-class LegacyPrinter {
-    public void printOldFormat(String text) {
-        System.out.println("Legacy: " + text);
-    }
-}
+// Legacy rendszer
+class LegacyPrinter { public void printOld(String text) { System.out.println(text); } }
 
-// Új interfész, amit használni szeretnénk
-interface ModernPrinter {
-    void print(String text);
-}
+// Modern interfész
+interface ModernPrinter { void print(String text); }
 
 // Adapter
 class PrinterAdapter implements ModernPrinter {
-    private LegacyPrinter legacyPrinter;
-
-    public PrinterAdapter(LegacyPrinter legacyPrinter) {
-        this.legacyPrinter = legacyPrinter;
-    }
-
-    @Override
-    public void print(String text) {
-        legacyPrinter.printOldFormat(text);
-    }
+    private LegacyPrinter legacy;
+    public PrinterAdapter(LegacyPrinter legacy) { this.legacy = legacy; }
+    public void print(String text) { legacy.printOld(text); }
 }
 ```
 
-#### Decorator Pattern
+**Decorator**
 ```java
-interface Coffee {
-    String getDescription();
-    double getCost();
-}
+interface Coffee { String getDescription(); double getCost(); }
 
 class SimpleCoffee implements Coffee {
-    public String getDescription() {
-        return "Simple coffee";
-    }
-
-    public double getCost() {
-        return 2.0;
-    }
+    public String getDescription() { return "Simple"; }
+    public double getCost() { return 2.0; }
 }
 
 abstract class CoffeeDecorator implements Coffee {
     protected Coffee coffee;
-
-    public CoffeeDecorator(Coffee coffee) {
-        this.coffee = coffee;
-    }
+    public CoffeeDecorator(Coffee coffee) { this.coffee = coffee; }
 }
 
 class MilkDecorator extends CoffeeDecorator {
-    public MilkDecorator(Coffee coffee) {
-        super(coffee);
-    }
-
-    public String getDescription() {
-        return coffee.getDescription() + ", milk";
-    }
-
-    public double getCost() {
-        return coffee.getCost() + 0.5;
-    }
-}
-
-class SugarDecorator extends CoffeeDecorator {
-    public SugarDecorator(Coffee coffee) {
-        super(coffee);
-    }
-
-    public String getDescription() {
-        return coffee.getDescription() + ", sugar";
-    }
-
-    public double getCost() {
-        return coffee.getCost() + 0.2;
-    }
+    public MilkDecorator(Coffee coffee) { super(coffee); }
+    public String getDescription() { return coffee.getDescription() + ", milk"; }
+    public double getCost() { return coffee.getCost() + 0.5; }
 }
 
 // Használat
 Coffee coffee = new SimpleCoffee();
 coffee = new MilkDecorator(coffee);
-coffee = new SugarDecorator(coffee);
 System.out.println(coffee.getDescription() + " costs " + coffee.getCost());
 ```
 
-### Behavioral Patterns
-
-#### Observer Pattern
+**Observer**
 ```java
-import java.util.*;
-
-interface Observer {
-    void update(String message);
-}
-
-interface Subject {
-    void attach(Observer observer);
-    void detach(Observer observer);
-    void notifyObservers(String message);
-}
+interface Observer { void update(String msg); }
+interface Subject { void attach(Observer o); void detach(Observer o); void notifyObservers(String msg); }
 
 class NewsAgency implements Subject {
     private List<Observer> observers = new ArrayList<>();
-    private String news;
-
-    public void attach(Observer observer) {
-        observers.add(observer);
+    public void attach(Observer o) { observers.add(o); }
+    public void detach(Observer o) { observers.remove(o); }
+    public void notifyObservers(String msg) { 
+        for (Observer o : observers) o.update(msg); 
     }
-
-    public void detach(Observer observer) {
-        observers.remove(observer);
-    }
-
-    public void notifyObservers(String message) {
-        for (Observer observer : observers) {
-            observer.update(message);
-        }
-    }
-
-    public void setNews(String news) {
-        this.news = news;
-        notifyObservers(news);
-    }
+    
+    public void setNews(String news) { notifyObservers(news); }
 }
 
 class NewsChannel implements Observer {
     private String name;
-
-    public NewsChannel(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void update(String news) {
-        System.out.println(name + " received news: " + news);
-    }
+    public NewsChannel(String name) { this.name = name; }
+    public void update(String news) { System.out.println(name + ": " + news); }
 }
 ```
 
-#### Strategy Pattern
+**Strategy**
 ```java
-interface SortingStrategy {
-    void sort(int[] array);
-}
-
-class BubbleSort implements SortingStrategy {
-    public void sort(int[] array) {
-        // Bubble sort implementation
-        System.out.println("Sorting using bubble sort");
-    }
-}
-
-class QuickSort implements SortingStrategy {
-    public void sort(int[] array) {
-        // Quick sort implementation
-        System.out.println("Sorting using quick sort");
-    }
-}
+interface SortingStrategy { void sort(int[] arr); }
+class BubbleSort implements SortingStrategy { public void sort(int[] arr) { /* ... */ } }
+class QuickSort implements SortingStrategy { public void sort(int[] arr) { /* ... */ } }
 
 class SortingContext {
     private SortingStrategy strategy;
-
-    public SortingContext(SortingStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public void setStrategy(SortingStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public void performSort(int[] array) {
-        strategy.sort(array);
-    }
+    public SortingContext(SortingStrategy strategy) { this.strategy = strategy; }
+    public void setStrategy(SortingStrategy strategy) { this.strategy = strategy; }
+    public void performSort(int[] arr) { strategy.sort(arr); }
 }
 ```
 
-## Architektúrális minták
+### Architektúra minták
 
-### MVC (Model-View-Controller)
+**MVC (Model-View-Controller)**
 ```java
-// Model
-class User {
-    private String name;
-    private String email;
-
+// Model - adatok és üzleti logika
+class User { 
+    private String name; 
+    private String email; 
     // getters/setters
 }
 
-// View
-class UserView {
-    public void displayUser(String userName, String userEmail) {
-        System.out.println("User: " + userName);
-        System.out.println("Email: " + userEmail);
-    }
+// View - megjelenítés
+class UserView { 
+    public void displayUser(String n, String e) { 
+        System.out.println(n + " " + e); 
+    } 
 }
 
-// Controller
+// Controller - koordináció
 class UserController {
-    private User model;
+    private User model; 
     private UserView view;
-
-    public UserController(User model, UserView view) {
-        this.model = model;
-        this.view = view;
-    }
-
-    public void updateView() {
-        view.displayUser(model.getName(), model.getEmail());
-    }
+    
+    public UserController(User m, UserView v) { model = m; view = v; }
+    public void updateView() { view.displayUser(model.getName(), model.getEmail()); }
 }
 ```
 
-### Repository Pattern
+**Repository Pattern**
 ```java
-interface UserRepository {
-    void save(User user);
-    User findById(Long id);
-    List<User> findAll();
-    void delete(Long id);
+// Domain layer interface
+interface UserRepository { 
+    void save(User u); 
+    User findById(Long id); 
+    List<User> findAll(); 
+    void delete(Long id); 
 }
 
+// Infrastructure layer implementation
+@Repository
 class DatabaseUserRepository implements UserRepository {
-    public void save(User user) {
-        // Database save logic
-    }
-
-    public User findById(Long id) {
-        // Database query logic
-        return new User();
-    }
-
-    public List<User> findAll() {
-        // Database query logic
-        return new ArrayList<>();
-    }
-
-    public void delete(Long id) {
-        // Database delete logic
-    }
+    @Autowired private EntityManager em;
+    
+    public void save(User u) { em.persist(u); }
+    public User findById(Long id) { return em.find(User.class, id); }
+    public List<User> findAll() { return em.createQuery("FROM User", User.class).getResultList(); }
+    public void delete(Long id) { em.remove(em.find(User.class, id)); }
 }
 
-class UserService {
-    private UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
+// Service layer - business logic
+@Service
+class UserService { 
+    private UserRepository repo; 
+    public UserService(UserRepository r) { repo = r; }
+    
+    @Transactional
     public void createUser(User user) {
-        // Business logic
-        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-            userRepository.save(user);
-        }
+        validateUser(user);
+        repo.save(user);
+        sendWelcomeEmail(user);
     }
 }
 ```
 
-## Mikroszolgáltatás architektúra
-
-### Alapelvek
-1. **Single Responsibility**: Egy szolgáltatás = egy üzleti képesség
-2. **Decentralized**: Független adatbázisok
-3. **Failure Resilience**: Hibatűrő rendszer
-4. **Technology Diversity**: Különböző technológiák használata
-
-### Spring Boot mikroszolgáltatás példa
+**CQRS (Command Query Responsibility Segregation)**
 ```java
-@RestController
-@RequestMapping("/api/users")
-public class UserController {
-
-    @Autowired
-    private UserService userService;
-
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        try {
-            User user = userService.findById(id);
-            return ResponseEntity.ok(user);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User createdUser = userService.create(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
-    }
-}
-
-@Service
-public class UserService {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    public User create(User user) {
-        User savedUser = userRepository.save(user);
-        notificationService.sendWelcomeEmail(savedUser.getEmail());
-        return savedUser;
-    }
-
-    public User findById(Long id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException("User not found: " + id));
-    }
-}
-```
-
-### Service Communication
-```java
-// Synchronous communication with RestTemplate
-@Service
-public class OrderService {
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    public Order createOrder(Order order) {
-        // Get user information from User Service
-        User user = restTemplate.getForObject(
-            "http://user-service/api/users/" + order.getUserId(),
-            User.class
-        );
-
-        if (user == null) {
-            throw new UserNotFoundException("User not found");
-        }
-
-        // Create order
-        return orderRepository.save(order);
-    }
-}
-
-// Asynchronous communication with RabbitMQ
+// Command side - írási műveletek
 @Component
-public class OrderEventPublisher {
-
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    public void publishOrderCreated(Order order) {
-        OrderCreatedEvent event = new OrderCreatedEvent(order.getId(), order.getUserId());
-        rabbitTemplate.convertAndSend("order.exchange", "order.created", event);
+class CreateUserCommand {
+    private UserRepository userRepo;
+    private EventPublisher eventPublisher;
+    
+    public void handle(CreateUserRequest request) {
+        User user = new User(request.getName(), request.getEmail());
+        userRepo.save(user);
+        eventPublisher.publish(new UserCreatedEvent(user.getId()));
     }
 }
 
-@RabbitListener(queues = "inventory.queue")
-public void handleOrderCreated(OrderCreatedEvent event) {
-    // Update inventory
-    inventoryService.reserveItems(event.getOrderId());
+// Query side - olvasási műveletek
+@Component  
+class UserQueryService {
+    private UserReadModelRepository readRepo; // denormalizált adatok
+    
+    public UserSummary getUserSummary(Long userId) {
+        return readRepo.findSummaryById(userId);
+    }
+    
+    public List<UserListItem> searchUsers(String query) {
+        return readRepo.searchByNameOrEmail(query);
+    }
 }
-```
 
-## REST API Design
-
-### HTTP Methods és Status Codes
-```java
-@RestController
-@RequestMapping("/api/products")
-public class ProductController {
-
-    // GET /api/products - 200 OK
-    @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.findAll();
-        return ResponseEntity.ok(products);
-    }
-
-    // GET /api/products/{id} - 200 OK, 404 Not Found
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable Long id) {
-        return productService.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    // POST /api/products - 201 Created, 400 Bad Request
-    @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        Product created = productService.create(product);
-        URI location = ServletUriComponentsBuilder
-            .fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(created.getId())
-            .toUri();
-        return ResponseEntity.created(location).body(created);
-    }
-
-    // PUT /api/products/{id} - 200 OK, 404 Not Found
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
-        return productService.update(id, product)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    // DELETE /api/products/{id} - 204 No Content, 404 Not Found
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        if (productService.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+// Event Handler - szinkronizálja a read model-t
+@EventListener
+class UserProjectionHandler {
+    public void handle(UserCreatedEvent event) {
+        // Read model frissítése
+        UserSummary summary = createUserSummary(event);
+        readModelRepo.save(summary);
     }
 }
 ```
 
-### API Versioning
+## Gyakori hibák
+
+### Overengineering
+Túl komplex architektúra, felesleges absztrakciók, indokolatlan microservice darabolás.
+
+**Hibás példa:**
 ```java
-// URL versioning
-@RequestMapping("/api/v1/users")
-@RequestMapping("/api/v2/users")
+// Túl bonyolult egy egyszerű CRUD-hoz
+interface UserFactoryAbstractFactoryInterface {
+    UserCreationStrategyInterface createUserCreationStrategy();
+}
 
-// Header versioning
-@RequestMapping(value = "/api/users", headers = "API-Version=1")
+class UserFactoryAbstractFactory implements UserFactoryAbstractFactoryInterface {
+    public UserCreationStrategyInterface createUserCreationStrategy() {
+        return new ConcreteUserCreationStrategyFactoryBean()
+            .createUserCreationStrategyImplementation();
+    }
+}
 
-// Media type versioning
-@RequestMapping(value = "/api/users", produces = "application/vnd.company.app-v1+json")
-```
-
-## Caching Strategies
-
-### Spring Cache
-```java
+// Egyszerűbb lenne:
 @Service
-public class ProductService {
-
-    @Cacheable(value = "products", key = "#id")
-    public Product findById(Long id) {
-        // Expensive database operation
-        return productRepository.findById(id).orElse(null);
-    }
-
-    @CacheEvict(value = "products", key = "#product.id")
-    public Product update(Product product) {
-        return productRepository.save(product);
-    }
-
-    @CacheEvict(value = "products", allEntries = true)
-    public void clearCache() {
-        // Clear all cache entries
-    }
-}
-
-// Redis configuration
-@Configuration
-@EnableCaching
-public class CacheConfig {
-
-    @Bean
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        RedisCacheManager.Builder builder = RedisCacheManager
-            .RedisCacheManagerBuilder
-            .fromConnectionFactory(connectionFactory)
-            .cacheDefaults(cacheConfiguration(Duration.ofMinutes(10)));
-        return builder.build();
+class UserService {
+    public User createUser(String name, String email) {
+        return userRepository.save(new User(name, email));
     }
 }
 ```
 
-## Security Architecture
+### Chatty Services
+Túl sok, apró szolgáltatás közötti kommunikáció, ami lassítja a rendszert.
 
-### Authentication and Authorization
+**Hibás példa:**
 ```java
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
-                .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
-        return http.build();
+// Túl sok HTTP hívás egy művelethez
+public class OrderService {
+    public Order createOrder(CreateOrderRequest request) {
+        // 1. User szolgáltatás hívása
+        User user = userServiceClient.getUser(request.getUserId());
+        
+        // 2. Minden termékhez külön hívás
+        List<Product> products = new ArrayList<>();
+        for (Long productId : request.getProductIds()) {
+            Product product = productServiceClient.getProduct(productId); // N+1 probléma
+            products.add(product);
+        }
+        
+        // 3. Inventory ellenőrzés minden termékhez
+        for (Product product : products) {
+            boolean available = inventoryServiceClient.checkAvailability(product.getId());
+        }
+        
+        // 4. Pricing szolgáltatás hívása
+        Price totalPrice = pricingServiceClient.calculatePrice(products);
+        
+        // 5. Payment szolgáltatás hívása
+        PaymentResult payment = paymentServiceClient.processPayment(totalPrice);
+        
+        return new Order(user, products, payment);
     }
 }
 
+// Jobb megoldás - batch hívások
+public class OrderService {
+    public Order createOrder(CreateOrderRequest request) {
+        // Batch product hívás
+        List<Product> products = productServiceClient.getProducts(request.getProductIds());
+        
+        // Batch inventory ellenőrzés
+        Map<Long, Boolean> availability = inventoryServiceClient.checkAvailabilityBatch(
+            request.getProductIds());
+            
+        // Egy pricing hívás
+        Price totalPrice = pricingServiceClient.calculateTotalPrice(request);
+        
+        return processOrder(request, products, totalPrice);
+    }
+}
+```
+
+### Monolitikus adatbázis
+Minden komponens ugyanazt az adatbázist használja, ami skálázási és hibatűrési problémákat okoz.
+
+**Hibás példa:**
+```sql
+-- Minden tábla egy adatbázisban
+CREATE DATABASE ecommerce;
+
+-- User Management táblái
+CREATE TABLE users (id, name, email, password_hash);
+CREATE TABLE user_profiles (user_id, address, phone);
+CREATE TABLE user_preferences (user_id, theme, language);
+
+-- Product Management táblái  
+CREATE TABLE products (id, name, description, category_id);
+CREATE TABLE categories (id, name, parent_id);
+CREATE TABLE product_images (product_id, image_url);
+
+-- Order Management táblái
+CREATE TABLE orders (id, user_id, total_amount, status);
+CREATE TABLE order_items (order_id, product_id, quantity, price);
+
+-- Inventory Management táblái
+CREATE TABLE inventory (product_id, quantity, reserved);
+CREATE TABLE warehouse_locations (id, product_id, location);
+
+-- Payment Management táblái
+CREATE TABLE payments (id, order_id, amount, payment_method);
+CREATE TABLE payment_transactions (payment_id, transaction_id, status);
+```
+
+**Jobb megoldás - Database per Service:**
+```yaml
+# User Service DB
+user_service:
+  database: user_db
+  tables:
+    - users (id, name, email, password_hash)
+    - user_profiles (user_id, address, phone)
+
+# Product Service DB  
+product_service:
+  database: product_db
+  tables:
+    - products (id, name, description, price)
+    - categories (id, name)
+
+# Order Service DB
+order_service:
+  database: order_db  
+  tables:
+    - orders (id, user_id, total_amount, status)
+    - order_items (order_id, product_id, quantity)
+
+# Inventory Service DB
+inventory_service:
+  database: inventory_db
+  tables:
+    - stock (product_id, quantity, reserved)
+    - warehouses (id, location)
+```
+
+### Rossz rétegkeverés
+Prezentációs logika keveredik az üzleti vagy adatkezelési réteggel.
+
+**Hibás példa:**
+```java
 @RestController
-@PreAuthorize("hasRole('USER')")
-public class SecureController {
+public class UserController {
+    
+    @PostMapping("/users")
+    public ResponseEntity<String> createUser(@RequestBody Map<String, String> request) {
+        // HIBA: Üzleti logika a controller-ben
+        String name = request.get("name");
+        String email = request.get("email");
+        
+        // HIBA: Validáció a controller-ben
+        if (name == null || name.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Name is required");
+        }
+        
+        if (!email.contains("@")) {
+            return ResponseEntity.badRequest().body("Invalid email format");
+        }
+        
+        // HIBA: Közvetlen adatbázis hozzáférés a controller-ből
+        try (Connection conn = DriverManager.getConnection("jdbc:...")) {
+            PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO users (name, email) VALUES (?, ?)");
+            stmt.setString(1, name);
+            stmt.setString(2, email);
+            stmt.executeUpdate();
+        }
+        
+        // HIBA: HTML generálás a controller-ben
+        return ResponseEntity.ok("<html><body>User " + name + " created!</body></html>");
+    }
+}
 
-    @GetMapping("/profile")
-    @PreAuthorize("hasRole('USER') and #username == authentication.name")
-    public UserProfile getProfile(@RequestParam String username) {
-        return userService.getProfile(username);
+// Helyes megoldás - rétegek elválasztása
+@RestController
+public class UserController {
+    private final UserService userService;
+    
+    @PostMapping("/users") 
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserRequest request) {
+        UserDTO user = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 }
 ```
 
-## Best Practices
+## Interjúkérdések
 
-### 1. Clean Architecture
-- **Dependency Rule**: Belső rétegek ne függjenek külső rétegektől
-- **Separation of Concerns**: Különítsük el a business logikát az infrastruktúrától
-- **Testability**: Legyen könnyen tesztelhető
+- **Mi a különbség monolit és mikroszolgáltatás között?** — *Monolit: egy deploy egység, minden funkcionalitás együtt. Microservice: független, kis szolgáltatások, saját adatbázissal.*
 
-### 2. Database Design
-```java
-// JPA best practices
-@Entity
-@Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+- **Hogyan oldanád meg a resiliency-t egy rendszerben?** — *Retry mechanizmus, circuit breaker, fallback válaszok, timeout beállítások, bulkhead pattern.*
 
-    @Column(nullable = false, unique = true)
-    private String email;
+- **Mi az idempotencia és miért fontos?** — *Többszöri végrehajtás nem változtatja az eredményt. API-k megbízhatósága, hálózati hibák kezelése miatt fontos.*
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Order> orders = new ArrayList<>();
+- **Mi a hexagonális architektúra lényege?** — *Core business logika portokon keresztül kommunikál külső rendszerekkel, adapterek biztosítják az implementációt.*
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+- **Mik a legfontosabb design pattern-ek?** — *Singleton, Factory, Builder, Adapter, Decorator, Observer, Strategy, Repository, MVC.*
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-}
-```
+- **Hogyan terveznél egy skálázható REST API-t?** — *Layered architektúra, cache réteg, async műveletek, rate limiting, API versioning, proper HTTP status codes.*
 
-### 3. Error Handling
-```java
-@ControllerAdvice
-public class GlobalExceptionHandler {
+- **Mi a különbség chatty és chunky service között?** — *Chatty: sok kis hívás, lassú hálózat miatt. Chunky: kevesebb hívás nagyobb payloadokkal, hatékonyabb.*
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
-        ErrorResponse error = ErrorResponse.builder()
-            .message(ex.getMessage())
-            .code("USER_NOT_FOUND")
-            .timestamp(LocalDateTime.now())
-            .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-    }
+- **Mik a SOLID elvek?** — *SRP, OCP, LSP, ISP, DIP - clean code és maintainable architektúra alapelvei.*
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
+- **Mit jelent a separation of concerns?** — *Különböző felelősségek elkülönítése külön komponensekben, könnyebb fejlesztés és karbantartás.*
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-            .message("Validation failed")
-            .code("VALIDATION_ERROR")
-            .details(errors)
-            .timestamp(LocalDateTime.now())
-            .build();
+- **Hogyan implementálnál cache-t egy webalkalmazásban?** — *Redis/Memcached, application-level cache, HTTP cache headers, CDN, database query cache.*
 
-        return ResponseEntity.badRequest().body(errorResponse);
-    }
-}
-```
+- **Mi a különbség CQRS és hagyományos CRUD között?** — *CQRS: külön read/write modellek, skálázható. CRUD: egy modell minden művelethez.*
 
-## Következő lépések
+- **Hogyan biztosítanád az observability-t?** — *Structured logging, metrics (Prometheus), distributed tracing (Jaeger), health checks, alerting.*
 
-1. Gyakorold a SOLID alapelvek alkalmazását
-2. Implementálj design pattern-eket valós projektekben
-3. Tervezz és építs fel egy mikroszolgáltatás architektúrát
-4. Tanulj cloud-native megoldásokat (Docker, Kubernetes)
-5. Ismerkedj meg a Domain Driven Design (DDD) elvekkel
+## Gyakorlati feladat
+
+Tervezd meg egy egyszerű webshop architektúráját:
+
+**Követelmények:**
+1. **Komponensek**: User, Product, Order, Inventory, Notification, Payment
+2. **Rétegek**: API Gateway, Service Layer, Repository Layer, Database Layer  
+3. **Kommunikáció**: REST API-k, aszinkron események (RabbitMQ/Kafka)
+4. **Resiliency**: Retry mechanizmus, circuit breaker, fallback responses
+5. **Cache**: Redis termékekhez és felhasználói session-höz
+6. **Biztonság**: JWT auth, role-based access control
+7. **Observability**: Logging, metrics, health checks
+
+**Megvalósítandó:**
+- API design (endpoints, HTTP methods, status codes)
+- Database schema minden service-hez
+- Event-driven kommunikáció tervezése
+- Error handling stratégia
+- Deployment architektúra (Docker containers)
+
+*Kapcsolódó gyakorlati feladat: [REST vs gRPC](/exercises/arch/01-rest-vs-grpc)*
+
+## Kapcsolódó témák
+
+- [Java Alapok](/theory/java) – OOP elvek, design patterns alapjai
+- [Spring Framework](/theory/spring) – Dependency Injection, REST API-k
+- [Web Development](/theory/web) – HTTP, API design, CORS
+- [Frontend](/theory/frontend) – SPA architektúra, komponens design
+- [DevOps](/theory/devops) – CI/CD, containerization, monitoring
+- [SQL & Adatbázis](/theory/sql) – relációs modellek, indexek, tranzakciók
+- [Tesztelés](/theory/testing) – integrációs tesztek, contract testing
+
+## További olvasmányok
+
+- [Martin Fowler: Software Architecture](https://martinfowler.com/architecture/) – architektúra minták, best practices
+- [12-Factor App](https://12factor.net/) – cloud-native alkalmazás elvek
+- [Domain Driven Design Reference](https://domainlanguage.com/ddd/reference/) – DDD alapfogalmak és minták
+- [Microservices.io](https://microservices.io/) – mikroszolgáltatás minták gyűjteménye
+- [Enterprise Integration Patterns](https://www.enterpriseintegrationpatterns.com/) – integration és messaging minták
+- [Building Microservices by Sam Newman](https://www.oreilly.com/library/view/building-microservices/9781491950340/) – gyakorlati mikroszolgáltatás fejlesztés

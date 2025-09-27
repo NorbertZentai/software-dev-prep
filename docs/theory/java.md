@@ -6,7 +6,7 @@ A Java egy objektumorientált, platform-független programozási nyelv, amely a 
 
 ## Fogalmak
 
-### JVM (Java Virtual Machine)
+### JVM (Java Virtual Machine) {#jvm-java-virtual-machine}
 A Java bytecode futtatási környezete, amely platform-függetlenséget biztosít. A JVM értelmezi a bytecode-ot és natív gépi kódra fordítja futás közben (Just-In-Time compilation).
 
 **Példa:**
@@ -20,7 +20,7 @@ java HelloWorld         # JVM értelmezi a bytecode-ot
 
 Magyarázat: A JVM biztosítja, hogy ugyanaz a .class fájl Windows, Linux és macOS rendszereken is futjon anélkül, hogy újrafordítanánk.
 
-### JDK (Java Development Kit)
+### JDK (Java Development Kit) {#jdk-java-development-kit}
 Fejlesztői eszközkészlet, amely tartalmazza a JVM-et, fordítót (javac) és fejlesztői eszközöket. Minden Java fejlesztéshez szükséges.
 
 **Példa:**
@@ -34,7 +34,7 @@ jar      # Archive tool
 
 Magyarázat: JDK = JRE + fejlesztői eszközök. Ha csak futtatni akarod a Java programokat, elég a JRE, de fejlesztéshez JDK kell.
 
-### JRE (Java Runtime Environment)
+### JRE (Java Runtime Environment) {#jre-java-runtime-environment}
 Futtatási környezet, csak a JVM-et és alapvető osztálykönyvtárakat tartalmaz. Csak Java alkalmazások futtatására alkalmas.
 
 **Példa:**
@@ -49,7 +49,7 @@ public class SimpleApp {
 
 Magyarázat: JRE nem tartalmazza a javac fordítót, ezért új .java fájlokat nem tudsz lefordítani vele.
 
-### Bytecode
+### Bytecode {#bytecode}
 A Java fordító által generált köztes kód, amit a JVM értelmez. Platform-független bináris formátum.
 
 **Példa:**
@@ -72,7 +72,7 @@ public class Example {
 
 Magyarázat: A bytecode stack-alapú instrukciók sorozata, amit a JVM hajtja végre.
 
-### Garbage Collector
+### Garbage Collector {#garbage-collector}
 Automatikus memóriakezelő rendszer, amely felszabadítja a nem használt objektumokat. Különböző algoritmusokat használhat (Serial, Parallel, G1).
 
 **Példa:**
@@ -94,7 +94,7 @@ public class GCExample {
 
 Magyarázat: A GC automatikusan felszabadítja azokat az objektumokat, amelyekre nincs több referencia.
 
-### Class
+### Class {#class}
 Objektum sablon, amely definiálja az adatokat (mezők) és metódusokat. Az objektumok egy osztály példányai.
 
 **Példa:**
@@ -151,7 +151,7 @@ public class Circle implements Drawable {
 
 Magyarázat: Az interface biztosítja, hogy minden implementáló osztály rendelkezzen a meghatározott metódusokkal.
 
-### Package
+### Package {#package}
 Névtér mechanizmus a kapcsolódó osztályok csoportosítására. Segíti a kód szervezését és névütközések elkerülését.
 
 **Példa:**
@@ -177,7 +177,7 @@ public class UserService {
 
 Magyarázat: A package szerkezet tükrözi a könyvtárszerkezetet és logikusan csoportosítja az osztályokat.
 
-### Exception
+### Exception {#exception}
 Futásidejű hibák kezelésére szolgáló mechanizmus. Checked és unchecked típusokra osztható.
 
 **Példa:**
@@ -200,7 +200,7 @@ public class ExceptionExample {
 
 Magyarázat: Az exception mechanizmus lehetővé teszi a hibák strukturált kezelését try-catch blokkok segítségével.
 
-### Collections Framework
+### Collections Framework {#collections-framework}
 Beépített adatstruktúrák és algoritmusok (List, Set, Map). Egységes interfészt biztosít különböző adatstruktúrákhoz.
 
 **Példa:**
@@ -229,7 +229,7 @@ public class CollectionsExample {
 
 Magyarázat: A Collections Framework egységes API-t biztosít különböző adatstruktúrákhoz, algoritmusokkal együtt.
 
-### Thread
+### Thread {#thread}
 Párhuzamos végrehajtási egység a multithreading támogatásához. Lehetővé teszi egyidejű feladatvégrehajtást.
 
 **Példa:**
@@ -258,7 +258,7 @@ public class ThreadExample {
 
 Magyarázat: A Thread lehetővé teszi párhuzamos végrehajtást, de figyelni kell a thread-safety-re és szinkronizációra.
 
-### Stream API
+### Stream API {#stream-api}
 Funkcionális stílusú adatfeldolgozás Java 8-tól. Lehetővé teszi adatok deklaratív feldolgozását lazy evaluation-nel.
 
 **Példa:**
@@ -291,7 +291,7 @@ public class StreamExample {
 
 Magyarázat: A Stream API lazy evaluation-t használ - a műveletek csak a terminal operation (pl. collect) hívásakor hajtódnak végre.
 
-### OOP Alapelvek
+### OOP Alapelvek {#oop-alapelvek}
 
 #### Encapsulation (Enkapszuláció)
 Az objektum belső állapotának elrejtése és csak definiált interfészeken keresztüli hozzáférés biztosítása.
@@ -395,8 +395,193 @@ public class ShapeCalculator {
 
 Magyarázat: Ugyanaz a `Shape` referencia különböző típusú objektumokra mutathat, és futásidőben dől el, melyik implementáció hívódik.
 
-###Equals és HashCode
-Ha felüldefiniáljuk az equals() metódust, kötelező a hashCode() metódust is felüldefiniálni, hogy konzisztensek legyenek.
+### SOLID Alapelvek {#solid-alapelvek}
+Az objektumorientált tervezés öt alapelve, amely tisztább, karbantarthatóbb kódot eredményez.
+
+#### Single Responsibility Principle (SRP)
+Egy osztálynak csak egy oka legyen a változásra - csak egy felelőssége legyen.
+
+**Példa:**
+```java
+// ROSSZ - több felelősség
+class User {
+    private String name;
+    private String email;
+
+    public void save() { /* adatbázis művelet */ }
+    public void sendEmail() { /* email küldés */ }
+    public String generateReport() { /* jelentés generálás */ }
+}
+
+// JÓ - szétbontott felelősségek
+class User {
+    private String name;
+    private String email;
+    // getters/setters
+}
+
+class UserRepository {
+    public void save(User user) { /* adatbázis művelet */ }
+}
+
+class EmailService {
+    public void sendEmail(User user, String message) { /* email küldés */ }
+}
+
+class UserReportGenerator {
+    public String generateReport(User user) { /* jelentés generálás */ }
+}
+```
+
+#### Open/Closed Principle (OCP)
+Osztályok legyenek nyitottak a bővítésre, de zártak a módosításra.
+
+**Példa:**
+```java
+// Extensible design
+abstract class DiscountCalculator {
+    public abstract double calculate(double amount);
+}
+
+class PercentageDiscount extends DiscountCalculator {
+    private double percentage;
+
+    @Override
+    public double calculate(double amount) {
+        return amount * (1 - percentage / 100);
+    }
+}
+
+class FixedAmountDiscount extends DiscountCalculator {
+    private double discount;
+
+    @Override
+    public double calculate(double amount) {
+        return Math.max(0, amount - discount);
+    }
+}
+```
+
+#### Liskov Substitution Principle (LSP)
+Leszármazott osztályok helyettesíthetők legyenek az ősosztállyal anélkül, hogy megváltoztatná a program helyességét.
+
+**Példa:**
+```java
+// LSP betartása
+class Rectangle {
+    protected int width, height;
+
+    public void setWidth(int width) { this.width = width; }
+    public void setHeight(int height) { this.height = height; }
+    public int getArea() { return width * height; }
+}
+
+// ROSSZ - sérti LSP-t
+class Square extends Rectangle {
+    @Override
+    public void setWidth(int width) {
+        this.width = this.height = width; // megváltoztatja a viselkedést!
+    }
+}
+
+// JÓ - közös interfész
+interface Shape {
+    int getArea();
+}
+
+class Rectangle implements Shape {
+    private int width, height;
+    // implementation
+}
+
+class Square implements Shape {
+    private int side;
+    // implementation
+}
+```
+
+#### Interface Segregation Principle (ISP)
+Kliens ne függjön olyan metódusoktól, amelyeket nem használ.
+
+**Példa:**
+```java
+// ROSSZ - túl nagy interfész
+interface Worker {
+    void work();
+    void eat();
+    void sleep();
+}
+
+// JÓ - szegregált interfészek
+interface Workable {
+    void work();
+}
+
+interface Eater {
+    void eat();
+}
+
+interface Sleeper {
+    void sleep();
+}
+
+class Human implements Workable, Eater, Sleeper {
+    // implementálja mindhárom interfészt
+}
+
+class Robot implements Workable {
+    // csak a releváns interfészt implementálja
+}
+```
+
+#### Dependency Inversion Principle (DIP)
+Magas szintű modulok ne függjenek alacsony szintűektől. Mindketten az absztrakciótól függjenek.
+
+**Példa:**
+```java
+// ROSSZ - közvetlen függőség
+class EmailService {
+    public void sendEmail(String message) { /* email logic */ }
+}
+
+class NotificationManager {
+    private EmailService emailService = new EmailService(); // tight coupling
+
+    public void notify(String message) {
+        emailService.sendEmail(message);
+    }
+}
+
+// JÓ - dependency injection
+interface NotificationService {
+    void send(String message);
+}
+
+class EmailService implements NotificationService {
+    @Override
+    public void send(String message) { /* email logic */ }
+}
+
+class SMSService implements NotificationService {
+    @Override
+    public void send(String message) { /* SMS logic */ }
+}
+
+class NotificationManager {
+    private NotificationService notificationService;
+
+    public NotificationManager(NotificationService notificationService) {
+        this.notificationService = notificationService; // dependency injection
+    }
+
+    public void notify(String message) {
+        notificationService.send(message);
+    }
+}
+```
+
+### Equals és HashCode {#equals-es-hashcode}
+Ha felüldefinijáljuk az equals() metódust, kötelező a hashCode() metódust is felüldefinijálni, hogy konzisztensek legyenek.
 
 **Példa:**
 ```java
@@ -441,7 +626,7 @@ public class Person {
 
 Magyarázat: Az equals() és hashCode() szabálya: ha két objektum equals()-el egyenlő, akkor hashCode()-uk is egyenlő kell legyen.
 
-### Lambda Expressions
+### Lambda Expressions {#lambda-expressions}
 Rövid névtelen funkciók, amelyek főleg funkcionális interfészekkel és Stream API-val használatosak Java 8-tól.
 
 **Példa:**
@@ -482,7 +667,7 @@ public class LambdaExample {
 
 Magyarázat: A lambda kifejezések tömör szintaxist biztosítanak funkcionális interfészek implementálásához.
 
-### Generics
+### Generics {#generics}
 Típusparaméterek használata az osztályokban és metódusokban, amely fordítási idejű típusbiztonságot és kód újrafelhasználhatóságot biztosít.
 
 **Példa:**
@@ -528,7 +713,52 @@ public class GenericsExample {
 
 Magyarázat: A generics típusbiztonságot nyújtanak fordítási időben és eliminálják a explicit casting szükségességét.
 
-### Autoboxing és Unboxing
+### Immutability {#immutability}
+Az immutable objektumok olyan objektumok, amelyek létrehozás után nem változtathatók meg. Thread-safe-ek és hashelhetőek.
+
+**Példa:**
+```java
+// Immutable osztály példa
+public final class Person {
+    private final String name;
+    private final int age;
+    private final List<String> hobbies;
+
+    public Person(String name, int age, List<String> hobbies) {
+        this.name = name;
+        this.age = age;
+        // Defensive copy - ne adjuk ki az eredeti referenciát
+        this.hobbies = Collections.unmodifiableList(new ArrayList<>(hobbies));
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public List<String> getHobbies() {
+        return hobbies; // már unmodifiable
+    }
+
+    // Immutable update pattern
+    public Person withAge(int newAge) {
+        return new Person(this.name, newAge, new ArrayList<>(this.hobbies));
+    }
+}
+
+// String is immutable
+String str = "Hello";
+String upper = str.toUpperCase(); // új objektum, str változatlan
+System.out.println(str);   // "Hello"
+System.out.println(upper); // "HELLO"
+```
+
+Magyarázat: Az immutable objektumok biztonságosak concurrent környezetben és könnyen hashelhetőek HashMap kulcsként.
+
+### Autoboxing és Unboxing {#autoboxing-es-unboxing}
 Primitív típusok automatikus konverziója wrapper osztályokká (autoboxing) és vissza (unboxing).
 
 **Példa:**
@@ -563,6 +793,158 @@ public class AutoboxingExample {
 
 Magyarázat: Az autoboxing/unboxing kényelmes, de figyelni kell a null értékekre és a teljesítmény hatásokra.
 
+## Gyakori hibák és buktatók
+
+### NullPointerException
+A leggyakoribb futásidejű hiba Java-ban.
+
+**Példa:**
+```java
+// ROSSZ
+String text = getName(); // lehet null
+int length = text.length(); // NPE ha text null
+
+// JÓ - null check
+String text = getName();
+if (text != null) {
+    int length = text.length();
+}
+
+// JÓ - Optional használata
+Optional<String> text = getOptionalName();
+int length = text.map(String::length).orElse(0);
+```
+
+### Equals és HashCode hibák
+Ha equals()-t felüldefiniáljuk, hashCode()-ot is kell.
+
+**Példa:**
+```java
+// ROSSZ - csak equals van felüldefiniálva
+class Person {
+    String name;
+    
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Person && 
+               Objects.equals(name, ((Person) obj).name);
+    }
+    // hashCode() hiányzik! HashMap-ben nem működik jól
+}
+
+// JÓ - mindkettő implementálva
+class Person {
+    String name;
+    
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Person && 
+               Objects.equals(name, ((Person) obj).name);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+}
+```
+
+### Mutálható állapot
+Nem thread-safe kód concurrent környezetben.
+
+**Példa:**
+```java
+// ROSSZ - mutálható állapot
+class Counter {
+    private int count = 0;
+    
+    public void increment() {
+        count++; // nem atomic művelet!
+    }
+    
+    public int getCount() {
+        return count;
+    }
+}
+
+// JÓ - thread-safe
+class SafeCounter {
+    private final AtomicInteger count = new AtomicInteger(0);
+    
+    public void increment() {
+        count.incrementAndGet();
+    }
+    
+    public int getCount() {
+        return count.get();
+    }
+}
+
+// vagy synchronized
+class SynchronizedCounter {
+    private int count = 0;
+    
+    public synchronized void increment() {
+        count++;
+    }
+    
+    public synchronized int getCount() {
+        return count;
+    }
+}
+```
+
+### Resource Management
+A try-with-resources használata kötelező I/O műveletekhez.
+
+**Példa:**
+```java
+// ROSSZ - resource leak
+FileInputStream fis = null;
+try {
+    fis = new FileInputStream("file.txt");
+    // olvasás
+} catch (IOException e) {
+    // hibakezelés
+} finally {
+    if (fis != null) {
+        fis.close(); // lehet IOException!
+    }
+}
+
+// JÓ - try-with-resources
+try (FileInputStream fis = new FileInputStream("file.txt")) {
+    // olvasás
+} catch (IOException e) {
+    // hibakezelés
+    // automatikus close()
+}
+```
+
+### String Concatenation
+Cikluson belüli String konkatenáció ineffektív.
+
+**Példa:**
+```java
+// ROSSZ - O(n²) complexity
+String result = "";
+for (int i = 0; i < 1000; i++) {
+    result += "item" + i; // minden iterációban új String objektum
+}
+
+// JÓ - StringBuilder
+StringBuilder sb = new StringBuilder();
+for (int i = 0; i < 1000; i++) {
+    sb.append("item").append(i);
+}
+String result = sb.toString();
+
+// vagy Stream API
+String result = IntStream.range(0, 1000)
+    .mapToObj(i -> "item" + i)
+    .collect(Collectors.joining());
+```
+
 ## Interjúkérdések
 
 - **Mi a különbség a JDK, JRE és JVM között?** — *JDK fejlesztéshez, JRE futtatáshoz, JVM a bytecode futtatási környezete.*
@@ -590,11 +972,44 @@ Magyarázat: Az autoboxing/unboxing kényelmes, de figyelni kell a null értéke
 - **Hogyan implementálnál Singleton pattern-t Java-ban?** — *Enum-mal legbiztonságosabb, vagy synchronized lazy initialization, vagy eager initialization.*
 ## Gyakorlati feladat (mini)
 
-1. Hozz létre egy `Vehicle` abstract osztályt `brand`, `model` mezőkkel
-2. Implementálj `Car` és `Motorcycle` leszármazott osztályokat
-3. Adj hozzá `Comparable<Vehicle>` interfészt ár alapú rendezéshez
-4. Írj unit testeket JUnit-tal a főbb metódusokra
-5. Használj Stream API-t járművek szűrésére és rendezésére
+### Feladat: Jármű katalógus rendszer
+
+1. **Abstract Vehicle osztály** létrehozása:
+   - `brand` (String), `model` (String), `price` (double) mezők
+   - Abstract `getType()` metódus
+   - `equals()` és `hashCode()` implementáció
+
+2. **Leszármazott osztályok**:
+   - `Car` - `doors` (int) mezővel, `getType()` visszatér "Car"-ral
+   - `Motorcycle` - `engineSize` (int) mezővel, `getType()` visszatér "Motorcycle"-ral
+
+3. **Comparable implementáció**:
+   - Ár alapú természetes rendezés
+
+4. **VehicleCatalog osztály**:
+   - `List<Vehicle> vehicles` mező
+   - `addVehicle(Vehicle)`, `removeVehicle(Vehicle)` metódusok
+   - Stream API használata szűrésekhez és rendezéshez
+
+5. **JUnit tesztek**:
+   - Minden publikus metódushoz unit teszt
+   - Edge case-ek tesztelése (null értékek, üres lista)
+
+**Példa használat:**
+```java
+VehicleCatalog catalog = new VehicleCatalog();
+catalog.addVehicle(new Car("Toyota", "Camry", 25000, 4));
+catalog.addVehicle(new Motorcycle("Honda", "CBR", 15000, 600));
+
+// Ár szerinti rendezés
+List<Vehicle> sortedByPrice = catalog.getVehiclesSortedByPrice();
+
+// 20000 alatt szűrés
+List<Vehicle> affordable = catalog.getVehiclesUnderPrice(20000);
+
+// Típus szerinti csoportosítás
+Map<String, List<Vehicle>> byType = catalog.getVehiclesGroupedByType();
+```
 
 *Kapcsolódó gyakorlati feladat: [OOP Alapok Java-ban](/exercises/java/01-oop-basics)*
 

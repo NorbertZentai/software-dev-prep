@@ -65,20 +65,8 @@ export class MarkdownRenderer {
     const contentEl = document.getElementById('theory-content')
     if (contentEl) contentEl.innerHTML = ''
 
-    // Cleanup scroll spy
-    if (this.scrollSpyObserver) {
-      this.scrollSpyObserver.disconnect()
-      this.scrollSpyObserver = null
-    }
-
-    if (this.scrollSpyScrollHandler && this.scrollSpyScrollTargets.length) {
-      this.scrollSpyScrollTargets.forEach((target) =>
-        target.removeEventListener('scroll', this.scrollSpyScrollHandler)
-      )
-    }
-
-    this.scrollSpyScrollTargets = []
-    this.scrollSpyScrollHandler = null
+    // Cleanup scroll spy properly
+    this.cleanupScrollSpy()
     this.currentActiveConcept = null
   }
 
@@ -466,6 +454,8 @@ export class MarkdownRenderer {
     const concepts = []
     let current = null
     let mainTitle = ''
+    let insideFogalmakSection = false
+    let usedAnchors = new Set()
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
@@ -476,8 +466,25 @@ export class MarkdownRenderer {
         continue
       }
 
-      // Process ### headings as concepts
-      if (line.startsWith('### ')) {
+      // Check if we're entering the Fogalmak section
+      if (line.startsWith('## Fogalmak')) {
+        insideFogalmakSection = true
+        continue
+      }
+
+      // Check if we're leaving the Fogalmak section (next ## heading)
+      if (insideFogalmakSection && line.startsWith('## ') && !line.startsWith('## Fogalmak')) {
+        insideFogalmakSection = false
+        // Save the last concept if exists before leaving section
+        if (current) {
+          concepts.push(current)
+          current = null
+        }
+        continue
+      }
+
+      // Process ### headings as concepts ONLY if inside Fogalmak section
+      if (insideFogalmakSection && line.startsWith('### ')) {
         // Save previous concept if exists
         if (current) {
           concepts.push(current)
@@ -485,7 +492,7 @@ export class MarkdownRenderer {
 
         // Start new concept
         const title = line.replace(/^###\s+/, '').trim()
-        const anchor = title
+        let anchor = title
           .toLowerCase()
           .normalize('NFD')
           .replace(/[\u0300-\u036f]/g, '')
@@ -493,17 +500,26 @@ export class MarkdownRenderer {
           .replace(/\s+/g, '-')
           .replace(/^-+|-+$/g, '')
 
+        // Ensure unique anchors
+        let uniqueAnchor = anchor
+        let counter = 2
+        while (usedAnchors.has(uniqueAnchor)) {
+          uniqueAnchor = `${anchor}-${counter}`
+          counter++
+        }
+        usedAnchors.add(uniqueAnchor)
+
         current = {
           title,
-          anchor,
+          anchor: uniqueAnchor,
           content: '',
         }
-      } else if (current) {
+      } else if (insideFogalmakSection && current) {
         current.content += line + '\n'
       }
     }
 
-    // Add the last concept
+    // Add the last concept if we ended inside Fogalmak section
     if (current) {
       concepts.push(current)
     }
@@ -571,7 +587,7 @@ export class MarkdownRenderer {
 
         return `
           <article id="${concept.anchor}" class="concept-article">
-            <h3>${concept.title}</h3>
+            <h3 id="${concept.anchor}" class="concept-title">${concept.title}</h3>
             <div class="concept-body">
               ${processedContent}
             </div>
@@ -630,6 +646,40 @@ export class MarkdownRenderer {
     this.attachScrollSpy()
     this.enableTocKeyboardNav()
     this.setupMobileTocToggle()
+
+    // Setup deep link handling
+    this.setupDeepLinkHandling()
+  }
+
+  setupDeepLinkHandling() {
+    // Listen for hash changes (back/forward navigation)
+    const handleHashChange = () => {
+      const hashParts = window.location.hash.split('#')
+      const targetId = hashParts.length > 2 ? hashParts[2] : null
+      
+      if (targetId) {
+        const target = document.getElementById(targetId)
+        const scrollContainer = document.querySelector('#theory-content')
+        
+        if (target && scrollContainer) {
+          const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
+          scrollContainer.scrollTo({
+            top: target.offsetTop - headerHeight - 8,
+            behavior: 'smooth'
+          })
+          this.setActiveNavigationItem(targetId)
+        }
+      }
+    }
+
+    window.addEventListener('hashchange', handleHashChange)
+    window.addEventListener('popstate', handleHashChange)
+
+    // Store cleanup function
+    this.deepLinkCleanup = () => {
+      window.removeEventListener('hashchange', handleHashChange)
+      window.removeEventListener('popstate', handleHashChange)
+    }
   }
 
   handleInitialScroll(concepts) {
@@ -639,36 +689,26 @@ export class MarkdownRenderer {
       hashParts.length > 2 ? hashParts[hashParts.length - 1] : ''
 
     setTimeout(() => {
-      if (deepAnchor) {
-        // Scroll to specific concept
-        this.setActiveToc(deepAnchor)
-        this.updateTheoryHash(deepAnchor)
+      if (deepAnchor && concepts.find(c => c.anchor === deepAnchor)) {
+        // Scroll to specific concept with proper offset
         const target = document.getElementById(deepAnchor)
-
-        if (target) {
-          const theoryContent = document.getElementById('theory-content')
-          const isFirstConcept =
-            concepts.length > 0 && concepts[0].anchor === deepAnchor
-
-          if (isFirstConcept) {
-            // First concept: scroll to top to show title
-            theoryContent?.scrollTo({ top: 0, behavior: 'auto' })
-          } else {
-            // Other concepts: scroll with margin
-            const targetRect = target.getBoundingClientRect()
-            const contentRect = theoryContent?.getBoundingClientRect()
-            if (theoryContent && contentRect) {
-              const relativeTop =
-                targetRect.top - contentRect.top + theoryContent.scrollTop - 60
-              theoryContent.scrollTo({ top: relativeTop, behavior: 'auto' })
-            }
-          }
+        const scrollContainer = document.querySelector('#theory-content')
+        
+        if (target && scrollContainer) {
+          const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
+          scrollContainer.scrollTo({
+            top: target.offsetTop - headerHeight - 8,
+            behavior: 'auto'
+          })
+          this.setActiveNavigationItem(deepAnchor)
         }
       } else if (concepts.length > 0) {
-        // No hash: set first concept active but show title
-        this.setActiveToc(concepts[0].anchor)
-        const theoryContent = document.getElementById('theory-content')
-        theoryContent?.scrollTo({ top: 0, behavior: 'auto' })
+        // No hash: set first concept active
+        this.setActiveNavigationItem(concepts[0].anchor)
+        const scrollContainer = document.querySelector('#theory-content')
+        if (scrollContainer) {
+          scrollContainer.scrollTop = 0
+        }
       }
     }, 100)
   }
@@ -867,39 +907,8 @@ export class MarkdownRenderer {
   }
 
   setActiveToc(anchor) {
-    // Try both possible sidebar containers
-    const sidebar =
-      document.querySelector('.theory-sidebar') ||
-      document.querySelector('.theory-toc')
-    if (!sidebar) return
-
-    // Remove active from all TOC links in both containers
-    document
-      .querySelectorAll('.theory-sidebar .toc-link, .theory-toc .toc-link')
-      .forEach((link) => {
-        link.classList.remove('active')
-        link.removeAttribute('aria-current')
-      })
-
-    // Find the active link in either container
-    const activeLink = document.querySelector(
-      `.theory-sidebar .toc-link[data-anchor="${anchor}"], .theory-toc .toc-link[data-anchor="${anchor}"]`
-    )
-
-    if (activeLink) {
-      activeLink.classList.add('active')
-      activeLink.setAttribute('aria-current', 'location')
-      this.scrollSidebarLinkIntoView(anchor)
-      this.currentActiveConcept = anchor
-
-      // Update URL hash
-      this.updateTheoryHash(anchor)
-
-      // Trigger active menu manager update if available
-      if (window.activeMenuManager) {
-        window.activeMenuManager.refresh()
-      }
-    }
+    // Use the new unified method
+    this.setActiveNavigationItem(anchor)
   }
 
   updateTheoryHash(anchor) {
@@ -913,55 +922,133 @@ export class MarkdownRenderer {
   }
 
   attachScrollSpy() {
-    const articles = Array.from(
-      document.querySelectorAll('.theory-content .concept-article')
-    )
+    // Clean up existing observers
+    this.cleanupScrollSpy()
 
-    if (!articles.length) return
+    // Find the actual scroll container and headings
+    const scrollContainer = document.querySelector('#theory-content')
+    const headings = Array.from(document.querySelectorAll('#theory-content h3[id]'))
 
-    this.setupScrollSpyFallback(articles)
-
-    if (!('IntersectionObserver' in window)) {
+    if (!scrollContainer || !headings.length) {
+      console.warn('ScrollSpy: No scroll container or headings found')
       return
     }
 
+    // Get sticky header height for proper offset calculation
+    const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
+    const rootMargin = `-${headerHeight}px 0px -60% 0px`
+
+    // Create IntersectionObserver with proper root
+    this.scrollSpyObserver = new IntersectionObserver(
+      (entries) => {
+        // Find the most visible heading
+        let activeHeading = null
+        let maxVisibility = 0
+
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > maxVisibility) {
+            maxVisibility = entry.intersectionRatio
+            activeHeading = entry.target
+          }
+        })
+
+        // If we have an active heading, update the navigation
+        if (activeHeading?.id && this.currentActiveConcept !== activeHeading.id) {
+          this.setActiveNavigationItem(activeHeading.id)
+          this.updateTheoryHash(activeHeading.id)
+        }
+      },
+      {
+        root: scrollContainer,
+        rootMargin: rootMargin,
+        threshold: [0, 0.1, 0.5, 1]
+      }
+    )
+
+    // Observe all headings
+    headings.forEach(heading => {
+      this.scrollSpyObserver.observe(heading)
+    })
+
+    // Set initial active state
+    this.setInitialActiveState(headings, scrollContainer, headerHeight)
+  }
+
+  cleanupScrollSpy() {
     if (this.scrollSpyObserver) {
       this.scrollSpyObserver.disconnect()
       this.scrollSpyObserver = null
     }
 
-    let scrollSpyTimeout = null
+    // Remove old scroll listeners
+    if (this.scrollSpyScrollHandler && this.scrollSpyScrollTargets?.length) {
+      this.scrollSpyScrollTargets.forEach((target) =>
+        target.removeEventListener('scroll', this.scrollSpyScrollHandler)
+      )
+    }
+    this.scrollSpyScrollTargets = []
+    this.scrollSpyScrollHandler = null
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (scrollSpyTimeout) clearTimeout(scrollSpyTimeout)
+    // Remove deep link handlers
+    if (this.deepLinkCleanup) {
+      this.deepLinkCleanup()
+      this.deepLinkCleanup = null
+    }
+  }
 
-        scrollSpyTimeout = setTimeout(() => {
-          let mostVisible = null
-          let maxRatio = 0
+  setActiveNavigationItem(headingId) {
+    // Remove active state from all TOC links
+    const allTocLinks = document.querySelectorAll('.theory-toc .toc-link, .theory-sidebar .toc-link')
+    allTocLinks.forEach(link => {
+      link.classList.remove('active')
+      link.removeAttribute('aria-current')
+    })
 
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
-              maxRatio = entry.intersectionRatio
-              mostVisible = entry.target
-            }
-          })
-
-          if (mostVisible?.id && this.currentActiveConcept !== mostVisible.id) {
-            this.setActiveToc(mostVisible.id)
-            this.updateTheoryHash(mostVisible.id)
-          }
-        }, 150)
-      },
-      {
-        root: null,
-        rootMargin: '-10% 0px -50% 0px',
-        threshold: [0.1, 0.3, 0.5, 0.7],
-      }
+    // Set active state on the matching link
+    const activeLink = document.querySelector(
+      `.theory-toc .toc-link[data-anchor="${headingId}"], .theory-sidebar .toc-link[data-anchor="${headingId}"]`
     )
 
-    this.scrollSpyObserver = observer
-    articles.forEach((article) => observer.observe(article))
+    if (activeLink) {
+      activeLink.classList.add('active')
+      activeLink.setAttribute('aria-current', 'true')
+      this.currentActiveConcept = headingId
+
+      // Scroll the sidebar link into view if needed
+      this.scrollSidebarLinkIntoView(headingId)
+    }
+  }
+
+  setInitialActiveState(headings, scrollContainer, headerHeight) {
+    // Check URL hash for deep linking
+    const hashParts = window.location.hash.split('#')
+    const targetId = hashParts.length > 2 ? hashParts[2] : null
+
+    if (targetId && headings.find(h => h.id === targetId)) {
+      // Deep link: scroll to target and set active
+      const target = document.getElementById(targetId)
+      if (target) {
+        scrollContainer.scrollTo({
+          top: target.offsetTop - headerHeight - 8,
+          behavior: 'auto' // No animation on initial load
+        })
+        this.setActiveNavigationItem(targetId)
+      }
+    } else {
+      // No deep link: find the first visible heading
+      const firstVisibleHeading = headings.find(heading => {
+        const rect = heading.getBoundingClientRect()
+        const containerRect = scrollContainer.getBoundingClientRect()
+        return rect.top >= containerRect.top + headerHeight
+      })
+
+      if (firstVisibleHeading) {
+        this.setActiveNavigationItem(firstVisibleHeading.id)
+      } else if (headings.length > 0) {
+        // Fallback to first heading
+        this.setActiveNavigationItem(headings[0].id)
+      }
+    }
   }
 
   getStickyOffset() {
@@ -977,70 +1064,10 @@ export class MarkdownRenderer {
     return headerHeight + gap + buffer
   }
 
-  setupScrollSpyFallback(articles) {
-    if (this.scrollSpyScrollHandler && this.scrollSpyScrollTargets.length) {
-      this.scrollSpyScrollTargets.forEach((target) =>
-        target.removeEventListener('scroll', this.scrollSpyScrollHandler)
-      )
-    }
 
-    this.scrollSpyScrollTargets = []
-
-    if (!articles.length) {
-      this.scrollSpyScrollHandler = null
-      return
-    }
-
-    let ticking = false
-
-    const updateActive = () => {
-      const offset = this.getStickyOffset()
-      let activeArticle = articles[0] || null
-
-      for (const article of articles) {
-        const rect = article.getBoundingClientRect()
-
-        if (rect.top - offset <= 0) {
-          activeArticle = article
-        } else {
-          break
-        }
-      }
-
-      if (activeArticle?.id && this.currentActiveConcept !== activeArticle.id) {
-        this.setActiveToc(activeArticle.id)
-        this.updateTheoryHash(activeArticle.id)
-      }
-
-      ticking = false
-    }
-
-    const handler = () => {
-      if (!ticking) {
-        ticking = true
-        requestAnimationFrame(updateActive)
-      }
-    }
-
-    this.scrollSpyScrollHandler = handler
-
-    const scrollTargets = new Set([window])
-    const appEl = document.getElementById('app')
-    if (appEl) {
-      scrollTargets.add(appEl)
-    }
-
-    scrollTargets.forEach((target) =>
-      target.addEventListener('scroll', handler, { passive: true })
-    )
-
-    this.scrollSpyScrollTargets = Array.from(scrollTargets)
-
-    updateActive()
-  }
 
   wireTocLinks() {
-    document.querySelectorAll('#theory-sidebar .toc-link').forEach((link) => {
+    document.querySelectorAll('#theory-sidebar .toc-link, .theory-sidebar .toc-link').forEach((link) => {
       link.addEventListener('click', (e) => {
         e.preventDefault()
         e.stopPropagation()
@@ -1049,44 +1076,25 @@ export class MarkdownRenderer {
         const href = link.getAttribute('href')
         const anchor = href ? href.slice(1) : link.getAttribute('data-anchor')
         const target = document.getElementById(anchor)
+        const scrollContainer = document.querySelector('#theory-content')
 
-        if (!target) return
+        if (!target || !scrollContainer) return
 
-        const theoryContent = document.getElementById('theory-content')
-        if (theoryContent) {
-          // Check if this is the first concept (first article in theory-content)
-          const firstConcept = theoryContent.querySelector('article[id]')
-          const isFirstConcept = firstConcept && firstConcept.id === anchor
+        // Get sticky header height for offset calculation
+        const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
+        const offset = 8 // Additional padding
 
-          if (isFirstConcept) {
-            // If it's the first concept, scroll to the very top to show the title
-            // Use window scroll to ensure we get to the absolute top
-            window.scrollTo({
-              top: 0,
-              behavior: 'smooth',
-            })
-            // Also scroll theory-content to top
-            theoryContent.scrollTop = 0
-          } else {
-            // For other concepts, scroll with 60px space above
-            const targetRect = target.getBoundingClientRect()
-            const contentRect = theoryContent.getBoundingClientRect()
-            const relativeTop =
-              targetRect.top - contentRect.top + theoryContent.scrollTop - 60
+        // Scroll to target with proper offset
+        scrollContainer.scrollTo({
+          top: target.offsetTop - headerHeight - offset,
+          behavior: 'smooth'
+        })
 
-            theoryContent.scrollTo({
-              top: relativeTop,
-              behavior: 'smooth',
-            })
-          }
-        } else {
-          // Fallback to standard scroll if theory-content not found
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-
-        this.setActiveToc(anchor)
+        // Update active state immediately
+        this.setActiveNavigationItem(anchor)
         this.updateTheoryHash(anchor)
 
+        // Close mobile sidebar if open
         if (window.innerWidth <= 768) {
           const sidebar = document.querySelector('.theory-sidebar')
           sidebar?.classList.remove('open')

@@ -130,36 +130,52 @@ export class ActiveMenuManager {
     )
     if (tocLinks.length === 0) return
 
-    // Remove active states from all TOC links
-    tocLinks.forEach((link) => {
-      link.classList.remove('active')
-      link.removeAttribute('aria-current')
-    })
-
     // Handle hash anchors (e.g., #/theory/java#concept)
     const fullHash = window.location.hash
     const anchorMatch = fullHash.match(/#([^#]+)$/)
 
     if (anchorMatch) {
       const anchor = anchorMatch[1]
-      // Try both selectors for finding the active link
-      const activeLink = document.querySelector(
+      
+      // Remove active states from all TOC links only if we're changing
+      const currentActive = document.querySelector(
+        `.theory-toc .toc-link[aria-current="true"], .theory-sidebar .toc-link[aria-current="true"]`
+      )
+      const targetLink = document.querySelector(
         `.theory-toc .toc-link[data-anchor="${anchor}"], .theory-sidebar .toc-link[data-anchor="${anchor}"]`
       )
 
-      if (activeLink) {
-        activeLink.classList.add('active')
-        activeLink.setAttribute('aria-current', 'location')
-        this.scrollIntoViewIfNeeded(activeLink)
+      // Only update if the active link is actually changing
+      if (currentActive !== targetLink) {
+        tocLinks.forEach((link) => {
+          link.classList.remove('active')
+          link.removeAttribute('aria-current')
+        })
+
+        if (targetLink) {
+          targetLink.classList.add('active')
+          targetLink.setAttribute('aria-current', 'true')
+          this.scrollIntoViewIfNeeded(targetLink)
+          return
+        }
+      } else if (targetLink) {
+        // Link is already active, just ensure proper state
         return
       }
     }
 
     // If no hash anchor, activate the first TOC item as fallback
-    const firstTocLink = tocLinks[0]
-    if (firstTocLink) {
-      firstTocLink.classList.add('active')
-      firstTocLink.setAttribute('aria-current', 'true')
+    // But only if no item is currently active
+    const hasActiveLink = document.querySelector(
+      '.theory-toc .toc-link[aria-current="true"], .theory-sidebar .toc-link[aria-current="true"]'
+    )
+    
+    if (!hasActiveLink) {
+      const firstTocLink = tocLinks[0]
+      if (firstTocLink) {
+        firstTocLink.classList.add('active')
+        firstTocLink.setAttribute('aria-current', 'true')
+      }
     }
   }
 
