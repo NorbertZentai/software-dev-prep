@@ -1,0 +1,32 @@
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Theory-specific motion overrides */
+  body.is-theory #theory-sidebar,
+  body.is-theory #theory-content {
+    transition: none !important;
+  }
+
+  /* Drawer motion overrides */
+  .theory-drawer, 
+  .theory-drawer-toggle, 
+  .theory-drawer-overlay {
+    transition: none !important; 
+    animation: none !important;
+  }
+}
+
+/* Desktop theory auto-collapse motion */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  #theory-sidebar { 
+    transition: width 200ms ease; 
+  }
+}

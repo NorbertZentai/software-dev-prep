@@ -1,0 +1,482 @@
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  /* Grid layouts */
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  /* Page headers */
+  .page-meta-header {
+    padding: var(--space-lg);
+  }
+
+  .page-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .goals-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stats */
+  .stats-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Starter links */
+  .starter-buttons {
+    flex-direction: column;
+  }
+
+  .starter-link {
+    justify-content: center;
+  }
+
+  /* Layout changes */
+  body {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'header'
+      'main'
+      'footer';
+  }
+
+  .sidebar {
+    position: fixed;
+    top: var(--header-height);
+    left: -100%;
+    width: var(--sidebar-width);
+    height: calc(100vh - var(--header-height));
+    z-index: 105;
+    transition: left var(--transition-slow);
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .main-nav {
+    display: none;
+  }
+
+  .header-content {
+    gap: var(--space-md);
+  }
+
+  #search-input {
+    width: 150px;
+  }
+
+  #search-input:focus {
+    width: 180px;
+  }
+
+  .main-content {
+    padding: var(--space-lg);
+  }
+
+  .welcome-screen {
+    padding: var(--space-lg) 0;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  /* Theory page mobile */
+  .theory-page-container {
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-md);
+    width: 100%;
+  }
+
+  .theory-sidebar {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    width: auto;
+    z-index: 999;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    display: none;
+    border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+  }
+
+  .theory-sidebar.open {
+    display: block;
+  }
+
+  .theory-sidebar .toc {
+    max-height: calc(45vh - 2 * var(--space-md));
+  }
+
+  .toc-toggle {
+    display: block;
+  }
+
+  .theory-content {
+    padding: var(--space-lg);
+    margin-left: 0;
+  }
+
+  .theory-header h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .concept-article .concept-title {
+    font-size: var(--font-size-xl);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .theory-navigation {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .theory-navigation .btn {
+    width: 100%;
+  }
+
+  /* Hide desktop inline toolbar/menu on mobile */
+  .theory-inline-toolbar,
+  .theory-inline-menu { display: none !important; }
+
+  /* Show toggle on theory routes */
+  #theory-drawer-toggle,
+  .theory-drawer-toggle,
+  #global-nav-toggle,
+  #toc-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1001;
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    touch-action: manipulation;
+    overflow: hidden; /* prevent label overflow */
+    white-space: nowrap;
+  }
+
+  .theory-drawer-toggle:hover,
+  .theory-drawer-toggle:focus {
+    background: var(--bg-accent);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+
+  .theory-drawer-toggle[aria-expanded="true"] {
+    background: var(--accent-primary);
+    color: #fff;
+    border-color: var(--accent-primary);
+  }
+
+  /* Hide regular sidebar on theory pages for mobile */
+  body.is-theory .sidebar { display: none; }
+  body.is-theory .main-nav { display: none; }
+  body.is-theory .header-tools #search-input { display: none; }
+
+  /* Generic drawer panels */
+  .drawer.left {
+    position: fixed;
+    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    left: -100%;
+    width: 85vw;
+    max-width: 320px;
+    height: calc(100vh - var(--header-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    z-index: 1001;
+    background: var(--bg-secondary);
+    border-right: 2px solid var(--border-color);
+  /* Keep outer container non-scrollable so rounded corner clips scrollbar */
+  overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  transition: left var(--transition-slow, 300ms);
+    /* Outer padding removed to avoid double-padding with cloned .sidebar-content */
+    padding: 0;
+    /* Match right drawer rounding on exposed edge */
+    border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+  }
+  .drawer.left.open { left: 0; box-shadow: 4px 0 20px var(--shadow-color); }
+
+  .drawer.right {
+    position: fixed;
+    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    right: -100%;
+    left: auto !important;
+    width: 85vw;
+    max-width: 320px;
+    height: calc(100vh - var(--header-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    z-index: 1001;
+    background: var(--bg-secondary);
+    border-left: 2px solid var(--border-color);
+  /* Keep outer container non-scrollable so rounded corner clips scrollbar */
+  overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  transition: right var(--transition-slow, 300ms);
+    padding: 0;
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+  }
+  .drawer.right.open { right: 0; box-shadow: -4px 0 20px var(--shadow-color); }
+
+  /* Drawer panel - right side off-canvas (overrides desktop #theory-sidebar) */
+  #theory-sidebar.theory-drawer.right {
+    position: fixed;
+    top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
+    right: -100%;
+    left: auto !important;
+    width: 85vw;
+    max-width: 320px;
+    height: calc(100vh - var(--header-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    z-index: 1001;
+    background: var(--bg-secondary);
+    border-left: 2px solid var(--border-color);
+    border-right: none;
+  /* Keep outer container non-scrollable so rounded corner clips scrollbar */
+  overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  transition: right var(--transition-slow, 300ms);
+    padding: 0;
+    box-shadow: none;
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+  }
+
+  #theory-sidebar.theory-drawer.right.open {
+    right: 0;
+    box-shadow: -4px 0 20px var(--shadow-color);
+  }
+
+  /* Drawer content */
+  .theory-drawer h3 {
+    color: var(--accent-primary);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--space-sm);
+  }
+
+  /* Add consistent inner padding for both drawers */
+  #global-nav .sidebar-content,
+  #theory-sidebar .theory-toc,
+  #theory-sidebar .sidebar-content {
+    padding: var(--space-lg);
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable both-edges;
+  }
+
+  .theory-drawer .toc-link {
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-xs);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    min-height: 44px; /* mobile tap target */
+    touch-action: manipulation;
+  }
+
+  .theory-drawer .toc-link:hover { background: var(--bg-accent); transform: none; }
+  .theory-drawer .toc-link.active { background: var(--accent-primary); color: #fff; font-weight: 600; }
+
+  /* Mobil: mindent visszaállítás normálra */
+  body.is-theory {
+    display: block !important;
+    padding-top: 0 !important;
+    gap: 0 !important;
+    width: 100% !important;
+  }
+
+  /* App normál mobilon */
+  body.is-theory #app {
+    display: block !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Sidebar mobilon normál */
+  body.is-theory #sidebar {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    left: auto !important;
+    top: auto !important;
+    float: none !important;
+  }
+
+  /* Theory sidebar mobilon normál */
+  body.is-theory #theory-sidebar {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    float: none !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  /* Theory content mobilon normál */
+  body.is-theory #theory-content {
+    position: static !important;
+    margin: 0 !important;
+    padding: var(--space-lg) !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+    background: var(--bg-primary) !important;
+    box-sizing: border-box !important;
+    float: none !important;
+  }
+
+  /* Body scroll lock while drawer open */
+  body.drawer-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+
+  /* Hide legacy floating TOC toggle in favor of header toggles */
+  .toc-toggle { display: none !important; }
+
+  /* Hard guard against horizontal overflow on mobile */
+  * { min-width: 0; }
+  .content-container, .concept-article, .card { overflow-wrap: anywhere; word-break: break-word; }
+  img, svg, video, iframe { max-width: 100%; height: auto; display: block; }
+
+  /* Code/table scrolling helpers */
+  .content-container .table-scroll, .concept-body .table-scroll {
+    overflow-x: auto;
+    margin: var(--space-md) 0;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* TOC submenu collapsed by default (if present) */
+  .toc-group > ul { display: none; }
+  .toc-group[aria-expanded="true"] > ul { display: block; }
+  .toc-group-toggle {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    padding: 8px 4px;
+    min-height: 44px;
+    color: var(--text-primary);
+  }
+
+  /* --- Minimal mobile overrides (append-only) --- */
+  .toc-toggle { display: none !important; }
+  /* Hide the left-center floating hamburger on mobile */
+  .sidebar-toggle { display: none !important; }
+  /* Left drawer */
+  #global-nav.drawer.left { left: -100%; }
+  #global-nav.drawer.left.open { left: 0; }
+  /* Right drawer */
+  #theory-sidebar.drawer.right { right: -100%; left: auto !important; }
+  #theory-sidebar.drawer.right.open { right: 0; }
+  /* Full width content on theory pages */
+  #theory-content.theory-content {
+    position: static;
+    top: auto; left: auto; right: auto;
+    height: auto; max-width: 100%;
+    padding: clamp(12px, 2.5vw, 20px);
+  }
+  /* Overlay and z-index guards */
+  .drawer-overlay { z-index: 1000; }
+  #global-nav, #theory-sidebar { z-index: 1001; }
+
+  /* ===================== */
+  /* Global drawer styling */
+  /* Match Fogalmak look   */
+  /* ===================== */
+
+  /* Header style inside the drawer */
+  #global-nav .sidebar-content > h3 {
+    color: var(--accent-primary);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    margin: 0 0 var(--space-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: var(--space-sm);
+  }
+
+  /* Section headings */
+  #global-nav .nav-group { margin-bottom: var(--space-xl); }
+  #global-nav .nav-group h4 {
+    margin: 0 0 var(--space-sm) 0;
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.9;
+  }
+
+  /* Pill-like links to match TOC look */
+  #global-nav .nav-group a {
+    display: block;
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: var(--border-radius-lg);
+    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+    line-height: 1.35;
+    font-size: var(--font-size-base);
+    border: 1px solid transparent;
+    margin-bottom: var(--space-sm);
+    background: transparent;
+  }
+
+  #global-nav .nav-group a:hover,
+  #global-nav .nav-group a:focus {
+    background: var(--bg-accent);
+    color: var(--text-primary);
+    transform: none; /* override sidebar hover shift */
+    outline: none;
+    border-color: var(--border-color);
+  }
+
+  /* Active state mirroring TOC */
+  #global-nav .nav-group a.active,
+  #global-nav .nav-group a[aria-current="page"],
+  #global-nav .nav-group a[aria-current="true"] {
+    background: var(--accent-primary);
+    color: #fff;
+    font-weight: 600;
+    border-left: 4px solid var(--accent-secondary);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+    border-color: transparent; /* keep borders clean on active */
+    transform: none;
+  }
+
+  #global-nav .nav-group a.active:hover,
+  #global-nav .nav-group a[aria-current="page"]:hover {
+    background: var(--accent-primary);
+    color: #fff;
+    transform: none;
+  }
+}

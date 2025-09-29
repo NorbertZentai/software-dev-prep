@@ -1,0 +1,45 @@
+/* Small phones */
+@media (max-width: 480px) {
+  .header-tools {
+    gap: var(--space-sm);
+  }
+
+  #search-input {
+    width: 120px;
+    font-size: var(--font-size-xs);
+  }
+
+  #search-input:focus {
+    width: 140px;
+  }
+
+  .site-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .main-content {
+    padding: var(--space-md);
+  }
+
+  .action-card {
+    padding: var(--space-lg);
+  }
+
+  .theory-drawer { 
+    width: 95vw; 
+    max-width: none; 
+  }
+  
+  .theory-content { 
+    padding: var(--space-md); 
+  }
+}
+
+/* Desktop-only rules to ensure header toggles are hidden */
+@media (min-width: 1024px) {
+  #theory-drawer-toggle.theory-drawer-toggle,
+  #global-nav-toggle,
+  #toc-toggle { 
+    display: none !important; 
+  }
+}

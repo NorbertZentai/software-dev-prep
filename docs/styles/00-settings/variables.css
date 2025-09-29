@@ -1,0 +1,74 @@
+/* CSS Custom Properties (Variables) */
+:root {
+  /* Color Scheme - Light Mode Default */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-accent: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-danger: #ef4444;
+  --border-color: #e2e8f0;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* Header width adjustment for fine-tuning */
+  --header-width-adjust: 0px;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas,
+    'Courier New', monospace;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+
+  /* Layout */
+  --header-height: 4rem;
+  --header-h: 64px;               /* Header magasság px-ben anchor scroll-hoz */
+  --sidebar-width: 280px;
+  --border-radius: 0.5rem;
+  --border-radius-lg: 0.75rem;
+
+  /* Desktop theory layout tokens */
+  --sidebar-left: 240px;          /* bal főmenü szélesség */
+  --toc-wide: 280px;              /* jobb TOC nyitva */
+  --toc-rail: 56px;               /* jobb TOC rail (ha később kellene) */
+  --layout-gap: 24px;
+
+  /* Transition durations (slower, smoother) */
+  --transition-fast: 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-normal: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-slow: 550ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Inline theory toolbar metrics */
+  --inline-toolbar-height: 56px;
+  --inline-toolbar-gap: 12px;
+}
+
+/* Light Mode Override */
+[data-theme='light'] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-accent: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}

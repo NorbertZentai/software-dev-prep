@@ -1,0 +1,114 @@
+/* === WELCOME SCREEN === */
+.welcome-screen {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-2xl) 0;
+}
+
+.welcome-screen h1 {
+  font-size: var(--font-size-3xl);
+  margin-bottom: var(--space-lg);
+  color: var(--accent-primary);
+}
+
+.welcome-screen p {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2xl);
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-2xl);
+}
+
+.action-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-xl);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition-normal);
+  text-align: left;
+}
+
+.action-card:hover,
+.action-card:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px var(--shadow-color);
+  border-color: var(--accent-primary);
+}
+
+.action-card h3 {
+  font-size: var(--font-size-xl);
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--accent-primary);
+}
+
+.action-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* === ERROR HANDLING === */
+.error-message {
+  background-color: var(--accent-danger);
+  color: white;
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  margin: var(--space-lg) 0;
+  text-align: center;
+}
+
+/* === DRAWER OVERRIDES === */
+/* Hide header toggles by default (desktop baseline) */
+#theory-drawer-toggle,
+.theory-drawer-toggle,
+#global-nav-toggle,
+#toc-toggle {
+  display: none;
+}
+
+/* Base overlay hidden by default */
+.theory-drawer-overlay, /* backward compat */
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+.theory-drawer-overlay.active,
+.drawer-overlay.active {
+  display: block;
+  pointer-events: auto;
+}
+
+/* === LOADING STATES === */
+.loading {
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-muted);
+}
+
+.loading::after {
+  content: '⌟ Betöltés...';
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

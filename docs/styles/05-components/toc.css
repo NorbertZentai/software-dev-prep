@@ -1,0 +1,166 @@
+/* TOC Styles */
+.toc-header {
+  margin-bottom: var(--space-lg);
+}
+
+.toc-header h3 {
+  margin: 0 0 var(--space-md) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+#toc-search {
+  width: 100%;
+  padding: var(--space-sm);
+  margin-bottom: var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition-normal);
+}
+
+#toc-search:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+#toc-search::placeholder {
+  color: var(--text-muted);
+}
+
+.toc-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-md) 0 0 0;
+}
+
+.toc-list li {
+  margin-bottom: var(--space-xs);
+}
+
+.toc-link {
+  display: block;
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  line-height: 1.4;
+  font-size: var(--font-size-sm);
+}
+
+.toc-link:hover {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+
+.toc-link.active,
+.toc-link[aria-current="true"] {
+  background: var(--accent-primary);
+  color: white;
+  font-weight: 600;
+  border-left: 4px solid var(--accent-secondary);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.toc-link:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.concept-title {
+  flex: 1;
+  line-height: 1.3;
+}
+
+.concept-status {
+  font-size: var(--font-size-lg);
+  color: var(--text-muted);
+  margin-left: var(--space-sm);
+}
+
+.toc-footer {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-color);
+}
+
+.reading-progress {
+  text-align: center;
+}
+
+#progress-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--bg-accent);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Enhanced active state for theory TOC */
+.theory-toc .toc-link.active,
+.theory-toc .toc-link[aria-current='true'],
+.theory-sidebar .toc-link.active,
+.theory-sidebar .toc-link[aria-current='true'] {
+  background: var(--accent-primary) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-left: 4px solid var(--accent-secondary) !important;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Maintain active state styling on hover for TOC */
+.theory-toc .toc-link.active:hover,
+.theory-toc .toc-link[aria-current='true']:hover,
+.theory-sidebar .toc-link.active:hover,
+.theory-sidebar .toc-link[aria-current='true']:hover {
+  background: var(--accent-primary) !important;
+  color: white !important;
+  transform: translateX(4px);
+}
+
+/* Mobile Responsive */
+.toc-toggle {
+  display: none;
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all var(--transition-normal);
+}
+
+.toc-toggle:hover {
+  background: var(--accent-secondary);
+  transform: scale(1.05);
+}

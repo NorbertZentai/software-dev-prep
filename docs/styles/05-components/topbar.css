@@ -1,0 +1,114 @@
+/* === HEADER === */
+.topbar {
+  grid-area: header;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-lg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.logo {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+}
+
+.site-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin: 0;
+  color: var(--accent-primary);
+}
+
+.main-nav {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--text-primary);
+  background-color: var(--bg-accent);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  color: var(--accent-primary);
+  background-color: var(--bg-accent);
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+#search-input {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  width: 200px;
+  transition: all var(--transition-fast);
+}
+
+#search-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  width: 250px;
+}
+
+.theme-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: var(--font-size-lg);
+  transition: all var(--transition-fast);
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn:hover,
+.theme-btn:focus {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  transform: scale(1.05);
+}

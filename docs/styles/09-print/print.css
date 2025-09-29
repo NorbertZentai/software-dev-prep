@@ -1,0 +1,22 @@
+/* === PRINT STYLES === */
+@media print {
+  .topbar,
+  .sidebar,
+  .footer,
+  .sidebar-toggle {
+    display: none !important;
+  }
+
+  body {
+    grid-template-areas: 'main';
+    grid-template-columns: 1fr;
+  }
+
+  .main-content {
+    padding: 0;
+  }
+
+  .content-container {
+    max-width: none;
+  }
+}

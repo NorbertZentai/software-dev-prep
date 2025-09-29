@@ -1,0 +1,43 @@
+/* === MAIN CONTENT === */
+.main-content {
+  grid-area: main;
+  padding: var(--space-xl);
+  overflow-y: auto;
+  max-width: 100%;
+}
+
+.theory-layout .main-content {
+  overflow-y: visible;
+  overflow-x: hidden;
+}
+
+#app.theory-layout {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.main-content.theory-layout {
+  overflow-y: visible;
+}
+
+/* === FOOTER === */
+.footer {
+  grid-area: footer;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: var(--space-lg);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+.footer a {
+  color: var(--accent-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer a:hover,
+.footer a:focus {
+  color: var(--accent-secondary);
+}

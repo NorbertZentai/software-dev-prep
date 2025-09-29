@@ -1,0 +1,99 @@
+/* === CONTENT STYLES === */
+.content-container {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.content-container h1,
+.content-container h2,
+.content-container h3,
+.content-container h4 {
+  color: var(--accent-primary);
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-lg);
+}
+
+.content-container h1 {
+  font-size: var(--font-size-3xl);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: var(--space-md);
+}
+
+.content-container h2 {
+  font-size: var(--font-size-2xl);
+}
+
+.content-container h3 {
+  font-size: var(--font-size-xl);
+}
+
+.content-container p {
+  margin-bottom: var(--space-lg);
+  color: var(--text-secondary);
+}
+
+.content-container code {
+  background-color: var(--bg-accent);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--accent-secondary);
+}
+
+.content-container pre {
+  background-color: var(--bg-accent);
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  overflow-x: auto;
+  margin: var(--space-lg) 0;
+  border: 1px solid var(--border-color);
+}
+
+.content-container pre code {
+  background: none;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+.content-container ul,
+.content-container ol {
+  padding-left: var(--space-xl);
+  margin-bottom: var(--space-lg);
+}
+
+.content-container li {
+  margin-bottom: var(--space-sm);
+  color: var(--text-secondary);
+}
+
+.content-container blockquote {
+  border-left: 4px solid var(--accent-primary);
+  margin: var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  background-color: var(--bg-secondary);
+  font-style: italic;
+}
+
+.content-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-lg) 0;
+  background-color: var(--bg-secondary);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.content-container th,
+.content-container td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.content-container th {
+  background-color: var(--bg-accent);
+  font-weight: 600;
+  color: var(--accent-primary);
+}

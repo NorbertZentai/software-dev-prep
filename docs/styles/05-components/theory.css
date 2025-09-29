@@ -1,0 +1,529 @@
+/* === THEORY PAGE STYLES === */
+.theory-page-container {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xl);
+  min-height: calc(100vh - var(--header-height));
+  padding: var(--space-lg);
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+#theory-sidebar {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-md));
+  left: calc(var(--sidebar-width) + var(--space-lg) * 2);
+  width: 280px;
+  height: calc(100vh - var(--header-height) - 2 * var(--space-md));
+  flex-shrink: 0;
+  z-index: 10;
+  padding: var(--space-lg);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#theory-sidebar.hidden {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  /* On desktop, the theory sidebar should always be visible when on theory pages */
+  body.is-theory #theory-sidebar.hidden { display: block; }
+}
+
+/* === THEORY PAGE LAYOUT === */
+
+/* Anchor scroll offset - címsorok ne takarják el a header */
+.concept-article h2[id], 
+.concept-article h3[id] {
+  scroll-margin-top: calc(var(--header-h) + 16px);
+}
+
+/* Base theory content - mobilon normál flow */
+#theory-content {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  padding: var(--space-xl);
+  margin: var(--space-md);
+  max-width: none;
+  box-sizing: border-box;
+}
+
+/* DESKTOP: Egyszerű, működő layout */
+@media (min-width: 1024px) {
+  /* Normál body */
+  body.is-theory {
+    display: block;
+  }
+
+  /* Bal főmenü fix pozícióban */
+  body.is-theory #sidebar {
+    position: fixed;
+    left: 0;
+    top: var(--header-h);
+    width: var(--sidebar-left);
+    height: calc(100vh - var(--header-h));
+    overflow-y: auto;
+    z-index: 10;
+  }
+
+  /* Main tartalom nem tolva - a theory sidebar absolute pozícionálás miatt */
+  body.is-theory #app {
+    margin-left: 0; /* Nincs margin-left, mert a theory sidebar absolute */
+    padding: var(--space-md);
+    padding-left: 0; /* Nincs bal padding, mert a theory sidebar közvetlenül a főmenü mellé kerül */
+  }
+
+  /* Theory sidebar közvetlenül a főmenü mellé, nagyobb paddingel */
+  body.is-theory #theory-sidebar {
+    position: absolute;
+    left: calc(var(--sidebar-left) + var(--space-md)); /* Főmenü + nagyobb padding */
+    top: calc(var(--header-h) + var(--space-md));
+    width: var(--toc-wide);
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: var(--space-md);
+    height: calc(100vh - var(--header-h) - 2 * var(--space-md));
+    overflow-y: auto;
+    z-index: 5;
+    transition: width 0.3s ease, padding 0.3s ease, border-width 0.3s ease;
+  }
+
+  /* Theory content eltolva a főmenü + theory sidebar + gap-ek szélességével, jobb oldali margin-nal */
+  body.is-theory #theory-content {
+    margin-left: calc(var(--sidebar-left) + var(--space-md) + var(--toc-wide) + var(--layout-gap)); /* Főmenü + padding + theory sidebar + gap */
+    margin-right: var(--space-md); /* Jobb oldali margin, hogy ne lógjon ki */
+    padding: var(--space-xl);
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    box-sizing: border-box;
+    transition: margin-left 0.3s ease;
+  }
+
+  /* Rail mód: theory sidebar teljesen eltűnik */
+  body.is-theory.theory-collapsed #theory-sidebar {
+    width: 0;
+    padding: 0;
+    border-width: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: width 0.3s ease, padding 0.3s ease, border-width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  /* Rail módban content közelebb kerül - theory sidebar teljesen eltűnt */
+  body.is-theory.theory-collapsed #theory-content {
+    margin-left: calc(var(--sidebar-left) + var(--space-md)); /* Csak főmenü + padding, theory sidebar nincs */
+    margin-right: var(--space-md);
+    padding-top: calc(var(--header-h) + var(--space-md) + 64px + var(--space-md)); /* Header + gap + toolbar height + gap */
+    box-sizing: border-box;
+  }
+
+  /* Top toolbar theory oldalon - csak collapsed állapotban látható */
+  body.is-theory #theory-top-toolbar {
+    display: none;
+    position: fixed;
+    top: calc(var(--header-h) + var(--space-md));
+    left: calc(var(--sidebar-left) + var(--space-md));
+    right: var(--space-md);
+    height: 64px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    z-index: 90; /* Magasabb z-index a jobb láthatóságért */
+    padding: 0 var(--space-xl); /* Ugyanaz a padding mint a theory content */
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    margin-bottom: var(--space-md);
+  }
+
+  /* Collapsed állapotban megjelenik a toolbar */
+  body.is-theory.theory-collapsed #theory-top-toolbar {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Hamburger menü gomb */
+  #theory-top-toolbar .hamburger-btn {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+  }
+
+  #theory-top-toolbar .hamburger-btn:hover {
+    background-color: var(--bg-hover);
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+  }
+
+  /* Keresés rész */
+  #theory-top-toolbar .search-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  #theory-top-toolbar .search-input {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-size: 14px;
+    width: 180px;
+    height: 44px;
+    transition: all 0.2s ease;
+  }
+
+  #theory-top-toolbar .search-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-color-alpha), 0 2px 4px var(--shadow-color);
+    transform: translateY(-1px);
+  }
+
+  #theory-top-toolbar .search-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  body.is-theory.theory-collapsed #theory-sidebar .toc-text {
+    display: none;
+  }
+
+  /* Mobil drawer elemek elrejtése desktopon */
+  body.is-theory #toc-toggle, 
+  body.is-theory #global-nav-toggle, 
+  body.is-theory .drawer-overlay { 
+    display: none !important; 
+  }
+}
+
+/* Rail mód: CSAK a theory sidebar csukódik -> tartalom még szélesebb */
+body.is-theory.theory-collapsed #theory-sidebar {
+  width: var(--toc-rail);
+  overflow: hidden;
+}
+
+/* Rail módban szövegek elrejtése */
+body.is-theory.theory-collapsed #theory-sidebar .toc-text {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* Főmenü MINDIG ugyanakkora marad - nem csukódik össze */
+body.is-theory #sidebar,
+body.is-theory.theory-collapsed #sidebar {
+  width: var(--sidebar-left) !important;
+}
+
+/* Desktopon rejtsd a mobil drawer elemeket */
+body.is-theory #toc-toggle, 
+body.is-theory #global-nav-toggle, 
+body.is-theory .drawer-overlay { 
+  display: none !important; 
+}
+
+/* Mozgásérzékenység tiszteletben tartása */
+@media (prefers-reduced-motion: reduce) {
+  body.is-theory #theory-sidebar,
+  body.is-theory #theory-content {
+    transition: none !important;
+  }
+}
+
+/* Kompakt top-bar collapsed állapotban */
+@media (min-width: 1024px) {
+  /* Top-bar kompakt mód */
+  body.is-theory.theory-collapsed .topbar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px var(--shadow-color);
+  }
+  
+  /* Theory jobb oldali TOC - változatlan pozícionálás */
+  body.is-theory .theory-toc {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-md));
+    max-height: calc(100vh - var(--header-height) - 2 * var(--space-md));
+    overflow-y: auto;
+  }
+}
+
+/* Theory TOC Styles */
+.theory-toc h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-lg);
+  border-bottom: 2px solid var(--accent-primary);
+  padding-bottom: var(--space-sm);
+}
+
+/* Theory Content Styles */
+.theory-header {
+  margin-bottom: var(--space-2xl);
+  text-align: center;
+  padding-bottom: var(--space-xl);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.theory-header h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-md) 0;
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.theory-summary {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.concepts-container {
+  margin-bottom: var(--space-2xl);
+  width: 100%;
+  max-width: none;
+}
+
+.concept-article {
+  scroll-margin-top: calc(var(--header-height) + 2rem);
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-xl);
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.concept-article:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.concept-article .concept-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-lg) 0;
+  line-height: 1.3;
+}
+
+.concept-read-toggle {
+  background: var(--bg-accent);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  opacity: 0.7;
+}
+
+.concept-read-toggle:hover {
+  opacity: 1;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+.concept-read-toggle.read {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  opacity: 1;
+}
+
+.read-icon {
+  color: white;
+  font-weight: bold;
+  font-size: var(--font-size-sm);
+}
+
+.concept-body {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  width: 100%;
+  max-width: none;
+}
+
+.concept-body h4 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin: var(--space-lg) 0 var(--space-md) 0;
+}
+
+.concept-body p {
+  margin-bottom: var(--space-md);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.concept-body strong {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.concept-body pre {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--space-lg);
+  margin: var(--space-lg) 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.concept-body code {
+  background: var(--bg-primary);
+  color: var(--accent-secondary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* Theory Navigation */
+.theory-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-xl);
+  border-top: 2px solid var(--border-color);
+}
+
+.theory-navigation .btn {
+  min-width: 120px;
+}
+
+/* Desktop theory layout extensions */
+@media (min-width: 1024px) {
+  /* Állapotváltozók - dinamikus jobb oszlop szélesség */
+  body.is-theory { --right-col: var(--toc-wide); }
+  body.is-theory.theory-collapsed { --right-col: var(--toc-rail); }
+
+  /* Opcionális finomhangolók - már létező változó használata */
+  body.is-theory { 
+    --content-left: calc(var(--sidebar-left) + var(--space-md));
+    --content-right: var(--space-md);
+  }
+
+  /* A külső topbar paddingját vedd ki, hogy a belső tudjon igazítani */
+  body.is-theory .topbar { padding-inline: 0; }
+
+  /* 1) Fő header sáv - padding-alapú igazítás */
+  body.is-theory .topbar .header-content {
+    box-sizing: border-box;
+    width: 100%; max-width: none; margin: 0;
+    padding-inline-start: var(--content-left);
+    padding-inline-end: var(--content-right);
+  }
+
+  /* 2) Theory top toolbar - pontosan ugyanolyan pozicionálás mint a theory content */
+  body.is-theory #theory-top-toolbar {
+    top: calc(var(--header-height) + var(--space-md) + clamp(-12px, -2vh, -6px)) !important;
+    left: calc(var(--sidebar-left) + var(--space-md)) !important; 
+    right: var(--space-md) !important;
+    width: auto !important; 
+    max-width: none !important; 
+    margin-right: clamp(8px, 1vw, 20px) !important;
+    box-sizing: border-box;
+    padding: 0 var(--space-xl); /* Ugyanaz a padding mint a theory content */
+    /* Megtartja a többi tulajdonságot: position: fixed, z-index stb. */
+  }
+
+  /* Theory: content lejjebb tolása, vízszintes eltolás nélkül */
+  body.is-theory.theory-collapsed #theory-content {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: calc(var(--header-h) + var(--space-md) + 64px + var(--space-md)) !important;
+    margin-top: 0 !important;
+    padding-top: var(--space-xl) !important;
+  }
+
+  /* Desktop theory auto-collapse rules */
+  :root {
+    --toc-wide: 280px;
+    --toc-rail: 56px;
+  }
+
+  /* Keep default widths unless collapsed */
+  #theory-sidebar { width: var(--toc-wide); }
+
+  body.theory-collapsed #theory-sidebar {
+    width: var(--toc-rail);
+    overflow: hidden;
+  }
+
+  /* Hide non-essential text/content inside sidebar when collapsed */
+  body.theory-collapsed #theory-sidebar .toc-header,
+  body.theory-collapsed #theory-sidebar .toc-text,
+  body.theory-collapsed #theory-sidebar #toc-search,
+  body.theory-collapsed #theory-sidebar .toc-list .toc-link span,
+  body.theory-collapsed #theory-sidebar .toc-footer {
+    display: none !important;
+  }
+
+  /* Widen content area when collapsed */
+  body.theory-collapsed #theory-content {
+    max-width: none;
+    left: calc(var(--sidebar-width) + var(--space-lg));
+    right: var(--space-md);
+  }
+
+  /* When sidebar temporarily expands on hover/focus, restore original left offset */
+  body.theory-collapsed #theory-sidebar:hover + #theory-content,
+  body.theory-collapsed #theory-sidebar:focus-within + #theory-content {
+    left: calc(var(--sidebar-width) + 280px + 3 * var(--space-lg));
+    right: var(--space-lg);
+  }
+
+  /* Hover/focus temporarily expands for accessibility */
+  body.theory-collapsed #theory-sidebar:hover,
+  body.theory-collapsed #theory-sidebar:focus-within {
+    width: var(--toc-wide);
+  }
+}

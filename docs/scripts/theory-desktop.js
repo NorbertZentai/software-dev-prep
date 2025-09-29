@@ -1,106 +1,99 @@
-// === Theory Desktop Auto-Collapse (≥1024px) ===
-// Behavior: On desktop theory pages, show the Fogalmak (TOC) when at the top or within the first concept.
-// Collapse (hide) the TOC and widen content once the second concept is reached. Animate transitions.
+// theory-desktop.js
+(() => {
+  const mqDesktop = window.matchMedia('(min-width: 1024px)');
+  let lastY = 0;
+  let ticking = false;
 
-(function () {
-  const mql = window.matchMedia('(min-width: 1024px)')
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const isTheoryRoute = () => window.location.hash.startsWith('#/theory/')
-
-  let rafId = null
-  let scrollEl = null
-  let concepts = []
-
-  const collapse = () => {
-    if (!mql.matches || !isTheoryRoute()) return
-    document.body.classList.add('theory-collapsed')
+  function isTheory() {
+    return location.hash.startsWith('#/theory/');
   }
-  const expand = () => {
-    document.body.classList.remove('theory-collapsed')
+  
+  function setCollapsed(on) {
+    document.body.classList.toggle('theory-collapsed', !!on);
   }
 
-  const computeConcepts = () => {
-    concepts = Array.from(document.querySelectorAll('#theory-content article[id]'))
+  function onScroll() {
+    if (!mqDesktop.matches || !isTheory()) return;
+    const y = window.scrollY || document.documentElement.scrollTop;
+    const dy = y - lastY;
+    lastY = y;
+
+    if (y < 120) { 
+      setCollapsed(false); 
+      return; 
+    }
+    
+    // lefelé nagyobbat görget – csuk
+    if (dy > 4) setCollapsed(true);
+    // felfelé – nyiss
+    if (dy < -6) setCollapsed(false);
   }
 
-  const evaluate = () => {
-    if (!mql.matches || !isTheoryRoute() || !scrollEl) return
-    if (concepts.length < 2) { expand(); return }
+  function onTOCClick(e) {
+    const a = e.target.closest('a[href*="#"]');
+    if (!a) return;
+    if (!mqDesktop.matches || !isTheory()) return;
+    
+    // kattintáskor széles tartalomra váltunk, hogy jól látszódjon a szakasz
+    setCollapsed(true);
+    // NINCS inline scroll – a render.js saját smooth-scrollja + scroll-margin-top intézi
+  }
 
-    const secondTop = concepts[1].offsetTop
-    const y = scrollEl.scrollTop
+  function bind() {
+    if (!mqDesktop.matches) return;
+    if (!isTheory()) return;
 
-    // Collapse when the scroll position reaches the second concept
-    if (y + 1 >= secondTop) {
-      collapse()
+    lastY = window.scrollY || 0;
+    
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => { 
+          onScroll(); 
+          ticking = false; 
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    const toc = document.getElementById('theory-sidebar');
+    if (toc) toc.addEventListener('click', onTOCClick, true);
+
+    // Hamburger gomb functionality
+    const hamburgerBtn = document.querySelector('#theory-top-toolbar .hamburger-btn');
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', () => {
+        setCollapsed(false); // Sidebar megnyitása
+      });
+    }
+  }
+
+  function unbind() {
+    // egyszerű verzió: oldal újrarajzolásánál újrakötjük; itt nem távolítunk el mindent globálból
+  }
+
+  window.addEventListener('hashchange', () => {
+    if (isTheory() && mqDesktop.matches) {
+      document.body.classList.add('is-theory');
+      setCollapsed(false); // tetején kezdünk
+      bind();
     } else {
-      // Otherwise (top or first concept), expand
-      expand()
+      document.body.classList.remove('is-theory', 'theory-collapsed');
+      unbind();
     }
-  }
+  });
 
-  const onScroll = () => {
-    if (rafId) return
-    rafId = requestAnimationFrame(() => {
-      rafId = null
-      evaluate()
-    })
-  }
-
-  const onRouteOrResize = () => {
-    if (!isTheoryRoute() || !mql.matches) {
-      expand()
-      return
+  mqDesktop.addEventListener?.('change', () => {
+    // viewport váltáskor reset
+    if (!mqDesktop.matches) {
+      document.body.classList.remove('theory-collapsed');
+    } else if (isTheory()) {
+      bind();
     }
-    scrollEl = document.getElementById('theory-content')
-    computeConcepts()
-    evaluate()
+  });
+
+  // első betöltés
+  if (isTheory() && mqDesktop.matches) {
+    document.body.classList.add('is-theory');
+    bind();
   }
-
-  const setup = () => {
-    // Desktop only
-    if (!mql.matches) return
-
-    scrollEl = document.getElementById('theory-content')
-    if (!scrollEl) return
-
-    // Enable transitions unless reduced motion
-    if (prefersReducedMotion.matches) {
-      document.body.classList.add('motion-reduce')
-    }
-
-    computeConcepts()
-    evaluate()
-
-    // Scroll within theory content container controls state
-    scrollEl.addEventListener('scroll', onScroll, { passive: true })
-
-    // Re-evaluate on route/resize/content-ready
-    window.addEventListener('hashchange', onRouteOrResize)
-    window.addEventListener('resize', onRouteOrResize)
-    window.addEventListener('theory:content:ready', onRouteOrResize)
-    window.addEventListener('theory:navigation:complete', () => {
-      // Re-evaluate after navigation using the standard method
-      evaluate()
-    })
-  }
-
-  const init = () => {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', setup)
-    } else {
-      setup()
-    }
-  }
-
-  mql.addEventListener('change', () => {
-    if (!mql.matches) {
-      // Leaving desktop: clean up state
-      expand()
-    } else {
-      onRouteOrResize()
-    }
-  })
-
-  init()
-})()
+})();

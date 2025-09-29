@@ -502,6 +502,11 @@ export class MarkdownRenderer {
       
   // Notify listeners that theory content is ready (for mobile TOC binding)
   window.dispatchEvent(new CustomEvent('theory:content:ready'))
+  
+  // Initialize scrollspy for active TOC tracking
+  setTimeout(() => {
+    this.initScrollspy();
+  }, 100);
       
     } catch (error) {
       console.error('Theory page rendering error:', error)
@@ -645,17 +650,6 @@ export class MarkdownRenderer {
   buildTheoryContent(concepts, title, frontmatter) {
     // Main title section
     const titleSection = `
-      <div id="theory-inline-toolbar" class="theory-inline-toolbar">
-        <div class="toolbar-left">
-          <button id="theory-inline-menu-toggle" class="btn icon" aria-controls="theory-inline-menu" aria-expanded="false" title="Fogalmak menü">
-            ☰
-          </button>
-        </div>
-        <div class="toolbar-right">
-          <input id="theory-inline-search" placeholder="Keresés..." type="text" />
-        </div>
-      </div>
-      <div id="theory-inline-menu" class="theory-inline-menu hidden" role="dialog" aria-modal="false" aria-labelledby="theory-inline-menu-toggle"></div>
       <header class="theory-header">
         <h1>${title}</h1>
         ${
@@ -743,7 +737,6 @@ export class MarkdownRenderer {
     this.attachScrollSpy()
     this.enableTocKeyboardNav()
     this.setupMobileTocToggle()
-    this.setupInlineToolbar(concepts)
 
     // Setup deep link handling
     this.setupDeepLinkHandling()
@@ -1135,14 +1128,14 @@ export class MarkdownRenderer {
 
   setActiveNavigationItem(headingId) {
     // Remove active state from all TOC links
-    const allTocLinks = document.querySelectorAll('.theory-toc .toc-link, .theory-sidebar .toc-link, #theory-inline-menu .toc-link')
+    const allTocLinks = document.querySelectorAll('.theory-toc .toc-link, .theory-sidebar .toc-link')
     allTocLinks.forEach(link => {
       link.classList.remove('active')
       link.removeAttribute('aria-current')
     })
 
     // Set active state on the matching link
-  const activeLink = document.querySelector(`.theory-toc .toc-link[data-anchor="${headingId}"], .theory-sidebar .toc-link[data-anchor="${headingId}"], #theory-inline-menu .toc-link[data-anchor="${headingId}"]`)
+    const activeLink = document.querySelector(`.theory-toc .toc-link[data-anchor="${headingId}"], .theory-sidebar .toc-link[data-anchor="${headingId}"]`)
 
     if (activeLink) {
       activeLink.classList.add('active')
@@ -1205,119 +1198,106 @@ export class MarkdownRenderer {
 
 
 
-  wireTocLinks() {
-    document.querySelectorAll('#theory-sidebar .toc-link, .theory-sidebar .toc-link, #theory-inline-menu .toc-link').forEach((link) => {
-      link.addEventListener('click', (e) => {
-        // Prevent default to avoid any native jump-to-top
-        e.preventDefault()
-        e.stopPropagation()
-
-        // Get anchor from href or data-anchor
-        const href = link.getAttribute('href')
-        const anchor = href ? href.slice(1) : link.getAttribute('data-anchor')
-        const target = document.getElementById(anchor)
-        const scrollContainer = document.querySelector('#theory-content')
-        const isWindowScroll = !scrollContainer || getComputedStyle(scrollContainer).overflowY === 'visible' || (scrollContainer.scrollHeight <= scrollContainer.clientHeight)
-
-        if (!target) return
-
-        // Get sticky header height for offset calculation
-        const headerHeight = document.querySelector('.topbar')?.offsetHeight || 0
-        const offset = 8 // Additional padding
-
-        // Scroll to target with proper offset
-        const top = Math.max(0, target.offsetTop - headerHeight - offset)
-        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
-        if (isWindowScroll) {
-          window.scrollTo({ top, behavior })
-        } else {
-          scrollContainer.scrollTo({ top, behavior })
-        }
-
-        // Update active state and hash after scroll with appropriate delay
-        const delay = behavior === 'auto' ? 0 : 300 // Wait for smooth scroll to complete
-        setTimeout(() => {
-          this.setActiveNavigationItem(anchor)
-          this.updateTheoryHash(anchor)
-          
-          // Trigger desktop auto-collapse re-evaluation after navigation
-          window.dispatchEvent(new CustomEvent('theory:navigation:complete', {
-            detail: { anchor: anchor, target: target }
-          }))
-        }, delay)
-
-        // Close mobile sidebar if open
-        if (window.innerWidth <= 768) {
-          const sidebar = document.querySelector('.theory-sidebar')
-          sidebar?.classList.remove('open')
-
-          const toggleBtn = document.getElementById('toc-toggle')
-          toggleBtn?.setAttribute('aria-expanded', 'false')
-        } else {
-          // Desktop inline menu close after navigation
-          const inlineMenu = document.getElementById('theory-inline-menu')
-          const inlineToggle = document.getElementById('theory-inline-menu-toggle')
-          if (inlineMenu && inlineToggle) {
-            inlineMenu.classList.add('hidden')
-            inlineMenu.classList.remove('open')
-            inlineToggle.setAttribute('aria-expanded','false')
-          }
-        }
-      })
-    })
+  // Compute header offset for anchor scrolling
+  computeHeaderOffset() {
+    const topbar = document.querySelector('.topbar');
+    return (topbar?.offsetHeight || 64) + 16; // Header + padding
   }
 
-  setupInlineToolbar(concepts) {
-    const toolbar = document.getElementById('theory-inline-toolbar')
-    const menu = document.getElementById('theory-inline-menu')
-    const toggle = document.getElementById('theory-inline-menu-toggle')
-    const search = document.getElementById('theory-inline-search')
-    if (!toolbar || !menu || !toggle || !search) return
-
-    // Populate inline menu with same TOC markup
-    if (!menu.getAttribute('data-populated')) {
-      const tocHtml = this.buildTheorySidebar(concepts)
-      // Extract only the inner list portion for compact menu
-      const tmp = document.createElement('div')
-      tmp.innerHTML = tocHtml
-      const toc = tmp.querySelector('.theory-toc')
-      menu.innerHTML = ''
-      if (toc) menu.appendChild(toc)
-      menu.setAttribute('data-populated', 'true')
-      // Rewire TOC links inside inline menu
-      this.wireTocLinks()
+  // Initialize scrollspy with IntersectionObserver
+  initScrollspy() {
+    if (this.scrollspyObserver) {
+      this.scrollspyObserver.disconnect();
     }
 
-    // Toggle behavior (desktop only)
-    const handleToggle = (e) => {
-      if (window.matchMedia('(min-width: 1024px)').matches && document.body.classList.contains('theory-collapsed')) {
-        e.preventDefault()
-        const isOpen = menu.classList.contains('open')
-        menu.classList.toggle('open', !isOpen)
-        menu.classList.toggle('hidden', isOpen)
-        toggle.setAttribute('aria-expanded', (!isOpen).toString())
-      }
-    }
-    toggle.addEventListener('click', handleToggle)
+    const headings = document.querySelectorAll('#theory-content h3[id]');
+    if (headings.length === 0) return;
 
-    // Click-outside to close
-    document.addEventListener('click', (e) => {
-      if (!menu.contains(e.target) && !toggle.contains(e.target)) {
-        menu.classList.remove('open'); menu.classList.add('hidden')
-        toggle.setAttribute('aria-expanded','false')
+    const headerOffset = this.computeHeaderOffset();
+    
+    this.scrollspyObserver = new IntersectionObserver((entries) => {
+      let activeId = null;
+      let highestRatio = 0;
+      
+      // Find the heading with highest intersection ratio
+      entries.forEach(entry => {
+        if (entry.isIntersecting && entry.intersectionRatio > highestRatio) {
+          highestRatio = entry.intersectionRatio;
+          activeId = entry.target.id;
+        }
+      });
+      
+      // Update active states
+      if (activeId) {
+        this.setActiveNavigationItem(activeId);
       }
-    })
+    }, {
+      root: null, // Use viewport
+      rootMargin: `-${headerOffset}px 0px -60% 0px`,
+      threshold: [0, 0.1, 0.5, 1.0]
+    });
 
-    // Search filter for inline menu
-    search.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase()
-      menu.querySelectorAll('.toc-link').forEach((link) => {
-        const li = link.closest('li')
-        if (!li) return
-        const title = link.textContent.toLowerCase()
-        li.style.display = title.includes(q) ? '' : 'none'
-      })
-    })
+    headings.forEach(heading => {
+      this.scrollspyObserver.observe(heading);
+    });
+  }
+
+  wireTocLinks() {
+    // Remove old event listeners
+    document.querySelectorAll('.toc-link').forEach(link => {
+      link.replaceWith(link.cloneNode(true));
+    });
+
+    // Add new event listeners with proper anchor scrolling
+    document.querySelectorAll('#theory-sidebar .toc-link, .theory-sidebar .toc-link').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const href = link.getAttribute('href');
+        const anchor = href ? href.slice(1) : link.getAttribute('data-anchor');
+        const target = document.getElementById(anchor);
+        
+        if (!target) return;
+
+        // Calculate scroll position with header offset
+        const headerOffset = this.computeHeaderOffset();
+        const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+        
+        // Smooth scroll to target
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        window.scrollTo({ 
+          top: Math.max(0, targetTop), 
+          behavior 
+        });
+
+        // Update hash without page jump
+        const baseUrl = location.href.split('#')[0];
+        history.replaceState(null, '', `${baseUrl}#${anchor}`);
+        
+        // Update active state immediately
+        this.setActiveNavigationItem(anchor);
+
+        // Close mobile drawers if open
+        if (window.innerWidth <= 768) {
+          const sidebar = document.querySelector('.theory-sidebar');
+          if (sidebar) {
+            sidebar.classList.remove('open');
+            document.body.classList.remove('sidebar-open');
+          }
+          
+          const toggleBtn = document.getElementById('toc-toggle');
+          if (toggleBtn) {
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          }
+        }
+      });
+    });
+  }
+
+  // TOC link active state management cleanup when needed
+  cleanupTocStates() {
+    // Placeholder for future cleanup logic
   }
 
   enableTocKeyboardNav() {
