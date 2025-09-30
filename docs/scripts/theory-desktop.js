@@ -62,13 +62,35 @@
     const toc = document.getElementById('theory-sidebar');
     if (toc) toc.addEventListener('click', onTOCClick, true);
 
-    // Egyszerű hamburger gomb functionality
-    const hamburgerBtn = document.querySelector('.theory-hamburger');
-    if (hamburgerBtn) {
-      hamburgerBtn.addEventListener('click', () => {
-        setCollapsed(false); // Sidebar megnyitása
-      });
-    }
+    // Sticky TOC megjelenítés hamburger gombbal - X funkcióval
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('theory-hamburger')) {
+        e.preventDefault();
+        console.log('Hamburger clicked!'); // DEBUG
+        const sidebar = document.getElementById('theory-sidebar');
+        const hamburger = e.target;
+        
+        if (sidebar) {
+          console.log('Sidebar found:', sidebar); // DEBUG
+          // Toggle sticky TOC visibility
+          if (sidebar.classList.contains('sticky-toc-visible')) {
+            // Bezárás
+            sidebar.classList.remove('sticky-toc-visible');
+            hamburger.textContent = '☰';
+            hamburger.setAttribute('aria-label', 'Fogalmak menü megnyitása');
+            console.log('TOC hidden'); // DEBUG
+          } else {
+            // Megnyitás
+            sidebar.classList.add('sticky-toc-visible');
+            hamburger.textContent = '✕';
+            hamburger.setAttribute('aria-label', 'Fogalmak menü bezárása');
+            console.log('TOC shown, sidebar classes:', sidebar.className); // DEBUG
+          }
+        } else {
+          console.log('Sidebar NOT found!'); // DEBUG
+        }
+      }
+    });
   }
 
   function unbind() {

@@ -481,3 +481,26 @@ body.is-theory .drawer-overlay {
     width: var(--toc-wide);
   }
 }
+
+/* Desktop Sticky TOC - hamburger ikonra kattintáskor */
+@media (min-width: 769px) {
+  #theory-sidebar.sticky-toc-visible {
+    display: block !important;
+    position: fixed !important;
+    top: calc(var(--header-height) + var(--space-lg)) !important;
+    left: calc(var(--sidebar-left) + 60px) !important;
+    width: 280px !important;
+    max-height: calc(100vh - var(--header-height) - 2 * var(--space-lg)) !important;
+    z-index: 1000 !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: 0 4px 20px var(--shadow-color) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: var(--space-lg) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+}
