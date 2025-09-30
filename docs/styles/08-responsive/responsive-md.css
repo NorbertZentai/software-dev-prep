@@ -77,7 +77,7 @@
   }
 
   .main-content {
-    padding: var(--space-lg);
+    padding: var(--space-xl) var(--space-lg) var(--space-lg);
   }
 
   .welcome-screen {
@@ -121,7 +121,7 @@
   }
 
   .theory-content {
-    padding: var(--space-lg);
+    padding: var(--space-xl) var(--space-lg);
     margin-left: 0;
   }
 
@@ -134,6 +134,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-sm);
+    margin-top: var(--space-lg);
   }
 
   .theory-navigation {
@@ -148,46 +149,6 @@
   /* Hide desktop inline toolbar/menu on mobile */
   .theory-inline-toolbar,
   .theory-inline-menu { display: none !important; }
-
-  /* Show toggle on theory routes */
-  #theory-drawer-toggle,
-  .theory-drawer-toggle,
-  #global-nav-toggle,
-  #toc-toggle {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 1001;
-    background: transparent;
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: var(--space-sm);
-    width: 48px;
-    height: 48px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    touch-action: manipulation;
-    overflow: hidden; /* prevent label overflow */
-    white-space: nowrap;
-  }
-
-  .theory-drawer-toggle:hover,
-  .theory-drawer-toggle:focus {
-    background: var(--bg-accent);
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-    outline: 2px solid var(--accent-primary);
-    outline-offset: 2px;
-  }
-
-  .theory-drawer-toggle[aria-expanded="true"] {
-    background: var(--accent-primary);
-    color: #fff;
-    border-color: var(--accent-primary);
-  }
 
   /* Hide regular sidebar on theory pages for mobile */
   body.is-theory .sidebar { display: none; }
@@ -242,8 +203,8 @@
     top: calc(var(--header-height) + env(safe-area-inset-top, 0px));
     right: -100%;
     left: auto !important;
-    width: 85vw;
-    max-width: 320px;
+    width: 75vw;
+    max-width: 280px;
     height: calc(100vh - var(--header-height) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     z-index: 1001;
     background: var(--bg-secondary);
@@ -313,31 +274,91 @@
     padding: 0 !important;
   }
 
-  /* Sidebar mobilon normál */
-  body.is-theory #sidebar {
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    left: auto !important;
-    top: auto !important;
+  /* Sidebar mobilon - TELJESEN OVERLAY */
+  body.is-theory #sidebar,
+  #sidebar {
+    position: fixed !important;              /* NE foglaljon helyet */
+    left: -100vw !important;                 /* teljesen képernyőn kívül */
+    top: calc(var(--header-h, var(--header-height, 64px))) !important;
+    width: min(85vw, 360px) !important;
+    height: calc(100dvh - var(--header-h, var(--header-height, 64px))) !important;
+    display: block !important;               /* láthatóságot ne a display vezérelje */
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;         /* rejtve ne fogjon eventet */
+    z-index: 1100 !important;                /* tartalom FÖLÉ kerüljön */
+    overflow-y: auto !important;
+    background: var(--surface-2, #16202e) !important;
+    box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
+    border-right: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    padding: var(--space-md, 16px) !important;
+    margin: 0 !important;
     float: none !important;
+    grid-area: none !important;              /* nincs grid pozíció */
+    transition:
+      left .32s ease,
+      opacity .24s ease,
+      visibility 0s linear .32s !important;
+  }
+  
+  /* SIDEBAR NYITOTT ÁLLAPOT - becsúszik balról */
+  body.is-theory #sidebar.open,
+  #sidebar.open {
+    left: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transition:
+      left .32s ease,
+      opacity .24s ease,
+      visibility 0s linear 0s !important;
   }
 
-  /* Theory sidebar mobilon normál */
-  body.is-theory #theory-sidebar {
-    position: static !important;
-    width: auto !important;
-    height: auto !important;
-    float: none !important;
+  /* Theory sidebar mobilon - TELJESEN OVERLAY */
+  body.is-theory #theory-sidebar,
+  #theory-sidebar {
+    position: fixed !important;              /* NE foglaljon helyet */
+    right: -100vw !important;                /* teljesen képernyőn kívül */
+    top: calc(var(--header-h, var(--header-height, 64px))) !important;
+    width: min(85vw, 360px) !important;
+    height: calc(100dvh - var(--header-h, var(--header-height, 64px))) !important;
+    display: block !important;               /* láthatóságot ne a display vezérelje */
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;         /* rejtve ne fogjon eventet */
+    z-index: 1100 !important;                /* tartalom FÖLÉ kerüljön */
+    overflow-y: auto !important;
+    background: var(--surface-2, #16202e) !important;
+    box-shadow: -20px 0 40px rgba(0,0,0,.35) !important;
+    border-left: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    padding: var(--space-md, 16px) !important;
     margin: 0 !important;
-    display: block !important;
+    float: none !important;
+    grid-area: none !important;              /* nincs grid pozíció */
+    transition:
+      right .32s ease,
+      opacity .24s ease,
+      visibility 0s linear .32s !important;
+  }
+  
+  /* THEORY SIDEBAR NYITOTT ÁLLAPOT - becsúszik jobbról */
+  body.is-theory #theory-sidebar.open,
+  #theory-sidebar.open {
+    right: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transition:
+      right .32s ease,
+      opacity .24s ease,
+      visibility 0s linear 0s !important;
   }
 
   /* Theory content mobilon normál */
   body.is-theory #theory-content {
     position: static !important;
     margin: 0 !important;
-    padding: var(--space-lg) !important;
+    padding: var(--space-xl) var(--space-lg) var(--space-lg) var(--space-lg) !important; /* felső padding hozzáadva */
     width: 100% !important;
     border-radius: 0 !important;
     border: none !important;
@@ -360,123 +381,589 @@
   * { min-width: 0; }
   .content-container, .concept-article, .card { overflow-wrap: anywhere; word-break: break-word; }
   img, svg, video, iframe { max-width: 100%; height: auto; display: block; }
+}
 
-  /* Code/table scrolling helpers */
-  .content-container .table-scroll, .concept-body .table-scroll {
-    overflow-x: auto;
-    margin: var(--space-md) 0;
-    border-radius: var(--border-radius);
-    border: 1px solid var(--border-color);
-    -webkit-overflow-scrolling: touch;
+/* === MOBIL DUAL DRAWER SYSTEM === */
+@media (max-width: 768px) {
+  /* Header layout mobilon */
+  .header-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: var(--space-sm) !important;
+    padding: 0 var(--space-sm) !important;
   }
 
-  /* TOC submenu collapsed by default (if present) */
-  .toc-group > ul { display: none; }
-  .toc-group[aria-expanded="true"] > ul { display: block; }
-  .toc-group-toggle {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    border: 0;
-    padding: 8px 4px;
-    min-height: 44px;
-    color: var(--text-primary);
+  /* Logo section középen */
+  .logo-section {
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 !important;
+    justify-content: center !important;
   }
 
-  /* --- Minimal mobile overrides (append-only) --- */
-  .toc-toggle { display: none !important; }
-  /* Hide the left-center floating hamburger on mobile */
-  .sidebar-toggle { display: none !important; }
-  /* Left drawer */
-  #global-nav.drawer.left { left: -100%; }
-  #global-nav.drawer.left.open { left: 0; }
-  /* Right drawer */
-  #theory-sidebar.drawer.right { right: -100%; left: auto !important; }
-  #theory-sidebar.drawer.right.open { right: 0; }
-  /* Full width content on theory pages */
-  #theory-content.theory-content {
-    position: static;
-    top: auto; left: auto; right: auto;
-    height: auto; max-width: 100%;
-    padding: clamp(12px, 2.5vw, 20px);
+  /* Main nav elrejtése mobilon */
+  .main-nav {
+    display: none !important;
   }
-  /* Overlay and z-index guards */
-  .drawer-overlay { z-index: 1000; }
-  #global-nav, #theory-sidebar { z-index: 1001; }
 
-  /* ===================== */
-  /* Global drawer styling */
-  /* Match Fogalmak look   */
-  /* ===================== */
+  /* Header tools kompakt */
+  .header-tools {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--space-xs) !important;
+  }
 
-  /* Header style inside the drawer */
-  #global-nav .sidebar-content > h3 {
-    color: var(--accent-primary);
-    font-size: var(--font-size-lg);
-    font-weight: 700;
-    margin: 0 0 var(--space-md) 0;
-    display: flex;
+  /* Search input kisebb mobilon */
+  #search-input {
+    width: 120px !important;
+    font-size: 14px !important;
+  }
+
+  /* Hamburger ikonok stílusa */
+  .mobile-nav-toggle,
+  .mobile-toc-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: var(--border-radius) !important;
+    padding: var(--space-sm) !important;
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    transition: all var(--transition-fast) !important;
+    box-shadow: 0 2px 4px var(--shadow-color) !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Bal hamburger pozicionálása */
+  .mobile-nav-toggle {
+    order: -1 !important;
+    margin-right: var(--space-sm) !important;
+  }
+
+  /* Jobb hamburger pozicionálása */
+  .mobile-toc-toggle {
+    order: 10 !important;
+    margin-left: var(--space-sm) !important;
+    display: none !important; /* Alapból elrejtett */
+  }
+
+  /* Theory oldalakon jobb hamburger megjelenítése */
+  body.is-theory .mobile-toc-toggle {
+    display: flex !important;
+  }
+
+  /* Hover effektek */
+  .mobile-nav-toggle:hover,
+  .mobile-nav-toggle:focus,
+  .mobile-toc-toggle:hover,
+  .mobile-toc-toggle:focus {
+    background: var(--bg-accent) !important;
+    border-color: var(--accent-primary) !important;
+    color: var(--accent-primary) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px var(--shadow-color) !important;
+  }
+
+  /* Aktív állapot */
+  .mobile-nav-toggle[aria-expanded="true"],
+  .mobile-toc-toggle[aria-expanded="true"] {
+    background: var(--accent-primary) !important;
+    color: #fff !important;
+    border-color: var(--accent-primary) !important;
+  }
+
+  /* RÉGI ELEMEK ELREJTÉSE */
+  .sidebar-toggle {
+    display: none !important;
+  }
+
+  .theory-drawer-toggle {
+    display: none !important;
+  }
+
+  /* Theory sidebar alapból TELJESEN elrejtett mobilon */
+  #theory-sidebar {
+    display: none !important;
+  }
+
+  /* Hidden utility felülírása is */
+  #theory-sidebar.hidden {
+    display: none !important;
+  }
+
+  /* BAL OLDALI NAVIGATION DRAWER */
+  #sidebar {
+    position: fixed !important;
+    top: var(--header-height) !important;
+    left: -100% !important;
+    width: 85vw !important;
+    max-width: 320px !important;
+    height: calc(100vh - var(--header-height)) !important;
+    background: var(--bg-secondary) !important;
+    border-right: 2px solid var(--border-color) !important;
+    z-index: 1001 !important;
+    padding: var(--space-lg) !important;
+    overflow-y: auto !important;
+    transition: left 0.3s ease !important;
+    box-shadow: 4px 0 20px var(--shadow-color) !important;
+    border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0 !important;
+  }
+
+  /* RÉGI SZABÁLY - kikommentálva, mert ütközik az újjal
+  #sidebar.open {
+    left: 0 !important;
+  }
+  */
+
+  /* JOBB OLDALI TOC DRAWER */
+  #theory-sidebar.drawer-open {
+    display: block !important;
+    position: fixed !important;
+    top: var(--header-height) !important;
+    right: -100% !important;
+    width: 85vw !important;
+    max-width: 320px !important;
+    height: calc(100vh - var(--header-height)) !important;
+    background: var(--bg-secondary) !important;
+    border-left: 2px solid var(--border-color) !important;
+    z-index: 1001 !important;
+    padding: var(--space-lg) !important;
+    overflow-y: auto !important;
+    transition: right 0.3s ease !important;
+    box-shadow: -4px 0 20px var(--shadow-color) !important;
+    border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg) !important;
+  }
+
+  #theory-sidebar.drawer-open.open {
+    right: 0 !important;
+  }
+
+  /* Jobb oldali TOC toggle gomb a headerben */
+  body.is-theory #toc-toggle {
+    display: inline-flex !important;
     align-items: center;
-    gap: var(--space-sm);
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: var(--space-sm);
-  }
-
-  /* Section headings */
-  #global-nav .nav-group { margin-bottom: var(--space-xl); }
-  #global-nav .nav-group h4 {
-    margin: 0 0 var(--space-sm) 0;
-    color: var(--text-secondary);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    opacity: 0.9;
-  }
-
-  /* Pill-like links to match TOC look */
-  #global-nav .nav-group a {
-    display: block;
-    width: 100%;
-    padding: var(--space-md) var(--space-lg);
-    color: var(--text-secondary);
-    text-decoration: none;
-    border-radius: var(--border-radius-lg);
-    transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
-    line-height: 1.35;
-    font-size: var(--font-size-base);
-    border: 1px solid transparent;
-    margin-bottom: var(--space-sm);
-    background: transparent;
-  }
-
-  #global-nav .nav-group a:hover,
-  #global-nav .nav-group a:focus {
-    background: var(--bg-accent);
+    justify-content: center;
+    background: var(--bg-secondary);
     color: var(--text-primary);
-    transform: none; /* override sidebar hover shift */
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  body.is-theory #toc-toggle:hover,
+  body.is-theory #toc-toggle:focus {
+    background: var(--bg-accent);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow-color);
+  }
+
+  /* Drawer overlay */
+  .drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .drawer-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* === Mobile TOC drawer (≤768px) – modern right slide-in === */
+@media (max-width: 768px) {
+  /* A utilities .hidden ne tudja elrejteni a drawert, hogy animálhassuk */
+  #theory-sidebar.hidden { display: block !important; }
+
+  /* Overlay alapból rejtve */
+  #drawer-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.5) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .25s ease !important;
+    z-index: 1000 !important;
+  }
+  body.drawer-open-right #drawer-overlay { opacity: 1 !important; visibility: visible !important; }
+
+  /* TOC drawer – alapállapot: teljesen kívül a jobb oldalon, nem klikkelhető */
+  #theory-sidebar {
+    position: fixed !important;
+    top: calc(var(--header-h, 64px) + var(--space-sm, 8px)) !important;
+    right: -92vw !important;             /* teljesen kint */
+    width: min(88vw, 340px) !important;
+    height: calc(100vh - var(--header-h,64px) - var(--space-sm,8px)) !important;
+    display: block !important;            /* kell az animációhoz */
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: right .32s ease, opacity .25s ease, visibility 0s linear .32s !important;
+    z-index: 1100 !important;
+
+    /* Modern kinézet */
+    background: color-mix(in oklab, var(--surface, #0f172a) 92%, black 8%) !important;
+    border-left: 1px solid rgba(255,255,255,.08) !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45) !important;
+    backdrop-filter: saturate(140%) blur(6px);
+    -webkit-backdrop-filter: saturate(140%) blur(6px);
+    border-top-left-radius: 16px !important;
+    border-bottom-left-radius: 16px !important;
+    padding: var(--space-md, 16px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Nyitott állapot */
+  body.drawer-open-right #theory-sidebar.open {
+    right: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: right .32s ease, opacity .25s ease, visibility 0s linear 0s !important;
+  }
+
+  /* Body scroll lock nyitott állapotban */
+  body.drawer-open-right { overflow: hidden !important; touch-action: none !important; }
+
+  /* TOC belső elemek – finom modern stílusok */
+  #theory-sidebar .theory-toc h3 {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 1.05rem; font-weight: 700; letter-spacing: .2px;
+    margin: 4px 0 12px;
+  }
+  #theory-sidebar .theory-toc #toc-search {
+    width: 100%; border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.04); color: #e5e7eb;
+    padding: 10px 12px; border-radius: 10px; outline: none;
+  }
+  #theory-sidebar .theory-toc a {
+    display: block; padding: 12px 10px; margin: 4px 0;
+    border-radius: 10px; text-decoration: none; color: #cbd5e1;
+    transition: transform .12s ease, background .12s ease, color .12s ease;
+  }
+  #theory-sidebar .theory-toc a:hover { transform: translateY(-1px); background: rgba(59,130,246,.12); color: #e5e7eb; }
+  #theory-sidebar .theory-toc a.active { background: #2563eb; color: #fff; box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+}
+
+/* === Mobile TOC drawer (≤768px) – right slide-in, overlay, scroll lock === */
+@media (max-width: 768px) {
+
+  /* 1. Rejtsük el az in-content / desktop rail toggler gombot mobilon */
+  .theory-hamburger,
+  .toc-rail-toggle,
+  #theory-top-toolbar {
+    display: none !important;
+  }
+
+  /* 2. Drawer alapállapot: teljesen rejtve, jobb oldalon off-canvas */
+  #theory-sidebar {
+    position: fixed !important;
+    top: calc(var(--header-h, var(--header-height, 64px))) !important;
+    right: -100vw !important;                /* teljesen kívül */
+    width: min(85vw, 360px) !important;
+    height: calc(100dvh - var(--header-h, var(--header-height, 64px))) !important;
+    display: block !important;               /* ne a display vezérelje a láthatóságot */
+    visibility: hidden !important;
+    opacity: 0 !important;
+    background: var(--surface-2, #16202e) !important;
+    box-shadow: -20px 0 40px rgba(0,0,0,.35) !important;
+    border-left: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    z-index: 1002 !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: var(--space-md, 16px) !important;
+    transition:
+      right .32s ease,
+      opacity .24s ease,
+      visibility 0s linear .32s !important;  /* visibility késleltetve záráskor */
+    backdrop-filter: blur(6px) saturate(110%);
+  }
+
+  /* 3. Nyitott állapot – jobbról becsúszik, láthatóvá válik */
+  #theory-sidebar.open {
+    right: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition:
+      right .32s ease,
+      opacity .24s ease,
+      visibility 0s linear 0s !important;
+  }
+
+  /* 4. Overlay mobilon */
+  #drawer-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.45) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .24s ease, visibility 0s linear .24s !important;
+    z-index: 1001 !important;
+  }
+  #drawer-overlay.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: opacity .24s ease, visibility 0s linear 0s !important;
+  }
+
+  /* 5) Body scroll lock nyitott állapotban (class-t JS adja a body-ra) */
+  body.drawer-open-right,
+  body.drawer-open-left {
+    overflow: hidden !important;
+    touch-action: none !important;
+  }
+
+  /* 6. TOC belsejének kis kozmetikája mobilon */
+  #theory-sidebar .theory-toc h3 {
+    font-size: 1.1rem;
+    margin: 0 0 12px;
+  }
+  #theory-sidebar .theory-toc input[type="search"],
+  #theory-sidebar .theory-toc input[type="text"] {
+    width: 100%;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid color-mix(in oklab, #fff 10%, transparent);
+    background: color-mix(in oklab, var(--surface-2, #16202e) 92%, #fff 8%);
     outline: none;
-    border-color: var(--border-color);
+    padding: 0 12px;
+    margin: 6px 0 12px;
+  }
+  #theory-sidebar .theory-toc a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+  }
+  #theory-sidebar .theory-toc a:hover {
+    background: color-mix(in oklab, #fff 8%, transparent);
+  }
+}
+
+/* === MOBILE: TOC overlay, ne foglaljon helyet (≤768px) === */
+@media (max-width: 768px) {
+  /* 0) Tartalomban lévő rail/mini-hamburger teljes rejtése mobilon */
+  .theory-hamburger,
+  .toc-rail-toggle,
+  #theory-top-toolbar { display: none !important; }
+
+  /* 0.5) FONTOS: Mobilon felülírjuk a fő grid layout-ot */
+  body {
+    display: block !important;               /* nincs grid layout mobilon */
+    grid-template-columns: none !important;
+    grid-template-areas: none !important;
+    grid-template-rows: none !important;
+    padding-top: 0 !important;              /* nincs felső padding */
+    margin-top: 0 !important;               /* nincs felső margin */
   }
 
-  /* Active state mirroring TOC */
-  #global-nav .nav-group a.active,
-  #global-nav .nav-group a[aria-current="page"],
-  #global-nav .nav-group a[aria-current="true"] {
-    background: var(--accent-primary);
-    color: #fff;
-    font-weight: 600;
-    border-left: 4px solid var(--accent-secondary);
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-    border-color: transparent; /* keep borders clean on active */
-    transform: none;
+  /* 0.6) Main container teljes szélességbe */
+  #app,
+  main {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    grid-area: none !important;
   }
 
-  #global-nav .nav-group a.active:hover,
-  #global-nav .nav-group a[aria-current="page"]:hover {
-    background: var(--accent-primary);
-    color: #fff;
-    transform: none;
+  /* 1) A TOC mindig kivegyük a flow-ból: fix + off-canvas alapból */
+  /* ERŐSEBB SPECIFICITÁS: body.is-theory #theory-sidebar felülírásához */
+  body.is-theory #theory-sidebar,
+  #theory-sidebar {
+    position: fixed !important;               /* NE foglaljon helyet */
+    top: calc(var(--header-h, var(--header-height, 64px))) !important;
+    right: -100vw !important;                 /* teljesen képernyőn kívül */
+    width: min(85vw, 360px) !important;
+    height: calc(100dvh - var(--header-h, var(--header-height, 64px))) !important;
+    display: block !important;                /* láthatóságot ne a display vezérelje */
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;          /* rejtve ne fogjon eventet */
+    background: var(--surface-2, #16202e) !important;
+    box-shadow: -20px 0 40px rgba(0,0,0,.35) !important;
+    border-left: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    z-index: 1100 !important;                 /* tartalom FÖLÉ kerüljön */
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: var(--space-md, 16px) !important;
+    transition:
+      right .32s ease,
+      opacity .24s ease,
+      visibility 0s linear .32s !important;   /* záráskor késleltetett visibility */
+    backdrop-filter: blur(6px) saturate(110%);
+    /* FONTOS: felülírjuk a korábbi mobilos szabályokat */
+    margin: 0 !important;
+    float: none !important;
+  }
+  body.is-theory #theory-sidebar.open,
+  #theory-sidebar.open {
+    right: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;          /* nyitva kaphat eventet */
+    transition:
+      right .32s ease,
+      opacity .24s ease,
+      visibility 0s linear 0s !important;
+  }
+
+  /* 1.5) BAL OLDALI NAVIGATION SIDEBAR overlay stílusai */
+  #sidebar {
+    position: fixed !important;               /* NE foglaljon helyet */
+    top: calc(var(--header-h, var(--header-height, 64px))) !important;
+    left: -100vw !important;                  /* teljesen képernyőn kívül */
+    width: min(85vw, 360px) !important;
+    height: calc(100dvh - var(--header-h, var(--header-height, 64px))) !important;
+    display: block !important;                /* láthatóságot ne a display vezérelje */
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;          /* rejtve ne fogjon eventet */
+    background: var(--surface-2, #16202e) !important;
+    box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
+    border-right: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    z-index: 1100 !important;                 /* tartalom FÖLÉ kerüljön */
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: var(--space-md, 16px) !important;
+    transition:
+      left .32s ease,
+      opacity .24s ease,
+      visibility 0s linear .32s !important;   /* záráskor késleltetett visibility */
+    backdrop-filter: blur(6px) saturate(110%);
+    /* FONTOS: felülírjuk a korábbi mobilos szabályokat */
+    margin: 0 !important;
+    float: none !important;
+    /* Grid area felülírása */
+    grid-area: none !important;
+  }
+  #sidebar.open {
+    left: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;          /* nyitva kaphat eventet */
+    transition:
+      left .32s ease,
+      opacity .24s ease,
+      visibility 0s linear 0s !important;
+  }
+
+  /* 2) Overlay a teljes képernyő fölé, a tartalom fölött, a TOC alá */
+  #drawer-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.45) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;          /* csak visible-kor fogjon */
+    transition: opacity .24s ease, visibility 0s linear .24s !important;
+    z-index: 1095 !important;                 /* a TOC (1100) alatt, tartalom fölött */
+  }
+  #drawer-overlay.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: opacity .24s ease, visibility 0s linear 0s !important;
+  }
+
+  /* 3) Ha bármilyen rács/kolonna helyet hagyna a TOC-nak, kapcsold ki */
+  /* Keresztezett védelem: tipikus osztálynevek a projektben */
+  .theory-layout,
+  .theory-grid,
+  .content-grid,
+  .toc-rail,
+  #toc-rail,
+  #toc-column,
+  #theory-sidebar-host,
+  #theory-sidebar-placeholder,
+  .theory-page-container {
+    display: none !important;                 /* ne maradjon üres hely */
+  }
+
+  /* 4) A fő tartalom mindig foglalja a teljes szélességet mobilon */
+  main,
+  #content,
+  #theory-content,
+  .page-content,
+  .content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-top: 0 !important;           /* nincs felső padding */
+  }
+
+  /* 4.1) ÁLTALÁNOS RESET: minden lehetséges container elem */
+  .container,
+  .wrapper,
+  .page-wrapper,
+  .content-wrapper,
+  .theory-wrapper,
+  article,
+  section {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* 4.5) ERŐSEBB FELÜLÍRÁSOK: sidebar teljesen ki a flow-ból */
+  #sidebar {
+    position: fixed !important;
+    display: block !important;
+    grid-area: none !important;
+    margin: 0 !important;
+    padding: var(--space-md, 16px) !important;
+    /* Minden korábbi layout tulajdonság felülírása */
+    width: min(85vw, 360px) !important;
+    height: calc(100dvh - var(--header-h, var(--header-height, 64px))) !important;
+    top: calc(var(--header-h, var(--header-height, 64px))) !important;
+    left: -100vw !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: 1100 !important;
+    /* FONTOS: ne foglaljon helyet a layout-ban */
+    float: none !important;
+    background: var(--surface-2, #16202e) !important;
+    box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
+    border-right: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    transition:
+      left .32s ease,
+      opacity .24s ease,
+      visibility 0s linear .32s !important;
+  }
+
+  /* 5) Extra függőleges hézagok eltávolítása a header alatt */
+  .theory-header-spacer,
+  #theory-top-toolbar-spacer,
+  .toc-sticky-spacer {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }

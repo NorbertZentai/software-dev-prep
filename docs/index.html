@@ -114,20 +114,18 @@
   <body>
   <header class="topbar">
     <div class="header-content">
-      <div class="logo-section">
-        <!-- Global Mobile Drawer Toggle (left) -->
-        <button
-          id="global-nav-toggle"
-          class="theory-drawer-toggle"
-          aria-controls="global-nav"
-          aria-expanded="false"
-          aria-label="Főmenü megnyitása"
-          style="display: none;"
-          title="Főmenü megnyitása"
-        >
-          ☰
-        </button>
+      <!-- BAL HAMBURGER - LEGSZÉLEN -->
+      <button
+        id="nav-toggle"
+        class="mobile-nav-toggle"
+        aria-controls="sidebar"
+        aria-expanded="false"
+        title="Navigáció megnyitása"
+      >
+        ☰
+      </button>
 
+      <div class="logo-section">
         <img
           src="./assets/logo.svg"
           alt="Software Dev Prep Logo"
@@ -142,24 +140,24 @@
         <a href="#/quiz/java" class="nav-link">🧩 Kvíz</a>
         <a href="#/roadmap" class="nav-link">🗺️ Roadmap</a>
       </nav>
+      
       <div class="header-tools">
         <input id="search-input" placeholder="🔍 Keresés..." />
         <button id="theme-toggle" class="theme-btn" title="Sötét/Világos mód">
           🌙
         </button>
-        <!-- TOC Mobile Drawer Toggle (right, theory routes only) -->
-        <button
-          id="toc-toggle"
-          class="theory-drawer-toggle"
-          aria-controls="theory-sidebar"
-          aria-expanded="false"
-          aria-label="Fogalmak menü megnyitása"
-          style="display: none;"
-          title="Fogalmak megnyitása"
-        >
-          ☰
-        </button>
       </div>
+
+      <!-- JOBB HAMBURGER - LEGSZÉLEN -->
+      <button
+        id="mobile-toc-toggle"
+        class="mobile-toc-toggle"
+        aria-controls="theory-sidebar"
+        aria-expanded="false"
+        title="Fogalmak megnyitása"
+      >
+        ☰
+      </button>
     </div>
   </header>    <aside class="sidebar" id="sidebar">
       <div class="sidebar-content">
@@ -208,20 +206,10 @@
       <div id="drawer-overlay" class="drawer-overlay" aria-hidden="true" role="presentation"></div>
       <aside id="theory-sidebar" class="theory-drawer hidden" role="navigation" aria-label="Fogalmak navigáció" aria-modal="false"></aside>
       
-      <!-- Top toolbar for collapsed theory sidebar -->
-      <div id="theory-top-toolbar" class="theory-top-toolbar">
-        <button class="hamburger-btn" aria-label="Fogalmak menü megnyitása" title="Fogalmak menü">
-          ☰
-        </button>
-        <div class="search-section">
-          <input 
-            type="text" 
-            class="search-input" 
-            placeholder="🔍 Keresés az oldalon..."
-            aria-label="Keresés a tartalomban"
-          />
-        </div>
-      </div>
+      <!-- Egyszerű hamburger ikon collapsed állapotban -->
+      <button class="theory-hamburger" aria-label="Fogalmak menü megnyitása" title="Fogalmak menü">
+        ☰
+      </button>
       
       <section id="theory-content" class="theory-content"></section>
 

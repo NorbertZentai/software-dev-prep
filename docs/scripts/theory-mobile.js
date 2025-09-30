@@ -60,6 +60,8 @@ export class TheoryMobileDrawer {
   const drawerOverlay = document.getElementById('drawer-overlay')
   const drawer = document.getElementById('theory-sidebar')
 
+    // LETILTVA: ez ütközik az újabb implementációval
+    /*
     if (drawerToggle) {
         drawerToggle.addEventListener('click', (e) => {
         e.preventDefault()
@@ -69,8 +71,11 @@ export class TheoryMobileDrawer {
         }
       })
     }
+    */
     // (right-side class is handled in setupDrawer and on media change)
 
+    // LETILTVA: ez is ütközik az újabb implementációval
+    /*
     if (drawerOverlay) {
         drawerOverlay.addEventListener('click', () => {
         // Only handle overlay clicks on mobile
@@ -79,7 +84,10 @@ export class TheoryMobileDrawer {
         }
       })
     }
+    */
 
+    // LETILTVA: ez is ütközik az újabb implementációval
+    /*
     // Close drawer on escape key - only on mobile
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.mobileMediaQuery.matches && this.isDrawerOpen) {
@@ -95,6 +103,7 @@ export class TheoryMobileDrawer {
       // Also handle route changes
       this.handleRouteChange()
     })
+    */
   }
 
   // Handle media query changes - force close drawer when crossing to desktop
@@ -587,7 +596,453 @@ export class TheoryMobileDrawer {
   }
 }
 
+// LETILTVA: az egész TheoryMobileDrawer osztály ütközik az új implementációval
+/*
 // Auto-initialize when imported
 if (typeof window !== 'undefined') {
   window.theoryMobileDrawer = new TheoryMobileDrawer()
 }
+*/
+
+// === SIMPLE MOBILE DUAL DRAWER SYSTEM ===
+(function() {
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+  
+  function setupMobileTOCDrawer() {
+    if (!isMobile()) return;
+    
+    const tocToggle = document.getElementById('toc-toggle');
+    const theorySidebar = document.getElementById('theory-sidebar');
+    const drawerOverlay = document.getElementById('drawer-overlay');
+    
+    if (!tocToggle || !theorySidebar || !drawerOverlay) return;
+    
+    // Show toc-toggle only on theory pages and mobile
+    const isTheoryPage = window.location.hash.startsWith('#/theory/');
+    tocToggle.style.display = isTheoryPage && isMobile() ? 'flex' : 'none';
+    
+    // LETILTVA: ez is ütközik az újabb implementációval
+    /*
+    // Toggle function
+    function toggleTOC() {
+      const isOpen = theorySidebar.classList.contains('open');
+      
+      if (isOpen) {
+        // Close
+        theorySidebar.classList.remove('open');
+        drawerOverlay.classList.remove('active');
+        tocToggle.setAttribute('aria-expanded', 'false');
+        tocToggle.textContent = '☰';
+        document.body.style.overflow = '';
+      } else {
+        // Open - close other drawers first
+        const globalNav = document.getElementById('global-nav');
+        if (globalNav) globalNav.classList.remove('open');
+        
+        theorySidebar.classList.add('open');
+        drawerOverlay.classList.add('active');
+        tocToggle.setAttribute('aria-expanded', 'true');
+        tocToggle.textContent = '✕';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    // LETILTVA: ezek is ütköznek az újabb implementációval
+    /*
+    // Event listeners
+    tocToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (isMobile()) toggleTOC();
+    });
+    */
+    /*
+    drawerOverlay.addEventListener('click', () => {
+      if (isMobile() && theorySidebar.classList.contains('open')) {
+        toggleTOC();
+      }
+    });
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isMobile() && theorySidebar.classList.contains('open')) {
+        toggleTOC();
+      }
+    });
+    */
+  }
+  
+  // Initialize on DOM ready and route changes
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMobileTOCDrawer);
+  } else {
+    setupMobileTOCDrawer();
+  }
+  
+  // Re-run on hash change (route change)
+  window.addEventListener('hashchange', setupMobileTOCDrawer);
+})();
+
+// === CLEAN MOBILE DUAL-DRAWER SYSTEM ===
+document.addEventListener('DOMContentLoaded', function() {
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+  
+  function initDualDrawerSystem() {
+    if (!isMobile()) return;
+    
+    const navToggle = document.getElementById('nav-toggle');
+    const tocToggle = document.getElementById('toc-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const theorySidebar = document.getElementById('theory-sidebar');
+    
+    // Create overlay if doesn't exist
+    let overlay = document.querySelector('.drawer-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'drawer-overlay';
+      document.body.appendChild(overlay);
+    }
+    
+    // LETILTVA: ez ütközik az újabb implementációval
+    /*
+    // Left Navigation Drawer
+    if (navToggle && sidebar) {
+      navToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isOpen = sidebar.classList.contains('open');
+        
+        // Close other drawer
+        if (theorySidebar) {
+          theorySidebar.classList.remove('open', 'drawer-open');
+        }
+        
+        if (isOpen) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          sidebar.classList.add('open');
+          overlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    }
+    */
+    
+    // Right TOC Drawer
+    // LETILTVA: ez is ütközik az újabb implementációval
+    /*
+    if (tocToggle && theorySidebar) {
+      tocToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isOpen = theorySidebar.classList.contains('open');
+        
+        // Close other drawer
+        if (sidebar) {
+          sidebar.classList.remove('open');
+        }
+        
+        if (isOpen) {
+          theorySidebar.classList.remove('open', 'drawer-open');
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        } else {
+          theorySidebar.classList.add('drawer-open', 'open');
+          overlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    }
+    
+    // Close on overlay click
+    overlay.addEventListener('click', function() {
+      if (sidebar) sidebar.classList.remove('open');
+      if (theorySidebar) theorySidebar.classList.remove('open', 'drawer-open');
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    */
+    
+    // Close on ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        if (sidebar) sidebar.classList.remove('open');
+        if (theorySidebar) theorySidebar.classList.remove('open', 'drawer-open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  }
+  
+  initDualDrawerSystem();
+  
+  // Re-initialize on route changes
+  window.addEventListener('hashchange', function() {
+    setTimeout(initDualDrawerSystem, 100);
+  });
+});
+
+// === Mobile TOC right-drawer control ===
+(function () {
+  const mqMobile = window.matchMedia('(max-width: 768px)');
+  const body = document.body;
+  const sidebar = document.getElementById('theory-sidebar');
+  const overlay = document.getElementById('drawer-overlay');
+  const tocToggle = document.getElementById('toc-toggle');
+  if (!sidebar || !overlay || !tocToggle) return;
+
+  function openTOC() {
+    body.classList.add('drawer-open-right');
+    sidebar.classList.add('open');
+    sidebar.classList.remove('hidden'); // legacy guard
+    tocToggle.setAttribute('aria-expanded', 'true');
+  }
+  function closeTOC() {
+    body.classList.remove('drawer-open-right');
+    sidebar.classList.remove('open');
+    tocToggle.setAttribute('aria-expanded', 'false');
+  }
+  // LETILTVA: ez ütközik az újabb implementációval
+  /*
+  function toggleTOC() {
+    if (!mqMobile.matches) return; // csak mobilon
+    if (sidebar.classList.contains('open')) closeTOC(); else openTOC();
+  }
+
+  // Bind
+  tocToggle.addEventListener('click', toggleTOC);
+  overlay.addEventListener('click', closeTOC);
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTOC(); });
+
+  // Viewport váltáskor zárjuk
+  mqMobile.addEventListener?.('change', () => closeTOC());
+
+  // Route váltás / initial
+  closeTOC();
+  */
+})();
+
+// === Mobile TOC right drawer wiring (≤768px) ===
+(() => {
+  const mqMobile = window.matchMedia('(max-width: 768px)');
+  let wired = false;
+
+  const els = {
+    body: document.body,
+    drawer: document.getElementById('theory-sidebar'),
+    overlay: document.getElementById('drawer-overlay'),
+    toggle: document.getElementById('toc-toggle'), // jobb felső header ikon
+  };
+
+  const openTOC = () => {
+    if (!els.drawer || !els.overlay) return;
+    els.drawer.classList.add('open');
+    els.overlay.classList.add('visible');
+    els.body.classList.add('drawer-open-right');
+    els.toggle?.setAttribute('aria-expanded', 'true');
+  };
+
+  const closeTOC = () => {
+    if (!els.drawer || !els.overlay) return;
+    els.drawer.classList.remove('open');
+    els.overlay.classList.remove('visible');
+    els.body.classList.remove('drawer-open-right');
+    els.toggle?.setAttribute('aria-expanded', 'false');
+  };
+
+  const toggleTOC = () => {
+    if (!els.drawer) return;
+    els.drawer.classList.contains('open') ? closeTOC() : openTOC();
+  };
+
+  const onKey = (e) => {
+    if (e.key === 'Escape') closeTOC();
+  };
+
+  const wire = () => {
+    if (wired) return;
+    // biztosan friss referenciák (route után is)
+    els.drawer = document.getElementById('theory-sidebar');
+    els.overlay = document.getElementById('drawer-overlay');
+    els.toggle = document.getElementById('toc-toggle');
+
+    els.toggle?.addEventListener('click', toggleTOC);
+    els.overlay?.addEventListener('click', closeTOC);
+    window.addEventListener('keydown', onKey);
+    wired = true;
+  };
+
+  const unwire = () => {
+    if (!wired) return;
+    els.toggle?.removeEventListener('click', toggleTOC);
+    els.overlay?.removeEventListener('click', closeTOC);
+    window.removeEventListener('keydown', onKey);
+    closeTOC();
+    wired = false;
+  };
+
+  const onMQ = () => (mqMobile.matches ? wire() : unwire());
+  mqMobile.addEventListener?.('change', onMQ);
+  onMQ();
+
+  // opcionális: route váltáskor mindig csukd be
+  window.addEventListener('hashchange', closeTOC);
+})();
+
+// === Mobile TOC right drawer control (≤768px) ===
+(() => {
+  const mq = window.matchMedia('(max-width: 768px)');
+  let wired = false;
+
+  const els = {
+    body: document.body,
+    drawer: null,
+    overlay: null,
+    toggle: null,
+  };
+
+  const q = () => {
+    els.drawer = document.getElementById('theory-sidebar');
+    els.overlay = document.getElementById('drawer-overlay');
+    els.toggle = document.getElementById('mobile-toc-toggle');
+  };
+
+  const open = () => {
+    if (!els.drawer || !els.overlay) return;
+    // Bal oldali drawer bezárása ha nyitva van
+    const leftDrawer = document.getElementById('sidebar');
+    if (leftDrawer) {
+      leftDrawer.classList.remove('open');
+      els.body.classList.remove('drawer-open-left');
+    }
+    
+    els.drawer.classList.add('open');
+    els.overlay.classList.add('visible');
+    els.body.classList.add('drawer-open-right');
+    els.toggle?.setAttribute('aria-expanded', 'true');
+    if (els.toggle) els.toggle.textContent = '✕';
+  };
+
+  const close = () => {
+    if (!els.drawer || !els.overlay) return;
+    els.drawer.classList.remove('open');
+    els.overlay.classList.remove('visible');
+    els.body.classList.remove('drawer-open-right');
+    els.toggle?.setAttribute('aria-expanded', 'false');
+    if (els.toggle) els.toggle.textContent = '☰';
+  };
+
+  const toggle = () => {
+    if (!els.drawer) return;
+    els.drawer.classList.contains('open') ? close() : open();
+  };
+
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+
+  const wire = () => {
+    if (wired) return; q();
+    els.toggle?.addEventListener('click', toggle);
+    els.overlay?.addEventListener('click', close);
+    window.addEventListener('keydown', onKey);
+    if (els.toggle) {
+      els.toggle.textContent = '☰';
+      els.toggle.setAttribute('aria-expanded', 'false');
+    }
+    wired = true;
+  };
+
+  const unwire = () => {
+    if (!wired) return;
+    els.toggle?.removeEventListener('click', toggle);
+    els.overlay?.removeEventListener('click', close);
+    window.removeEventListener('keydown', onKey);
+    close();
+    wired = false;
+  };
+
+  const onMQ = () => (mq.matches ? wire() : unwire());
+  mq.addEventListener?.('change', onMQ);
+  onMQ();
+
+  window.addEventListener('hashchange', close);
+})();
+
+// === Mobile NAV left drawer control (≤768px) ===
+(() => {
+  const mq = window.matchMedia('(max-width: 768px)');
+  let wired = false;
+
+  const els = {
+    body: document.body,
+    drawer: null,
+    overlay: null,
+    toggle: null,
+  };
+
+  const q = () => {
+    els.drawer = document.getElementById('sidebar');
+    els.overlay = document.getElementById('drawer-overlay');
+    els.toggle = document.getElementById('nav-toggle'); // bal felső header ikon
+  };
+
+  const open = () => {
+    if (!els.drawer || !els.overlay) return;
+    // Jobb oldali drawer bezárása ha nyitva van
+    const rightDrawer = document.getElementById('theory-sidebar');
+    if (rightDrawer) {
+      rightDrawer.classList.remove('open');
+      els.body.classList.remove('drawer-open-right');
+    }
+    
+    els.drawer.classList.add('open');
+    els.overlay.classList.add('visible');
+    els.body.classList.add('drawer-open-left');
+    els.toggle?.setAttribute('aria-expanded', 'true');
+    if (els.toggle) els.toggle.textContent = '✕';
+  };
+
+  const close = () => {
+    if (!els.drawer || !els.overlay) return;
+    els.drawer.classList.remove('open');
+    els.overlay.classList.remove('visible');
+    els.body.classList.remove('drawer-open-left');
+    els.toggle?.setAttribute('aria-expanded', 'false');
+    if (els.toggle) els.toggle.textContent = '☰';
+  };
+
+  const toggle = () => {
+    if (!els.drawer) return;
+    els.drawer.classList.contains('open') ? close() : open();
+  };
+
+  const onKey = (e) => { if (e.key === 'Escape') close(); };
+
+  const wire = () => {
+    if (wired) return; q();
+    els.toggle?.addEventListener('click', toggle);
+    els.overlay?.addEventListener('click', close);
+    window.addEventListener('keydown', onKey);
+    if (els.toggle) {
+      els.toggle.textContent = '☰';
+      els.toggle.setAttribute('aria-expanded', 'false');
+    }
+    wired = true;
+  };
+
+  const unwire = () => {
+    if (!wired) return;
+    els.toggle?.removeEventListener('click', toggle);
+    els.overlay?.removeEventListener('click', close);
+    window.removeEventListener('keydown', onKey);
+    close();
+    wired = false;
+  };
+
+  const onMQ = () => (mq.matches ? wire() : unwire());
+  mq.addEventListener?.('change', onMQ);
+  onMQ();
+
+  window.addEventListener('hashchange', close);
+})();

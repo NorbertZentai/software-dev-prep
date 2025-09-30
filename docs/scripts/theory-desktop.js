@@ -18,15 +18,19 @@
     const dy = y - lastY;
     lastY = y;
 
-    if (y < 120) { 
+    // Csak a valódi tetején (0-5px) nyitunk ki
+    if (y <= 5) { 
       setCollapsed(false); 
       return; 
     }
     
-    // lefelé nagyobbat görget – csuk
-    if (dy > 4) setCollapsed(true);
-    // felfelé – nyiss
-    if (dy < -6) setCollapsed(false);
+    // Lefelé görgetéskor összecsukás (ha már túl vagyunk a küszöbön)
+    if (dy > 4 && y > 120) {
+      setCollapsed(true);
+    }
+    
+    // Felfelé görgetéskor NEM nyitunk ki automatikusan!
+    // Csak hamburger gombbal vagy a tetejére görgetéssel
   }
 
   function onTOCClick(e) {
@@ -58,8 +62,8 @@
     const toc = document.getElementById('theory-sidebar');
     if (toc) toc.addEventListener('click', onTOCClick, true);
 
-    // Hamburger gomb functionality
-    const hamburgerBtn = document.querySelector('#theory-top-toolbar .hamburger-btn');
+    // Egyszerű hamburger gomb functionality
+    const hamburgerBtn = document.querySelector('.theory-hamburger');
     if (hamburgerBtn) {
       hamburgerBtn.addEventListener('click', () => {
         setCollapsed(false); // Sidebar megnyitása
@@ -96,4 +100,6 @@
     document.body.classList.add('is-theory');
     bind();
   }
+
+  // === TOOLBAR ELTÁVOLÍTVA - event listener-ek és clipping funkciók eltávolítva ===
 })();
