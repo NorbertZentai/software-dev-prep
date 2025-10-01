@@ -80,22 +80,25 @@ Az algoritmusok a problémamegoldás építőkövei, amelyek strukturált lépé
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-function twoPointers(array, target):
-    left = 0
-    right = array.length - 1
+```pseudo
+FUNCTION TwoPointers(A, target)
+  left ← 0
+  right ← LENGTH(A) − 1
+  
+  WHILE left < right DO
+    currentSum ← A[left] + A[right]
     
-    while left < right:
-        current_sum = array[left] + array[right]
-        
-        if current_sum == target:
-            return [left, right]
-        else if current_sum < target:
-            left += 1
-        else:
-            right -= 1
-    
-    return null  // nem található
+    IF currentSum = target THEN
+      RETURN [left, right]
+    ELSE IF currentSum < target THEN
+      left ← left + 1
+    ELSE
+      right ← right − 1
+    END IF
+  END WHILE
+  
+  RETURN null  // nem található
+END FUNCTION
 ```
 
 </div>
@@ -413,39 +416,48 @@ Left-right: ellentétes irányból közeledik (pl. two sum). Slow-fast: ugyanabb
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-// Fix méretű ablak
-function fixedSlidingWindow(array, windowSize):
-    windowSum = 0
-    
-    // Első ablak kiszámítása
-    for i = 0 to windowSize - 1:
-        windowSum += array[i]
-    
-    maxSum = windowSum
-    
-    // Ablak csúsztatása
-    for i = windowSize to array.length - 1:
-        windowSum = windowSum - array[i - windowSize] + array[i]
-        maxSum = max(maxSum, windowSum)
-    
-    return maxSum
 
-// Változó méretű ablak
-function variableSlidingWindow(array, target):
-    left = 0
-    windowSum = 0
-    minLength = infinity
+**Fix méretű ablak**
+```pseudo
+FUNCTION FixedSlidingWindow(A, windowSize)
+  windowSum ← 0
+  
+  // Első ablak kiszámítása
+  FOR i ← 0 TO windowSize − 1 DO
+    windowSum ← windowSum + A[i]
+  END FOR
+  
+  maxSum ← windowSum
+  
+  // Ablak csúsztatása
+  FOR i ← windowSize TO LENGTH(A) − 1 DO
+    windowSum ← windowSum − A[i − windowSize] + A[i]
+    maxSum ← MAX(maxSum, windowSum)
+  END FOR
+  
+  RETURN maxSum
+END FUNCTION
+```
+
+**Változó méretű ablak**
+```pseudo
+FUNCTION VariableSlidingWindow(A, target)
+  left ← 0
+  windowSum ← 0
+  minLength ← INFINITY
+  
+  FOR right ← 0 TO LENGTH(A) − 1 DO
+    windowSum ← windowSum + A[right]
     
-    for right = 0 to array.length - 1:
-        windowSum += array[right]
-        
-        while windowSum >= target:
-            minLength = min(minLength, right - left + 1)
-            windowSum -= array[left]
-            left += 1
-    
-    return minLength == infinity ? 0 : minLength
+    WHILE windowSum ≥ target DO
+      minLength ← MIN(minLength, right − left + 1)
+      windowSum ← windowSum − A[left]
+      left ← left + 1
+    END WHILE
+  END FOR
+  
+  RETURN minLength = INFINITY ? 0 : minLength
+END FUNCTION
 ```
 
 </div>
@@ -842,35 +854,47 @@ A bal pointer mozgatása, amíg az ablak nem felel meg a feltételeknek. Pl. ös
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
+
+**Prefix Sum Array létrehozása**
+```pseudo
+FUNCTION BuildPrefixSum(A)
+  prefixSum ← NEW ARRAY[LENGTH(A) + 1]
+  prefixSum[0] ← 0
+  
+  FOR i ← 1 TO LENGTH(A) DO
+    prefixSum[i] ← prefixSum[i − 1] + A[i − 1]
+  END FOR
+  
+  RETURN prefixSum
+END FUNCTION
 ```
-// Prefix Sum Array létrehozása
-function buildPrefixSum(array):
-    prefixSum = new array[array.length + 1]
-    prefixSum[0] = 0
-    
-    for i = 1 to array.length:
-        prefixSum[i] = prefixSum[i-1] + array[i-1]
-    
-    return prefixSum
 
-// Range Sum Query
-function rangeSum(prefixSum, left, right):
-    return prefixSum[right + 1] - prefixSum[left]
+**Range Sum Query**
+```pseudo
+FUNCTION RangeSum(prefixSum, left, right)
+  RETURN prefixSum[right + 1] − prefixSum[left]
+END FUNCTION
+```
 
-// Difference Array (Range Updates)
-function buildDifferenceArray(array):
-    diff = new array[array.length]
-    diff[0] = array[0]
-    
-    for i = 1 to array.length - 1:
-        diff[i] = array[i] - array[i-1]
-    
-    return diff
+**Difference Array (Range Updates)**
+```pseudo
+FUNCTION BuildDifferenceArray(A)
+  diff ← NEW ARRAY[LENGTH(A)]
+  diff[0] ← A[0]
+  
+  FOR i ← 1 TO LENGTH(A) − 1 DO
+    diff[i] ← A[i] − A[i − 1]
+  END FOR
+  
+  RETURN diff
+END FUNCTION
 
-function rangeUpdate(diff, left, right, value):
-    diff[left] += value
-    if right + 1 < diff.length:
-        diff[right + 1] -= value
+PROCEDURE RangeUpdate(diff, left, right, value)
+  diff[left] ← diff[left] + value
+  IF right + 1 < LENGTH(diff) THEN
+    diff[right + 1] ← diff[right + 1] − value
+  END IF
+END PROCEDURE
 ```
 
 </div>
@@ -1330,43 +1354,53 @@ Tárolja a prefix sum értékeket és előfordulási gyakoriságukat. sum[j] - s
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-// Next Greater Element (növekvő monotonic stack)
-function nextGreaterElement(array):
-    stack = []  // indices tárolása
-    result = new array[array.length]
-    
-    for i = 0 to array.length - 1:
-        // Stack-ből pop amíg current > stack.top elem
-        while stack is not empty AND array[i] > array[stack.top()]:
-            index = stack.pop()
-            result[index] = array[i]
-        
-        stack.push(i)
-    
-    // Maradék elemek nem találtak nagyobb elemet
-    while stack is not empty:
-        index = stack.pop()
-        result[index] = -1
-    
-    return result
 
-// Largest Rectangle in Histogram
-function largestRectangle(heights):
-    stack = []
-    maxArea = 0
+**Next Greater Element (növekvő monotonic stack)**
+```pseudo
+FUNCTION NextGreaterElement(A)
+  stack ← EMPTY_STACK  // indexek tárolása
+  result ← NEW ARRAY[LENGTH(A)]
+  
+  FOR i ← 0 TO LENGTH(A) − 1 DO
+    // Stack-ből pop amíg current > stack.top elem
+    WHILE NOT EMPTY(stack) AND A[i] > A[TOP(stack)] DO
+      index ← POP(stack)
+      result[index] ← A[i]
+    END WHILE
     
-    for i = 0 to heights.length:
-        currentHeight = (i == heights.length) ? 0 : heights[i]
-        
-        while stack is not empty AND currentHeight < heights[stack.top()]:
-            height = heights[stack.pop()]
-            width = stack.isEmpty() ? i : i - stack.top() - 1
-            maxArea = max(maxArea, height * width)
-        
-        stack.push(i)
+    PUSH(stack, i)
+  END FOR
+  
+  // Maradék elemek nem találtak nagyobb elemet
+  WHILE NOT EMPTY(stack) DO
+    index ← POP(stack)
+    result[index] ← −1
+  END WHILE
+  
+  RETURN result
+END FUNCTION
+```
+
+**Largest Rectangle in Histogram**
+```pseudo
+FUNCTION LargestRectangle(heights)
+  stack ← EMPTY_STACK
+  maxArea ← 0
+  
+  FOR i ← 0 TO LENGTH(heights) DO
+    currentHeight ← (i = LENGTH(heights)) ? 0 : heights[i]
     
-    return maxArea
+    WHILE NOT EMPTY(stack) AND currentHeight < heights[TOP(stack)] DO
+      height ← heights[POP(stack)]
+      width ← EMPTY(stack) ? i : i − TOP(stack) − 1
+      maxArea ← MAX(maxArea, height × width)
+    END WHILE
+    
+    PUSH(stack, i)
+  END FOR
+  
+  RETURN maxArea
+END FUNCTION
 ```
 
 </div>
@@ -1828,63 +1862,78 @@ Minden csökkenő elem triggerel egy pop műveletet. A popped elem magasságát 
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
+
+**Merge Intervals**
+```pseudo
+FUNCTION MergeIntervals(intervals)
+  SORT intervals BY start time
+  merged ← EMPTY_LIST
+  
+  FOR interval IN intervals DO
+    IF EMPTY(merged) OR interval.start > LAST(merged).end THEN
+      ADD(merged, interval)
+    ELSE
+      LAST(merged).end ← MAX(LAST(merged).end, interval.end)
+    END IF
+  END FOR
+  
+  RETURN merged
+END FUNCTION
 ```
-// Merge Intervals
-function mergeIntervals(intervals):
-    sort intervals by start time
-    merged = []
-    
-    for interval in intervals:
-        if merged is empty OR interval.start > merged.last().end:
-            merged.add(interval)
-        else:
-            merged.last().end = max(merged.last().end, interval.end)
-    
-    return merged
 
-// Meeting Rooms II (minimum conference rooms)
-function minMeetingRooms(intervals):
-    events = []
-    
-    for interval in intervals:
-        events.add([interval.start, 1])    // meeting starts
-        events.add([interval.end, -1])     // meeting ends
-    
-    sort events by time (if tie, end before start)
-    
-    activeRooms = 0
-    maxRooms = 0
-    
-    for event in events:
-        activeRooms += event.type
-        maxRooms = max(maxRooms, activeRooms)
-    
-    return maxRooms
+**Meeting Rooms II (minimum conference rooms)**
+```pseudo
+FUNCTION MinMeetingRooms(intervals)
+  events ← EMPTY_LIST
+  
+  FOR interval IN intervals DO
+    ADD(events, [interval.start, 1])    // meeting starts
+    ADD(events, [interval.end, −1])     // meeting ends
+  END FOR
+  
+  SORT events BY time (if tie, end before start)
+  
+  activeRooms ← 0
+  maxRooms ← 0
+  
+  FOR event IN events DO
+    activeRooms ← activeRooms + event.type
+    maxRooms ← MAX(maxRooms, activeRooms)
+  END FOR
+  
+  RETURN maxRooms
+END FUNCTION
+```
 
-// Insert Interval
-function insertInterval(intervals, newInterval):
-    result = []
-    i = 0
-    
-    // Add all intervals before overlap
-    while i < intervals.length AND intervals[i].end < newInterval.start:
-        result.add(intervals[i])
-        i++
-    
-    // Merge overlapping intervals
-    while i < intervals.length AND intervals[i].start <= newInterval.end:
-        newInterval.start = min(newInterval.start, intervals[i].start)
-        newInterval.end = max(newInterval.end, intervals[i].end)
-        i++
-    
-    result.add(newInterval)
-    
-    // Add remaining intervals
-    while i < intervals.length:
-        result.add(intervals[i])
-        i++
-    
-    return result
+**Insert Interval**
+```pseudo
+FUNCTION InsertInterval(intervals, newInterval)
+  result ← EMPTY_LIST
+  i ← 0
+  
+  // Add all intervals before overlap
+  WHILE i < LENGTH(intervals) AND intervals[i].end < newInterval.start DO
+    ADD(result, intervals[i])
+    i ← i + 1
+  END WHILE
+  
+  // Merge overlapping intervals
+  WHILE i < LENGTH(intervals) AND intervals[i].start ≤ newInterval.end DO
+    newInterval.start ← MIN(newInterval.start, intervals[i].start)
+    newInterval.end ← MAX(newInterval.end, intervals[i].end)
+    i ← i + 1
+  END WHILE
+  
+  ADD(result, newInterval)
+  
+  // Add remaining intervals
+  WHILE i < LENGTH(intervals) DO
+    ADD(result, intervals[i])
+    i ← i + 1
+  END WHILE
+  
+  RETURN result
+END FUNCTION
 ```
 
 </div>
@@ -2431,53 +2480,66 @@ Heap/priority queue helyett sweep line: +1 start-nál, -1 end-nél. Maximum akt�
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
+
+**Basic Kadane's Algorithm**
+```pseudo
+FUNCTION MaxSubarraySum(A)
+  maxSoFar ← A[0]
+  maxEndingHere ← A[0]
+  
+  FOR i ← 1 TO LENGTH(A) − 1 DO
+    maxEndingHere ← MAX(A[i], maxEndingHere + A[i])
+    maxSoFar ← MAX(maxSoFar, maxEndingHere)
+  END FOR
+  
+  RETURN maxSoFar
+END FUNCTION
 ```
-// Basic Kadane's Algorithm
-function maxSubarraySum(array):
-    maxSoFar = array[0]
-    maxEndingHere = array[0]
-    
-    for i = 1 to array.length - 1:
-        maxEndingHere = max(array[i], maxEndingHere + array[i])
-        maxSoFar = max(maxSoFar, maxEndingHere)
-    
-    return maxSoFar
 
-// Kadane with indices (track start and end)
-function maxSubarrayWithIndices(array):
-    maxSum = array[0]
-    currentSum = array[0]
-    start = 0, end = 0, tempStart = 0
+**Kadane with indices (track start and end)**
+```pseudo
+FUNCTION MaxSubarrayWithIndices(A)
+  maxSum ← A[0]
+  currentSum ← A[0]
+  start ← 0, end ← 0, tempStart ← 0
+  
+  FOR i ← 1 TO LENGTH(A) − 1 DO
+    IF currentSum < 0 THEN
+      currentSum ← A[i]
+      tempStart ← i
+    ELSE
+      currentSum ← currentSum + A[i]
+    END IF
     
-    for i = 1 to array.length - 1:
-        if currentSum < 0:
-            currentSum = array[i]
-            tempStart = i
-        else:
-            currentSum += array[i]
-        
-        if currentSum > maxSum:
-            maxSum = currentSum
-            start = tempStart
-            end = i
-    
-    return [maxSum, start, end]
+    IF currentSum > maxSum THEN
+      maxSum ← currentSum
+      start ← tempStart
+      end ← i
+    END IF
+  END FOR
+  
+  RETURN [maxSum, start, end]
+END FUNCTION
+```
 
-// Circular Array Maximum Subarray
-function maxSubarrayCircular(array):
-    // Case 1: Maximum subarray is non-circular
-    normalMax = kadane(array)
-    
-    // Case 2: Maximum subarray is circular
-    totalSum = sum(array)
-    invertedArray = [-x for x in array]
-    maxWrap = totalSum + kadane(invertedArray)  // totalSum - minSubarray
-    
-    // Handle all negative case
-    if maxWrap == 0:
-        return normalMax
-    
-    return max(normalMax, maxWrap)
+**Circular Array Maximum Subarray**
+```pseudo
+FUNCTION MaxSubarrayCircular(A)
+  // Case 1: Maximum subarray is non-circular
+  normalMax ← KADANE(A)
+  
+  // Case 2: Maximum subarray is circular
+  totalSum ← SUM(A)
+  invertedArray ← [−x FOR x IN A]
+  maxWrap ← totalSum + KADANE(invertedArray)  // totalSum − minSubarray
+  
+  // Handle all negative case
+  IF maxWrap = 0 THEN
+    RETURN normalMax
+  END IF
+  
+  RETURN MAX(normalMax, maxWrap)
+END FUNCTION
 ```
 
 </div>
@@ -3087,53 +3149,66 @@ Circular max = total_sum - minimum_subarray. Minimum subarray megtalálásához 
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-// Template for Binary Search on Answer
-function binarySearchAnswer(possibleAnswers, checkFunction):
-    left = minPossibleAnswer
-    right = maxPossibleAnswer
-    result = -1  // or other default
-    
-    while left <= right:
-        mid = left + (right - left) / 2
-        
-        if checkFunction(mid):
-            result = mid  // Valid answer found
-            right = mid - 1  // Search for smaller valid answer
-        else:
-            left = mid + 1   // Search for larger answer
-    
-    return result
 
-// Capacity To Ship Packages example
-function shipWithinDays(weights, days):
-    function canShipWithCapacity(capacity):
-        currentWeight = 0
-        daysNeeded = 1
-        
-        for weight in weights:
-            if currentWeight + weight > capacity:
-                daysNeeded += 1
-                currentWeight = weight
-                if daysNeeded > days:
-                    return false
-            else:
-                currentWeight += weight
-        
-        return true
+**Template for Binary Search on Answer**
+```pseudo
+FUNCTION BinarySearchAnswer(possibleAnswers, checkFunction)
+  left ← minPossibleAnswer
+  right ← maxPossibleAnswer
+  result ← −1  // or other default
+  
+  WHILE left ≤ right DO
+    mid ← left + (right − left) / 2
     
-    left = max(weights)  // minimum possible capacity
-    right = sum(weights) // maximum possible capacity
+    IF checkFunction(mid) THEN
+      result ← mid  // Valid answer found
+      right ← mid − 1  // Search for smaller valid answer
+    ELSE
+      left ← mid + 1   // Search for larger answer
+    END IF
+  END WHILE
+  
+  RETURN result
+END FUNCTION
+```
+
+**Capacity To Ship Packages example**
+```pseudo
+FUNCTION ShipWithinDays(weights, days)
+  FUNCTION CanShipWithCapacity(capacity)
+    currentWeight ← 0
+    daysNeeded ← 1
     
-    while left < right:
-        mid = left + (right - left) / 2
-        
-        if canShipWithCapacity(mid):
-            right = mid
-        else:
-            left = mid + 1
+    FOR weight IN weights DO
+      IF currentWeight + weight > capacity THEN
+        daysNeeded ← daysNeeded + 1
+        currentWeight ← weight
+        IF daysNeeded > days THEN
+          RETURN false
+        END IF
+      ELSE
+        currentWeight ← currentWeight + weight
+      END IF
+    END FOR
     
-    return left
+    RETURN true
+  END FUNCTION
+  
+  left ← MAX(weights)  // minimum possible capacity
+  right ← SUM(weights) // maximum possible capacity
+  
+  WHILE left < right DO
+    mid ← left + (right − left) / 2
+    
+    IF CanShipWithCapacity(mid) THEN
+      right ← mid
+    ELSE
+      left ← mid + 1
+    END IF
+  END WHILE
+  
+  RETURN left
+END FUNCTION
 ```
 
 </div>
@@ -3798,58 +3873,73 @@ Klasszikus: konkrét értéket keresünk tömbben. Answer: válaszok terében ke
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
+
+**Basic Quickselect Algorithm**
+```pseudo
+FUNCTION Quickselect(A, left, right, k)
+  IF left = right THEN
+    RETURN A[left]
+  END IF
+  
+  pivotIndex ← PARTITION(A, left, right)
+  
+  IF k = pivotIndex THEN
+    RETURN A[k]
+  ELSE IF k < pivotIndex THEN
+    RETURN Quickselect(A, left, pivotIndex − 1, k)
+  ELSE
+    RETURN Quickselect(A, pivotIndex + 1, right, k)
+  END IF
+END FUNCTION
 ```
-// Basic Quickselect Algorithm
-function quickselect(array, left, right, k):
-    if left == right:
-        return array[left]
-    
-    pivotIndex = partition(array, left, right)
-    
-    if k == pivotIndex:
-        return array[k]
-    else if k < pivotIndex:
-        return quickselect(array, left, pivotIndex - 1, k)
-    else:
-        return quickselect(array, pivotIndex + 1, right, k)
 
-// Lomuto Partition Scheme
-function partition(array, left, right):
-    pivot = array[right]
-    i = left
-    
-    for j = left to right - 1:
-        if array[j] <= pivot:
-            swap(array, i, j)
-            i += 1
-    
-    swap(array, i, right)
-    return i
+**Lomuto Partition Scheme**
+```pseudo
+FUNCTION Partition(A, left, right)
+  pivot ← A[right]
+  i ← left
+  
+  FOR j ← left TO right − 1 DO
+    IF A[j] ≤ pivot THEN
+      SWAP(A, i, j)
+      i ← i + 1
+    END IF
+  END FOR
+  
+  SWAP(A, i, right)
+  RETURN i
+END FUNCTION
+```
 
-// Median of Medians (guarantees O(n) worst case)
-function medianOfMedians(array, k):
-    if array.length <= 5:
-        sort array and return k-th element
-    
-    // Divide into groups of 5
-    medians = []
-    for i = 0 to array.length step 5:
-        group = array[i:i+5]
-        sort group
-        medians.append(group[group.length/2])
-    
-    // Recursively find median of medians
-    pivot = medianOfMedians(medians, medians.length/2)
-    
-    // Partition around this pivot
-    pivotIndex = partition(array, pivot)
-    
-    if k == pivotIndex:
-        return array[k]
-    else if k < pivotIndex:
-        return medianOfMedians(array[0:pivotIndex], k)
-    else:
-        return medianOfMedians(array[pivotIndex+1:], k - pivotIndex - 1)
+**Median of Medians (guarantees O(n) worst case)**
+```pseudo
+FUNCTION MedianOfMedians(A, k)
+  IF LENGTH(A) ≤ 5 THEN
+    SORT A AND RETURN k-th element
+  END IF
+  
+  // Divide into groups of 5
+  medians ← EMPTY_LIST
+  FOR i ← 0 TO LENGTH(A) STEP 5 DO
+    group ← A[i:i+5]
+    SORT group
+    ADD(medians, group[LENGTH(group)/2])
+  END FOR
+  
+  // Recursively find median of medians
+  pivot ← MedianOfMedians(medians, LENGTH(medians)/2)
+  
+  // Partition around this pivot
+  pivotIndex ← PARTITION(A, pivot)
+  
+  IF k = pivotIndex THEN
+    RETURN A[k]
+  ELSE IF k < pivotIndex THEN
+    RETURN MedianOfMedians(A[0:pivotIndex], k)
+  ELSE
+    RETURN MedianOfMedians(A[pivotIndex+1:], k − pivotIndex − 1)
+  END IF
+END FUNCTION
 ```
 
 </div>
@@ -5381,59 +5471,77 @@ In-place működés (jobb cache locality), kevesebb másolás, konstans faktor k
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
+
+**Top-K Largest Elements using Min-Heap**
+```pseudo
+FUNCTION TopKLargest(A, k)
+  minHeap ← NEW MIN_HEAP
+  
+  FOR element IN A DO
+    IF SIZE(minHeap) < k THEN
+      PUSH(minHeap, element)
+    ELSE IF element > PEEK(minHeap) THEN
+      POP(minHeap)      // Remove smallest from heap
+      PUSH(minHeap, element)
+    END IF
+  END FOR
+  
+  result ← EMPTY_LIST
+  WHILE NOT EMPTY(minHeap) DO
+    ADD(result, POP(minHeap))
+  END WHILE
+  
+  RETURN result
+END FUNCTION
 ```
-// Top-K Largest Elements using Min-Heap
-function topKLargest(array, k):
-    minHeap = new MinHeap()
-    
-    for element in array:
-        if minHeap.size() < k:
-            minHeap.push(element)
-        else if element > minHeap.peek():
-            minHeap.pop()      // Remove smallest from heap
-            minHeap.push(element)
-    
-    result = []
-    while minHeap is not empty:
-        result.add(minHeap.pop())
-    
-    return result
 
-// Top-K Frequent Elements
-function topKFrequent(array, k):
-    frequencyMap = {}
-    
-    // Count frequencies
-    for element in array:
-        frequencyMap[element] = frequencyMap[element] + 1
-    
-    // Use min-heap with size k
-    minHeap = new MinHeap(compareByFrequency)
-    
-    for [element, frequency] in frequencyMap:
-        if minHeap.size() < k:
-            minHeap.push([element, frequency])
-        else if frequency > minHeap.peek().frequency:
-            minHeap.pop()
-            minHeap.push([element, frequency])
-    
-    return minHeap.getAllElements()
+**Top-K Frequent Elements**
+```pseudo
+FUNCTION TopKFrequent(A, k)
+  frequencyMap ← EMPTY_MAP
+  
+  // Count frequencies
+  FOR element IN A DO
+    frequencyMap[element] ← frequencyMap[element] + 1
+  END FOR
+  
+  // Use min-heap with size k
+  minHeap ← NEW MIN_HEAP(compareByFrequency)
+  
+  FOR [element, frequency] IN frequencyMap DO
+    IF SIZE(minHeap) < k THEN
+      PUSH(minHeap, [element, frequency])
+    ELSE IF frequency > PEEK(minHeap).frequency THEN
+      POP(minHeap)
+      PUSH(minHeap, [element, frequency])
+    END IF
+  END FOR
+  
+  RETURN getAllElements(minHeap)
+END FUNCTION
+```
 
-// Streaming Top-K (for real-time data)
-class StreamingTopK:
-    function __init__(k):
-        this.k = k
-        this.minHeap = new MinHeap()
-    
-    function add(element):
-        if minHeap.size() < k:
-            minHeap.push(element)
-        else if element > minHeap.peek():
-            minHeap.pop()
-            minHeap.push(element)
-    
-    function getTopK():
-        return minHeap.getAllElements()
+**Streaming Top-K (for real-time data)**
+```pseudo
+CLASS StreamingTopK
+  CONSTRUCTOR(k)
+    this.k ← k
+    this.minHeap ← NEW MIN_HEAP
+  END CONSTRUCTOR
+  
+  PROCEDURE Add(element)
+    IF SIZE(minHeap) < k THEN
+      PUSH(minHeap, element)
+    ELSE IF element > PEEK(minHeap) THEN
+      POP(minHeap)
+      PUSH(minHeap, element)
+    END IF
+  END PROCEDURE
+  
+  FUNCTION GetTopK()
+    RETURN getAllElements(minHeap)
+  END FUNCTION
+END CLASS
 ```
 
 </div>
@@ -6341,42 +6449,51 @@ Fix méretű heap fenntartása, új elemek hozzáadása csak akkor, ha jobbak a 
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-class UnionFind:
-    function __init__(n):
-        parent = [0, 1, 2, ..., n-1]  // Everyone is their own parent
-        rank = [0, 0, 0, ..., 0]      // All trees have height 0
-        count = n                      // Number of components
+```pseudo
+CLASS UnionFind
+  CONSTRUCTOR(n)
+    parent ← [0, 1, 2, ..., n−1]  // Everyone is their own parent
+    rank ← [0, 0, 0, ..., 0]      // All trees have height 0
+    count ← n                      // Number of components
+  END CONSTRUCTOR
+  
+  FUNCTION Find(x)
+    IF parent[x] ≠ x THEN
+      parent[x] ← Find(parent[x])  // Path compression
+    END IF
+    RETURN parent[x]
+  END FUNCTION
+  
+  FUNCTION Union(x, y)
+    rootX ← Find(x)
+    rootY ← Find(y)
     
-    function find(x):
-        if parent[x] != x:
-            parent[x] = find(parent[x])  // Path compression
-        return parent[x]
+    IF rootX = rootY THEN
+      RETURN false  // Already in same set
+    END IF
     
-    function union(x, y):
-        rootX = find(x)
-        rootY = find(y)
-        
-        if rootX == rootY:
-            return false  // Already in same set
-        
-        // Union by rank
-        if rank[rootX] < rank[rootY]:
-            parent[rootX] = rootY
-        else if rank[rootX] > rank[rootY]:
-            parent[rootY] = rootX
-        else:
-            parent[rootY] = rootX
-            rank[rootX] += 1
-        
-        count -= 1
-        return true
+    // Union by rank
+    IF rank[rootX] < rank[rootY] THEN
+      parent[rootX] ← rootY
+    ELSE IF rank[rootX] > rank[rootY] THEN
+      parent[rootY] ← rootX
+    ELSE
+      parent[rootY] ← rootX
+      rank[rootX] ← rank[rootX] + 1
+    END IF
     
-    function connected(x, y):
-        return find(x) == find(y)
-    
-    function getCount():
-        return count  // Number of disjoint components
+    count ← count − 1
+    RETURN true
+  END FUNCTION
+  
+  FUNCTION Connected(x, y)
+    RETURN Find(x) = Find(y)
+  END FUNCTION
+  
+  FUNCTION GetCount()
+    RETURN count  // Number of disjoint components
+  END FUNCTION
+END CLASS
 ```
 
 </div>
@@ -7227,65 +7344,78 @@ Ha gyakori a komponens szétválasztás (Union-Find csak union-t támogat), vagy
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-// LRU Cache with HashMap + Doubly Linked List
-class LRUCache:
-    class Node:
-        key, value, prev, next
+
+**LRU Cache with HashMap + Doubly Linked List**
+```pseudo
+CLASS LRUCache
+  CLASS Node
+    key, value, prev, next
+  END CLASS
+  
+  CONSTRUCTOR(capacity)
+    this.capacity ← capacity
+    this.cache ← EMPTY_MAP  // HashMap: key → Node
     
-    function __init__(capacity):
-        this.capacity = capacity
-        this.cache = {}  // HashMap: key -> Node
-        
-        // Dummy head and tail for easier manipulation
-        this.head = Node(0, 0)
-        this.tail = Node(0, 0)
-        this.head.next = this.tail
-        this.tail.prev = this.head
-    
-    function get(key):
-        if key in cache:
-            node = cache[key]
-            moveToHead(node)  // Mark as recently used
-            return node.value
-        return -1
-    
-    function put(key, value):
-        if key in cache:
-            // Update existing
-            node = cache[key]
-            node.value = value
-            moveToHead(node)
-        else:
-            // Add new
-            newNode = Node(key, value)
-            
-            if len(cache) >= capacity:
-                // Remove LRU (tail.prev)
-                lru = removeTail()
-                del cache[lru.key]
-            
-            cache[key] = newNode
-            addToHead(newNode)
-    
-    function addToHead(node):
-        node.prev = head
-        node.next = head.next
-        head.next.prev = node
-        head.next = node
-    
-    function removeNode(node):
-        node.prev.next = node.next
-        node.next.prev = node.prev
-    
-    function moveToHead(node):
-        removeNode(node)
-        addToHead(node)
-    
-    function removeTail():
-        lru = tail.prev
-        removeNode(lru)
-        return lru
+    // Dummy head and tail for easier manipulation
+    this.head ← NEW Node(0, 0)
+    this.tail ← NEW Node(0, 0)
+    this.head.next ← this.tail
+    this.tail.prev ← this.head
+  END CONSTRUCTOR
+  
+  FUNCTION Get(key)
+    IF key IN cache THEN
+      node ← cache[key]
+      MoveToHead(node)  // Mark as recently used
+      RETURN node.value
+    END IF
+    RETURN −1
+  END FUNCTION
+  
+  PROCEDURE Put(key, value)
+    IF key IN cache THEN
+      // Update existing
+      node ← cache[key]
+      node.value ← value
+      MoveToHead(node)
+    ELSE
+      // Add new
+      newNode ← NEW Node(key, value)
+      
+      IF SIZE(cache) ≥ capacity THEN
+        // Remove LRU (tail.prev)
+        lru ← RemoveTail()
+        DELETE cache[lru.key]
+      END IF
+      
+      cache[key] ← newNode
+      AddToHead(newNode)
+    END IF
+  END PROCEDURE
+  
+  PROCEDURE AddToHead(node)
+    node.prev ← head
+    node.next ← head.next
+    head.next.prev ← node
+    head.next ← node
+  END PROCEDURE
+  
+  PROCEDURE RemoveNode(node)
+    node.prev.next ← node.next
+    node.next.prev ← node.prev
+  END PROCEDURE
+  
+  PROCEDURE MoveToHead(node)
+    RemoveNode(node)
+    AddToHead(node)
+  END PROCEDURE
+  
+  FUNCTION RemoveTail()
+    lru ← tail.prev
+    RemoveNode(lru)
+    RETURN lru
+  END FUNCTION
+END CLASS
 ```
 
 </div>
@@ -8413,46 +8543,65 @@ Lazy cleanup: lejárt elemeket csak access-kor töröljük. Batch cleanup: perio
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-// Basic Heap Operations
-class MinHeap:
-    function __init__():
-        heap = []
-    
-    function insert(val):
-        heap.append(val)
-        heapifyUp(heap.length - 1)
-    
-    function extractMin():
-        if heap.isEmpty(): return null
-        
-        min = heap[0]
-        heap[0] = heap[heap.length - 1]
-        heap.pop()
-        heapifyDown(0)
-        return min
-    
-    function heapifyUp(index):
-        while index > 0:
-            parent = (index - 1) / 2
-            if heap[parent] <= heap[index]: break
-            swap(heap, parent, index)
-            index = parent
-    
-    function heapifyDown(index):
-        while index has children:
-            smallestChild = index
-            
-            if leftChild(index) < heap[smallestChild]:
-                smallestChild = leftChild(index)
-            if rightChild(index) < heap[smallestChild]:
-                smallestChild = rightChild(index)
-            
-            if smallestChild == index: break
-            swap(heap, index, smallestChild)
-            index = smallestChild
 
-// Common Patterns:
+**Basic Heap Operations**
+```pseudo
+CLASS MinHeap
+  CONSTRUCTOR()
+    heap ← EMPTY_ARRAY
+  END CONSTRUCTOR
+  
+  PROCEDURE Insert(val)
+    APPEND(heap, val)
+    HeapifyUp(LENGTH(heap) − 1)
+  END PROCEDURE
+  
+  FUNCTION ExtractMin()
+    IF EMPTY(heap) THEN
+      RETURN null
+    END IF
+    
+    min ← heap[0]
+    heap[0] ← heap[LENGTH(heap) − 1]
+    REMOVE_LAST(heap)
+    HeapifyDown(0)
+    RETURN min
+  END FUNCTION
+  
+  PROCEDURE HeapifyUp(index)
+    WHILE index > 0 DO
+      parent ← (index − 1) / 2
+      IF heap[parent] ≤ heap[index] THEN
+        BREAK
+      END IF
+      SWAP(heap, parent, index)
+      index ← parent
+    END WHILE
+  END PROCEDURE
+  
+  PROCEDURE HeapifyDown(index)
+    WHILE index has children DO
+      smallestChild ← index
+      
+      IF LeftChild(index) < heap[smallestChild] THEN
+        smallestChild ← LeftChild(index)
+      END IF
+      IF RightChild(index) < heap[smallestChild] THEN
+        smallestChild ← RightChild(index)
+      END IF
+      
+      IF smallestChild = index THEN
+        BREAK
+      END IF
+      SWAP(heap, index, smallestChild)
+      index ← smallestChild
+    END WHILE
+  END PROCEDURE
+END CLASS
+```
+
+**Common Patterns:**
+```pseudo
 // 1. Top-K Pattern: Use heap of size K
 // 2. Merge Pattern: Merge multiple sorted streams
 // 3. Sliding Window: Maintain min/max in window
@@ -9618,60 +9767,79 @@ Index tracking Map-pel + heapify up/down kombinációval, vagy indexed heap hasz
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
+
+**BFS - Breadth-First Search**
+```pseudo
+FUNCTION BFS(graph, startNode)
+  queue ← NEW QUEUE
+  visited ← NEW SET
+  distances ← NEW MAP
+  
+  ENQUEUE(queue, startNode)
+  ADD(visited, startNode)
+  distances[startNode] ← 0
+  
+  WHILE NOT EMPTY(queue) DO
+    current ← DEQUEUE(queue)
+    
+    FOR EACH neighbor IN graph[current] DO
+      IF neighbor NOT IN visited THEN
+        ADD(visited, neighbor)
+        distances[neighbor] ← distances[current] + 1
+        ENQUEUE(queue, neighbor)
+      END IF
+    END FOR
+  END WHILE
+  
+  RETURN distances
+END FUNCTION
 ```
-// BFS - Breadth-First Search
-function BFS(graph, startNode):
-    queue = new Queue()
-    visited = new Set()
-    distances = new Map()
-    
-    queue.enqueue(startNode)
-    visited.add(startNode)
-    distances[startNode] = 0
-    
-    while queue is not empty:
-        current = queue.dequeue()
-        
-        for each neighbor in graph[current]:
-            if neighbor not in visited:
-                visited.add(neighbor)
-                distances[neighbor] = distances[current] + 1
-                queue.enqueue(neighbor)
-    
-    return distances
 
-// DFS - Depth-First Search (Recursive)
-function DFS(graph, node, visited, path):
-    visited.add(node)
-    path.append(node)
-    
-    for each neighbor in graph[node]:
-        if neighbor not in visited:
-            DFS(graph, neighbor, visited, path)
+**DFS - Depth-First Search (Recursive)**
+```pseudo
+PROCEDURE DFS(graph, node, visited, path)
+  ADD(visited, node)
+  APPEND(path, node)
+  
+  FOR EACH neighbor IN graph[node] DO
+    IF neighbor NOT IN visited THEN
+      DFS(graph, neighbor, visited, path)
+    END IF
+  END FOR
+END PROCEDURE
+```
 
-// DFS - Iterative with Stack
-function DFS_Iterative(graph, startNode):
-    stack = new Stack()
-    visited = new Set()
-    path = []
+**DFS - Iterative with Stack**
+```pseudo
+FUNCTION DFS_Iterative(graph, startNode)
+  stack ← NEW STACK
+  visited ← NEW SET
+  path ← EMPTY_LIST
+  
+  PUSH(stack, startNode)
+  
+  WHILE NOT EMPTY(stack) DO
+    current ← POP(stack)
     
-    stack.push(startNode)
-    
-    while stack is not empty:
-        current = stack.pop()
-        
-        if current not in visited:
-            visited.add(current)
-            path.append(current)
-            
-            // Add neighbors in reverse order for consistent traversal
-            for neighbor in reverse(graph[current]):
-                if neighbor not in visited:
-                    stack.push(neighbor)
-    
-    return path
+    IF current NOT IN visited THEN
+      ADD(visited, current)
+      APPEND(path, current)
+      
+      // Add neighbors in reverse order for consistent traversal
+      FOR neighbor IN REVERSE(graph[current]) DO
+        IF neighbor NOT IN visited THEN
+          PUSH(stack, neighbor)
+        END IF
+      END FOR
+    END IF
+  END WHILE
+  
+  RETURN path
+END FUNCTION
+```
 
-// Applications:
+**Applications:**
+```pseudo
 // 1. Shortest path (unweighted) - BFS
 // 2. Connected components - DFS/BFS
 // 3. Cycle detection - DFS with colors
@@ -10979,55 +11147,67 @@ White: még nem látogatott. Gray: folyamatban lévő (stack-ben). Black: teljes
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-function Dijkstra(graph, startNode):
-    distances = new Map()  // Minden csúcshoz a távolság
-    previous = new Map()   // Út rekonstrukció
-    visited = new Set()
-    priorityQueue = new MinHeap()
+```pseudo
+FUNCTION Dijkstra(graph, startNode)
+  distances ← NEW MAP  // Minden csúcshoz a távolság
+  previous ← NEW MAP   // Út rekonstrukció
+  visited ← NEW SET
+  priorityQueue ← NEW MIN_HEAP
+  
+  // Inicializálás
+  FOR EACH node IN graph DO
+    distances[node] ← INFINITY
+    previous[node] ← null
+  END FOR
+  
+  distances[startNode] ← 0
+  INSERT(priorityQueue, startNode, 0)
+  
+  WHILE NOT EMPTY(priorityQueue) DO
+    current ← EXTRACT_MIN(priorityQueue)
     
-    // Inicializálás
-    for each node in graph:
-        distances[node] = INFINITY
-        previous[node] = null
-    
-    distances[startNode] = 0
-    priorityQueue.insert(startNode, 0)
-    
-    while priorityQueue is not empty:
-        current = priorityQueue.extractMin()
+    IF current IN visited THEN
+      CONTINUE  // Skip if already processed
+    END IF
         
-        if current in visited:
-            continue  // Skip if already processed
-            
-        visited.add(current)
-        
-        for each neighbor in graph.neighbors(current):
-            if neighbor not in visited:
-                newDistance = distances[current] + graph.weight(current, neighbor)
-                
-                if newDistance < distances[neighbor]:
-                    distances[neighbor] = newDistance
-                    previous[neighbor] = current
-                    priorityQueue.insert(neighbor, newDistance)
+    ADD(visited, current)
     
-    return distances, previous
+    FOR EACH neighbor IN NEIGHBORS(graph, current) DO
+      IF neighbor NOT IN visited THEN
+        newDistance ← distances[current] + WEIGHT(graph, current, neighbor)
+        
+        IF newDistance < distances[neighbor] THEN
+          distances[neighbor] ← newDistance
+          previous[neighbor] ← current
+          INSERT(priorityQueue, neighbor, newDistance)
+        END IF
+      END IF
+    END FOR
+  END WHILE
+  
+  RETURN distances, previous
+END FUNCTION
 
 // Út rekonstrukció
-function reconstructPath(previous, start, target):
-    path = []
-    current = target
-    
-    while current != null:
-        path.prepend(current)
-        current = previous[current]
-    
-    if path[0] == start:
-        return path
-    else:
-        return []  // No path exists
+FUNCTION ReconstructPath(previous, start, target)
+  path ← EMPTY_LIST
+  current ← target
+  
+  WHILE current ≠ null DO
+    PREPEND(path, current)
+    current ← previous[current]
+  END WHILE
+  
+  IF path[0] = start THEN
+    RETURN path
+  ELSE
+    RETURN EMPTY_LIST  // No path exists
+  END IF
+END FUNCTION
+```
 
-// Optimalizációs trükkök:
+**Optimalizációs trükkök:**
+```pseudo
 // 1. Early termination: stop when target found
 // 2. Bidirectional search: search from both ends
 // 3. A* heuristic: guided search with admissible heuristic
@@ -12323,41 +12503,55 @@ Nagy gráfokban, amikor start és target között keresünk. Két irányból O(b
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
-```
-// O(n²) Dynamic Programming solution
-function LIS_DP(arr):
-    n = arr.length
-    dp = new Array(n).fill(1)  // dp[i] = length of LIS ending at i
-    
-    for i from 1 to n-1:
-        for j from 0 to i-1:
-            if arr[j] < arr[i]:
-                dp[i] = max(dp[i], dp[j] + 1)
-    
-    return max(dp)
 
-// O(n log n) Binary Search + DP solution
-function LIS_BinarySearch(arr):
-    tails = []  // tails[i] = smallest ending element of all increasing subsequences of length i+1
+**O(n²) Dynamic Programming solution**
+```pseudo
+FUNCTION LIS_DP(A)
+  n ← LENGTH(A)
+  dp ← NEW ARRAY[n] FILLED WITH 1  // dp[i] = length of LIS ending at i
+  
+  FOR i ← 1 TO n − 1 DO
+    FOR j ← 0 TO i − 1 DO
+      IF A[j] < A[i] THEN
+        dp[i] ← MAX(dp[i], dp[j] + 1)
+      END IF
+    END FOR
+  END FOR
+  
+  RETURN MAX(dp)
+END FUNCTION
+```
+
+**O(n log n) Binary Search + DP solution**
+```pseudo
+FUNCTION LIS_BinarySearch(A)
+  tails ← EMPTY_LIST  // tails[i] = smallest ending element of all increasing subsequences of length i+1
+  
+  FOR num IN A DO
+    left ← 0
+    right ← LENGTH(tails)
     
-    for num in arr:
-        left, right = 0, tails.length
-        
-        // Binary search for insertion position
-        while left < right:
-            mid = (left + right) / 2
-            if tails[mid] < num:
-                left = mid + 1
-            else:
-                right = mid
-        
-        // If left == tails.length, append. Otherwise, replace
-        if left == tails.length:
-            tails.append(num)
-        else:
-            tails[left] = num
+    // Binary search for insertion position
+    WHILE left < right DO
+      mid ← (left + right) / 2
+      IF tails[mid] < num THEN
+        left ← mid + 1
+      ELSE
+        right ← mid
+      END IF
+    END WHILE
     
-    return tails.length
+    // If left = LENGTH(tails), append. Otherwise, replace
+    IF left = LENGTH(tails) THEN
+      APPEND(tails, num)
+    ELSE
+      tails[left] ← num
+    END IF
+  END FOR
+  
+  RETURN LENGTH(tails)
+END FUNCTION
+```
 
 // LIS with reconstruction
 function LIS_WithPath(arr):
@@ -13564,63 +13758,83 @@ Kártyákat kupacokba rakjuk: minden kupacban csökkenő sorrend. Új kártya a 
 <div class="concept-section algorithm-steps">
 
 ⚙️ **Algoritmus lépései (pszeudokód)**
+
+**Basic Edit Distance with DP**
+```pseudo
+FUNCTION EditDistance(str1, str2)
+  m ← LENGTH(str1)
+  n ← LENGTH(str2)
+  dp ← NEW ARRAY[m + 1][n + 1]
+  
+  // Initialize base cases
+  FOR i ← 0 TO m DO
+    dp[i][0] ← i  // Delete all characters from str1
+  END FOR
+  FOR j ← 0 TO n DO
+    dp[0][j] ← j  // Insert all characters to str1
+  END FOR
+  
+  // Fill DP table
+  FOR i ← 1 TO m DO
+    FOR j ← 1 TO n DO
+      IF str1[i − 1] = str2[j − 1] THEN
+        dp[i][j] ← dp[i − 1][j − 1]  // No operation needed
+      ELSE
+        dp[i][j] ← 1 + MIN(
+          dp[i − 1][j],    // Delete from str1
+          dp[i][j − 1],    // Insert to str1
+          dp[i − 1][j − 1] // Replace in str1
+        )
+      END IF
+    END FOR
+  END FOR
+  
+  RETURN dp[m][n]
+END FUNCTION
 ```
-// Basic Edit Distance with DP
-function editDistance(str1, str2):
-    m, n = str1.length, str2.length
-    dp = new Array(m+1, n+1)
-    
-    // Initialize base cases
-    for i from 0 to m:
-        dp[i][0] = i  // Delete all characters from str1
-    for j from 0 to n:
-        dp[0][j] = j  // Insert all characters to str1
-    
-    // Fill DP table
-    for i from 1 to m:
-        for j from 1 to n:
-            if str1[i-1] == str2[j-1]:
-                dp[i][j] = dp[i-1][j-1]  // No operation needed
-            else:
-                dp[i][j] = 1 + min(
-                    dp[i-1][j],    // Delete from str1
-                    dp[i][j-1],    // Insert to str1
-                    dp[i-1][j-1]   // Replace in str1
-                )
-    
-    return dp[m][n]
 
-// Space-optimized version
-function editDistanceOptimized(str1, str2):
-    m, n = str1.length, str2.length
-    if m < n:
-        swap(str1, str2)
-        swap(m, n)
+**Space-optimized version**
+```pseudo
+FUNCTION EditDistanceOptimized(str1, str2)
+  m ← LENGTH(str1)
+  n ← LENGTH(str2)
+  IF m < n THEN
+    SWAP(str1, str2)
+    SWAP(m, n)
+  END IF
+  
+  prev ← NEW ARRAY[n + 1]
+  curr ← NEW ARRAY[n + 1]
+  
+  // Initialize first row
+  FOR j ← 0 TO n DO
+    prev[j] ← j
+  END FOR
+  
+  FOR i ← 1 TO m DO
+    curr[0] ← i
+    FOR j ← 1 TO n DO
+      IF str1[i − 1] = str2[j − 1] THEN
+        curr[j] ← prev[j − 1]
+      ELSE
+        curr[j] ← 1 + MIN(prev[j], curr[j − 1], prev[j − 1])
+      END IF
+    END FOR
     
-    prev = new Array(n+1)
-    curr = new Array(n+1)
-    
-    // Initialize first row
-    for j from 0 to n:
-        prev[j] = j
-    
-    for i from 1 to m:
-        curr[0] = i
-        for j from 1 to n:
-            if str1[i-1] == str2[j-1]:
-                curr[j] = prev[j-1]
-            else:
-                curr[j] = 1 + min(prev[j], curr[j-1], prev[j-1])
-        
-        swap(prev, curr)
-    
-    return prev[n]
+    SWAP(prev, curr)
+  END FOR
+  
+  RETURN prev[n]
+END FUNCTION
+```
 
-// Edit Distance with operation tracking
-function editDistanceWithPath(str1, str2):
-    m, n = str1.length, str2.length
-    dp = new Array(m+1, n+1)
-    operations = new Array(m+1, n+1)  // Track operations
+**Edit Distance with operation tracking**
+```pseudo
+FUNCTION EditDistanceWithPath(str1, str2)
+  m ← LENGTH(str1)
+  n ← LENGTH(str2)
+  dp ← NEW ARRAY[m + 1][n + 1]
+  operations ← NEW ARRAY[m + 1][n + 1]  // Track operations
     
     // Initialize and fill similar to above, but also track operations
     // operations[i][j] = "insert"/"delete"/"replace"/"match"
