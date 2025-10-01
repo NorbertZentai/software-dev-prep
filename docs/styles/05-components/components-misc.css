@@ -36,8 +36,7 @@
   text-align: left;
 }
 
-.action-card:hover,
-.action-card:focus {
+.action-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px var(--shadow-color);
   border-color: var(--accent-primary);

@@ -37,7 +37,6 @@
   transition: color var(--transition-fast);
 }
 
-.footer a:hover,
-.footer a:focus {
+.footer a:hover {
   color: var(--accent-secondary);
 }

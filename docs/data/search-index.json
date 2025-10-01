@@ -10,6 +10,15 @@
       "estimatedMinutes": 20
     },
     {
+      "route": "#/theory/oop",
+      "title": "Objektumorientált Programozás",
+      "excerpt": "OOP alapelvek: encapsulation, inheritance, polymorphism, abstraction. SOLID principles, design patterns, composition vs inheritance.",
+      "tags": ["oop", "encapsulation", "inheritance", "polymorphism", "solid", "design-patterns"],
+      "category": "theory",
+      "difficulty": "beginner",
+      "estimatedMinutes": 25
+    },
+    {
       "route": "#/theory/spring",
       "title": "Spring Framework",
       "excerpt": "Enterprise Java alkalmazás keretrendszer. Dependency Injection, Spring Boot, REST API, Spring Data JPA, Spring Security.",
@@ -66,6 +75,25 @@
       "estimatedMinutes": 30
     },
     {
+      "route": "#/theory/algorithms",
+      "title": "Algoritmusok & Adatstruktúrák",
+      "excerpt": "Klasszikus algoritmusok, komplexitás elemzés, interview preparation. Two Pointers, Dynamic Programming, Graph algoritmusok, Backtracking és String matching.",
+      "tags": [
+        "algorithms",
+        "data-structures",
+        "complexity",
+        "two-pointers",
+        "dynamic-programming",
+        "graph-algorithms",
+        "backtracking",
+        "string-matching",
+        "interview-prep"
+      ],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 60
+    },
+    {
       "route": "#/theory/git",
       "title": "Git & Verziókezelés",
       "excerpt": "Git workflow, branching stratégiák, merging, konfliktus feloldás és csapatmunka best practices.",
@@ -73,6 +101,24 @@
       "category": "theory",
       "difficulty": "beginner",
       "estimatedMinutes": 15
+    },
+    {
+      "route": "#/theory/devops",
+      "title": "DevOps & Infrastructure",
+      "excerpt": "Docker, Kubernetes, CI/CD pipelines, Infrastructure as Code, monitoring és cloud deployment stratégiák.",
+      "tags": ["devops", "docker", "kubernetes", "ci-cd", "infrastructure", "monitoring"],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 25
+    },
+    {
+      "route": "#/theory/frontend",
+      "title": "Frontend Development",
+      "excerpt": "React, TypeScript, hooks, state management, performance optimization és modern frontend architektúra.",
+      "tags": ["frontend", "react", "typescript", "hooks", "performance", "spa"],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 30
     },
     {
       "route": "#/exercises/java/01-oop-basics",
@@ -280,6 +326,24 @@
       "category": "quiz",
       "difficulty": "beginner",
       "estimatedMinutes": 10
+    },
+    {
+      "route": "#/quiz/devops",
+      "title": "DevOps Kvíz",
+      "excerpt": "Docker, Kubernetes, CI/CD, Infrastructure as Code, monitoring és DevOps best practices teszt.",
+      "tags": ["quiz", "devops", "docker", "kubernetes", "ci-cd", "infrastructure"],
+      "category": "quiz",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 12
+    },
+    {
+      "route": "#/quiz/frontend",
+      "title": "Frontend Kvíz",
+      "excerpt": "React, TypeScript, hooks, performance optimization és modern frontend development teszt.",
+      "tags": ["quiz", "frontend", "react", "typescript", "hooks", "performance"],
+      "category": "quiz",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 12
     },
     {
       "route": "#/roadmap",

@@ -1,0 +1,189 @@
+{
+  "title": "CI/CD & DevOps Kvíz",
+  "description": "Teszteld a DevOps, CI/CD, Docker és monitoring ismereteidet!",
+  "timeLimit": 15,
+  "passingScore": 60,
+  "tags": ["devops", "ci-cd", "docker", "monitoring"],
+  "questions": [
+    {
+      "id": 1,
+      "question": "Mi a CI/CD pipeline fő célja?",
+      "type": "single",
+      "options": [
+        "Kód verziókezelése",
+        "Automatizált kód integráció, tesztelés és deployment",
+        "Csak tesztelés automatizálása",
+        "Dokumentáció generálása"
+      ],
+      "correct": 1,
+      "explanation": "A CI/CD pipeline automatizálja a teljes fejlesztési folyamatot a kód integration-től a production deployment-ig, biztosítva a quality gate-eket.",
+      "difficulty": "junior",
+      "category": "cicd"
+    },
+    {
+      "id": 2,
+      "question": "Mi a Docker container fő előnye a virtuális gépekkel szemben?",
+      "type": "single",
+      "options": [
+        "Nagyobb biztonság",
+        "Könnyebb súly és gyorsabb startup",
+        "Jobb grafikai teljesítmény",
+        "Több memória"
+      ],
+      "correct": 1,
+      "explanation": "Docker container-ek megosztják a host OS kernel-t, így sokkal könnyebbek és gyorsabban indulnak, mint a teljes OS-t futtató VM-ek.",
+      "difficulty": "junior",
+      "category": "docker"
+    },
+    {
+      "id": 3,
+      "question": "Melyik NEM tartozik a 'Three Pillars of Observability' közé?",
+      "type": "single",
+      "options": [
+        "Metrics",
+        "Logs", 
+        "Traces",
+        "Alerts"
+      ],
+      "correct": 3,
+      "explanation": "A három pillér: Metrics, Logs, Traces. Az Alert-ek ezek alapján működnek, de nem alapvető pillérek.",
+      "difficulty": "medior",
+      "category": "monitoring"
+    },
+    {
+      "id": 4,
+      "question": "Mit jelent a 'Infrastructure as Code' (IaC)?",
+      "type": "single",
+      "options": [
+        "Kód tárolása felhőben",
+        "Infrastruktúra definíciója verziókezelt kóddal",
+        "Automatikus code review",
+        "Serverless computing"
+      ],
+      "correct": 1,
+      "explanation": "IaC azt jelenti, hogy az infrastruktúra konfigurációját kód formájában írjuk le (pl. Terraform), amely verziókezelt és reprodukálható.",
+      "difficulty": "medior",
+      "category": "iac"
+    },
+    {
+      "id": 5,
+      "question": "Melyik Docker best practice HELYES?",
+      "type": "single",
+      "options": [
+        "Root user használata a container-ben",
+        "Egy image-ben minden dependency-t telepíteni",
+        "Multi-stage build használata optimalizáláshoz",
+        "Latest tag használata production-ben"
+      ],
+      "correct": 2,
+      "explanation": "Multi-stage build lehetővé teszi a build-time dependency-k elkülönítését a runtime-tól, kisebb és biztonságosabb image-eket eredményezve.",
+      "difficulty": "medior",
+      "category": "docker"
+    },
+    {
+      "id": 6,
+      "question": "Mit jelent a 'Blue-Green Deployment'?",
+      "type": "single",
+      "options": [
+        "Kék és zöld színű felhasználói felület",
+        "Két azonos production környezet, amelyek között váltunk",
+        "Development és production környezet",
+        "Testing és staging környezet"
+      ],
+      "correct": 1,
+      "explanation": "Blue-Green deployment két azonos production környezetet használ, ahol az új verzió a 'green'-re kerül, majd traffic switch-sel váltunk.",
+      "difficulty": "medior",
+      "category": "deployment"
+    },
+    {
+      "id": 7,
+      "question": "Melyik Prometheus metric típus alkalmas counter-ek mérésére?",
+      "type": "single",
+      "options": [
+        "Gauge",
+        "Counter", 
+        "Histogram",
+        "Summary"
+      ],
+      "correct": 1,
+      "explanation": "Counter egy monoton növekvő metric típus, ideális eseményszámláláshoz (pl. HTTP request-ek száma).",
+      "difficulty": "medior",
+      "category": "monitoring"
+    },
+    {
+      "id": 8,
+      "question": "Mi a Kubernetes Pod?",
+      "type": "single",
+      "options": [
+        "Egy container",
+        "Egy vagy több container logikai egysége",
+        "Egy node a cluster-ben",
+        "Egy service endpoint"
+      ],
+      "correct": 1,
+      "explanation": "Pod a legkisebb deployable unit Kubernetes-ben, amely egy vagy több szorosan kapcsolódó container-t tartalmaz.",
+      "difficulty": "junior",
+      "category": "kubernetes"
+    },
+    {
+      "id": 9,
+      "question": "Melyik GitOps principle HELYES?",
+      "type": "single",
+      "options": [
+        "Manual deployment production-be",
+        "Git mint single source of truth",
+        "Csak development branch-ek használata",
+        "Infrastructure módosítása közvetlenül"
+      ],
+      "correct": 1,
+      "explanation": "GitOps-ban a Git repository a single source of truth az infrastruktúra és alkalmazás állapotához, minden változás Git-en keresztül történik.",
+      "difficulty": "medior",
+      "category": "gitops"
+    },
+    {
+      "id": 10,
+      "question": "Mi a Docker layer caching előnye?",
+      "type": "single",
+      "options": [
+        "Kisebb image méret",
+        "Gyorsabb build idő ha a layer-ek nem változtak",
+        "Jobb biztonság",
+        "Automatikus update"
+      ],
+      "correct": 1,
+      "explanation": "Docker layer caching lehetővé teszi, hogy csak a megváltozott layer-eket építse újra, jelentősen gyorsítva a build folyamatot.",
+      "difficulty": "junior",
+      "category": "docker"
+    },
+    {
+      "id": 11,
+      "question": "Melyik a helyes CI/CD pipeline sorrend?",
+      "type": "single",
+      "options": [
+        "Build → Deploy → Test → Monitor",
+        "Test → Build → Deploy → Monitor", 
+        "Build → Test → Deploy → Monitor",
+        "Deploy → Test → Build → Monitor"
+      ],
+      "correct": 2,
+      "explanation": "A helyes sorrend: Build (kód compile), Test (quality gates), Deploy (környezetbe), Monitor (observability).",
+      "difficulty": "junior",
+      "category": "cicd"
+    },
+    {
+      "id": 12,
+      "question": "Mi a különbség rolling update és canary deployment között?",
+      "type": "single",
+      "options": [
+        "Rolling update gyorsabb",
+        "Canary csak kis forgalmat kap az új verzióból kezdetben",
+        "Rolling update biztonságosabb",
+        "Nincs különbség"
+      ],
+      "correct": 1,
+      "explanation": "Canary deployment-ben az új verzió először csak a forgalom kis részét kapja (pl. 5%), majd fokozatosan növelik, míg rolling update során fokozatosan cserélik ki az instance-okat.",
+      "difficulty": "medior",
+      "category": "deployment"
+    }
+  ]
+}

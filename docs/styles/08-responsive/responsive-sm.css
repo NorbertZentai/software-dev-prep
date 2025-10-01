@@ -9,10 +9,6 @@
     font-size: var(--font-size-xs);
   }
 
-  #search-input:focus {
-    width: 140px;
-  }
-
   .site-title {
     font-size: var(--font-size-lg);
   }
@@ -25,9 +21,19 @@
     padding: var(--space-lg);
   }
 
-  .theory-drawer { 
-    width: 95vw; 
-    max-width: none; 
+  .theory-drawer,
+  #theory-sidebar.theory-drawer.right,
+  body.is-theory #theory-sidebar,
+  #theory-sidebar { 
+    width: min(88vw, 280px) !important; 
+    max-width: 280px !important;
+    right: -100% !important; /* ensure it starts off-screen */
+  }
+
+  #theory-sidebar.theory-drawer.right.open,
+  body.is-theory #theory-sidebar.open,
+  #theory-sidebar.open {
+    right: 0 !important; /* slide in completely */
   }
   
   .theory-content { 

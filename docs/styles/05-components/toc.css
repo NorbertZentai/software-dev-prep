@@ -22,11 +22,6 @@
   transition: border-color var(--transition-normal);
 }
 
-#toc-search:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-}
-
 #toc-search::placeholder {
   color: var(--text-muted);
 }
@@ -66,11 +61,6 @@
   font-weight: 600;
   border-left: 4px solid var(--accent-secondary);
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-}
-
-.toc-link:focus {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
 }
 
 .concept-title {

@@ -25,6 +25,18 @@
       "tags": ["html", "css", "javascript", "typescript", "react", "rest"]
     },
     {
+      "id": "devops",
+      "name": "DevOps",
+      "color": "#f97316",
+      "tags": ["docker", "kubernetes", "ci-cd", "monitoring", "terraform", "aws"]
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend",
+      "color": "#ec4899",
+      "tags": ["react", "typescript", "hooks", "state-management", "performance", "testing"]
+    },
+    {
       "id": "testing",
       "name": "Tesztelés",
       "color": "#8b5cf6",

@@ -7,35 +7,109 @@ A relációs adatbázisok és SQL (Structured Query Language) az adattárolás �
 ## Fogalmak
 
 ### CRUD {#crud}
-Create, Read, Update, Delete - az alapvető adatbázis műveletek négy típusa.
 
-**Példa:**
+<div class="concept-section mental-model" data-filter="queries junior">
+
+🧭 **Így gondolj rá**  
+*A CRUD olyan, mint egy könyvtár alapműveletek: Create (új könyv beszerzése), Read (olvasás), Update (adatok frissítése), Delete (selejtezés).*
+
+</div>
+
+<div class="concept-section why-important" data-filter="queries junior">
+
+💡 **Miért számít?**
+- **Alapvető műveletek**: minden adatbázis alkalmazás ezekre épül
+- **RESTful API mapping**: POST→Create, GET→Read, PUT→Update, DELETE→Delete
+- **Tranzakciós biztonság**: mindegyik művelet atomikus kell legyen
+- **Performance impact**: különböző műveletek különböző optimalizálást igényelnek
+
+</div>
+
+<div class="runnable-model" data-filter="queries junior">
+
+**Runnable mental model**
 ```sql
--- CREATE (INSERT)
+-- CREATE (INSERT) - új adat létrehozása
 INSERT INTO users (name, email, age) 
 VALUES ('John Doe', 'john@example.com', 30);
 
--- READ (SELECT)
+-- READ (SELECT) - adatok lekérdezése
 SELECT id, name, email FROM users 
 WHERE age > 25 
 ORDER BY name;
 
--- UPDATE
+-- UPDATE - meglévő adat módosítása
 UPDATE users 
 SET email = 'newemail@example.com' 
 WHERE id = 1;
 
--- DELETE
+-- DELETE - adat törlése
 DELETE FROM users 
 WHERE last_login < '2023-01-01';
 ```
+*Figyeld meg: minden művelet WHERE clause-szal célzott és visszavonhatatlan (kivéve tranzakcióban).*
 
-Magyarázat: A CRUD műveletek alkotják az adatbázis interakciók alapját minden alkalmazásban.
+</div>
+
+<div class="concept-section micro-learning" data-filter="queries">
+
+<details>
+<summary>📚 <strong>5 perces mikro-tanulás</strong></summary>
+
+<div>
+
+**CRUD best practices:**
+```sql
+-- ✅ Jó: specifikus oszlopok
+SELECT id, name, email FROM users;
+
+-- ❌ Rossz: SELECT *
+SELECT * FROM users;
+
+-- ✅ Jó: WHERE clause minden UPDATE/DELETE-nél
+UPDATE users SET status = 'inactive' WHERE last_login < '2023-01-01';
+
+-- ❌ Veszélyes: WHERE nélküli UPDATE
+UPDATE users SET status = 'inactive'; -- Minden rekord!
+```
+
+**Batch műveletek:**
+```sql
+-- Egyetlen INSERT több sorral
+INSERT INTO products (name, price) VALUES 
+    ('Product 1', 29.99),
+    ('Product 2', 39.99),
+    ('Product 3', 19.99);
+```
+
+</div>
+
+</details>
+
+</div>
 
 ### DDL/DML {#ddl-dml}
-Data Definition Language (struktúra) és Data Manipulation Language (adatok) megkülönböztetés.
 
-**Példa:**
+<div class="concept-section mental-model" data-filter="queries junior">
+
+🧭 **Így gondolj rá**  
+*DDL olyan, mint egy ház tervezése (falak, szobák kialakítása), DML pedig a berendezés (bútorok mozgatása, cseréje).*
+
+</div>
+
+<div class="concept-section why-important" data-filter="queries junior">
+
+💡 **Miért számít?**
+- **Struktúra vs adatok**: DDL a séma, DML a tartalom kezelése
+- **Jogosultságok**: gyakran különböző szerepkörök kezelik őket
+- **Backup stratégia**: DDL ritkábban változik, DML folyamatosan
+- **Migration scripts**: DDL változások verziózottak, DML adatfüggő
+
+</div>
+
+<div class="runnable-model" data-filter="queries junior">
+
+**Runnable mental model**
 ```sql
 -- DDL - Data Definition Language (struktúra meghatározás)
 CREATE TABLE products (
@@ -48,9 +122,7 @@ CREATE TABLE products (
 );
 
 CREATE INDEX idx_products_category ON products(category_id);
-
 ALTER TABLE products ADD COLUMN description TEXT;
-
 DROP TABLE old_products;
 
 -- DML - Data Manipulation Language (adat manipuláció)
@@ -69,21 +141,78 @@ WHERE category_id = 2;
 DELETE FROM products 
 WHERE price < 10;
 ```
+*Figyeld meg: DDL-t ritkábban, DML-t gyakran futtatjuk.*
 
-Magyarázat: DDL az adatbázis struktúráját definiálja, DML az adatokkal végzett műveleteket.
+</div>
+
+<div class="concept-section micro-learning" data-filter="queries">
+
+<details>
+<summary>📚 <strong>5 perces mikro-tanulás</strong></summary>
+
+<div>
+
+**DDL kategóriák:**
+```sql
+-- Schema objektumok létrehozása
+CREATE TABLE, CREATE INDEX, CREATE VIEW, CREATE PROCEDURE
+
+-- Schema objektumok módosítása  
+ALTER TABLE, ALTER INDEX, ALTER VIEW
+
+-- Schema objektumok törlése
+DROP TABLE, DROP INDEX, DROP VIEW
+
+-- Jogosultságok kezelése
+GRANT SELECT ON products TO app_user;
+REVOKE INSERT ON products FROM app_user;
+```
+
+**DML transaction safety:**
+```sql
+BEGIN TRANSACTION;
+UPDATE inventory SET quantity = quantity - 1 WHERE product_id = 123;
+INSERT INTO order_items (order_id, product_id, quantity) VALUES (456, 123, 1);
+COMMIT; -- Vagy ROLLBACK ha hiba történt
+```
+
+</div>
+
+</details>
+
+</div>
 
 ### JOIN-ok (INNER/LEFT/RIGHT) {#join-ok-inner-left-right}
-Táblák közötti kapcsolatok létrehozására szolgáló műveletek.
 
-**Példa:**
+<div class="concept-section mental-model" data-filter="joins medior">
+
+🧭 **Így gondolj rá**  
+*A JOIN-ok olyan, mint a családfa kutatás: INNER JOIN csak a biztos rokonokat mutatja, LEFT JOIN az összes elődet + ismert leszármazókat, RIGHT JOIN fordítva.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="joins medior">
+
+💡 **Miért számít?**
+- **Normalizált adatok**: relációs adatbázisokban az adatok több táblában vannak
+- **Performance kritikus**: rossz JOIN lassú query-ket eredményez
+- **Üzleti logika**: komplex jelentések és elemzések alapja
+- **Data integrity**: foreign key kapcsolatok validálása
+
+</div>
+
+<div class="runnable-model" data-filter="joins medior">
+
+**Runnable mental model**
 ```sql
--- INNER JOIN - csak egyező rekordok
+-- INNER JOIN - csak egyező rekordok (metszet)
 SELECT 
     u.name as customer_name,
     o.order_date,
     o.total_amount
 FROM users u
 INNER JOIN orders o ON u.id = o.customer_id;
+-- Eredmény: csak azok a userek, akiknek van rendelése
 
 -- LEFT JOIN - minden bal oldali + egyező jobb oldaliak
 SELECT 
@@ -93,6 +222,7 @@ SELECT
 FROM users u
 LEFT JOIN orders o ON u.id = o.customer_id
 GROUP BY u.id, u.name;
+-- Eredmény: minden user, akinek nincs rendelése is (NULL értékekkel)
 
 -- RIGHT JOIN - minden jobb oldali + egyező bal oldaliak
 SELECT 
@@ -100,13 +230,7 @@ SELECT
     COALESCE(oi.quantity, 0) as total_sold
 FROM order_items oi
 RIGHT JOIN products p ON oi.product_id = p.id;
-
--- FULL OUTER JOIN - minden rekord mindkét oldalról
-SELECT 
-    COALESCE(u.name, 'Unknown Customer') as customer,
-    COALESCE(o.order_date, 'No Orders') as last_order
-FROM users u
-FULL OUTER JOIN orders o ON u.id = o.customer_id;
+-- Eredmény: minden termék, még a nem eladottak is
 
 -- Self JOIN - hierarchikus adatok
 SELECT 
@@ -114,6 +238,27 @@ SELECT
     m.name as manager
 FROM employees e
 LEFT JOIN employees m ON e.manager_id = m.id;
+```
+*Figyeld meg: COALESCE() kezeli a NULL értékeket LEFT/RIGHT JOIN-oknál.*
+
+</div>
+
+<div class="concept-section myths" data-filter="joins">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „JOIN mindig lassú." → Helyes indexsekkel a JOIN lehet gyorsabb mint subquery
+- „LEFT JOIN és RIGHT JOIN ugyanaz." → Nem, a sorrendjük és az eredményük különbözik
+- „INNER JOIN a default." → Igen, de explicit írás tisztább kód
+
+</div>
+
+</details>
+
+</div>
 
 -- Multiple JOIN example
 SELECT 
@@ -133,56 +278,110 @@ ORDER BY o.order_date DESC;
 Magyarázat: A JOIN típusok különböző módon kombinálják a táblák adatait - INNER csak egyező, LEFT/RIGHT minden rekord az egyik oldalról.
 
 ### Indexek {#indexek}
-Adatbázis teljesítmény optimalizálására szolgáló struktúrák. Gyorsítják a keresést, de lassítják a módosítást.
 
-**Példa:**
+<div class="concept-section mental-model" data-filter="indexing performance medior">
+
+🧭 **Így gondolj rá**  
+*Az index olyan, mint egy könyv tartalomjegyzéke: gyorsan megtalálod amit keresel, de a könyv írása lassabb lesz, mert a tartalomjegyzéket is frissíteni kell.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="indexing performance medior">
+
+💡 **Miért számít?**
+- **Query performance**: milliószorosra javíthatja a keresés sebességét
+- **Trade-off**: gyorsabb SELECT, lassabb INSERT/Update/Delete
+- **Memory usage**: indexek memóriát és tárhelyet fogyasztanak
+- **Query optimizer**: az adatbázis dönt róla, hogy használja-e az indexet
+
+</div>
+
+<div class="runnable-model" data-filter="indexing performance">
+
+**Runnable mental model**
 ```sql
--- Simple index létrehozás
+-- Simple index - egy oszlopra
 CREATE INDEX idx_users_email ON users(email);
 
--- Composite (összetett) index
+-- Composite index - több oszlopra (sorrend számít!)
 CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date);
 
--- Unique index
+-- Unique constraint + index
 CREATE UNIQUE INDEX idx_users_email_unique ON users(email);
 
--- Partial index (feltételes)
+-- Partial index - csak bizonyos rekordokra
 CREATE INDEX idx_active_users ON users(last_login_date) 
 WHERE active = true;
 
--- Functional index
+-- Functional index - számított értékre
 CREATE INDEX idx_users_lower_email ON users(LOWER(email));
 
--- Covering index (includes oszlopokkal)
+-- Index hatékonyság ellenőrzése
+EXPLAIN (ANALYZE, BUFFERS) 
+SELECT * FROM users WHERE email = 'john@example.com';
+-- Keress: "Index Scan" vagy "Bitmap Index Scan" eredményt
+```
+*Figyeld meg: composite indexnél a sorrend számít - (customer_id, order_date) != (order_date, customer_id).*
+
+</div>
+
+<div class="concept-section myths" data-filter="indexing">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Minden oszlopra kell index." → Túl sok index lassítja az INSERT/UPDATE műveleteket
+- „Index mindig gyorsít." → Kis táblák esetén a full table scan gyorsabb lehet
+- „A primary key nem index." → A primary key automatikusan unique index
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="indexing performance">
+
+<details>
+<summary>📚 <strong>5 perces mikro-tanulás</strong></summary>
+
+<div>
+
+**Index típusok PostgreSQL-ben:**
+```sql
+-- B-tree (default) - egyenlőség és tartomány query-k
+CREATE INDEX idx_btree ON users(age);
+
+-- Hash - csak egyenlőség query-k
+CREATE INDEX idx_hash ON users USING HASH(status);
+
+-- GIN - full-text search, JSON oszlopok
+CREATE INDEX idx_gin ON documents USING GIN(content);
+
+-- GiST - geometriai adatok, range típusok
+CREATE INDEX idx_gist ON locations USING GIST(coordinates);
+```
+
+**Covering index strategy:**
+```sql
+-- Include oszlopokkal - index tartalmazza a SELECT oszlopokat is
 CREATE INDEX idx_orders_covering 
 ON orders(customer_id, order_date) 
 INCLUDE (total_amount, status);
 
--- Index használat ellenőrzése
-EXPLAIN (ANALYZE, BUFFERS) 
-SELECT * FROM users WHERE email = 'john@example.com';
+-- Így a query csak az indexet olvassa, nem a táblát
+SELECT customer_id, order_date, total_amount, status
+FROM orders 
+WHERE customer_id = 123 AND order_date > '2023-01-01';
+```
 
--- Index statisztikák
-SELECT 
-    schemaname,
-    tablename,
-    indexname,
-    idx_scan as index_scans,
-    idx_tup_read as tuples_read,
-    idx_tup_fetch as tuples_fetched
-FROM pg_stat_user_indexes 
-WHERE idx_scan > 0
-ORDER BY idx_scan DESC;
+</div>
 
--- Unused index detection
-SELECT 
-    schemaname,
-    tablename,
-    indexname,
-    pg_size_pretty(pg_relation_size(indexrelid)) as index_size
-FROM pg_stat_user_indexes 
-WHERE idx_scan = 0 
-AND schemaname NOT IN ('pg_catalog', 'information_schema');
+</details>
+
+</div>
 ```
 
 Magyarázat: Indexek B-tree struktúrában tárolják a rendezett adatokat, O(log n) keresési komplexitást biztosítva.
@@ -273,11 +472,29 @@ CREATE TABLE order_summary (
 Magyarázat: A normalizáció csökkenti a redundanciát, de sometimes denormalizáció szükséges a teljesítmény érdekében.
 
 ### Tranzakciók {#tranzakciok}
-Atomikus műveletcsoportok, amelyek vagy teljesen sikeresek, vagy teljesen visszavonódnak.
 
-**Példa:**
+<div class="concept-section mental-model" data-filter="transactions medior">
+
+🧭 **Így gondolj rá**  
+*A tranzakció olyan, mint egy banki utalás: vagy minden lépés sikeres (pénz levonás + hozzáadás), vagy semmi sem történik meg.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="transactions medior">
+
+💡 **Miért számít?**
+- **Adatkonsisztencia**: biztosítja hogy az adatbázis mindig valid állapotban maradjon
+- **Atomicitás**: vagy minden művelet sikeres, vagy egyik sem
+- **Hibakezelés**: automatikus rollback hiba esetén
+- **Konkurens hozzáférés**: több felhasználó biztonságos párhuzamos munkája
+
+</div>
+
+<div class="runnable-model" data-filter="transactions">
+
+**Runnable mental model**
 ```sql
--- Alapvető tranzakció
+-- Alapvető tranzakció - pénzátutalás
 BEGIN TRANSACTION;
 
 UPDATE accounts 
@@ -297,11 +514,10 @@ COMMIT;
 -- Ha hiba van
 -- ROLLBACK;
 
--- Savepoint használat
+-- Savepoint használat - részleges visszavonás
 BEGIN TRANSACTION;
 
 INSERT INTO orders (customer_id, order_date) VALUES (1, NOW());
-
 SAVEPOINT order_created;
 
 INSERT INTO order_items (order_id, product_id, quantity) 
@@ -311,6 +527,67 @@ VALUES (LAST_INSERT_ID(), 1, 2);
 -- ROLLBACK TO SAVEPOINT order_created;
 
 COMMIT;
+```
+*Figyeld meg: SAVEPOINT lehetővé teszi a részleges rollback-et tranzakción belül.*
+
+</div>
+
+<div class="concept-section myths" data-filter="transactions">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Autocommit mode-ban nincs tranzakció." → Minden statement implicit tranzakcióban fut
+- „Long running transaction jó." → Hosszú tranzakciók lockolnak és deadlock-ot okozhatnak
+- „ROLLBACK költséges." → ROLLBACK gyakran gyorsabb mint a hibás adatok javítása
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="transactions">
+
+<details>
+<summary>📚 <strong>5 perces mikro-tanulás</strong></summary>
+
+<div>
+
+**Transaction isolation levels:**
+```sql
+-- Read committed (default)
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
+
+-- Repeatable read
+SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+
+-- Serializable - legmagasabb izolációs szint
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+```
+
+**Pessimistic locking:**
+```sql
+-- FOR UPDATE - exclusive lock
+SELECT * FROM products WHERE id = 1 FOR UPDATE;
+
+-- FOR SHARE - shared lock
+SELECT * FROM products WHERE id = 1 FOR SHARE;
+```
+
+**Deadlock detection:**
+```sql
+-- PostgreSQL automatikusan felismeri és megszakítja a deadlock-ot
+-- Log-ban: "deadlock detected"
+```
+
+</div>
+
+</details>
+
+</div>
 
 -- Komplex üzleti tranzakció
 CREATE OR REPLACE FUNCTION process_order(
@@ -587,22 +864,578 @@ HAVING COUNT(o.id) > 5;
 
 Magyarázat: Az explain plan megmutatja a query optimizer döntéseit és segít azonosítani a teljesítmény bottleneck-eket.
 
-## Gyakori hibák
+### Primary Key vs Foreign Key {#primary-key-vs-foreign-key}
+
+<div class="concept-section mental-model" data-filter="constraints junior">
+
+🧭 **Így gondolj rá**  
+*A Primary Key olyan, mint a személyi igazolványszám: egyedileg azonosít minden rekordot. A Foreign Key pedig mint egy címjegyzék bejegyzés: mutatja, hogy ki kivel van kapcsolatban.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="constraints junior">
+
+💡 **Miért számít?**
+- **Adatintegritás**: biztosítja hogy minden rekord egyedi és az összekapcsolások valósak
+- **Referenciális integritás**: nem lehet olyan kapcsolatot létrehozni, ami nem létező rekordra mutat
+- **Query optimization**: automatikus indexek javítják a teljesítményt
+- **Cascade operations**: kapcsolt rekordok automatikus kezelése
+
+</div>
+
+<div class="runnable-model" data-filter="constraints junior">
+
+**Runnable mental model**
+```sql
+-- Primary Key - egyedi azonosító
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,              -- Auto-increment primary key
+    email VARCHAR(255) UNIQUE NOT NULL, -- Egyedi, de nem primary
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Composite Primary Key
+CREATE TABLE order_items (
+    order_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (order_id, product_id)  -- Összetett kulcs
+);
+
+-- Foreign Key - kapcsolat másik táblához
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    order_date TIMESTAMP DEFAULT NOW(),
+    total_amount DECIMAL(12,2),
+    FOREIGN KEY (customer_id) REFERENCES users(id)
+        ON DELETE CASCADE              -- User törléskor rendelések is törlődnek
+        ON UPDATE CASCADE              -- User ID frissítéskor propagálás
+);
+
+-- Foreign Key constraints különböző opciókkal
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    category_id INT,
+    supplier_id INT,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
+        ON DELETE SET NULL,            -- Category törléskor NULL lesz
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+        ON DELETE RESTRICT             -- Supplier törlés blokkolva ha van termék
+);
+
+-- Self-referencing Foreign Key - hierarchikus struktúra
+CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    manager_id INT,
+    FOREIGN KEY (manager_id) REFERENCES employees(id)
+        ON DELETE SET NULL
+);
+
+-- FK constraint ellenőrzése
+SELECT 
+    tc.table_name,
+    kcu.column_name,
+    ccu.table_name AS foreign_table_name,
+    ccu.column_name AS foreign_column_name
+FROM information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+    ON tc.constraint_name = kcu.constraint_name
+JOIN information_schema.constraint_column_usage AS ccu
+    ON ccu.constraint_name = tc.constraint_name
+WHERE tc.constraint_type = 'FOREIGN KEY';
+```
+*Figyeld meg: CASCADE, SET NULL, RESTRICT opciók különböző viselkedést eredményeznek.*
+
+</div>
+
+<div class="concept-section myths" data-filter="constraints">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Primary key mindig AUTO_INCREMENT." → Nem, lehet UUID, composite key, vagy manuálisan megadott
+- „Foreign key mindig kötelező." → Lehet NULL is, ha az ON DELETE SET NULL be van állítva
+- „Egy táblában csak egy primary key lehet." → Igaz, de lehet composite (több oszlopból álló)
+
+</div>
+
+</details>
+
+</div>
+
+### Unique és Check Constraint {#unique-check-constraint}
+
+<div class="concept-section mental-model" data-filter="constraints junior">
+
+🧭 **Így gondolj rá**  
+*A Unique constraint olyan, mint egy névjegyzék: nem lehet két ugyanolyan név. A Check constraint pedig mint egy kapus: csak megfelelő feltételekkel rendelkező adatok léphetnek be.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="constraints junior">
+
+💡 **Miért számít?**
+- **Business rules enforcement**: üzleti szabályok betartatása adatbázis szinten
+- **Data quality**: rossz adatok megelőzése, nem csak az alkalmazásban
+- **Performance**: unique constraint automatikus index létrehozás
+- **Error prevention**: early feedback hibás adatoknál
+
+</div>
+
+<div class="runnable-model" data-filter="constraints junior">
+
+**Runnable mental model**
+```sql
+-- Unique constraints - egyediség biztosítása
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,     -- Egyedi email cím
+    username VARCHAR(50) UNIQUE NOT NULL,   -- Egyedi felhasználónév
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Composite unique constraint - kombinált egyediség
+CREATE TABLE user_roles (
+    user_id INT,
+    role_id INT,
+    assigned_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, role_id),               -- Egy user-nek egy role csak egyszer
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+-- Check constraints - üzleti szabályok
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    discount_percent INT DEFAULT 0,
+    stock_quantity INT NOT NULL DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'active',
+    
+    -- Check constraints
+    CONSTRAINT price_positive CHECK (price > 0),
+    CONSTRAINT discount_valid CHECK (discount_percent BETWEEN 0 AND 100),
+    CONSTRAINT stock_non_negative CHECK (stock_quantity >= 0),
+    CONSTRAINT status_valid CHECK (status IN ('active', 'inactive', 'discontinued'))
+);
+
+-- Complex check constraints
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    order_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    ship_date DATE,
+    total_amount DECIMAL(12,2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    
+    -- Complex business rules
+    CONSTRAINT ship_after_order CHECK (ship_date IS NULL OR ship_date >= order_date),
+    CONSTRAINT amount_positive CHECK (total_amount > 0),
+    CONSTRAINT status_valid CHECK (status IN ('pending', 'confirmed', 'shipped', 'delivered', 'cancelled')),
+    CONSTRAINT future_ship_date CHECK (ship_date IS NULL OR ship_date <= CURRENT_DATE + INTERVAL '30 days'),
+    
+    FOREIGN KEY (customer_id) REFERENCES users(id)
+);
+
+-- Conditional check constraints
+CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    birth_date DATE NOT NULL,
+    hire_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    salary DECIMAL(10,2),
+    department VARCHAR(50),
+    
+    -- Age requirement
+    CONSTRAINT adult_employee CHECK (birth_date <= CURRENT_DATE - INTERVAL '18 years'),
+    -- Hire date logical
+    CONSTRAINT hire_after_birth CHECK (hire_date > birth_date),
+    -- Salary by department
+    CONSTRAINT salary_by_dept CHECK (
+        (department = 'intern' AND salary >= 1000) OR
+        (department = 'junior' AND salary >= 2000) OR  
+        (department = 'senior' AND salary >= 4000) OR
+        (department NOT IN ('intern', 'junior', 'senior'))
+    )
+);
+
+-- Partial unique indexes - conditional uniqueness
+CREATE UNIQUE INDEX idx_users_active_email 
+ON users(email) 
+WHERE status = 'active';  -- Csak aktív userek email-je legyen egyedi
+
+-- Constraint ellenőrzése
+SELECT 
+    conname AS constraint_name,
+    contype AS constraint_type,
+    pg_get_constraintdef(oid) AS constraint_definition
+FROM pg_constraint 
+WHERE conrelid = 'products'::regclass;
+```
+*Figyeld meg: check constraintek komplex üzleti logikát is tartalmazhatnak.*
+
+</div>
+
+<div class="concept-section myths" data-filter="constraints">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Check constraint csak egyszerű értékekre alkalmas." → Komplex kifejezések és subquery-k is használhatók
+- „Unique constraint nem lehet NULL." → NULL értékek megengedettek, de csak egy lehet (PostgreSQL-ben)
+- „Constraints lassítják az INSERT-et." → Igen, de megelőzik a hibás adatokat és konzisztenciát biztosítanak
+
+</div>
+
+</details>
+
+</div>
+
+### Default Értékek {#default-ertekek}
+
+<div class="concept-section mental-model" data-filter="schema junior">
+
+🧭 **Így gondolj rá**  
+*A Default érték olyan, mint az alapbeállítások egy új telefonnál: ha nem állítasz be semmit, valami ésszerű érték lesz beállítva automatikusan.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="schema junior">
+
+💡 **Miért számít?**
+- **Data consistency**: konzisztens alapértékek az egész alkalmazásban
+- **User experience**: kevesebb kötelező mező, gyorsabb adatbevitel
+- **Application logic**: egyszerűbb kód, mert nem kell minden mezőt kezelni
+- **Business rules**: automatikus értékek üzleti szabályok szerint
+
+</div>
+
+<div class="runnable-model" data-filter="schema junior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű default értékek
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,                              -- AUTO_INCREMENT default
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    status VARCHAR(20) DEFAULT 'active',                -- String default
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,     -- Timestamp default
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_verified BOOLEAN DEFAULT FALSE,                  -- Boolean default
+    login_count INT DEFAULT 0,                          -- Integer default
+    credit_balance DECIMAL(10,2) DEFAULT 0.00           -- Decimal default
+);
+
+-- Function-based defaults
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    order_number VARCHAR(20) DEFAULT ('ORD-' || nextval('order_number_seq')),
+    customer_id INT NOT NULL,
+    order_date DATE DEFAULT CURRENT_DATE,
+    ship_date DATE DEFAULT (CURRENT_DATE + INTERVAL '3 days'),      -- Calculated default
+    total_amount DECIMAL(12,2) DEFAULT 0.00,
+    currency VARCHAR(3) DEFAULT 'USD',
+    status VARCHAR(20) DEFAULT 'pending',
+    
+    FOREIGN KEY (customer_id) REFERENCES users(id)
+);
+
+-- Sequence-based defaults
+CREATE SEQUENCE order_number_seq START 1000;
+CREATE SEQUENCE invoice_number_seq START 100000 INCREMENT BY 1;
+
+CREATE TABLE invoices (
+    id SERIAL PRIMARY KEY,
+    invoice_number VARCHAR(20) DEFAULT ('INV-' || TO_CHAR(nextval('invoice_number_seq'), 'FM000000')),
+    order_id INT UNIQUE NOT NULL,
+    issue_date DATE DEFAULT CURRENT_DATE,
+    due_date DATE DEFAULT (CURRENT_DATE + INTERVAL '30 days'),
+    amount DECIMAL(12,2) NOT NULL,
+    
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+-- Conditional defaults with triggers
+CREATE OR REPLACE FUNCTION set_user_defaults()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Automatically set username if not provided
+    IF NEW.username IS NULL THEN
+        NEW.username := 'user_' || NEW.id;
+    END IF;
+    
+    -- Set welcome credit for new users
+    IF NEW.credit_balance IS NULL THEN
+        NEW.credit_balance := 10.00;  -- $10 welcome credit
+    END IF;
+    
+    -- Auto-generate display name
+    IF NEW.display_name IS NULL THEN
+        NEW.display_name := SPLIT_PART(NEW.email, '@', 1);
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER user_defaults_trigger
+    BEFORE INSERT ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION set_user_defaults();
+
+-- UUID defaults
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE documents (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    created_by INT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    access_token UUID DEFAULT uuid_generate_v4(),     -- Random access token
+    
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- JSON default values
+CREATE TABLE user_preferences (
+    user_id INT PRIMARY KEY,
+    settings JSONB DEFAULT '{"theme": "light", "language": "en", "notifications": true}'::jsonb,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Testing defaults
+INSERT INTO users (name, email) 
+VALUES ('John Doe', 'john@example.com');
+-- status='active', created_at=now(), is_verified=false automatikusan
+
+INSERT INTO orders (customer_id, total_amount) 
+VALUES (1, 299.99);
+-- order_number, order_date, ship_date automatikusan generálódik
+
+-- Default értékek módosítása
+ALTER TABLE users ALTER COLUMN status SET DEFAULT 'pending';
+ALTER TABLE orders ALTER COLUMN currency SET DEFAULT 'EUR';
+
+-- Default eltávolítása
+ALTER TABLE users ALTER COLUMN credit_balance DROP DEFAULT;
+```
+*Figyeld meg: funkciók, szekvenciák és triggerek is használhatók default értékek generálásához.*
+
+</div>
+
+<div class="concept-section interview-pitfalls" data-filter="schema">
+
+<details>
+<summary>💼 <strong>Interjú buktatók</strong></summary>
+
+<div>
+
+- **"Mikor használnál default értékeket?"** → Gyakori értékek, audit mezők, business logic egyszerűsítése
+- **"Mi a különbség SERIAL és SEQUENCE között?"** → SERIAL shorthand egy AUTO_INCREMENT sequence-hez
+- **"Hogyan frissítenéd a default értéket meglévő táblában?"** → ALTER TABLE... ALTER COLUMN... SET DEFAULT
+
+</div>
+
+</details>
+
+</div>
+
+### Views (Nézetek) {#views}
+
+<div class="concept-section mental-model" data-filter="views junior">
+
+🧭 **Így gondolj rá**  
+*A View olyan, mint egy ablak: ugyanazt az adatot látod, de egy másik perspektívából, és nem foglal el extra helyet.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="views junior">
+
+💡 **Miért számít?**
+- **Abstraction layer**: komplex query-k elrejtése egyszerű interface mögött
+- **Security**: csak szükséges oszlopok és sorok megjelenítése
+- **Code reuse**: gyakori lekérdezések központosítása
+- **Backward compatibility**: schema változások elleni védelem
+
+</div>
+
+<div class="runnable-model" data-filter="views junior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű view - oszlopok szűrése
+CREATE VIEW user_public_info AS
+SELECT 
+    id,
+    name,
+    email,
+    created_at,
+    status
+FROM users
+WHERE status = 'active';
+
+-- Komplex view - JOIN-ok és aggregáció
+CREATE VIEW order_summary AS
+SELECT 
+    u.id as customer_id,
+    u.name as customer_name,
+    u.email,
+    COUNT(o.id) as total_orders,
+    COALESCE(SUM(o.total_amount), 0) as total_spent,
+    MAX(o.order_date) as last_order_date,
+    CASE 
+        WHEN SUM(o.total_amount) > 1000 THEN 'VIP'
+        WHEN SUM(o.total_amount) > 500 THEN 'Premium'
+        ELSE 'Regular'
+    END as customer_tier
+FROM users u
+LEFT JOIN orders o ON u.id = o.customer_id
+WHERE u.status = 'active'
+GROUP BY u.id, u.name, u.email;
+
+-- Business logic view
+CREATE VIEW product_availability AS
+SELECT 
+    p.id,
+    p.name,
+    p.price,
+    p.stock_quantity,
+    c.name as category_name,
+    CASE 
+        WHEN p.stock_quantity = 0 THEN 'Out of Stock'
+        WHEN p.stock_quantity < 10 THEN 'Low Stock'
+        WHEN p.stock_quantity < 50 THEN 'In Stock'
+        ELSE 'Well Stocked'
+    END as availability_status,
+    CASE 
+        WHEN p.status = 'active' AND p.stock_quantity > 0 THEN TRUE
+        ELSE FALSE
+    END as can_order
+FROM products p
+JOIN categories c ON p.category_id = c.id;
+
+-- Security view - sensitive data filtering
+CREATE VIEW employee_directory AS
+SELECT 
+    id,
+    name,
+    department,
+    hire_date,
+    -- Salary és personal info kihagyva
+    CASE 
+        WHEN department = 'management' THEN 'Manager'
+        WHEN hire_date < (CURRENT_DATE - INTERVAL '2 years') THEN 'Senior'
+        ELSE 'Junior'
+    END as level
+FROM employees
+WHERE status = 'active';
+
+-- Reporting view - dashboard adatok
+CREATE VIEW monthly_sales_report AS
+SELECT 
+    DATE_TRUNC('month', o.order_date) as month,
+    COUNT(o.id) as order_count,
+    SUM(o.total_amount) as revenue,
+    AVG(o.total_amount) as avg_order_value,
+    COUNT(DISTINCT o.customer_id) as unique_customers,
+    SUM(oi.quantity) as items_sold
+FROM orders o
+JOIN order_items oi ON o.id = oi.order_id
+WHERE o.status IN ('confirmed', 'shipped', 'delivered')
+    AND o.order_date >= (CURRENT_DATE - INTERVAL '12 months')
+GROUP BY DATE_TRUNC('month', o.order_date)
+ORDER BY month DESC;
+
+-- Updatable view (egyszerű view-k)
+CREATE VIEW active_products AS
+SELECT id, name, price, stock_quantity
+FROM products 
+WHERE status = 'active';
+
+-- View használata
+SELECT * FROM user_public_info WHERE name ILIKE '%john%';
+
+SELECT customer_name, customer_tier, total_spent 
+FROM order_summary 
+WHERE customer_tier = 'VIP';
+
+-- View-k módosítása
+CREATE OR REPLACE VIEW user_public_info AS
+SELECT 
+    id,
+    name,
+    email,
+    created_at,
+    status,
+    is_verified  -- Új oszlop hozzáadva
+FROM users
+WHERE status IN ('active', 'pending');
+
+-- View információk lekérdezése
+SELECT table_name, view_definition 
+FROM information_schema.views 
+WHERE table_schema = 'public';
+
+-- View törlése
+DROP VIEW IF EXISTS old_report_view;
+```
+*Figyeld meg: view-k valós időben adják vissza az aktuális adatokat, nem cachelt verziót.*
+
+</div>
+
+<div class="concept-section myths" data-filter="views">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „View-k lassúak." → Egyszerű view-k gyorsak, de komplex JOIN-ok és aggregációk lassíthatnak
+- „View-k tárolják az adatokat." → Nem, csak a query definíciót tárolják (kivéve materialized view)
+- „View-ken keresztül nem lehet írni." → Egyszerű view-k írhatók, komplexek általában nem
+
+</div>
+
+</details>
+
+</div>
+
+## Gyakori hibák és buktatók
+
+<div class="concept-section myths" data-filter="junior medior">
 
 ### SELECT * használata
-Nagy táblákból minden oszlop lekérése felesleges network és memory overhead.
 
-**Hibás példa:**
+<details>
+<summary>🧯 <strong>Felesleges adatforgalom</strong></summary>
+
+<div>
+
+**❌ Hibás példa - Pazarló lekérdezés:**
 ```sql
 -- HIBÁS - felesleges adatforgalom
 SELECT * FROM products p
 JOIN categories c ON p.category_id = c.id
 WHERE p.price > 100;
-
--- Lehet, hogy csak a nevet és árat kell
+-- Lehet, hogy csak a nevet és árat kell, de minden mező jön
 ```
 
-**Helyes megoldás:**
+**✅ Helyes megoldás - Specifikus oszlopok:**
 ```sql
 -- HELYES - csak szükséges oszlopok
 SELECT p.name, p.price, c.name as category_name
@@ -611,23 +1444,37 @@ JOIN categories c ON p.category_id = c.id
 WHERE p.price > 100;
 ```
 
-### N+1 query
-Egy lekérdezés N további lekérdezést generál, exponenciálisan lassítva a rendszert.
+**Miért problémás:**
+- Felesleges network forgalom
+- Nagyobb memory használat
+- Index covering lehetőségének elvesztése
+- Sérülékeny kód - ha új oszlop jön, a query "eltörik"
 
-**Hibás példa:**
+</div>
+
+</details>
+
+### N+1 Query Problem
+
+<details>
+<summary>⚡ <strong>Exponenciális teljesítményvesztés</strong></summary>
+
+<div>
+
+**❌ Hibás példa - N+1 anti-pattern:**
 ```sql
 -- HIBÁS - N+1 query pattern
--- 1. Query: felhasználók lekérése
+-- 1. Query: felhasználók lekérése (1 query)
 SELECT * FROM users;
 
 -- 2. N Query: minden userhez külön query (application code-ban)
 -- SELECT COUNT(*) FROM orders WHERE customer_id = 1;
 -- SELECT COUNT(*) FROM orders WHERE customer_id = 2;
 -- SELECT COUNT(*) FROM orders WHERE customer_id = 3;
--- ... N query
+-- ... 1000 user = 1000 query!
 ```
 
-**Helyes megoldás:**
+**✅ Helyes megoldás - Egyetlen JOIN:**
 ```sql
 -- HELYES - egyetlen optimalizált query
 SELECT 
@@ -638,16 +1485,53 @@ SELECT
 FROM users u
 LEFT JOIN orders o ON u.id = o.customer_id
 GROUP BY u.id, u.name, u.email;
+-- 1000 user = 1 query!
 ```
 
-### SQL Injection vulnerabilitas
-Felhasználói input közvetlen beillesztése SQL query-be biztonsági rést nyit.
+**Performance impact:**
+- 1000 user esetén: 1001 query → 1 query
+- Network latency: 1001 * 5ms = 5 másodperc → 5ms
+- Database connection pool terhelés csökkenése
 
-**Hibás példa:**
+</div>
+
+</details>
+
+### SQL Injection
+
+<details>
+<summary>🛡️ <strong>Kritikus biztonsági rés</strong></summary>
+
+<div>
+
+**❌ Veszélyes példa - Direkt string concatenation:**
 ```sql
 -- VESZÉLYES - SQL injection lehetőség
 -- Application code: "SELECT * FROM users WHERE email = '" + userInput + "';"
 -- Ha userInput = "test@example.com'; DROP TABLE users; --"
+-- Eredmény: Az egész users tábla törlődik!
+```
+
+**✅ Biztonságos megoldás - Prepared statements:**
+```java
+// BIZTONSÁGOS - Prepared statement
+String sql = "SELECT * FROM users WHERE email = ?";
+PreparedStatement stmt = connection.prepareStatement(sql);
+stmt.setString(1, userInput);
+ResultSet rs = stmt.executeQuery();
+```
+
+**Védelem módjai:**
+- Prepared statements/parameterized queries használata
+- Input validation és sanitization
+- Least privilege principle - minimális DB jogosultságok
+- ORM használata (pl. Hibernate, MyBatis)
+
+</div>
+
+</details>
+
+</div>
 -- Eredmény: SELECT * FROM users WHERE email = 'test@example.com'; DROP TABLE users; --';
 ```
 
@@ -660,31 +1544,65 @@ stmt.setString(1, userEmail);
 ResultSet rs = stmt.executeQuery();
 ```
 
-## Interjúkérdések
+## Interjúkérdések és válaszok
 
-- **Mi a különbség az INNER és LEFT JOIN között?** — *INNER JOIN csak egyező rekordokat ad vissza mindkét táblából, LEFT JOIN minden rekordot a bal oldali táblából plus egyezőket a jobb oldaliból.*
+<div class="concept-section interview-pitfalls" data-filter="junior medior">
 
-- **Mi az ACID?** — *Atomicity (atomosság), Consistency (konzisztencia), Isolation (elkülönítés), Durability (tartósság) - tranzakciós tulajdonságok.*
+<details>
+<summary>💼 <strong>Gyakori interjúkérdések - Junior szint</strong></summary>
 
-- **Hogyan optimalizálnál egy lassú query-t?** — *EXPLAIN ANALYZE használata, megfelelő indexek, WHERE feltételek optimalizálása, JOIN sorrendek.*
+<div>
 
-- **Mi a különbség a clustered és non-clustered index között?** — *Clustered index meghatározza a tábla fizikai sorrendjét (általában PK), non-clustered külön struktúra.*
+**Q: Mi a különbség az INNER és LEFT JOIN között?**
+> INNER JOIN csak egyező rekordokat ad vissza mindkét táblából, LEFT JOIN minden rekordot a bal oldali táblából plus egyezőket a jobb oldaliból.
 
-- **Hogyan kezelnéd a deadlock-ot?** — *Timeout beállítás, konzisztens lock sorrend, rövidebb tranzakciók, retry mechanizmus.*
+**Q: Mi az ACID?**
+> Atomicity (atomosság), Consistency (konzisztencia), Isolation (elkülönítés), Durability (tartósság) - tranzakciós tulajdonságok.
 
-- **Mi a normalizáció célja?** — *Redundancia csökkentése, update anomáliák eliminálása, adatintegritás javítása.*
+**Q: Hogyan optimalizálnál egy lassú query-t?**
+> EXPLAIN ANALYZE használata, megfelelő indexek, WHERE feltételek optimalizálása, JOIN sorrendek.
 
-- **Mikor használnál denormalizációt?** — *Read-heavy workload, performance kritikus alkalmazások, data warehouse scenarios.*
+**Q: Mi a normalizáció célja?**
+> Redundancia csökkentése, update anomáliák eliminálása, adatintegritás javítása.
 
-- **Mi az ablakfüggvény (window function)?** — *Aggregációs számítások sorok csoportjain anélkül, hogy GROUP BY-t használnánk.*
+**Q: Hogyan implementálnál pagination-t?**
+> LIMIT és OFFSET, vagy cursor-based pagination nagy dataset-ekhez.
 
-- **Hogyan működik a tranzakciós izolációs szintek?** — *READ UNCOMMITTED < READ COMMITTED < REPEATABLE READ < SERIALIZABLE - növekvő konzisztencia, csökkenő concurrency.*
+</div>
 
-- **Mi a különbség az EXISTS és IN között?** — *EXISTS korrelált subquery, gyakran gyorsabb; IN érték lista vagy subquery, problémás NULL értékekkel.*
+</details>
 
-- **Hogyan implementálnál pagination-t?** — *LIMIT és OFFSET, vagy cursor-based pagination nagy dataset-ekhez.*
+<details>
+<summary>💼 <strong>Haladó interjúkérdések - Medior+ szint</strong></summary>
 
-- **Mi a stored procedure előnyei és hátrányai?** — *Előnyök: teljesítmény, biztonság, központosított logika. Hátrányok: vendor lock-in, nehéz verziókezelés, limited debugging.*
+<div>
+
+**Q: Mi a különbség a clustered és non-clustered index között?**
+> Clustered index meghatározza a tábla fizikai sorrendjét (általában PK), non-clustered külön struktúra.
+
+**Q: Hogyan kezelnéd a deadlock-ot?**
+> Timeout beállítás, konzisztens lock sorrend, rövidebb tranzakciók, retry mechanizmus.
+
+**Q: Mikor használnál denormalizációt?**
+> Read-heavy workload, performance kritikus alkalmazások, data warehouse scenarios.
+
+**Q: Mi az ablakfüggvény (window function)?**
+> Aggregációs számítások sorok csoportjain anélkül, hogy GROUP BY-t használnánk.
+
+**Q: Hogyan működik a tranzakciós izolációs szintek?**
+> READ UNCOMMITTED < READ COMMITTED < REPEATABLE READ < SERIALIZABLE - növekvő konzisztencia, csökkenő concurrency.
+
+**Q: Mi a különbség az EXISTS és IN között?**
+> EXISTS korrelált subquery, gyakran gyorsabb; IN érték lista vagy subquery, problémás NULL értékekkel.
+
+**Q: Mi a stored procedure előnyei és hátrányai?**
+> Előnyök: teljesítmény, biztonság, központosított logika. Hátrányok: vendor lock-in, nehéz verziókezelés, limited debugging.
+
+</div>
+
+</details>
+
+</div>
 
 ## Gyakorlati feladat
 
@@ -712,6 +1630,1945 @@ Követelmények:
 - [Spring Framework](/theory/spring) - Spring Data JPA és tranzakciókezelés
 - [Szoftver Architektúra](/theory/arch) - Database design patterns és scaling
 - [Tesztelés](/theory/testing) - Database testing és TestContainers
+
+### Primary Key vs Foreign Key {#primary-key-vs-foreign-key}
+
+<div class="concept-section mental-model" data-filter="constraints junior">
+
+🧭 **Így gondolj rá**  
+*A Primary Key olyan, mint a személyi igazolványszám: egyedileg azonosít minden rekordot. A Foreign Key pedig mint egy címjegyzék bejegyzés: mutatja, hogy ki kivel van kapcsolatban.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="constraints junior">
+
+💡 **Miért számít?**
+- **Adatintegritás**: biztosítja hogy minden rekord egyedi és az összekapcsolások valósak
+- **Referenciális integritás**: nem lehet olyan kapcsolatot létrehozni, ami nem létező rekordra mutat
+- **Query optimization**: automatikus indexek javítják a teljesítményt
+- **Cascade operations**: kapcsolt rekordok automatikus kezelése
+
+</div>
+
+<div class="runnable-model" data-filter="constraints junior">
+
+**Runnable mental model**
+```sql
+-- Primary Key - egyedi azonosító
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,              -- Auto-increment primary key
+    email VARCHAR(255) UNIQUE NOT NULL, -- Egyedi, de nem primary
+    name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Foreign Key - kapcsolat másik táblához
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    order_date TIMESTAMP DEFAULT NOW(),
+    total_amount DECIMAL(12,2),
+    FOREIGN KEY (customer_id) REFERENCES users(id)
+        ON DELETE CASCADE              -- User törléskor rendelések is törlődnek
+        ON UPDATE CASCADE              -- User ID frissítéskor propagálás
+);
+
+-- Self-referencing Foreign Key - hierarchikus struktúra
+CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    manager_id INT,
+    FOREIGN KEY (manager_id) REFERENCES employees(id)
+        ON DELETE SET NULL
+);
+```
+*Figyeld meg: CASCADE, SET NULL, RESTRICT opciók különböző viselkedést eredményeznek.*
+
+</div>
+
+<div class="concept-section myths" data-filter="constraints">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Primary key mindig AUTO_INCREMENT." → Nem, lehet UUID, composite key, vagy manuálisan megadott
+- „Foreign key mindig kötelező." → Lehet NULL is, ha az ON DELETE SET NULL be van állítva
+- „Egy táblában csak egy primary key lehet." → Igaz, de lehet composite (több oszlopból álló)
+
+</div>
+
+</details>
+
+</div>
+
+### Unique és Check Constraint {#unique-check-constraint}
+
+<div class="concept-section mental-model" data-filter="constraints junior">
+
+🧭 **Így gondolj rá**  
+*A Unique constraint olyan, mint egy névjegyzék: nem lehet két ugyanolyan név. A Check constraint pedig mint egy kapus: csak megfelelő feltételekkel rendelkező adatok léphetnek be.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="constraints junior">
+
+💡 **Miért számít?**
+- **Business rules enforcement**: üzleti szabályok betartatása adatbázis szinten
+- **Data quality**: rossz adatok megelőzése, nem csak az alkalmazásban
+- **Performance**: unique constraint automatikus index létrehozás
+- **Error prevention**: early feedback hibás adatoknál
+
+</div>
+
+<div class="runnable-model" data-filter="constraints junior">
+
+**Runnable mental model**
+```sql
+-- Check constraints - üzleti szabályok
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    discount_percent INT DEFAULT 0,
+    stock_quantity INT NOT NULL DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'active',
+    
+    -- Check constraints
+    CONSTRAINT price_positive CHECK (price > 0),
+    CONSTRAINT discount_valid CHECK (discount_percent BETWEEN 0 AND 100),
+    CONSTRAINT stock_non_negative CHECK (stock_quantity >= 0),
+    CONSTRAINT status_valid CHECK (status IN ('active', 'inactive', 'discontinued'))
+);
+
+-- Composite unique constraint
+CREATE TABLE user_roles (
+    user_id INT,
+    role_id INT,
+    assigned_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, role_id),               -- Egy user-nek egy role csak egyszer
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+```
+*Figyeld meg: check constraintek komplex üzleti logikát is tartalmazhatnak.*
+
+</div>
+
+### NULL Kezelés {#null-kezeles}
+
+<div class="concept-section mental-model" data-filter="null-handling junior">
+
+🧭 **Így gondolj rá**  
+*A NULL olyan, mint egy üres doboz: nem tudjuk mi van benne (mert semmi), de a doboz maga létezik. Nem egyenlő semmivel, még egy másik üres dobozzal sem.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="null-handling junior">
+
+💡 **Miért számít?**
+- **Three-valued logic**: TRUE, FALSE, NULL - megváltoztatja a logikai műveleteket
+- **Aggregation impact**: NULL értékek kiesnek a COUNT, SUM, AVG számításokból
+- **Comparison pitfalls**: NULL = NULL eredménye NULL, nem TRUE
+- **Business logic**: üres vs ismeretlen vs nem alkalmazható különbsége
+
+</div>
+
+<div class="runnable-model" data-filter="null-handling junior">
+
+**Runnable mental model**
+```sql
+-- NULL ellenőrzés - IS NULL és IS NOT NULL
+SELECT id, name, email, phone
+FROM users
+WHERE phone IS NULL;           -- Helyes NULL ellenőrzés
+
+-- COALESCE - első nem-NULL érték visszaadása
+SELECT 
+    id,
+    name,
+    COALESCE(phone, email, 'No contact info') as primary_contact
+FROM users;
+
+-- NULLIF - érték NULL-lá alakítása bizonyos feltételnél
+SELECT 
+    id,
+    name,
+    NULLIF(phone, '') as clean_phone,           -- Üres string → NULL
+    NULLIF(discount_percent, -1) as active_discount  -- -1 → NULL
+FROM users;
+
+-- NULL-ok aggregációban
+SELECT 
+    COUNT(*) as total_records,                   -- Minden rekord
+    COUNT(phone) as records_with_phone,          -- NULL kiesik
+    AVG(age) as avg_age                          -- NULL kiesik az átlagból
+FROM users;
+```
+*Figyeld meg: NULL != NULL, de IS NULL és IS NOT NULL használata proper NULL ellenőrzéshez.*
+
+</div>
+
+<div class="concept-section myths" data-filter="null-handling">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „NULL ugyanaz mint üres string." → Nem, NULL ismeretlen érték, üres string konkrét érték
+- „NULL = NULL TRUE eredményt ad." → Nem, NULL = NULL eredménye NULL (UNKNOWN)
+- „COUNT(*) kihagyja a NULL-okat." → COUNT(*) minden sort számol, COUNT(column) hagyja ki a NULL-okat
+
+</div>
+
+</details>
+
+</div>
+
+### CTE (Common Table Expressions) {#cte}
+
+<div class="concept-section mental-model" data-filter="advanced-queries medior">
+
+🧭 **Így gondolj rá**  
+*A CTE olyan, mint egy ideiglenes munkalap: komplex számításokat részletekre bontva, lépésről lépésre építed fel a végeredményt.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="advanced-queries medior">
+
+💡 **Miért számít?**
+- **Query readability**: komplex lekérdezések strukturált, olvasható részekre bontása
+- **Code reuse**: ugyanazt a CTE-t többször is felhasználhatod egy query-ben
+- **Recursive queries**: hierarchikus adatok (fa struktúrák) kezelése
+- **Performance**: néha jobb mint subquery-k vagy temp table-ök
+
+</div>
+
+<div class="runnable-model" data-filter="advanced-queries medior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű CTE - sales summary
+WITH monthly_sales AS (
+    SELECT 
+        DATE_TRUNC('month', order_date) as month,
+        SUM(total_amount) as monthly_revenue,
+        COUNT(*) as order_count
+    FROM orders
+    WHERE order_date >= '2024-01-01'
+    GROUP BY DATE_TRUNC('month', order_date)
+)
+SELECT 
+    month,
+    monthly_revenue,
+    order_count,
+    LAG(monthly_revenue) OVER (ORDER BY month) as prev_month_revenue,
+    monthly_revenue - LAG(monthly_revenue) OVER (ORDER BY month) as revenue_growth
+FROM monthly_sales
+ORDER BY month;
+
+-- Multiple CTE-k - complex analysis
+WITH customer_stats AS (
+    SELECT 
+        customer_id,
+        COUNT(*) as order_count,
+        SUM(total_amount) as total_spent,
+        AVG(total_amount) as avg_order_value,
+        MAX(order_date) as last_order_date
+    FROM orders
+    GROUP BY customer_id
+),
+customer_segments AS (
+    SELECT 
+        customer_id,
+        order_count,
+        total_spent,
+        CASE 
+            WHEN total_spent >= 5000 THEN 'VIP'
+            WHEN total_spent >= 1000 THEN 'Premium'
+            WHEN total_spent >= 100 THEN 'Regular'
+            ELSE 'New'
+        END as segment
+    FROM customer_stats
+)
+SELECT 
+    u.name,
+    u.email,
+    cs.order_count,
+    cs.total_spent,
+    seg.segment,
+    CASE 
+        WHEN cs.last_order_date < CURRENT_DATE - INTERVAL '90 days' THEN 'Inactive'
+        ELSE 'Active'
+    END as activity_status
+FROM users u
+JOIN customer_stats cs ON u.id = cs.customer_id
+JOIN customer_segments seg ON u.id = seg.customer_id;
+
+-- Recursive CTE - hierarchikus adatok
+WITH RECURSIVE employee_hierarchy AS (
+    -- Base case: top-level managers
+    SELECT 
+        id,
+        name,
+        manager_id,
+        0 as level,
+        name as path
+    FROM employees
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    -- Recursive case: subordinates
+    SELECT 
+        e.id,
+        e.name,
+        e.manager_id,
+        eh.level + 1,
+        eh.path || ' -> ' || e.name
+    FROM employees e
+    JOIN employee_hierarchy eh ON e.manager_id = eh.id
+)
+SELECT 
+    REPEAT('  ', level) || name as indented_name,
+    level,
+    path as hierarchy_path
+FROM employee_hierarchy
+ORDER BY path;
+
+-- CTE with window functions
+WITH product_sales AS (
+    SELECT 
+        p.category_id,
+        p.name as product_name,
+        SUM(oi.quantity * oi.unit_price) as total_revenue
+    FROM products p
+    JOIN order_items oi ON p.id = oi.product_id
+    JOIN orders o ON oi.order_id = o.id
+    WHERE o.order_date >= '2024-01-01'
+    GROUP BY p.category_id, p.name
+),
+ranked_products AS (
+    SELECT 
+        category_id,
+        product_name,
+        total_revenue,
+        ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY total_revenue DESC) as rank_in_category,
+        PERCENT_RANK() OVER (ORDER BY total_revenue DESC) as revenue_percentile
+    FROM product_sales
+)
+SELECT 
+    c.name as category_name,
+    rp.product_name,
+    rp.total_revenue,
+    rp.rank_in_category,
+    ROUND(rp.revenue_percentile * 100, 2) as revenue_percentile
+FROM ranked_products rp
+JOIN categories c ON rp.category_id = c.id
+WHERE rp.rank_in_category <= 3  -- Top 3 per category
+ORDER BY c.name, rp.rank_in_category;
+```
+*Figyeld meg: CTE-k olvashatóvá és karbantarthatóvá teszik a komplex query-ket.*
+
+</div>
+
+### Window Functions {#window-functions}
+
+<div class="concept-section mental-model" data-filter="analytics medior">
+
+🧭 **Így gondolj rá**  
+*A Window function olyan, mint amikor egy mozgó ablakból nézel ki: minden sornál más-más "kilátásod" van a többi sorra, de az eredeti sorok megmaradnak.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="analytics medior">
+
+💡 **Miért számít?**
+- **Analytical queries**: ranking, running totals, percentiles számítása
+- **Row preservation**: GROUP BY-val ellentétben megtartja az eredeti sorokat
+- **Performance**: egy lépésben végzi el a komplex analitikai számításokat
+- **Business intelligence**: dashboard-ok és riportok alapja
+
+</div>
+
+<div class="runnable-model" data-filter="analytics medior">
+
+**Runnable mental model**
+```sql
+-- ROW_NUMBER, RANK, DENSE_RANK
+SELECT 
+    name,
+    department,
+    salary,
+    ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC) as row_num,
+    RANK() OVER (PARTITION BY department ORDER BY salary DESC) as rank,
+    DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) as dense_rank,
+    PERCENT_RANK() OVER (PARTITION BY department ORDER BY salary DESC) as percent_rank
+FROM employees;
+
+-- LAG és LEAD - előző/következő értékek
+SELECT 
+    order_date,
+    total_amount,
+    LAG(total_amount) OVER (ORDER BY order_date) as prev_order_amount,
+    LEAD(total_amount) OVER (ORDER BY order_date) as next_order_amount,
+    total_amount - LAG(total_amount) OVER (ORDER BY order_date) as amount_change
+FROM orders
+ORDER BY order_date;
+
+-- Running totals és moving averages
+SELECT 
+    order_date,
+    total_amount,
+    SUM(total_amount) OVER (ORDER BY order_date ROWS UNBOUNDED PRECEDING) as running_total,
+    AVG(total_amount) OVER (ORDER BY order_date ROWS 6 PRECEDING) as moving_avg_7days,
+    COUNT(*) OVER (ORDER BY order_date ROWS UNBOUNDED PRECEDING) as cumulative_order_count
+FROM orders
+ORDER BY order_date;
+
+-- NTILE - percentile buckets
+SELECT 
+    customer_id,
+    total_spent,
+    NTILE(4) OVER (ORDER BY total_spent DESC) as quartile,
+    CASE NTILE(4) OVER (ORDER BY total_spent DESC)
+        WHEN 1 THEN 'Top 25%'
+        WHEN 2 THEN 'Second 25%'
+        WHEN 3 THEN 'Third 25%'
+        WHEN 4 THEN 'Bottom 25%'
+    END as customer_segment
+FROM (
+    SELECT customer_id, SUM(total_amount) as total_spent
+    FROM orders
+    GROUP BY customer_id
+) customer_totals;
+
+-- Complex window functions with frames
+SELECT 
+    product_id,
+    order_date,
+    quantity,
+    -- Running average of last 30 days
+    AVG(quantity) OVER (
+        PARTITION BY product_id 
+        ORDER BY order_date 
+        RANGE BETWEEN INTERVAL '30 days' PRECEDING AND CURRENT ROW
+    ) as avg_quantity_30d,
+    -- Peak quantity in last 90 days
+    MAX(quantity) OVER (
+        PARTITION BY product_id 
+        ORDER BY order_date 
+        RANGE BETWEEN INTERVAL '90 days' PRECEDING AND CURRENT ROW
+    ) as peak_quantity_90d
+FROM order_items oi
+JOIN orders o ON oi.order_id = o.id
+ORDER BY product_id, order_date;
+```
+*Figyeld meg: window functions komplex analitikai számításokat tesznek lehetővé egyszerű SQL-ben.*
+
+</div>
+
+### Views (Nézetek) {#views}
+
+<div class="concept-section mental-model" data-filter="views junior">
+
+🧭 **Így gondolj rá**  
+*A View olyan, mint egy ablak: ugyanazt az adatot látod, de egy másik perspektívából, és nem foglal el extra helyet.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="views junior">
+
+💡 **Miért számít?**
+- **Abstraction layer**: komplex query-k elrejtése egyszerű interface mögött
+- **Security**: csak szükséges oszlopok és sorok megjelenítése
+- **Code reuse**: gyakori lekérdezések központosítása
+- **Backward compatibility**: schema változások elleni védelem
+
+</div>
+
+<div class="runnable-model" data-filter="views junior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű view - oszlopok szűrése
+CREATE VIEW user_public_info AS
+SELECT 
+    id,
+    name,
+    email,
+    created_at,
+    status
+FROM users
+WHERE status = 'active';
+
+-- Komplex view - JOIN-ok és aggregáció
+CREATE VIEW order_summary AS
+SELECT 
+    u.id as customer_id,
+    u.name as customer_name,
+    COUNT(o.id) as total_orders,
+    COALESCE(SUM(o.total_amount), 0) as total_spent,
+    MAX(o.order_date) as last_order_date,
+    CASE 
+        WHEN SUM(o.total_amount) > 1000 THEN 'VIP'
+        WHEN SUM(o.total_amount) > 500 THEN 'Premium'
+        ELSE 'Regular'
+    END as customer_tier
+FROM users u
+LEFT JOIN orders o ON u.id = o.customer_id
+WHERE u.status = 'active'
+GROUP BY u.id, u.name;
+
+-- Business logic view
+CREATE VIEW product_availability AS
+SELECT 
+    p.id,
+    p.name,
+    p.price,
+    p.stock_quantity,
+    CASE 
+        WHEN p.stock_quantity = 0 THEN 'Out of Stock'
+        WHEN p.stock_quantity < 10 THEN 'Low Stock'
+        ELSE 'In Stock'
+    END as availability_status,
+    CASE 
+        WHEN p.status = 'active' AND p.stock_quantity > 0 THEN TRUE
+        ELSE FALSE
+    END as can_order
+FROM products p;
+
+-- View használata
+SELECT * FROM order_summary WHERE customer_tier = 'VIP';
+```
+*Figyeld meg: view-k valós időben adják vissza az aktuális adatokat, nem cachelt verziót.*
+
+</div>
+
+<div class="concept-section myths" data-filter="views">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „View-k lassúak." → Egyszerű view-k gyorsak, de komplex JOIN-ok és aggregációk lassíthatnak
+- „View-k tárolják az adatokat." → Nem, csak a query definíciót tárolják (kivéve materialized view)
+- „View-ken keresztül nem lehet írni." → Egyszerű view-k írhatók, komplexek általában nem
+
+</div>
+
+</details>
+
+</div>
+
+### Stored Procedures {#stored-procedures}
+
+<div class="concept-section mental-model" data-filter="procedures junior">
+
+🧭 **Így gondolj rá**  
+*A Stored Procedure olyan, mint egy recept a konyhában: összetett lépések sorozata, ami az adatbázisban tárolódik és bármikor előhívható.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="procedures junior">
+
+💡 **Miért számít?**
+- **Performance**: előre lefordított kód, gyorsabb végrehajtás
+- **Security**: SQL injection protection, központosított logika
+- **Business logic**: komplex üzleti szabályok az adatbázisban
+- **Transaction management**: atomikus műveletek guarantee
+
+</div>
+
+<div class="runnable-model" data-filter="procedures junior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű stored procedure - felhasználó létrehozás
+CREATE OR REPLACE FUNCTION create_user(
+    p_name VARCHAR(100),
+    p_email VARCHAR(255),
+    p_initial_credit DECIMAL(10,2) DEFAULT 10.00
+) RETURNS INT AS $$
+DECLARE
+    user_id INT;
+BEGIN
+    -- Input validáció
+    IF p_email !~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' THEN
+        RAISE EXCEPTION 'Invalid email format: %', p_email;
+    END IF;
+    
+    -- Felhasználó létrehozás
+    INSERT INTO users (name, email, credit_balance, status)
+    VALUES (p_name, p_email, p_initial_credit, 'active')
+    RETURNING id INTO user_id;
+    
+    -- Audit log
+    INSERT INTO user_audit (user_id, action, created_at)
+    VALUES (user_id, 'USER_CREATED', NOW());
+    
+    RETURN user_id;
+EXCEPTION
+    WHEN unique_violation THEN
+        RAISE EXCEPTION 'Email already exists: %', p_email;
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'User creation failed: %', SQLERRM;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Komplex procedure - rendelés feldolgozás
+CREATE OR REPLACE FUNCTION process_order(
+    p_customer_id INT,
+    p_items JSONB
+) RETURNS TABLE(order_id INT, total_amount DECIMAL, message TEXT) AS $$
+DECLARE
+    v_order_id INT;
+    v_total_amount DECIMAL(12,2) := 0;
+    v_item JSONB;
+BEGIN
+    -- Rendelés létrehozás
+    INSERT INTO orders (customer_id, order_date, status)
+    VALUES (p_customer_id, NOW(), 'pending')
+    RETURNING id INTO v_order_id;
+    
+    -- Minden tétel feldolgozása
+    FOR v_item IN SELECT * FROM jsonb_array_elements(p_items)
+    LOOP
+        -- Order item hozzáadás és összeg számítás
+        INSERT INTO order_items (order_id, product_id, quantity, unit_price)
+        SELECT v_order_id, (v_item->>'product_id')::INT, 
+               (v_item->>'quantity')::INT, p.price
+        FROM products p 
+        WHERE p.id = (v_item->>'product_id')::INT;
+        
+        v_total_amount := v_total_amount + 
+            ((v_item->>'quantity')::INT * 
+             (SELECT price FROM products WHERE id = (v_item->>'product_id')::INT));
+    END LOOP;
+    
+    -- Rendelés finalizálás
+    UPDATE orders 
+    SET total_amount = v_total_amount, status = 'confirmed'
+    WHERE id = v_order_id;
+    
+    RETURN QUERY SELECT v_order_id, v_total_amount, 'Order processed successfully'::TEXT;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Procedure használat
+SELECT create_user('John Doe', 'john@example.com', 25.00);
+SELECT * FROM process_order(1, '[{"product_id": 1, "quantity": 2}]'::jsonb);
+```
+*Figyeld meg: exception handling és transaction management beépítve a procedure-ökbe.*
+
+</div>
+
+<div class="concept-section interview-pitfalls" data-filter="procedures">
+
+<details>
+<summary>💼 <strong>Interjú buktatók</strong></summary>
+
+<div>
+
+- **"Mikor használnál stored procedure-t?"** → Komplex business logic, batch processing, security
+- **"Mi a stored procedure hátránya?"** → Vendor lock-in, nehéz debugging, változtatás csak DB admin-nal
+- **"Hogyan kezelnél hibákat stored procedure-ben?"** → Exception handling, ROLLBACK, logging
+
+</div>
+
+</details>
+
+</div>
+
+### Functions {#functions}
+
+<div class="concept-section mental-model" data-filter="functions junior">
+
+🧭 **Így gondolj rá**  
+*A Function olyan, mint egy számológép: adatsz neki input értékeket, és visszaad egy eredményt. Scalar function egy számot ad vissza, table function egy egész táblázatot.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="functions junior">
+
+💡 **Miért számít?**
+- **Code reuse**: gyakori számítások centralizálása
+- **Complex logic**: nehéz üzleti szabályok beágyazása query-kbe
+- **Performance**: optimalizált számítások az adatbázis szintjén
+- **Consistency**: ugyanaz a logika minden alkalmazásban
+
+</div>
+
+<div class="runnable-model" data-filter="functions junior">
+
+**Runnable mental model**
+```sql
+-- Scalar Function - egyetlen érték visszaadása
+CREATE OR REPLACE FUNCTION calculate_discount(
+    original_price DECIMAL(10,2),
+    discount_percent INT
+) RETURNS DECIMAL(10,2) AS $$
+BEGIN
+    IF discount_percent < 0 OR discount_percent > 100 THEN
+        RAISE EXCEPTION 'Discount percent must be between 0 and 100';
+    END IF;
+    
+    RETURN original_price * (100 - discount_percent) / 100;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Business logic function
+CREATE OR REPLACE FUNCTION get_customer_tier(customer_id INT) 
+RETURNS VARCHAR(20) AS $$
+DECLARE
+    total_spent DECIMAL(12,2);
+    order_count INT;
+BEGIN
+    SELECT 
+        COALESCE(SUM(total_amount), 0),
+        COUNT(*)
+    INTO total_spent, order_count
+    FROM orders 
+    WHERE customer_id = get_customer_tier.customer_id 
+    AND status IN ('confirmed', 'delivered');
+    
+    IF total_spent >= 5000 AND order_count >= 20 THEN
+        RETURN 'PLATINUM';
+    ELSIF total_spent >= 2000 AND order_count >= 10 THEN
+        RETURN 'GOLD';
+    ELSIF total_spent >= 500 AND order_count >= 5 THEN
+        RETURN 'SILVER';
+    ELSE
+        RETURN 'BRONZE';
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Table-Valued Function - táblázat visszaadása
+CREATE OR REPLACE FUNCTION get_customer_orders(
+    p_customer_id INT,
+    p_limit INT DEFAULT 10
+) RETURNS TABLE(
+    order_id INT,
+    order_date DATE,
+    total_amount DECIMAL(12,2),
+    status VARCHAR(20),
+    item_count BIGINT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        o.id,
+        o.order_date::DATE,
+        o.total_amount,
+        o.status,
+        COUNT(oi.product_id)
+    FROM orders o
+    LEFT JOIN order_items oi ON o.id = oi.order_id
+    WHERE o.customer_id = p_customer_id
+    GROUP BY o.id, o.order_date, o.total_amount, o.status
+    ORDER BY o.order_date DESC
+    LIMIT p_limit;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function használat query-kben
+SELECT 
+    name,
+    get_customer_tier(id) as tier,
+    calculate_discount(credit_balance, 10) as discounted_credit
+FROM users 
+WHERE get_customer_tier(id) IN ('GOLD', 'PLATINUM');
+
+-- Table function használat
+SELECT * FROM get_customer_orders(1, 5);
+```
+*Figyeld meg: table-valued function-ök összetett adatokat adnak vissza structured formában.*
+
+</div>
+
+<div class="concept-section myths" data-filter="functions">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Function-ök mindig gyorsak." → Komplex function-ök lassíthatják a query-ket
+- „Function-ben nem lehet módosítani adatokat." → Stored function-ök tudnak INSERT/UPDATE/DELETE-et
+- „Function ugyanaz mint procedure." → Function return értékkel rendelkezik, procedure nem feltétlenül
+
+</div>
+
+</details>
+
+</div>
+
+### Sequences és Auto Increment {#sequences-auto-increment}
+
+<div class="concept-section mental-model" data-filter="sequences junior">
+
+🧭 **Így gondolj rá**  
+*A Sequence olyan, mint egy automatikus sorszámozó: minden alkalommal, amikor kérsz tőle egy számot, a következőt adja vissza, és megjegyzi, hogy hol tart.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="sequences junior">
+
+💡 **Miért számít?**
+- **Unique identifiers**: automatikus egyedi azonosítók generálása
+- **Concurrent safety**: többfelhasználós környezetben biztonságos
+- **Custom numbering**: összetett sorszámozási sémák (pl. INV-001, ORD-2024-0001)
+- **Performance**: gyors ID generálás lock-ok nélkül
+
+</div>
+
+<div class="runnable-model" data-filter="sequences junior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű SERIAL (auto-increment)
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,           -- Automatikus 1, 2, 3, 4...
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Custom sequence parameters
+CREATE SEQUENCE order_number_seq
+    START WITH 1000              -- Kezdőérték
+    INCREMENT BY 1               -- Lépésköz
+    MINVALUE 1000               -- Minimum érték
+    MAXVALUE 999999             -- Maximum érték
+    CACHE 50                    -- Cache-elt értékek száma
+    CYCLE;                      -- Max után újrakezdés
+
+-- Custom numbering schemes
+CREATE SEQUENCE invoice_seq START 100000 INCREMENT 1;
+
+CREATE TABLE invoices (
+    id SERIAL PRIMARY KEY,
+    invoice_number VARCHAR(20) DEFAULT ('INV-' || TO_CHAR(nextval('invoice_seq'), 'FM000000')),
+    customer_id INT NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    issue_date DATE DEFAULT CURRENT_DATE
+);
+
+-- UUID alternative to sequences
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE documents (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,  -- Random UUID
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Sequence operations
+SELECT nextval('users_id_seq');           -- Next value
+SELECT currval('users_id_seq');           -- Current value
+SELECT setval('users_id_seq', 1000);      -- Set sequence value
+
+-- Reset sequence to table's max value
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
+```
+*Figyeld meg: sequence-ek transaction-safe és concurrent access esetén is unique értékeket generálnak.*
+
+</div>
+
+<div class="concept-section myths" data-filter="sequences">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Sequence értékek mindig egymást követők." → Rollback vagy concurrent access miatt lehetnek hézagok
+- „SERIAL automatikusan primary key." → SERIAL csak auto-increment, PRIMARY KEY külön kell
+- „Sequence restart automatikus évente." → Manuálisan kell kezelni az év alapú újrakezdést
+
+</div>
+
+</details>
+
+</div>
+
+### Default Értékek {#default-ertekek}
+
+<div class="concept-section mental-model" data-filter="schema junior">
+
+🧭 **Így gondolj rá**  
+*A Default érték olyan, mint az alapbeállítások egy új telefonnál: ha nem állítasz be semmit, valami ésszerű érték lesz beállítva automatikusan.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="schema junior">
+
+💡 **Miért számít?**
+- **Data consistency**: konzisztens alapértékek az egész alkalmazásban
+- **User experience**: kevesebb kötelező mező, gyorsabb adatbevitel
+- **Application logic**: egyszerűbb kód, mert nem kell minden mezőt kezelni
+- **Business rules**: automatikus értékek üzleti szabályok szerint
+
+</div>
+
+<div class="runnable-model" data-filter="schema junior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű default értékek
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    status VARCHAR(20) DEFAULT 'active',                -- String default
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,     -- Timestamp default
+    is_verified BOOLEAN DEFAULT FALSE,                  -- Boolean default
+    login_count INT DEFAULT 0,                          -- Integer default
+    credit_balance DECIMAL(10,2) DEFAULT 0.00           -- Decimal default
+);
+
+-- Function-based defaults
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    order_number VARCHAR(20) DEFAULT ('ORD-' || nextval('order_number_seq')),
+    customer_id INT NOT NULL,
+    order_date DATE DEFAULT CURRENT_DATE,
+    ship_date DATE DEFAULT (CURRENT_DATE + INTERVAL '3 days'),      -- Calculated default
+    total_amount DECIMAL(12,2) DEFAULT 0.00,
+    currency VARCHAR(3) DEFAULT 'USD',
+    status VARCHAR(20) DEFAULT 'pending',
+    
+    FOREIGN KEY (customer_id) REFERENCES users(id)
+);
+
+-- JSON default values
+CREATE TABLE user_preferences (
+    user_id INT PRIMARY KEY,
+    settings JSONB DEFAULT '{"theme": "light", "language": "en", "notifications": true}'::jsonb,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Testing defaults
+INSERT INTO users (name, email) 
+VALUES ('John Doe', 'john@example.com');
+-- status='active', created_at=now(), is_verified=false automatikusan
+
+-- Default értékek módosítása
+ALTER TABLE users ALTER COLUMN status SET DEFAULT 'pending';
+ALTER TABLE users ALTER COLUMN credit_balance DROP DEFAULT;
+```
+*Figyeld meg: funkciók, szekvenciák és számított értékek is használhatók default értékeknek.*
+
+</div>
+
+### Aggregáció Advanced {#aggregacio-advanced}
+
+<div class="concept-section mental-model" data-filter="aggregation medior">
+
+🧭 **Így gondolj rá**  
+*Az advanced aggregáció olyan, mint egy statisztikai elemzés: nem csak összegzed az adatokat, hanem csoportosítod, szűröd és feltételes összesítéseket készítesz.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="aggregation medior">
+
+💡 **Miért számít?**
+- **Business intelligence**: komplex riportok és dashboardok alapja
+- **Data analysis**: trend analysis, cohort analysis, customer segmentation
+- **Performance**: egy query-ben végzi el a komplex számításokat
+- **Conditional aggregation**: különböző feltételekkel egy időben összesít
+
+</div>
+
+<div class="runnable-model" data-filter="aggregation medior">
+
+**Runnable mental model**
+```sql
+-- GROUP BY ROLLUP - részösszegek hierarchikusan
+SELECT 
+    COALESCE(category, 'TOTAL') as category,
+    COALESCE(status, 'ALL_STATUS') as status,
+    COUNT(*) as product_count,
+    AVG(price) as avg_price,
+    SUM(price * stock_quantity) as total_inventory_value
+FROM products
+GROUP BY ROLLUP(category, status)
+ORDER BY category NULLS LAST, status NULLS LAST;
+
+-- GROUP BY CUBE - minden kombináció
+SELECT 
+    COALESCE(EXTRACT(YEAR FROM order_date)::TEXT, 'ALL_YEARS') as year,
+    COALESCE(EXTRACT(MONTH FROM order_date)::TEXT, 'ALL_MONTHS') as month,
+    COALESCE(status, 'ALL_STATUS') as status,
+    COUNT(*) as order_count,
+    SUM(total_amount) as revenue
+FROM orders
+WHERE order_date >= '2023-01-01'
+GROUP BY CUBE(EXTRACT(YEAR FROM order_date), EXTRACT(MONTH FROM order_date), status)
+ORDER BY year NULLS LAST, month NULLS LAST, status NULLS LAST;
+
+-- HAVING with complex conditions
+SELECT 
+    customer_id,
+    COUNT(*) as order_count,
+    SUM(total_amount) as total_spent,
+    AVG(total_amount) as avg_order_value,
+    MAX(total_amount) as largest_order
+FROM orders
+WHERE order_date >= '2024-01-01'
+GROUP BY customer_id
+HAVING COUNT(*) >= 3                          -- Legalább 3 rendelés
+   AND SUM(total_amount) > 1000               -- Összesen több mint $1000
+   AND AVG(total_amount) > 100                -- Átlag rendelés > $100
+   AND MAX(total_amount) - MIN(total_amount) > 50  -- Rendelések közti variancia
+ORDER BY total_spent DESC;
+
+-- Conditional aggregation - FILTER és CASE
+SELECT 
+    customer_id,
+    COUNT(*) as total_orders,
+    COUNT(*) FILTER (WHERE status = 'completed') as completed_orders,
+    COUNT(*) FILTER (WHERE status = 'cancelled') as cancelled_orders,
+    SUM(total_amount) FILTER (WHERE status = 'completed') as completed_revenue,
+    
+    -- CASE alapú conditional aggregation
+    SUM(CASE WHEN status = 'completed' THEN total_amount ELSE 0 END) as revenue_completed,
+    SUM(CASE WHEN order_date >= CURRENT_DATE - INTERVAL '30 days' THEN total_amount ELSE 0 END) as revenue_last_30_days,
+    
+    -- Percentage calculations
+    ROUND(
+        COUNT(*) FILTER (WHERE status = 'completed') * 100.0 / COUNT(*), 2
+    ) as completion_rate_percent
+FROM orders
+GROUP BY customer_id
+HAVING COUNT(*) >= 5;
+
+-- String aggregation
+SELECT 
+    customer_id,
+    STRING_AGG(DISTINCT status, ', ' ORDER BY status) as all_statuses,
+    STRING_AGG(
+        order_id::TEXT || ':$' || total_amount::TEXT, 
+        ' | ' 
+        ORDER BY order_date DESC
+    ) as order_history,
+    ARRAY_AGG(DISTINCT EXTRACT(MONTH FROM order_date)::INT ORDER BY EXTRACT(MONTH FROM order_date)) as order_months
+FROM orders
+WHERE customer_id IN (1, 2, 3)
+GROUP BY customer_id;
+
+-- Complex business metrics
+WITH monthly_cohorts AS (
+    SELECT 
+        DATE_TRUNC('month', u.created_at) as cohort_month,
+        DATE_TRUNC('month', o.order_date) as order_month,
+        u.id as user_id,
+        o.total_amount
+    FROM users u
+    LEFT JOIN orders o ON u.id = o.customer_id
+    WHERE u.created_at >= '2024-01-01'
+)
+SELECT 
+    cohort_month,
+    order_month,
+    COUNT(DISTINCT user_id) as active_users,
+    SUM(total_amount) as revenue,
+    COUNT(DISTINCT user_id) FILTER (WHERE total_amount > 0) as paying_users,
+    ROUND(AVG(total_amount), 2) as avg_revenue_per_user
+FROM monthly_cohorts
+GROUP BY cohort_month, order_month
+ORDER BY cohort_month, order_month;
+
+-- Window functions with aggregation
+SELECT 
+    category_id,
+    product_name,
+    price,
+    stock_quantity,
+    AVG(price) OVER (PARTITION BY category_id) as category_avg_price,
+    SUM(stock_quantity) OVER (PARTITION BY category_id) as category_total_stock,
+    RANK() OVER (PARTITION BY category_id ORDER BY price DESC) as price_rank_in_category,
+    PERCENT_RANK() OVER (ORDER BY price) as price_percentile_overall
+FROM products
+WHERE status = 'active';
+```
+*Figyeld meg: ROLLUP, CUBE és FILTER lehetővé teszik a multi-dimenziós elemzéseket.*
+
+</div>
+
+### Query Optimization {#query-optimization}
+
+<div class="concept-section mental-model" data-filter="performance medior">
+
+🧭 **Így gondolj rá**  
+*A Query optimization olyan, mint egy autó tuning: megvizsgálod mi lassítja le, és systematikusan javítod a teljesítményt.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="performance medior">
+
+💡 **Miért számít?**
+- **Application performance**: lassú query-k blokkolják az egész alkalmazást
+- **Resource utilization**: CPU, memory, I/O optimalizálás
+- **User experience**: gyors válaszidők jobb UX-et jelentenek
+- **Cost optimization**: kevesebb szerver resource, alacsonyabb cloud költségek
+
+</div>
+
+<div class="runnable-model" data-filter="performance medior">
+
+**Runnable mental model**
+```sql
+-- EXPLAIN ANALYZE - execution plan elemzés
+EXPLAIN (ANALYZE, BUFFERS, VERBOSE)
+SELECT u.name, o.total_amount, p.name as product_name
+FROM users u
+JOIN orders o ON u.id = o.customer_id
+JOIN order_items oi ON o.id = oi.order_id
+JOIN products p ON oi.product_id = p.id
+WHERE o.order_date >= '2024-01-01'
+AND u.status = 'active'
+ORDER BY o.total_amount DESC;
+
+-- Index optimization strategies
+-- 1. Single column indexes
+CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX idx_orders_date ON orders(order_date);
+CREATE INDEX idx_users_status ON users(status);
+
+-- 2. Composite indexes (column order matters!)
+CREATE INDEX idx_orders_date_customer ON orders(order_date, customer_id);
+CREATE INDEX idx_orders_customer_date_amount ON orders(customer_id, order_date, total_amount);
+
+-- 3. Covering indexes (include columns)
+CREATE INDEX idx_orders_covering 
+ON orders(customer_id, order_date) 
+INCLUDE (total_amount, status);
+
+-- 4. Partial indexes - conditional
+CREATE INDEX idx_active_users_email ON users(email) 
+WHERE status = 'active';
+
+CREATE INDEX idx_large_orders ON orders(order_date, customer_id) 
+WHERE total_amount > 1000;
+
+-- 5. Functional indexes
+CREATE INDEX idx_users_lower_email ON users(LOWER(email));
+CREATE INDEX idx_orders_year ON orders(EXTRACT(YEAR FROM order_date));
+
+-- Query rewriting for performance
+-- ❌ SLOW - function on column
+SELECT * FROM orders 
+WHERE EXTRACT(YEAR FROM order_date) = 2024;
+
+-- ✅ FAST - range condition
+SELECT * FROM orders 
+WHERE order_date >= '2024-01-01' 
+AND order_date < '2025-01-01';
+
+-- ❌ SLOW - OR conditions
+SELECT * FROM products 
+WHERE name LIKE '%phone%' OR description LIKE '%phone%';
+
+-- ✅ FAST - separate queries + UNION
+SELECT * FROM products WHERE name LIKE '%phone%'
+UNION
+SELECT * FROM products WHERE description LIKE '%phone%' AND name NOT LIKE '%phone%';
+
+-- ❌ SLOW - correlated subquery
+SELECT u.name, 
+       (SELECT COUNT(*) FROM orders o WHERE o.customer_id = u.id) as order_count
+FROM users u;
+
+-- ✅ FAST - JOIN with aggregation
+SELECT u.name, COALESCE(o.order_count, 0) as order_count
+FROM users u
+LEFT JOIN (
+    SELECT customer_id, COUNT(*) as order_count
+    FROM orders
+    GROUP BY customer_id
+) o ON u.id = o.customer_id;
+
+-- Pagination optimization
+-- ❌ SLOW - OFFSET for large datasets
+SELECT * FROM orders 
+ORDER BY order_date DESC 
+OFFSET 10000 LIMIT 20;
+
+-- ✅ FAST - cursor-based pagination
+SELECT * FROM orders 
+WHERE order_date < '2024-03-15 10:30:00'  -- Last seen timestamp
+ORDER BY order_date DESC 
+LIMIT 20;
+
+-- JOIN optimization
+-- ❌ SLOW - no index on join columns
+SELECT u.name, COUNT(o.id) as order_count
+FROM users u
+LEFT JOIN orders o ON u.email = o.customer_email  -- String join, no index
+GROUP BY u.name;
+
+-- ✅ FAST - indexed foreign key join
+SELECT u.name, COUNT(o.id) as order_count
+FROM users u
+LEFT JOIN orders o ON u.id = o.customer_id  -- Indexed FK join
+GROUP BY u.name;
+
+-- Subquery optimization
+-- ❌ SLOW - EXISTS with complex subquery
+SELECT * FROM products p
+WHERE EXISTS (
+    SELECT 1 FROM order_items oi 
+    JOIN orders o ON oi.order_id = o.id
+    WHERE oi.product_id = p.id 
+    AND o.order_date >= '2024-01-01'
+);
+
+-- ✅ FAST - JOIN with DISTINCT
+SELECT DISTINCT p.*
+FROM products p
+JOIN order_items oi ON p.id = oi.product_id
+JOIN orders o ON oi.order_id = o.id
+WHERE o.order_date >= '2024-01-01';
+
+-- Query hints and configuration
+-- Set work_mem for complex sorts/aggregations
+SET work_mem = '256MB';
+
+-- Analyze query with increased statistics
+ANALYZE products;
+ANALYZE orders;
+
+-- Monitoring slow queries
+-- PostgreSQL: log_min_duration_statement
+-- MySQL: slow_query_log
+
+-- Index usage analysis
+SELECT 
+    schemaname,
+    tablename,
+    indexname,
+    idx_scan as index_scans,
+    idx_tup_read as tuples_read,
+    idx_tup_fetch as tuples_fetched
+FROM pg_stat_user_indexes
+ORDER BY idx_scan DESC;
+
+-- Unused indexes detection
+SELECT 
+    schemaname,
+    tablename,
+    indexname,
+    idx_scan
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0
+AND indexname NOT LIKE '%_pkey';  -- Exclude primary keys
+```
+*Figyeld meg: minden optimalizáció trade-off - index gyorsítja a SELECT-et, de lassítja az INSERT/UPDATE-et.*
+
+</div>
+
+<div class="concept-section interview-pitfalls" data-filter="performance">
+
+<details>
+<summary>💼 <strong>Interjú buktatók</strong></summary>
+
+<div>
+
+- **"Hogyan optimalizálnál egy lassú query-t?"** → EXPLAIN ANALYZE, indexek, query rewrite, statistics update
+- **"Mi a különbség covering index és composite index között?"** → Covering include-olja az oszlopokat, composite a WHERE/ORDER BY-hoz
+- **"Mikor nem érdemes indexet létrehozni?"** → Kis táblák, gyakori INSERT/UPDATE, ritkán használt oszlopok
+
+</div>
+
+</details>
+
+</div>
+
+### Materialized Views {#materialized-views}
+
+<div class="concept-section mental-model" data-filter="performance medior">
+
+🧭 **Így gondolj rá**  
+*A Materialized View olyan, mint egy előre elkészített jelentés: egyszer kiszámítod a komplex adatokat, eltárolod, és utána gyorsan eléred őket.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="performance medior">
+
+💡 **Miért számít?**
+- **Performance boost**: komplex aggregációk előre kiszámítva
+- **Reporting optimization**: dashboard-ok és riportok gyorsítása
+- **Expensive operations**: JOIN-ok és aggregációk cache-elése
+- **Data consistency**: periodikus refresh-sel friss adatok
+
+</div>
+
+<div class="runnable-model" data-filter="performance medior">
+
+**Runnable mental model**
+```sql
+-- Egyszerű materialized view - customer summary
+CREATE MATERIALIZED VIEW customer_summary AS
+SELECT 
+    u.id as customer_id,
+    u.name,
+    u.email,
+    u.created_at as registration_date,
+    COUNT(o.id) as total_orders,
+    COALESCE(SUM(o.total_amount), 0) as total_spent,
+    COALESCE(AVG(o.total_amount), 0) as avg_order_value,
+    MAX(o.order_date) as last_order_date,
+    CASE 
+        WHEN SUM(o.total_amount) >= 5000 THEN 'VIP'
+        WHEN SUM(o.total_amount) >= 1000 THEN 'Premium'
+        WHEN SUM(o.total_amount) >= 100 THEN 'Regular'
+        ELSE 'New'
+    END as customer_tier
+FROM users u
+LEFT JOIN orders o ON u.id = o.customer_id
+WHERE u.status = 'active'
+GROUP BY u.id, u.name, u.email, u.created_at;
+
+-- Index on materialized view for fast access
+CREATE INDEX idx_customer_summary_tier ON customer_summary(customer_tier);
+CREATE INDEX idx_customer_summary_spent ON customer_summary(total_spent DESC);
+
+-- Complex materialized view - sales analytics
+CREATE MATERIALIZED VIEW monthly_sales_analytics AS
+WITH monthly_data AS (
+    SELECT 
+        DATE_TRUNC('month', o.order_date) as month,
+        COUNT(DISTINCT o.id) as orders,
+        COUNT(DISTINCT o.customer_id) as unique_customers,
+        SUM(o.total_amount) as revenue,
+        AVG(o.total_amount) as avg_order_value,
+        SUM(oi.quantity) as items_sold
+    FROM orders o
+    JOIN order_items oi ON o.id = oi.order_id
+    WHERE o.status IN ('confirmed', 'delivered')
+    GROUP BY DATE_TRUNC('month', o.order_date)
+)
+SELECT 
+    month,
+    orders,
+    unique_customers,
+    revenue,
+    avg_order_value,
+    items_sold,
+    LAG(revenue) OVER (ORDER BY month) as prev_month_revenue,
+    revenue - LAG(revenue) OVER (ORDER BY month) as revenue_growth,
+    ROUND(
+        (revenue - LAG(revenue) OVER (ORDER BY month)) / 
+        LAG(revenue) OVER (ORDER BY month) * 100, 2
+    ) as growth_percentage
+FROM monthly_data
+ORDER BY month;
+
+-- Product performance materialized view
+CREATE MATERIALIZED VIEW product_performance AS
+SELECT 
+    p.id as product_id,
+    p.name as product_name,
+    p.category_id,
+    c.name as category_name,
+    p.price,
+    p.stock_quantity,
+    COALESCE(sales.total_sold, 0) as total_units_sold,
+    COALESCE(sales.total_revenue, 0) as total_revenue,
+    COALESCE(sales.avg_sale_price, p.price) as avg_sale_price,
+    COALESCE(sales.last_sale_date, p.created_at) as last_sale_date,
+    CASE 
+        WHEN sales.last_sale_date IS NULL THEN 'Never Sold'
+        WHEN sales.last_sale_date < CURRENT_DATE - INTERVAL '90 days' THEN 'Stale'
+        WHEN sales.total_sold >= 100 THEN 'Best Seller'
+        WHEN sales.total_sold >= 10 THEN 'Good Seller'
+        ELSE 'Slow Seller'
+    END as performance_category
+FROM products p
+LEFT JOIN categories c ON p.category_id = c.id
+LEFT JOIN (
+    SELECT 
+        oi.product_id,
+        SUM(oi.quantity) as total_sold,
+        SUM(oi.quantity * oi.unit_price) as total_revenue,
+        AVG(oi.unit_price) as avg_sale_price,
+        MAX(o.order_date) as last_sale_date
+    FROM order_items oi
+    JOIN orders o ON oi.order_id = o.id
+    WHERE o.status IN ('confirmed', 'delivered')
+    GROUP BY oi.product_id
+) sales ON p.id = sales.product_id
+WHERE p.status = 'active';
+
+-- Materialized view usage
+SELECT * FROM customer_summary 
+WHERE customer_tier IN ('VIP', 'Premium')
+ORDER BY total_spent DESC;
+
+SELECT 
+    category_name,
+    COUNT(*) as product_count,
+    SUM(total_units_sold) as category_units_sold,
+    AVG(total_revenue) as avg_product_revenue
+FROM product_performance
+GROUP BY category_name
+ORDER BY category_units_sold DESC;
+
+-- Refresh strategies
+-- Manual refresh
+REFRESH MATERIALIZED VIEW customer_summary;
+
+-- Concurrent refresh (no locking)
+REFRESH MATERIALIZED VIEW CONCURRENTLY customer_summary;
+
+-- Automated refresh with function
+CREATE OR REPLACE FUNCTION refresh_analytics_views()
+RETURNS VOID AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW CONCURRENTLY customer_summary;
+    REFRESH MATERIALIZED VIEW CONCURRENTLY monthly_sales_analytics;
+    REFRESH MATERIALIZED VIEW CONCURRENTLY product_performance;
+    
+    -- Log refresh
+    INSERT INTO view_refresh_log (view_name, refresh_date)
+    VALUES ('analytics_views', NOW());
+END;
+$$ LANGUAGE plpgsql;
+
+-- Schedule refresh (requires pg_cron extension)
+-- SELECT cron.schedule('refresh-analytics', '0 2 * * *', 'SELECT refresh_analytics_views();');
+
+-- Incremental refresh strategy (custom implementation)
+CREATE MATERIALIZED VIEW customer_summary_incremental AS
+SELECT 
+    customer_id,
+    name,
+    total_orders,
+    total_spent,
+    customer_tier,
+    last_updated
+FROM customer_summary_base
+WHERE last_updated >= CURRENT_DATE - INTERVAL '1 day';
+
+-- Performance comparison
+-- Normal view (always recalculates)
+EXPLAIN ANALYZE SELECT * FROM customer_analytics_view WHERE customer_tier = 'VIP';
+
+-- Materialized view (pre-calculated)
+EXPLAIN ANALYZE SELECT * FROM customer_summary WHERE customer_tier = 'VIP';
+
+-- Materialized view maintenance
+-- Check view size
+SELECT 
+    schemaname,
+    matviewname,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||matviewname)) as size
+FROM pg_matviews;
+
+-- Drop materialized view
+DROP MATERIALIZED VIEW IF EXISTS old_analytics_view;
+```
+*Figyeld meg: materialized view-k trade-off storage space-ért cserébe performance-t.*
+
+</div>
+
+<div class="concept-section myths" data-filter="performance">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- „Materialized view mindig gyorsabb." → Refresh költséges, kis adatmennyiségnél nem éri meg
+- „Materialized view automatikusan frissül." → Manuális vagy scheduled refresh szükséges
+- „Materialized view nem indexelhető." → Indexek létrehozhatók a performance javításához
+
+</div>
+
+</details>
+
+</div>
+
+### Locking Mechanizmusok {#locking-mechanizmusok}
+
+<div class="concept-section mental-model" data-filter="locking medior">
+
+🧭 **Így gondolj rá**  
+*A Database locking olyan, mint a közösségi fürdő kabinok: ha valaki benn van (lock), mások várni kell, vagy átmennek másik kabinba (lock escalation/deadlock avoidance).*
+
+</div>
+
+<div class="concept-section why-important" data-filter="locking medior">
+
+💡 **Miért számít?**
+- **Data consistency**: több felhasználó egyidejű hozzáférésének szabályozása
+- **Deadlock prevention**: körkörös várakozás elkerülése
+- **Performance impact**: rossz locking strategy blokkolhatja az alkalmazást
+- **Transaction isolation**: különböző izolációs szintek különböző lock stratégiákat igényelnek
+
+</div>
+
+<div class="runnable-model" data-filter="locking medior">
+
+**Runnable mental model**
+```sql
+-- Table-level locks
+-- Share lock - read access, blocks writes
+BEGIN;
+LOCK TABLE products IN SHARE MODE;
+SELECT * FROM products WHERE category_id = 1;
+-- Other sessions can read, but cannot write
+COMMIT;
+
+-- Exclusive lock - blocks all access
+BEGIN;
+LOCK TABLE products IN EXCLUSIVE MODE;
+DELETE FROM products WHERE status = 'discontinued';
+-- Other sessions must wait
+COMMIT;
+
+-- Row-level locks
+-- FOR UPDATE - exclusive row lock
+BEGIN;
+SELECT * FROM inventory 
+WHERE product_id = 123 
+FOR UPDATE;  -- Lock this specific row
+
+-- Modify with exclusive access
+UPDATE inventory 
+SET quantity = quantity - 5 
+WHERE product_id = 123;
+COMMIT;
+
+-- FOR SHARE - shared row lock
+BEGIN;
+SELECT price FROM products 
+WHERE id = 123 
+FOR SHARE;  -- Allow other reads, block writes
+
+-- Other session can read but not modify
+SELECT * FROM products WHERE id = 123 FOR SHARE;  -- OK
+-- UPDATE products SET price = 100 WHERE id = 123;  -- BLOCKS
+COMMIT;
+
+-- Practical locking example - order processing
+CREATE OR REPLACE FUNCTION safe_order_processing(
+    p_customer_id INT,
+    p_product_id INT,
+    p_quantity INT
+) RETURNS BOOLEAN AS $$
+DECLARE
+    v_available_stock INT;
+    v_customer_credit DECIMAL(10,2);
+    v_product_price DECIMAL(10,2);
+BEGIN
+    -- Lock customer record for credit check
+    SELECT credit_balance INTO v_customer_credit
+    FROM users 
+    WHERE id = p_customer_id 
+    FOR UPDATE;  -- Prevent other transactions from modifying credit
+    
+    -- Lock product record for stock check
+    SELECT stock_quantity, price INTO v_available_stock, v_product_price
+    FROM products 
+    WHERE id = p_product_id 
+    FOR UPDATE;  -- Prevent other transactions from changing stock
+    
+    -- Validation
+    IF v_available_stock < p_quantity THEN
+        RAISE EXCEPTION 'Insufficient stock: % available, % requested', 
+                        v_available_stock, p_quantity;
+    END IF;
+    
+    IF v_customer_credit < (v_product_price * p_quantity) THEN
+        RAISE EXCEPTION 'Insufficient credit: % available, % required', 
+                        v_customer_credit, (v_product_price * p_quantity);
+    END IF;
+    
+    -- Process order (atomic operations with locks held)
+    UPDATE products 
+    SET stock_quantity = stock_quantity - p_quantity 
+    WHERE id = p_product_id;
+    
+    UPDATE users 
+    SET credit_balance = credit_balance - (v_product_price * p_quantity)
+    WHERE id = p_customer_id;
+    
+    INSERT INTO orders (customer_id, total_amount, status)
+    VALUES (p_customer_id, v_product_price * p_quantity, 'confirmed');
+    
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Deadlock example and prevention
+-- Session 1:
+BEGIN;
+UPDATE accounts SET balance = balance - 100 WHERE id = 1;  -- Lock account 1
+-- UPDATE accounts SET balance = balance + 100 WHERE id = 2;  -- Wait for account 2
+
+-- Session 2 (simultaneously):
+BEGIN;
+UPDATE accounts SET balance = balance - 50 WHERE id = 2;   -- Lock account 2
+-- UPDATE accounts SET balance = balance + 50 WHERE id = 1;   -- Wait for account 1
+-- DEADLOCK DETECTED!
+
+-- Deadlock prevention - consistent lock ordering
+CREATE OR REPLACE FUNCTION transfer_money_safe(
+    from_account_id INT,
+    to_account_id INT,
+    amount DECIMAL(10,2)
+) RETURNS VOID AS $$
+DECLARE
+    first_id INT;
+    second_id INT;
+BEGIN
+    -- Always lock accounts in ascending ID order
+    IF from_account_id < to_account_id THEN
+        first_id := from_account_id;
+        second_id := to_account_id;
+    ELSE
+        first_id := to_account_id;
+        second_id := from_account_id;
+    END IF;
+    
+    -- Lock in consistent order
+    PERFORM * FROM accounts WHERE id = first_id FOR UPDATE;
+    PERFORM * FROM accounts WHERE id = second_id FOR UPDATE;
+    
+    -- Perform transfer
+    UPDATE accounts SET balance = balance - amount WHERE id = from_account_id;
+    UPDATE accounts SET balance = balance + amount WHERE id = to_account_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Lock timeout configuration
+SET lock_timeout = '10s';  -- Maximum wait time for locks
+
+-- Lock monitoring
+-- PostgreSQL: check current locks
+SELECT 
+    pid,
+    usename,
+    query,
+    mode,
+    granted,
+    query_start
+FROM pg_locks l
+JOIN pg_stat_activity a ON l.pid = a.pid
+WHERE NOT granted  -- Show blocked transactions
+ORDER BY query_start;
+
+-- Kill blocking session (if necessary)
+-- SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid = 12345;
+
+-- Advisory locks - application-level coordination
+-- Acquire exclusive advisory lock
+SELECT pg_advisory_lock(12345);
+
+-- Critical section - only one session can execute this
+-- Perform exclusive operation here
+
+-- Release advisory lock
+SELECT pg_advisory_unlock(12345);
+
+-- Try lock (non-blocking)
+SELECT pg_try_advisory_lock(12345);  -- Returns true if acquired, false if busy
+
+-- Named advisory locks
+SELECT pg_advisory_lock('inventory_update');
+-- Critical inventory operation
+SELECT pg_advisory_unlock('inventory_update');
+
+-- Lock escalation prevention
+-- Batch operations with smaller chunks
+DO $$
+DECLARE
+    batch_size INT := 1000;
+    processed INT := 0;
+BEGIN
+    LOOP
+        UPDATE products 
+        SET updated_at = NOW() 
+        WHERE id IN (
+            SELECT id FROM products 
+            WHERE updated_at < CURRENT_DATE - INTERVAL '30 days'
+            LIMIT batch_size
+        );
+        
+        GET DIAGNOSTICS processed = ROW_COUNT;
+        EXIT WHEN processed = 0;
+        
+        -- Give other transactions a chance
+        COMMIT;
+        BEGIN;
+    END LOOP;
+END $$;
+```
+*Figyeld meg: konzisztens lock ordering és timeout beállítások kritikusak a deadlock elkerüléshez.*
+
+</div>
+
+### Database Security {#database-security}
+
+<div class="concept-section mental-model" data-filter="security medior">
+
+🧭 **Így gondolj rá**  
+*A Database security olyan, mint egy bank biztonsági rendszere: több rétegű védelem, hogy csak a megfelelő személyek férjenek hozzá a megfelelő adatokhoz.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="security medior">
+
+💡 **Miért számít?**
+- **Data protection**: személyes és üzleti adatok védelme
+- **Compliance**: GDPR, HIPAA, SOX megfelelőség
+- **Access control**: fine-grained jogosultságkezelés
+- **Audit trail**: ki mit csinált nyomon követése
+
+</div>
+
+<div class="runnable-model" data-filter="security medior">
+
+**Runnable mental model**
+```sql
+-- Role-based access control
+-- Create roles
+CREATE ROLE app_readonly;
+CREATE ROLE app_readwrite;
+CREATE ROLE app_admin;
+CREATE ROLE report_user;
+
+-- Grant permissions to roles
+-- Read-only role
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO app_readonly;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO app_readonly;
+
+-- Read-write role
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO app_readwrite;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO app_readwrite;
+-- Restrict DELETE access
+GRANT DELETE ON orders, order_items TO app_readwrite;  -- Business tables only
+
+-- Admin role
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO app_admin;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO app_admin;
+
+-- Create users and assign roles
+CREATE USER app_service WITH PASSWORD 'secure_password_123!';
+CREATE USER report_service WITH PASSWORD 'report_pass_456!';
+CREATE USER admin_user WITH PASSWORD 'admin_pass_789!';
+
+-- Assign roles to users
+GRANT app_readwrite TO app_service;
+GRANT report_user TO report_service;
+GRANT app_admin TO admin_user;
+
+-- Row-level security (RLS)
+-- Enable RLS on sensitive table
+ALTER TABLE user_data ENABLE ROW LEVEL SECURITY;
+
+-- Create policies
+CREATE POLICY user_data_policy ON user_data
+FOR ALL
+TO app_service
+USING (user_id = current_setting('app.current_user_id')::INT);
+
+-- Policy for admins (see all data)
+CREATE POLICY admin_full_access ON user_data
+FOR ALL
+TO app_admin
+USING (TRUE);
+
+-- Department-based access policy
+CREATE POLICY department_access ON employee_data
+FOR SELECT
+TO hr_role
+USING (department = current_setting('app.user_department'));
+
+-- SQL Injection prevention
+-- ❌ VULNERABLE - String concatenation
+-- query = "SELECT * FROM users WHERE email = '" + userInput + "'";
+
+-- ✅ SECURE - Parameterized queries
+-- PreparedStatement stmt = connection.prepareStatement("SELECT * FROM users WHERE email = ?");
+-- stmt.setString(1, userInput);
+
+-- Stored procedure with input validation
+CREATE OR REPLACE FUNCTION secure_user_lookup(p_email TEXT)
+RETURNS TABLE(id INT, name VARCHAR(100), email VARCHAR(255)) AS $$
+BEGIN
+    -- Input validation
+    IF p_email IS NULL OR LENGTH(p_email) = 0 THEN
+        RAISE EXCEPTION 'Email parameter is required';
+    END IF;
+    
+    IF p_email !~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' THEN
+        RAISE EXCEPTION 'Invalid email format';
+    END IF;
+    
+    -- Audit log
+    INSERT INTO security_audit (action, email_searched, search_time, user_role)
+    VALUES ('USER_LOOKUP', p_email, NOW(), current_user);
+    
+    -- Safe query
+    RETURN QUERY
+    SELECT u.id, u.name, u.email
+    FROM users u
+    WHERE u.email = p_email
+    AND u.status = 'active';
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Data encryption
+-- Column-level encryption for sensitive data
+CREATE TABLE customer_sensitive (
+    id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    ssn_encrypted BYTEA,  -- Encrypted social security number
+    credit_card_encrypted BYTEA,  -- Encrypted credit card
+    encryption_key_id INT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+-- Encryption functions (simplified example)
+CREATE OR REPLACE FUNCTION encrypt_sensitive_data(
+    plain_text TEXT,
+    key_id INT DEFAULT 1
+) RETURNS BYTEA AS $$
+BEGIN
+    -- In real implementation, use proper encryption library
+    -- This is a simplified example
+    RETURN encode(digest(plain_text || (SELECT key_value FROM encryption_keys WHERE id = key_id), 'sha256'), 'hex')::BYTEA;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Audit logging
+CREATE TABLE security_audit (
+    id SERIAL PRIMARY KEY,
+    user_name VARCHAR(100) NOT NULL DEFAULT current_user,
+    action VARCHAR(50) NOT NULL,
+    table_name VARCHAR(100),
+    record_id INT,
+    old_values JSONB,
+    new_values JSONB,
+    ip_address INET,
+    timestamp TIMESTAMP DEFAULT NOW()
+);
+
+-- Audit trigger function
+CREATE OR REPLACE FUNCTION audit_trigger_function()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'DELETE' THEN
+        INSERT INTO security_audit (action, table_name, record_id, old_values)
+        VALUES (TG_OP, TG_TABLE_NAME, OLD.id, row_to_json(OLD));
+        RETURN OLD;
+    ELSIF TG_OP = 'UPDATE' THEN
+        INSERT INTO security_audit (action, table_name, record_id, old_values, new_values)
+        VALUES (TG_OP, TG_TABLE_NAME, NEW.id, row_to_json(OLD), row_to_json(NEW));
+        RETURN NEW;
+    ELSIF TG_OP = 'INSERT' THEN
+        INSERT INTO security_audit (action, table_name, record_id, new_values)
+        VALUES (TG_OP, TG_TABLE_NAME, NEW.id, row_to_json(NEW));
+        RETURN NEW;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Apply audit trigger to sensitive tables
+CREATE TRIGGER users_audit_trigger
+AFTER INSERT OR UPDATE OR DELETE ON users
+FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
+
+-- Data masking for non-production environments
+CREATE VIEW users_masked AS
+SELECT 
+    id,
+    name,
+    CASE 
+        WHEN current_setting('app.environment') = 'production' THEN email
+        ELSE SUBSTRING(email, 1, 3) || '***@' || SUBSTRING(email FROM '@(.*)$')
+    END as email,
+    CASE 
+        WHEN current_setting('app.environment') = 'production' THEN phone
+        ELSE '***-***-' || RIGHT(phone, 4)
+    END as phone,
+    created_at
+FROM users;
+
+-- Connection security
+-- SSL/TLS enforcement
+-- ALTER SYSTEM SET ssl = on;
+-- ALTER SYSTEM SET ssl_cert_file = 'server.crt';
+-- ALTER SYSTEM SET ssl_key_file = 'server.key';
+
+-- IP-based access control in pg_hba.conf
+-- host    all    app_service    10.0.1.0/24    md5
+-- host    all    report_user    10.0.2.0/24    md5
+-- hostssl all    admin_user     0.0.0.0/0      cert
+
+-- Database firewall rules (application level)
+CREATE TABLE allowed_ip_ranges (
+    id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50),
+    ip_range CIDR,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+INSERT INTO allowed_ip_ranges (role_name, ip_range, description) VALUES
+    ('app_service', '10.0.1.0/24', 'Application servers'),
+    ('report_user', '10.0.2.0/24', 'Reporting infrastructure'),
+    ('admin_user', '192.168.1.0/24', 'Admin network');
+
+-- Password policy enforcement
+CREATE OR REPLACE FUNCTION validate_password_policy(password TEXT)
+RETURNS BOOLEAN AS $$
+BEGIN
+    -- Minimum 12 characters
+    IF LENGTH(password) < 12 THEN
+        RAISE EXCEPTION 'Password must be at least 12 characters long';
+    END IF;
+    
+    -- Must contain uppercase
+    IF password !~ '[A-Z]' THEN
+        RAISE EXCEPTION 'Password must contain at least one uppercase letter';
+    END IF;
+    
+    -- Must contain lowercase
+    IF password !~ '[a-z]' THEN
+        RAISE EXCEPTION 'Password must contain at least one lowercase letter';
+    END IF;
+    
+    -- Must contain digit
+    IF password !~ '[0-9]' THEN
+        RAISE EXCEPTION 'Password must contain at least one digit';
+    END IF;
+    
+    -- Must contain special character
+    IF password !~ '[!@#$%^&*(),.?":{}|<>]' THEN
+        RAISE EXCEPTION 'Password must contain at least one special character';
+    END IF;
+    
+    RETURN TRUE;
+END;
+$$ LANGUAGE plpgsql;
+```
+*Figyeld meg: többrétegű biztonság - role-based access, RLS, encryption, audit logging.*
+
+</div>
 
 ## További olvasmányok
 

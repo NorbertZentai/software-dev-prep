@@ -1,0 +1,222 @@
+{
+  "title": "Objektumorientált Programozás Quiz",
+  "description": "Teszteld az OOP ismereteidet! Encapsulation, inheritance, polymorphism és SOLID principles.",
+  "category": "theory",
+  "difficulty": "beginner",
+  "estimatedMinutes": 15,
+  "tags": ["oop", "encapsulation", "inheritance", "polymorphism", "solid"],
+  "totalQuestions": 15,
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple-choice",
+      "question": "Mi az encapsulation (enkapszuláció) alapelve?",
+      "options": [
+        "Az adatok és metódusok szétválasztása",
+        "Az adatok és metódusok egységbe foglalása, belső implementáció elrejtése",
+        "A kód újrafelhasználhatóságának biztosítása",
+        "A különböző osztályok közötti kapcsolatok meghatározása"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Az encapsulation az adatok és a rájuk ható metódusok egységbe foglalását jelenti, miközben a belső implementáció el van rejtve a külvilág elől.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 2,
+      "type": "multiple-choice",
+      "question": "Melyik NEM tartozik az OOP négy alapelvéhez?",
+      "options": [
+        "Encapsulation",
+        "Inheritance", 
+        "Compilation",
+        "Polymorphism"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Az OOP négy alapelve: Encapsulation, Inheritance, Polymorphism és Abstraction. A Compilation nem OOP alapelv.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 3,
+      "type": "multiple-choice",
+      "question": "Mit jelent a polymorphism?",
+      "options": [
+        "Egy osztály több példányának létrehozása",
+        "Ugyanazon interfész mögött különböző implementációk",
+        "Osztályok közötti öröklt tulajdonságok",
+        "Privát mezők elrejtése"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A polymorphism lehetővé teszi, hogy ugyanazon interfész mögött különböző implementációk legyenek, és futásidőben dől el, melyik hívódik meg.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 4,
+      "type": "code-analysis",
+      "question": "Mit csinál ez a kód?\n\n```java\npublic class BankAccount {\n    private double balance;\n    \n    public void deposit(double amount) {\n        if (amount > 0) {\n            this.balance += amount;\n        }\n    }\n    \n    public double getBalance() {\n        return balance;\n    }\n}\n```",
+      "options": [
+        "Encapsulation példája - balance privát, kontrollált hozzáférés",
+        "Inheritance példája - BankAccount örököl egy másik osztályból",
+        "Polymorphism példája - különböző deposit implementációk",
+        "Abstraction példája - absztrakt metódusokat definiál"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Ez egy encapsulation példa: a balance mező privát, csak a definiált metódusokon keresztül érhető el.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 5,
+      "type": "multiple-choice", 
+      "question": "Mit jelent az 'S' betű a SOLID elvekben?",
+      "options": [
+        "Simple Responsibility Principle",
+        "Single Responsibility Principle",
+        "Structured Responsibility Principle", 
+        "Solid Responsibility Principle"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Az SRP (Single Responsibility Principle) szerint egy osztálynak csak egy oka legyen a változásra.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 6,
+      "type": "multiple-choice",
+      "question": "Mikor használj composition-t inheritance helyett?",
+      "options": [
+        "Sosem, inheritance mindig jobb",
+        "Amikor 'has-a' kapcsolat van két osztály között",
+        "Amikor 'is-a' kapcsolat van két osztály között",
+        "Csak performance okokból"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A composition 'has-a' kapcsolatoknál megfelelő (pl. Car has-a Engine), míg inheritance 'is-a' kapcsolatoknál (pl. Car is-a Vehicle).",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 7,
+      "type": "multiple-choice",
+      "question": "Mi a különbség interface és abstract class között Java-ban?",
+      "options": [
+        "Nincs különbség, ugyanazt jelentik",
+        "Interface csak abstract metódusokat, abstract class tartalmazhat implementációt is",
+        "Abstract class csak abstract metódusokat, interface tartalmazhat implementációt is",
+        "Interface private lehet, abstract class nem"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Az interface (Java 8 előtt) csak abstract metódusokat tartalmazhatott, míg az abstract class tartalmazhat implementált metódusokat is.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 8,
+      "type": "code-analysis",
+      "question": "Melyik SOLID elvet sérti ez a kód?\n\n```java\nclass Employee {\n    public void save() { /* DB save */ }\n    public void sendEmail() { /* Email */ }\n    public void calculateSalary() { /* Calculation */ }\n    public void generateReport() { /* Reporting */ }\n}\n```",
+      "options": [
+        "Single Responsibility Principle",
+        "Open/Closed Principle", 
+        "Liskov Substitution Principle",
+        "Interface Segregation Principle"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Ez sérti az SRP-t, mert az Employee osztály túl sok felelősséggel rendelkezik (adatmentés, email, fizetésszámítás, jelentés).",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 9,
+      "type": "multiple-choice",
+      "question": "Mit jelent a 'favor composition over inheritance' elv?",
+      "options": [
+        "Sosem használj öröklődést",
+        "Inkább építs objektumokat kisebb komponensekből",
+        "Az öröklődés mindig gyorsabb",
+        "A composition összetettebb, mint az inheritance"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Ez az elv azt javasolja, hogy inkább építs objektumokat kisebb komponensekből (composition), mint hogy mély öröklési hierarchiákat hozz létre.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 10,
+      "type": "multiple-choice",
+      "question": "Melyik design pattern biztosítja, hogy egy osztályból csak egy példány létezzen?",
+      "options": [
+        "Factory Pattern",
+        "Observer Pattern",
+        "Singleton Pattern", 
+        "Strategy Pattern"
+      ],
+      "correctAnswer": 2,
+      "explanation": "A Singleton pattern biztosítja, hogy egy osztályból csak egyetlen példány létezzen az alkalmazás futása során.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 11,
+      "type": "multiple-choice",
+      "question": "Mit jelent a method overriding?",
+      "options": [
+        "Ugyanaz a metódusnév, különböző paraméterek",
+        "Szülő osztály metódusának felüldefiniálása gyermek osztályban",
+        "Privát metódusok használata",
+        "Static metódusok létrehozása"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A method overriding azt jelenti, hogy a gyermek osztály felüldefiniálja a szülő osztály metódusát.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 12,
+      "type": "multiple-choice",
+      "question": "Mi a Liskov Substitution Principle (LSP)?",
+      "options": [
+        "A leszármazott osztályok helyettesíthetők az alaposztállyal",
+        "Az osztályok ne függjenek konkrét implementációktól",
+        "Egy osztálynak egy felelősségi köre legyen",
+        "Az osztályok legyenek nyitottak a bővítésre"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Az LSP szerint a leszármazott típusok teljesen helyettesíthetők az alaptípussal anélkül, hogy a program viselkedése megváltozna.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": 13,
+      "type": "code-analysis",
+      "question": "Melyik pattern-t mutatja ez a kód?\n\n```java\ninterface PaymentMethod {\n    void pay(double amount);\n}\n\nclass ShoppingCart {\n    private PaymentMethod paymentMethod;\n    \n    public void setPaymentMethod(PaymentMethod method) {\n        this.paymentMethod = method;\n    }\n}\n```",
+      "options": [
+        "Factory Pattern",
+        "Observer Pattern", 
+        "Strategy Pattern",
+        "Singleton Pattern"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Ez a Strategy pattern példája: a ShoppingCart objektum futásidőben válthat különböző fizetési stratégiák között.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 14,
+      "type": "multiple-choice",
+      "question": "Mit jelent a Dependency Inversion Principle?",
+      "options": [
+        "A függőségek fordított sorrendben legyenek",
+        "Függj az absztrakciótól, ne a konkrét implementációtól", 
+        "Ne használj dependency injection-t",
+        "A függőségek legyenek privátok"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A DIP szerint a magas szintű modulok ne függjenek alacsony szintűektől, mindkettő függjön absztrakcióktól.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": 15,
+      "type": "multiple-choice",
+      "question": "Melyik NEM egy creational design pattern?",
+      "options": [
+        "Factory",
+        "Singleton",
+        "Observer",
+        "Builder"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Az Observer egy behavioral pattern. A creational pattern-ek: Factory, Singleton, Builder, Prototype, Abstract Factory.",
+      "difficulty": "intermediate"
+    }
+  ]
+}

@@ -224,6 +224,374 @@ body.is-theory .drawer-overlay {
   }
 }
 
+/* === ENHANCED CONCEPT CARDS === */
+.concept-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-xl);
+  margin: var(--space-xl) 0;
+  box-shadow: 0 2px 12px var(--shadow-color);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.concept-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--shadow-color);
+}
+
+/* Concept sections with colored left borders */
+.concept-section {
+  margin: var(--space-lg) 0;
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.concept-section::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+/* Color coding for different section types */
+.concept-section.mental-model::before { background: #4f46e5; }
+.concept-section.why-important::before { background: #d97706; }
+.concept-section.connection-map::before { background: #059669; }
+.concept-section.myths::before { background: #dc2626; }
+.concept-section.performance::before { background: #4f46e5; }
+.concept-section.tools::before { background: #64748b; }
+.concept-section.micro-learning::before { background: #7c3aed; }
+.concept-section.interview-pitfalls::before { background: #ea580c; }
+
+/* Uniform icon styling */
+.concept-section h3,
+.concept-section h4,
+.concept-section > strong:first-child {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.concept-section h3:first-child,
+.concept-section h4:first-child,
+.concept-section > strong:first-child {
+  margin-top: 0;
+}
+
+/* Runnable mental model highlighting */
+.runnable-model {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  border: 2px solid #64748b;
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-xl);
+  margin: var(--space-xl) 0;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(100, 116, 139, 0.1);
+}
+
+.runnable-model::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #7c3aed;
+  border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+}
+
+.runnable-model strong {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+/* Enhanced code blocks with stronger contrast */
+.concept-card pre,
+.runnable-model pre {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: var(--border-radius);
+  padding: var(--space-lg);
+  margin: var(--space-md) 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.concept-card code:not(pre code),
+.runnable-model code:not(pre code) {
+  background: #64748b;
+  color: white;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+/* "Figyeld meg" info callouts */
+.runnable-model em,
+.concept-section em {
+  display: block;
+  background: rgba(79, 70, 229, 0.08);
+  border-left: 3px solid #64748b;
+  padding: var(--space-sm) var(--space-md);
+  margin: var(--space-md) 0;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  font-style: normal;
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.runnable-model em::before {
+  content: "💡 ";
+  margin-right: var(--space-xs);
+}
+
+/* Enhanced version badges with dark theme friendly colors */
+.version-badges {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin: var(--space-lg) 0;
+  justify-content: flex-start;
+}
+
+.version-badge {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 20px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.version-badge:nth-child(1) { /* Java 8 */
+  background: #7f1d1d;
+  color: #fca5a5;
+  border-color: #991b1b;
+}
+
+.version-badge:nth-child(2) { /* 11 LTS */
+  background: #14532d;
+  color: #86efac;
+  border-color: #166534;
+}
+
+.version-badge:nth-child(3) { /* 17 LTS */
+  background: #581c87;
+  color: #c4b5fd;
+  border-color: #6b21a8;
+}
+
+.version-badge:nth-child(4) { /* 21 LTS */
+  background: #1e3a8a;
+  color: #93c5fd;
+  border-color: #1e40af;
+}
+
+.version-badge:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  opacity: 0.9;
+}
+
+/* Connection map as dark theme chips */
+.concept-section.connection-map {
+  background: linear-gradient(135deg, #1e293b, #334155);
+}
+
+.concept-section.connection-map code {
+  display: inline-block;
+  background: #475569;
+  color: #e2e8f0;
+  padding: var(--space-xs) var(--space-md);
+  margin: var(--space-xs);
+  border-radius: 16px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border: none;
+  transition: all var(--transition-fast);
+}
+
+.concept-section.connection-map code:hover {
+  background: #334155;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(51, 65, 85, 0.3);
+}
+
+/* Enhanced details elements with dark theme colors */
+.concept-section details {
+  margin: var(--space-md) 0;
+}
+
+.concept-section details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: var(--space-md);
+  border-radius: var(--border-radius);
+  background: #334155;
+  transition: all var(--transition-fast);
+  list-style: none;
+  position: relative;
+  border: 1px solid #475569;
+}
+
+.concept-section details summary::-webkit-details-marker {
+  display: none;
+}
+
+.concept-section details summary::after {
+  content: '▶';
+  position: absolute;
+  right: var(--space-md);
+  transition: transform var(--transition-fast);
+  color: #94a3b8;
+  font-size: var(--font-size-sm);
+}
+
+.concept-section details[open] summary::after {
+  transform: rotate(90deg);
+}
+
+.concept-section details summary:hover {
+  background: #475569;
+  color: #f1f5f9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.3);
+}
+
+.concept-section details summary:hover::after {
+  color: #f1f5f9;
+}
+
+.concept-section details > div {
+  padding: var(--space-lg);
+  margin-top: var(--space-sm);
+  border: 1px solid #475569;
+  border-top: none;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  background: var(--bg-primary);
+}
+
+/* Nested details for micro-learning */
+.concept-section details details {
+  margin-left: 0;
+  margin-top: var(--space-md);
+}
+
+.concept-section details details summary {
+  font-size: var(--font-size-sm);
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+.concept-section details details summary:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+/* "Figyeld meg" info callouts with dark theme */
+.runnable-model em,
+.concept-section em {
+  display: block;
+  background: rgba(30, 41, 59, 0.6);
+  border-left: 3px solid #64748b;
+  padding: var(--space-sm) var(--space-md);
+  margin: var(--space-md) 0;
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  font-style: normal;
+  color: #e2e8f0;
+  font-size: var(--font-size-sm);
+}
+
+.runnable-model em::before {
+  content: "💡 ";
+  margin-right: var(--space-xs);
+}
+
+/* Runnable mental model with dark theme */
+.runnable-model {
+  background: linear-gradient(135deg, #1e293b, #334155);
+  border: 2px solid #475569;
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-xl);
+  margin: var(--space-xl) 0;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(30, 41, 59, 0.3);
+}
+
+.runnable-model::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #7c3aed;
+  border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+}
+
+.runnable-model strong {
+  color: #a5b4fc;
+  font-weight: 600;
+}
+
+/* Consistent spacing for all elements */
+.concept-section > * {
+  margin-bottom: var(--space-md);
+}
+
+.concept-section > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Copy button for code blocks */
+.concept-card pre {
+  position: relative;
+}
+
+.concept-card pre:hover .copy-btn {
+  opacity: 1;
+}
+
+.copy-btn {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.copy-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+}
+
 /* Kompakt top-bar collapsed állapotban */
 @media (min-width: 1024px) {
   /* Top-bar kompakt mód */

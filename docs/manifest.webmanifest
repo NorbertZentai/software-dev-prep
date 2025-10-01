@@ -38,6 +38,13 @@
       "icons": [{ "src": "./assets/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },
     {
+      "name": "Algoritmusok",
+      "short_name": "Algo",
+      "description": "Algoritmusok és adatstruktúrák",
+      "url": "./#/theory/algorithms",
+      "icons": [{ "src": "./assets/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
       "name": "Kvízek",
       "short_name": "Quiz",
       "description": "Interaktív tesztek",

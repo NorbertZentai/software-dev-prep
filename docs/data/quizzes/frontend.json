@@ -1,0 +1,234 @@
+{
+  "title": "Frontend (React, TypeScript) Kvíz",
+  "description": "Teszteld a React, TypeScript, Node.js és modern frontend ismereteidet!",
+  "timeLimit": 15,
+  "passingScore": 60,
+  "tags": ["react", "typescript", "frontend", "javascript"],
+  "questions": [
+    {
+      "id": 1,
+      "question": "Mi a React Virtual DOM fő előnye?",
+      "type": "single",
+      "options": [
+        "Kisebb memóriahasználat",
+        "Efficient diffing és batch updates",
+        "Gyorsabb network requests",
+        "Jobb SEO"
+      ],
+      "correct": 1,
+      "explanation": "A Virtual DOM lehetővé teszi a React számára, hogy hatékonyan összehasonlítsa a változásokat és batch-eli a DOM update-eket, javítva a teljesítményt.",
+      "difficulty": "junior",
+      "category": "react"
+    },
+    {
+      "id": 2,
+      "question": "Mikor használj useCallback hook-ot?",
+      "type": "single",
+      "options": [
+        "Minden függvénynél",
+        "Soha",
+        "Amikor függvényt adsz át memo-izált child komponensnek",
+        "Csak async függvényeknél"
+      ],
+      "correct": 2,
+      "explanation": "useCallback akkor hasznos, amikor egy függvényt props-ként adsz át memo-izált komponensnek, vagy dependency array-ben használod.",
+      "difficulty": "medior",
+      "category": "react-hooks"
+    },
+    {
+      "id": 3,
+      "question": "Mi a különbség interface és type között TypeScript-ben?",
+      "type": "single",
+      "options": [
+        "Nincs különbség",
+        "Interface object shape-ekhez, type union-ökhoz és computed type-okhoz",
+        "Type csak primitív típusokhoz",
+        "Interface csak class-okhoz"
+      ],
+      "correct": 1,
+      "explanation": "Interface jobb object shape-ek definíálásához és extension-höz, type pedig union type-okhoz, computed type-okhoz és function signature-ökhöz.",
+      "difficulty": "medior",
+      "category": "typescript"
+    },
+    {
+      "id": 4,
+      "question": "Melyik a helyes component naming convention React-ben?",
+      "type": "single",
+      "options": [
+        "camelCase",
+        "PascalCase",
+        "snake_case",
+        "kebab-case"
+      ],
+      "correct": 1,
+      "explanation": "React komponensek nevét PascalCase-ben írjuk (pl. UserCard), hogy megkülönböztessük őket a HTML element-ektől.",
+      "difficulty": "junior",
+      "category": "react"
+    },
+    {
+      "id": 5,
+      "question": "Mit csinál a useEffect cleanup function?",
+      "type": "single",
+      "options": [
+        "Törli a komponenst",
+        "Lemondja a subscription-öket és event listener-eket",
+        "Reseteli a state-et",
+        "Optimalizálja a teljesítményt"
+      ],
+      "correct": 1,
+      "explanation": "A cleanup function (useEffect return value) lemondja a subscription-öket, event listener-eket és más side effect-eket a komponens unmount-jakor vagy dependency változáskor.",
+      "difficulty": "medior",
+      "category": "react-hooks"
+    },
+    {
+      "id": 6,
+      "question": "Melyik TypeScript utility type teszi az összes property-t opcionálissá?",
+      "type": "single",
+      "options": [
+        "Required<T>",
+        "Partial<T>",
+        "Pick<T, K>",
+        "Omit<T, K>"
+      ],
+      "correct": 1,
+      "explanation": "Partial<T> minden property-t opcionálissá tesz, míg Required<T> mindent kötelezővé tesz.",
+      "difficulty": "medior",
+      "category": "typescript"
+    },
+    {
+      "id": 7,
+      "question": "Mi a prop drilling problémája?",
+      "type": "single",
+      "options": [
+        "Lassú renderelés",
+        "Props átadása több komponens szinten keresztül",
+        "Memory leak",
+        "Build error"
+      ],
+      "correct": 1,
+      "explanation": "Prop drilling az, amikor props-okat több komponens szinten keresztül kell átadni, annak ellenére, hogy a köztes komponensek nem használják őket.",
+      "difficulty": "junior",
+      "category": "react"
+    },
+    {
+      "id": 8,
+      "question": "Mikor használj useMemo hook-ot?",
+      "type": "single",
+      "options": [
+        "Minden számításnál",
+        "Soha",
+        "Expensive számításoknál, ha dependency-k ritkán változnak",
+        "Csak string műveletekhez"
+      ],
+      "correct": 2,
+      "explanation": "useMemo drága számításokhoz hasznos, amelyek eredménye csak akkor változik, ha a dependency-k változnak. Egyszerű műveleteknél overhead-et jelent.",
+      "difficulty": "medior",
+      "category": "react-hooks"
+    },
+    {
+      "id": 9,
+      "question": "Mi a helyes key prop használata React listákban?",
+      "type": "single",
+      "options": [
+        "Array index használata",
+        "Random number",
+        "Stabil, egyedi identifier (pl. ID)",
+        "Key prop nem szükséges"
+      ],
+      "correct": 2,
+      "explanation": "Key prop-nak stabil, egyedi identifier-t kell használni (pl. item.id), nem array index-et, hogy React hatékonyan tudja kezelni a list változásokat.",
+      "difficulty": "junior",
+      "category": "react"
+    },
+    {
+      "id": 10,
+      "question": "Mi a különbség useState és useReducer között?",
+      "type": "single",
+      "options": [
+        "Nincs különbség",
+        "useReducer komplex state logic-hoz, useState egyszerű state-hez",
+        "useReducer gyorsabb",
+        "useState async, useReducer sync"
+      ],
+      "correct": 1,
+      "explanation": "useState egyszerű state-hez jó, useReducer komplex state logic-hoz, amikor több related state variable van vagy complex state transition-ök.",
+      "difficulty": "medior",
+      "category": "react-hooks"
+    },
+    {
+      "id": 11,
+      "question": "Mit jelent a TypeScript 'strict' mode?",
+      "type": "single",
+      "options": [
+        "Tiltja a JavaScript használatát",
+        "Bekapcsol minden strict type checking opciót",
+        "Csak class-okat engedélyez",
+        "Gyorsabb compilation"
+      ],
+      "correct": 1,
+      "explanation": "Strict mode bekapcsol minden strict type checking opciót (noImplicitAny, strictNullChecks, stb.), maximális type safety-t biztosítva.",
+      "difficulty": "medior",
+      "category": "typescript"
+    },
+    {
+      "id": 12,
+      "question": "Melyik React pattern HELYES error boundary-hez?",
+      "type": "single",
+      "options": [
+        "Functional component useError hook-kal",
+        "Class component componentDidCatch-kel",
+        "Try-catch useEffect-ben",
+        "Window.onerror event"
+      ],
+      "correct": 1,
+      "explanation": "Error boundary-k jelenleg csak class component-ekkel implementálhatóak componentDidCatch és getDerivedStateFromError lifecycle method-okkal.",
+      "difficulty": "medior",
+      "category": "react"
+    },
+    {
+      "id": 13,
+      "question": "Mi a Node.js event loop fő jellemzője?",
+      "type": "single",
+      "options": [
+        "Multi-threaded execution",
+        "Single-threaded, non-blocking I/O",
+        "Synchronous processing",
+        "Browser-based execution"
+      ],
+      "correct": 1,
+      "explanation": "Node.js single-threaded event loop-ot használ non-blocking I/O-val, amely lehetővé teszi a nagy teljesítményű, concurrent alkalmazások fejlesztését.",
+      "difficulty": "junior",
+      "category": "nodejs"
+    },
+    {
+      "id": 14,
+      "question": "Melyik a helyes way custom hook írásához?",
+      "type": "single",
+      "options": [
+        "function customHook()",
+        "const customHook = () =>",
+        "function useCustomHook()",
+        "class CustomHook"
+      ],
+      "correct": 2,
+      "explanation": "Custom hook-ok nevének 'use' prefix-szel kell kezdődnie (pl. useCustomHook), hogy a React felismerje őket hook-ként.",
+      "difficulty": "junior",
+      "category": "react-hooks"
+    },
+    {
+      "id": 15,
+      "question": "Mi a JSX transpilation eredménye?",
+      "type": "single",
+      "options": [
+        "HTML string",
+        "React.createElement() hívások",
+        "DOM elements",
+        "JSON object"
+      ],
+      "correct": 1,
+      "explanation": "JSX Babel által React.createElement() függvény hívásokká transpil-álódik, amely React element object-eket hoz létre.",
+      "difficulty": "junior",
+      "category": "react"
+    }
+  ]
+}

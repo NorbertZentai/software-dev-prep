@@ -44,8 +44,7 @@
   font-size: var(--font-size-sm);
 }
 
-.nav-group a:hover,
-.nav-group a:focus {
+.nav-group a:hover {
   color: var(--text-primary);
   background-color: var(--bg-accent);
   transform: translateX(2px);
@@ -75,8 +74,7 @@
   display: none;
 }
 
-.sidebar-toggle:hover,
-.sidebar-toggle:focus {
+.sidebar-toggle:hover {
   background-color: var(--accent-secondary);
   transform: translateY(-50%) scale(1.05);
 }

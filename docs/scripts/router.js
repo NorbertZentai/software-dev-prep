@@ -15,6 +15,8 @@ export class Router {
       // Theory routes - new concept-based format
       '#/theory/java': () =>
         this.renderTheoryPage('./theory/java.md', 'Java Alapok'),
+      '#/theory/oop': () =>
+        this.renderTheoryPage('./theory/oop.md', 'Objektumorientált Programozás'),
       '#/theory/spring': () =>
         this.renderTheoryPage('./theory/spring.md', 'Spring Framework'),
       '#/theory/testing': () =>
@@ -27,6 +29,12 @@ export class Router {
         this.renderTheoryPage('./theory/arch.md', 'Architektúra'),
       '#/theory/git': () =>
         this.renderTheoryPage('./theory/git.md', 'Git & Verziókezelés'),
+      '#/theory/devops': () =>
+        this.renderTheoryPage('./theory/devops.md', 'CI/CD & DevOps'),
+      '#/theory/frontend': () =>
+        this.renderTheoryPage('./theory/frontend.md', 'Frontend (React, TypeScript)'),
+      '#/theory/algorithms': () =>
+        this.renderTheoryPage('./theory/algorithms.md', 'Algoritmusok & Adatstruktúrák'),
 
       // Exercise list routes
       '#/exercises/java': () =>
@@ -103,6 +111,8 @@ export class Router {
       // Quiz routes
       '#/quiz/java': () =>
         this.runQuiz('./data/quizzes/java.json', 'Java Kvíz'),
+      '#/quiz/oop': () =>
+        this.runQuiz('./data/quizzes/oop.json', 'OOP Kvíz'),
       '#/quiz/spring': () =>
         this.runQuiz('./data/quizzes/spring.json', 'Spring Kvíz'),
       '#/quiz/testing': () =>
@@ -112,6 +122,8 @@ export class Router {
       '#/quiz/arch': () =>
         this.runQuiz('./data/quizzes/arch.json', 'Architektúra Kvíz'),
       '#/quiz/git': () => this.runQuiz('./data/quizzes/git.json', 'Git Kvíz'),
+      '#/quiz/devops': () => this.runQuiz('./data/quizzes/devops.json', 'DevOps Kvíz'),
+      '#/quiz/frontend': () => this.runQuiz('./data/quizzes/frontend.json', 'Frontend Kvíz'),
 
       // Checklist routes
       '#/checklists/interview': () =>
@@ -612,19 +624,26 @@ export class Router {
   getPageTitle(route) {
     const routeTitles = {
       '#/theory/java': 'Java Alapok',
+      '#/theory/oop': 'Objektumorientált Programozás',
       '#/theory/spring': 'Spring Framework',
       '#/theory/testing': 'Tesztelés',
       '#/theory/sql': 'SQL & Adatbázis',
       '#/theory/web': 'Web Development',
       '#/theory/arch': 'Architektúra',
       '#/theory/git': 'Git & Verziókezelés',
+      '#/theory/devops': 'CI/CD & DevOps',
+      '#/theory/frontend': 'Frontend (React, TypeScript)',
+      '#/theory/algorithms': 'Algoritmusok & Adatstruktúrák',
       '#/quiz/java': 'Java Kvíz',
+      '#/quiz/oop': 'OOP Kvíz',
       '#/quiz/spring': 'Spring Kvíz',
       '#/quiz/testing': 'Testing Kvíz',
       '#/quiz/sql': 'SQL Kvíz',
       '#/quiz/web': 'Web Kvíz',
       '#/quiz/arch': 'Architektúra Kvíz',
       '#/quiz/git': 'Git Kvíz',
+      '#/quiz/devops': 'DevOps Kvíz',
+      '#/quiz/frontend': 'Frontend Kvíz',
     }
     return routeTitles[route] || route.split('/').pop()
   }
@@ -678,20 +697,27 @@ export class Router {
   updatePageTitle(hash) {
     const routeTitles = {
       '#/theory/java': 'Java Alapok',
+      '#/theory/oop': 'Objektumorientált Programozás',
       '#/theory/spring': 'Spring Framework',
       '#/theory/testing': 'Tesztelés',
       '#/theory/sql': 'SQL & Adatbázis',
       '#/theory/web': 'Web Development',
       '#/theory/arch': 'Architektúra',
       '#/theory/git': 'Git & Verziókezelés',
+      '#/theory/devops': 'CI/CD & DevOps',
+      '#/theory/frontend': 'Frontend (React, TypeScript)',
+      '#/theory/algorithms': 'Algoritmusok & Adatstruktúrák',
       '#/exercises/java': 'Java Gyakorlatok',
       '#/exercises/sql': 'SQL Gyakorlatok',
       '#/exercises/web': 'Web Gyakorlatok',
       '#/exercises/arch': 'Architektúra Gyakorlatok',
       '#/quiz/java': 'Java Teszt',
+      '#/quiz/oop': 'OOP Teszt',
       '#/quiz/sql': 'SQL Teszt',
       '#/quiz/web': 'Web Teszt',
       '#/quiz/arch': 'Architektúra Teszt',
+      '#/quiz/devops': 'DevOps Teszt',
+      '#/quiz/frontend': 'Frontend Teszt',
       '#/roadmap': 'Tanulási Roadmap',
       '#/checklists/interview': 'Interjú Kérdések',
       '#/checklists/project-setup': 'Projekt Setup',
