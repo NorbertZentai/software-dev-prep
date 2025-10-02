@@ -50,10 +50,14 @@
     height: calc(100vh - var(--header-height));
     z-index: 105;
     transition: left var(--transition-slow);
+    border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+    border-right: 2px solid var(--border-color);
+    box-shadow: none;
   }
 
   .sidebar.open {
     left: 0;
+    box-shadow: 4px 0 20px var(--shadow-color);
   }
 
   .sidebar-toggle {
@@ -99,7 +103,7 @@
     right: 0;
     width: auto;
     z-index: 999;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px var(--shadow-color);
     display: none;
     border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
   }
@@ -199,17 +203,18 @@
     top: var(--header-height);
     right: -100%;
     left: auto !important;
-    width: min(85vw, 320px);
-    max-width: 320px;
+    width: min(75vw, 260px);
+    max-width: 260px;
     height: calc(100vh - var(--header-height));
     z-index: 1001;
     background: var(--bg-secondary);
     border-left: 2px solid var(--border-color);
     border-right: none;
-  /* Keep outer container non-scrollable so rounded corner clips scrollbar */
-  overflow: hidden;
+    /* Allow scrolling with custom scrollbar */
+    overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-  transition: right var(--transition-slow, 300ms);
+    transition: right var(--transition-slow, 300ms);
     padding: 0;
     box-shadow: none;
     border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
@@ -284,9 +289,9 @@
     pointer-events: none !important;         /* rejtve ne fogjon eventet */
     z-index: 1100 !important;                /* tartalom FÖLÉ kerüljön */
     overflow-y: auto !important;
-    background: var(--surface-2, #16202e) !important;
-    box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
-    border-right: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    background: var(--bg-secondary) !important;
+    box-shadow: 20px 0 40px var(--shadow-color) !important;
+    border-right: 1px solid var(--border-color) !important;
     padding: var(--space-md, 16px) !important;
     margin: 0 !important;
     float: none !important;
@@ -324,9 +329,9 @@
     pointer-events: none !important;         /* rejtve ne fogjon eventet */
     z-index: 1100 !important;                /* tartalom FÖLÉ kerüljön */
     overflow-y: auto !important;
-    background: var(--surface-2, #16202e) !important;
-    box-shadow: -20px 0 40px rgba(0,0,0,.35) !important;
-    border-left: 1px solid color-mix(in oklab, white 8%, transparent) !important;
+    background: var(--bg-secondary) !important;
+    box-shadow: -20px 0 40px var(--shadow-color) !important;
+    border-left: 1px solid var(--border-color) !important;
     padding: var(--space-md, 16px) !important;
     margin: 0 !important;
     float: none !important;
@@ -571,7 +576,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--shadow-color);
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
@@ -593,7 +598,7 @@
   #drawer-overlay {
     position: fixed !important;
     inset: 0 !important;
-    background: rgba(0,0,0,.5) !important;
+    background: var(--shadow-color) !important;
     opacity: 0 !important;
     visibility: hidden !important;
     transition: opacity .25s ease !important;
@@ -616,9 +621,9 @@
     z-index: 1100 !important;
 
     /* Modern kinézet */
-    background: color-mix(in oklab, var(--surface, #0f172a) 92%, black 8%) !important;
+    background: var(--bg-secondary) !important;
     border-left: 1px solid rgba(255,255,255,.08) !important;
-    box-shadow: 0 12px 40px rgba(0,0,0,.45) !important;
+    box-shadow: 0 12px 40px var(--shadow-color) !important;
     backdrop-filter: saturate(140%) blur(6px);
     -webkit-backdrop-filter: saturate(140%) blur(6px);
     border-top-left-radius: 16px !important;
@@ -648,16 +653,16 @@
   }
   #theory-sidebar .theory-toc #toc-search {
     width: 100%; border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.04); color: #e5e7eb;
+    background: var(--bg-accent); color: var(--text-primary);
     padding: 10px 12px; border-radius: 10px; outline: none;
   }
   #theory-sidebar .theory-toc a {
     display: block; padding: 12px 10px; margin: 4px 0;
-    border-radius: 10px; text-decoration: none; color: #cbd5e1;
+    border-radius: 10px; text-decoration: none; color: var(--text-secondary);
     transition: transform .12s ease, background .12s ease, color .12s ease;
   }
-  #theory-sidebar .theory-toc a:hover { transform: translateY(-1px); background: rgba(59,130,246,.12); color: #e5e7eb; }
-  #theory-sidebar .theory-toc a.active { background: #2563eb; color: #fff; box-shadow: 0 6px 16px rgba(37,99,235,.35); }
+  #theory-sidebar .theory-toc a:hover { transform: translateY(-1px); background: var(--bg-accent); color: var(--text-primary); }
+  #theory-sidebar .theory-toc a.active { background: var(--accent-primary); color: #fff; box-shadow: 0 6px 16px var(--shadow-color); }
 }
 
 /* === Mobile TOC drawer (≤768px) – right slide-in, overlay, scroll lock === */
@@ -680,7 +685,7 @@
     display: block !important;               /* ne a display vezérelje a láthatóságot */
     visibility: hidden !important;
     opacity: 0 !important;
-    background: var(--surface-2, #16202e) !important;
+    background: var(--bg-secondary) !important;
     box-shadow: -20px 0 40px rgba(0,0,0,.35) !important;
     border-left: 1px solid color-mix(in oklab, white 8%, transparent) !important;
     z-index: 1002 !important;
@@ -740,7 +745,7 @@
     height: 40px;
     border-radius: 10px;
     border: 1px solid color-mix(in oklab, #fff 10%, transparent);
-    background: color-mix(in oklab, var(--surface-2, #16202e) 92%, #fff 8%);
+    background: color-mix(in oklab, var(--bg-secondary) 92%, #fff 8%);
     outline: none;
     padding: 0 12px;
     margin: 6px 0 12px;
@@ -799,7 +804,7 @@
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;          /* rejtve ne fogjon eventet */
-    background: var(--surface-2, #16202e) !important;
+    background: var(--bg-secondary) !important;
     box-shadow: -20px 0 40px rgba(0,0,0,.35) !important;
     border-left: 1px solid color-mix(in oklab, white 8%, transparent) !important;
     z-index: 1100 !important;                 /* tartalom FÖLÉ kerüljön */
@@ -839,7 +844,7 @@
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;          /* rejtve ne fogjon eventet */
-    background: var(--surface-2, #16202e) !important;
+    background: var(--bg-secondary) !important;
     box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
     border-right: 1px solid color-mix(in oklab, white 8%, transparent) !important;
     z-index: 1100 !important;                 /* tartalom FÖLÉ kerüljön */
@@ -943,7 +948,7 @@
     z-index: 1100 !important;
     /* FONTOS: ne foglaljon helyet a layout-ban */
     float: none !important;
-    background: var(--surface-2, #16202e) !important;
+    background: var(--bg-secondary) !important;
     box-shadow: 20px 0 40px rgba(0,0,0,.35) !important;
     border-right: 1px solid color-mix(in oklab, white 8%, transparent) !important;
     transition:

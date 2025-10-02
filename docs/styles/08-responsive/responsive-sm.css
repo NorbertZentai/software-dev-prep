@@ -25,9 +25,9 @@
   #theory-sidebar.theory-drawer.right,
   body.is-theory #theory-sidebar,
   #theory-sidebar { 
-    width: min(88vw, 280px) !important; 
-    max-width: 280px !important;
-    right: -100% !important; /* ensure it starts off-screen */
+    width: min(85vw, 320px) !important; 
+    max-width: 320px !important;
+    right: -100% !important; /* ensure it starts completely off-screen, no overflow */
   }
 
   #theory-sidebar.theory-drawer.right.open,

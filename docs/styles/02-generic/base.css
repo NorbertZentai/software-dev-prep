@@ -60,3 +60,265 @@ body {
 noscript {
   display: block;
 }
+
+/* === GLOBAL CUSTOM SCROLLBAR === */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: var(--border-radius);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/* === PRISM.JS SYNTAX HIGHLIGHTING OVERRIDES === */
+/* Custom CSS properties for dark/light theme compatibility */
+
+/* Default theme (light) code highlighting colors */
+:root,
+[data-theme="light"] {
+  /* Code highlighting colors - Solarized Light (VSCode) with warmer background */
+  --code-bg: #faf5e6;          /* Warmer, more yellowish cream background */
+  --code-text: #657b83;
+  
+  /* Solarized Light color scheme */
+  --code-keyword: #859900;      /* Green - keywords */
+  --code-string: #2aa198;       /* Cyan - strings */
+  --code-comment: #93a1a1;      /* Gray - comments */
+  --code-operator: #dc322f;     /* Red - operators */
+  --code-punctuation: #657b83;  /* Base text - punctuation */
+  --code-number: #d33682;       /* Magenta - numbers */
+  --code-function: #b58900;     /* Yellow - function names */
+  --code-variable: #268bd2;     /* Blue - variables */
+  --code-boolean: #d33682;      /* Magenta - true/false */
+  --code-type: #cb4b16;         /* Orange - types */
+  --code-property: #268bd2;     /* Blue - properties */
+  
+  /* Pseudocode light theme colors - Solarized */
+  --pseudocode-keyword: #6c71c4;    /* Violet for keywords */
+  --pseudocode-operator: #dc322f;   /* Red for operators */
+  --pseudocode-variable: #268bd2;   /* Blue for variables */
+  
+  /* Global scrollbar colors - Light theme */
+  --scrollbar-thumb: #cbd5e1;          /* Light gray thumb */
+  --scrollbar-thumb-hover: #94a3b8;    /* Darker gray on hover */
+}
+
+/* Dark theme code highlighting colors */
+[data-theme="dark"] {
+  /* Code highlighting colors - Dracula Theme (VSCode) */
+  --code-bg: #282a36;
+  --code-text: #f8f8f2;
+  
+  /* Dracula color scheme */
+  --code-keyword: #ff79c6;      /* Pink - keywords (public, class, if, etc.) */
+  --code-string: #f1fa8c;       /* Yellow - strings */
+  --code-comment: #6272a4;      /* Blue gray - comments */
+  --code-operator: #ff79c6;     /* Pink - operators */
+  --code-punctuation: #f8f8f2;  /* White - punctuation */
+  --code-number: #bd93f9;       /* Purple - numbers */
+  --code-function: #50fa7b;     /* Green - function names */
+  --code-variable: #f8f8f2;     /* White - variables */
+  --code-boolean: #bd93f9;      /* Purple - true/false */
+  --code-type: #8be9fd;         /* Cyan - types (String, int, etc.) */
+  --code-property: #50fa7b;     /* Green - properties */
+  
+  /* Pseudocode specific colors - Dracula inspired */
+  --pseudocode-keyword: #ff79c6;    /* Pink for FUNCTION, IF, THEN */
+  --pseudocode-operator: #ffb86c;   /* Orange for ← → */
+  --pseudocode-variable: #8be9fd;   /* Cyan for variables */
+  
+  /* Global scrollbar colors - Dark theme */
+  --scrollbar-thumb: #475569;          /* Dark gray thumb */
+  --scrollbar-thumb-hover: #64748b;    /* Lighter gray on hover */
+}
+}
+
+/* Light theme overrides - removed duplicate as it's now in root */
+
+/* Override Prism.js default styles with our theme variables */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: var(--code-text) !important;
+  background: var(--code-bg) !important;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: background-color var(--transition-normal), 
+              color var(--transition-normal),
+              border-color var(--transition-normal);
+  text-shadow: none !important; /* Remove text shadow */
+  box-shadow: none !important; /* Remove box shadow */
+  text-decoration: none !important; /* Remove underlines */
+}
+
+/* Force light theme background for testing */
+[data-theme="light"] code[class*="language-"],
+[data-theme="light"] pre[class*="language-"] {
+  background: #fbfaf8 !important; /* Very subtle warm cream - barely noticeable difference */
+}
+
+pre[class*="language-"] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+  line-height: 1.5;
+}
+
+code[class*="language-"] {
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+
+/* Strong override for ALL tokens - remove any decorations */
+.token.keyword,
+.token.string,
+.token.comment,
+.token.operator,
+.token.punctuation,
+.token.number,
+.token.function,
+.token.variable,
+.token.boolean,
+.token {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Token colors - Dracula & Solarized inspired */
+.token.keyword {
+  color: var(--code-keyword) !important;
+  font-weight: 600;
+}
+
+.token.string {
+  color: var(--code-string) !important;
+}
+
+.token.comment {
+  color: var(--code-comment) !important;
+  font-style: italic;
+}
+
+.token.operator {
+  color: var(--code-operator) !important;
+  font-weight: 500;
+}
+
+.token.punctuation {
+  color: var(--code-punctuation) !important;
+}
+
+.token.number {
+  color: var(--code-number) !important;
+  font-weight: 500;
+}
+
+.token.function {
+  color: var(--code-function) !important;
+  font-weight: 600;
+}
+
+.token.variable {
+  color: var(--code-variable) !important;
+}
+
+.token.boolean {
+  color: var(--code-boolean) !important;
+  font-weight: 600;
+}
+
+/* Additional token types for better highlighting */
+.token.class-name,
+.token.builtin {
+  color: var(--code-type) !important;
+  font-weight: 600;
+}
+
+.token.property,
+.token.attr-name {
+  color: var(--code-property) !important;
+}
+
+.token.annotation,
+.token.decorator {
+  color: var(--code-function) !important;
+  font-weight: 600;
+}
+
+/* Java specific - Dracula style */
+.token.annotation .token.punctuation {
+  color: var(--code-function) !important;
+}
+
+/* SQL specific - emphasized keywords */
+.token.sql-keyword {
+  color: var(--code-keyword) !important;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+/* JSON specific */
+.token.property.string {
+  color: var(--code-property) !important;
+}
+
+/* CSS specific */
+.token.selector {
+  color: var(--code-function) !important;
+}
+
+.token.important {
+  color: var(--code-operator) !important;
+  font-weight: bold;
+}
+
+/* Special styling for pseudocode language - Dracula/Solarized */
+pre[class*="language-pseudocode"] .token.keyword,
+pre[class*="language-pseudo"] .token.keyword,
+pre[class*="language-algorithm"] .token.keyword {
+  color: var(--pseudocode-keyword) !important;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+pre[class*="language-pseudocode"] .token.operator,
+pre[class*="language-pseudo"] .token.operator,
+pre[class*="language-algorithm"] .token.operator {
+  color: var(--pseudocode-operator) !important;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+pre[class*="language-pseudocode"] .token.variable,
+pre[class*="language-pseudo"] .token.variable,
+pre[class*="language-algorithm"] .token.variable {
+  color: var(--pseudocode-variable) !important;
+  font-style: italic;
+  font-weight: 500;
+}

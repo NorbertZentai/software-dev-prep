@@ -6,12 +6,15 @@ export class ThemeManager {
   }
 
   init() {
-    // Get saved theme or default to light
-    this.currentTheme =
-      localStorage.getItem('software_dev_prep_theme') || 'light'
+    // Clear any conflicting theme data and force light as default
+    const savedTheme = localStorage.getItem('software_dev_prep_theme')
+    this.currentTheme = savedTheme === 'dark' ? 'dark' : 'light'
 
-    // Apply theme
+    // Apply theme immediately and forcefully
     this.applyTheme(this.currentTheme)
+    
+    // Ensure HTML attribute is set
+    document.documentElement.setAttribute('data-theme', this.currentTheme)
 
     // Setup toggle button
     this.setupToggleButton()
@@ -50,6 +53,13 @@ export class ThemeManager {
   toggleTheme() {
     const newTheme = this.currentTheme === 'light' ? 'dark' : 'light'
     this.setTheme(newTheme)
+    
+    // Force immediate visual update
+    setTimeout(() => {
+      if (typeof Prism !== 'undefined') {
+        Prism.highlightAll()
+      }
+    }, 50)
   }
 
   setTheme(theme) {
@@ -67,10 +77,19 @@ export class ThemeManager {
   }
 
   applyTheme(theme) {
+    this.currentTheme = theme
     document.documentElement.setAttribute('data-theme', theme)
+    
+    // Save to localStorage
+    localStorage.setItem('software_dev_prep_theme', theme)
 
     // Update meta theme-color for mobile browsers
     this.updateMetaThemeColor(theme)
+
+    // Re-highlight code blocks with new theme
+    if (typeof Prism !== 'undefined') {
+      setTimeout(() => Prism.highlightAll(), 100)
+    }
   }
 
   updateMetaThemeColor(theme) {

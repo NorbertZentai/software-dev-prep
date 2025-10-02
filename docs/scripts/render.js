@@ -372,6 +372,11 @@ export class MarkdownRenderer {
   }
 
   setupCodeHighlighting() {
+    // Run Prism.js syntax highlighting
+    if (typeof Prism !== 'undefined') {
+      Prism.highlightAll()
+    }
+
     document.querySelectorAll('pre code').forEach((block) => {
       // Add copy button to code blocks
       const copyBtn = document.createElement('button')

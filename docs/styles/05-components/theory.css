@@ -249,7 +249,7 @@ body.is-theory .drawer-overlay {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   position: relative;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px var(--shadow-color);
 }
 
 .concept-section::before {
@@ -271,6 +271,15 @@ body.is-theory .drawer-overlay {
 .concept-section.tools::before { background: #64748b; }
 .concept-section.micro-learning::before { background: #7c3aed; }
 .concept-section.interview-pitfalls::before { background: #ea580c; }
+
+/* Ensure proper contrast for all concept sections */
+.concept-section {
+  color: var(--text-primary) !important;
+}
+
+.concept-section * {
+  color: inherit !important;
+}
 
 /* Uniform icon styling */
 .concept-section h3,
@@ -318,9 +327,9 @@ body.is-theory .drawer-overlay {
 /* Enhanced code blocks with stronger contrast */
 .concept-card pre,
 .runnable-model pre {
-  background: #1e293b;
-  color: #f8fafc;
-  border: 1px solid #334155;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   padding: var(--space-lg);
   margin: var(--space-md) 0;
@@ -328,13 +337,13 @@ body.is-theory .drawer-overlay {
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
   line-height: 1.5;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 4px var(--shadow-color);
 }
 
 .concept-card code:not(pre code),
 .runnable-model code:not(pre code) {
-  background: #64748b;
-  color: white;
+  background: var(--bg-accent);
+  color: var(--text-primary);
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--border-radius);
   font-family: var(--font-mono);
@@ -412,15 +421,15 @@ body.is-theory .drawer-overlay {
   opacity: 0.9;
 }
 
-/* Connection map as dark theme chips */
+/* Connection map as themed chips */
 .concept-section.connection-map {
-  background: linear-gradient(135deg, #1e293b, #334155);
+  background: var(--bg-secondary);
 }
 
 .concept-section.connection-map code {
   display: inline-block;
-  background: #475569;
-  color: #e2e8f0;
+  background: var(--bg-accent);
+  color: var(--text-primary);
   padding: var(--space-xs) var(--space-md);
   margin: var(--space-xs);
   border-radius: 16px;
@@ -432,7 +441,7 @@ body.is-theory .drawer-overlay {
 }
 
 .concept-section.connection-map code:hover {
-  background: #334155;
+  background: var(--bg-secondary);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(51, 65, 85, 0.3);
 }
@@ -448,11 +457,11 @@ body.is-theory .drawer-overlay {
   color: var(--text-primary);
   padding: var(--space-md);
   border-radius: var(--border-radius);
-  background: #334155;
+  background: var(--bg-secondary);
   transition: all var(--transition-fast);
   list-style: none;
   position: relative;
-  border: 1px solid #475569;
+  border: 1px solid var(--border-color);
 }
 
 .concept-section details summary::-webkit-details-marker {
@@ -464,7 +473,7 @@ body.is-theory .drawer-overlay {
   position: absolute;
   right: var(--space-md);
   transition: transform var(--transition-fast);
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: var(--font-size-sm);
 }
 
@@ -473,20 +482,20 @@ body.is-theory .drawer-overlay {
 }
 
 .concept-section details summary:hover {
-  background: #475569;
-  color: #f1f5f9;
+  background: var(--bg-accent);
+  color: var(--text-primary);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.3);
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .concept-section details summary:hover::after {
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .concept-section details > div {
   padding: var(--space-lg);
   margin-top: var(--space-sm);
-  border: 1px solid #475569;
+  border: 1px solid var(--border-color);
   border-top: none;
   border-radius: 0 0 var(--border-radius) var(--border-radius);
   background: var(--bg-primary);
@@ -500,21 +509,21 @@ body.is-theory .drawer-overlay {
 
 .concept-section details details summary {
   font-size: var(--font-size-sm);
-  background: #1e293b;
-  color: #cbd5e1;
+  background: var(--bg-accent);
+  color: var(--text-secondary);
 }
 
 .concept-section details details summary:hover {
-  background: #334155;
-  color: #f1f5f9;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
-/* "Figyeld meg" info callouts with dark theme */
+/* "Figyeld meg" info callouts with theme variables */
 .runnable-model em,
 .concept-section em {
   display: block;
-  background: rgba(30, 41, 59, 0.6);
-  border-left: 3px solid #64748b;
+  background: var(--bg-accent);
+  border-left: 3px solid var(--accent-primary);
   padding: var(--space-sm) var(--space-md);
   margin: var(--space-md) 0;
   border-radius: 0 var(--border-radius) var(--border-radius) 0;
@@ -528,15 +537,15 @@ body.is-theory .drawer-overlay {
   margin-right: var(--space-xs);
 }
 
-/* Runnable mental model with dark theme */
+/* Runnable mental model with theme variables */
 .runnable-model {
-  background: linear-gradient(135deg, #1e293b, #334155);
-  border: 2px solid #475569;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
   border-radius: var(--border-radius-lg);
   padding: var(--space-xl);
   margin: var(--space-xl) 0;
   position: relative;
-  box-shadow: 0 4px 16px rgba(30, 41, 59, 0.3);
+  box-shadow: 0 4px 16px var(--shadow-color);
 }
 
 .runnable-model::before {
