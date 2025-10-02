@@ -302,9 +302,9 @@ accessible-library/
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/accessibility.js"></script>
-    <script src="js/keyboard-navigation.js"></script>
+    <script src="js/example-main.js"></script>
+    <script src="js/example-accessibility.js"></script>
+    <script src="js/example-keyboard-navigation.js"></script>
 </body>
 </html>
 ```

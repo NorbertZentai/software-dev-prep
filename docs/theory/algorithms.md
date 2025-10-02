@@ -26967,11 +26967,3 @@ Ez az algoritmus referencia a **junior–medior developer szint** átfogó lefed
 *Célcsoport: Junior–Medior Software Developers | Fókusz: Interview Preparation & Practical Implementation*
 
 </footer>
-
-</main>
-
-<script src="../scripts/theory-desktop.js"></script>
-<script src="../scripts/theory-mobile.js"></script>
-
-</body>
-</html>
