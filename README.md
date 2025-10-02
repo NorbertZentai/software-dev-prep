@@ -5,7 +5,7 @@
 
 ## 🚀 Élő demo
 
-👉 **[Nyisd meg a platformot itt](https://yourusername.github.io/software-dev-prep/)**itHub Pages
+👉 **[Nyisd meg a platformot itt](https://norbertzentai.github.io/software-dev-prep/)**itHub Pages
 
 Komplex felkészülő platform szoftverfejlesztői állásokhoz. Statikus site a **/docs** mappából fut, GitHub Pages ready.
 
@@ -33,7 +33,7 @@ Komplex felkészülő platform szoftverfejlesztői állásokhoz. Statikus site a
 
 ## 🚀 Élő demo
 
-👉 **[Nyisd meg a platformot itt](https://yourusername.github.io/java-dev-prep/)**
+👉 **[Nyisd meg a platformot itt](https://norbertzentai.github.io/software-dev-prep/)**
 
 *(Természetesen először fel kell töltened GitHub-ra és aktiválni a Pages funkciót)*
 
