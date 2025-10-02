@@ -2061,14 +2061,14 @@ public class Intervals {
     
     // Teszt
     public static void main(String[] args) {
-        int[][] intervals = {{1, 3}, {2, 6}, {8, 10}, {15, 18}};
+        int[][] intervals = { {1, 3}, {2, 6}, {8, 10}, {15, 18} };
         System.out.println("Merged: " + Arrays.deepToString(merge(intervals)));
         // [[1,6], [8,10], [15,18]]
         
-        int[][] meetings = {{0, 30}, {5, 10}, {15, 20}};
+        int[][] meetings = { {0, 30}, {5, 10}, {15, 20} };
         System.out.println("Min meeting rooms: " + minMeetingRooms(meetings)); // 2
         
-        int[][] intervals2 = {{1, 3}, {6, 9}};
+        int[][] intervals2 = { {1, 3}, {6, 9} };
         int[] newInterval = {2, 5};
         System.out.println("Insert interval: " + Arrays.deepToString(insert(intervals2, newInterval)));
         // [[1,5], [6,9]]
@@ -5735,7 +5735,7 @@ public class TopKHeap {
         }
         
         // Test K Closest Points
-        int[][] points = {{1, 1}, {2, 2}, {3, 3}};
+        int[][] points = { {1, 1}, {2, 2}, {3, 3} };
         int[][] closest = kClosest(points, 2);
         System.out.println("2 closest points: " + Arrays.deepToString(closest));
     }
@@ -6582,7 +6582,7 @@ public class UnionFind {
         UnionFind uf = new UnionFind(rows * cols);
         int waterCount = 0;
         
-        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int[][] directions = { {0, 1}, {1, 0}, {0, -1}, {-1, 0} };
         
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -6691,7 +6691,7 @@ public class UnionFind {
         };
         System.out.println("Number of islands: " + numIslands(grid)); // 1
         
-        int[][] edges = {{0,1},{0,2},{0,3},{1,4}};
+        int[][] edges = { {0,1},{0,2},{0,3},{1,4} };
         System.out.println("Valid tree: " + validTree(5, edges)); // true
     }
 }
@@ -8871,7 +8871,7 @@ public class HeapRecipes {
         // [3, 3, 5, 5, 6, 7]
         
         // Test meeting rooms
-        int[][] meetings = {{0, 30}, {5, 10}, {15, 20}};
+        int[][] meetings = { {0, 30}, {5, 10}, {15, 20} };
         System.out.println("Min meeting rooms: " + minMeetingRooms(meetings)); // 2
         
         // Test task scheduler
@@ -10099,7 +10099,7 @@ public class GraphTraversal {
     }
     
     // Grid-based BFS (for maze-like problems)
-    public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    public static int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
     
     public static int shortestPathInGrid(int[][] grid, int[] start, int[] target) {
         int rows = grid.length;
@@ -12880,7 +12880,7 @@ public class LIS {
         System.out.println("Longest Bitonic Subsequence: " + longestBitonicSubsequence(nums));
         
         // Test Russian Doll Envelopes
-        int[][] envelopes = {{5,4},{6,4},{6,7},{2,3}};
+        int[][] envelopes = { {5,4},{6,4},{6,7},{2,3} };
         System.out.println("Max envelopes: " + maxEnvelopes(envelopes));
         
         // Test Box Stacking
