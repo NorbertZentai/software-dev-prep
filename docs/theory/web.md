@@ -6498,7 +6498,7 @@ const htmlExample = \`
         <button type="submit">Send</button>
     </form>
     
-    <script src="/js/example-pwa-manager.js"></script>
+    <!-- <script src="/js/example-pwa-manager.js"></script> -->
 </body>
 </html>
 \`;
@@ -13413,7 +13413,7 @@ document.getElementById('action-btn').addEventListener('click', () => {
 <body>
     <button id="my-button">Click me</button>
     <!-- Script a </body> elé -->
-    <script src="example-script.js"></script>
+    <!-- <script src="your-script.js"></script> -->
 </body>
 ```
 
@@ -13421,10 +13421,10 @@ document.getElementById('action-btn').addEventListener('click', () => {
 ```html
 <head>
     <!-- async: letöltődik párhuzamosan, azonnal futtatódik -->
-    <script async src="example-analytics.js"></script>
+    <!-- <script async src="example-analytics.js"></script> -->
     
     <!-- defer: letöltődik párhuzamosan, DOM után futtatódik -->
-    <script defer src="example-main.js"></script>
+    <!-- <script defer src="example-main.js"></script> -->
 </head>
 ```
 
