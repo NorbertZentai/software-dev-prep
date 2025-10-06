@@ -1,4 +1,6 @@
 // === Quiz Engine ===
+import { i18n } from './i18n.js'
+
 export class QuizEngine {
   constructor() {
     this.currentQuiz = null
@@ -53,26 +55,26 @@ export class QuizEngine {
             <span class="difficulty-badge ${quiz.difficulty}">
               ${this.getDifficultyLabel(quiz.difficulty)}
             </span>
-            <span class="question-count">${quiz.questions.length} kérdés</span>
+            <span class="question-count">${quiz.questions.length} ${i18n.t('quiz.questions')}</span>
             <span class="estimated-time">~${Math.ceil(
               quiz.questions.length * 1.5
-            )} perc</span>
+            )} ${i18n.t('quiz.estimatedTime')}</span>
           </div>
         </header>
 
         <div class="quiz-intro">
           <div class="quiz-instructions">
-            <h3>📋 Útmutatás</h3>
+            <h3>${i18n.t('quiz.instructions.title')}</h3>
             <ul>
-              <li>Válaszd ki a helyes választ minden kérdésre</li>
-              <li>A kvíz végén láthatod az eredményed és a magyarázatokat</li>
-              <li>Az eredmények automatikusan mentésre kerülnek</li>
+              <li>${i18n.t('quiz.instructions.step1')}</li>
+              <li>${i18n.t('quiz.instructions.step2')}</li>
+              <li>${i18n.t('quiz.instructions.step3')}</li>
             </ul>
           </div>
 
           <div class="quiz-actions">
             <button id="start-quiz-btn" class="btn-primary large">
-              🚀 Kvíz indítása
+              ${i18n.t('quiz.start')}
             </button>
           </div>
         </div>
@@ -109,11 +111,11 @@ export class QuizEngine {
       optionsHtml = `
         <label class="quiz-option">
           <input type="radio" name="answer" value="true" />
-          <span class="option-text">Igaz</span>
+          <span class="option-text">${i18n.t('quiz.true')}</span>
         </label>
         <label class="quiz-option">
           <input type="radio" name="answer" value="false" />
-          <span class="option-text">Hamis</span>
+          <span class="option-text">${i18n.t('quiz.false')}</span>
         </label>
       `
     }
@@ -131,7 +133,7 @@ export class QuizEngine {
 
         <div class="question-card">
           <div class="question-header">
-            <h2>Kérdés ${questionIndex + 1}</h2>
+            <h2>${i18n.t('quiz.question')} ${questionIndex + 1}</h2>
           </div>
 
           <div class="question-text">
@@ -145,14 +147,14 @@ export class QuizEngine {
           <div class="question-actions">
             ${
               questionIndex > 0
-                ? '<button id="prev-question" class="btn-secondary">← Előző</button>'
+                ? `<button id="prev-question" class="btn-secondary">${i18n.t('quiz.previous')}</button>`
                 : ''
             }
             <button id="next-question" class="btn-primary" disabled>
               ${
                 questionIndex === this.currentQuiz.questions.length - 1
-                  ? 'Befejezés'
-                  : 'Következő →'
+                  ? i18n.t('quiz.finish')
+                  : i18n.t('quiz.next')
               }
             </button>
           </div>
@@ -189,14 +191,14 @@ export class QuizEngine {
         <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
           <div class="result-header">
             <span class="result-icon">${isCorrect ? '✅' : '❌'}</span>
-            <span class="result-title">Kérdés ${index + 1}</span>
+            <span class="result-title">${i18n.t('quiz.question')} ${index + 1}</span>
           </div>
 
           <div class="result-question">${question.question}</div>
 
           <div class="result-answers">
             <div class="user-answer">
-              <strong>Te válaszod:</strong> ${this.formatAnswer(
+              <strong>${i18n.t('quiz.results.yourAnswer')}</strong> ${this.formatAnswer(
                 question,
                 userAnswer
               )}
@@ -205,7 +207,7 @@ export class QuizEngine {
               !isCorrect
                 ? `
               <div class="correct-answer">
-                <strong>Helyes válasz:</strong> ${this.formatCorrectAnswer(
+                <strong>${i18n.t('quiz.results.correctAnswer')}</strong> ${this.formatCorrectAnswer(
                   question
                 )}
               </div>
@@ -218,7 +220,7 @@ export class QuizEngine {
             question.explanation
               ? `
             <div class="result-explanation">
-              <strong>Magyarázat:</strong> ${question.explanation}
+              <strong>${i18n.t('quiz.results.explanation')}</strong> ${question.explanation}
             </div>
           `
               : ''
@@ -231,21 +233,21 @@ export class QuizEngine {
     return `
       <div class="quiz-results-container">
         <header class="results-header">
-          <h1>🎯 Kvíz eredmény</h1>
+          <h1>${i18n.t('quiz.results.title')}</h1>
           <div class="score-display">
             <div class="score-circle ${this.getScoreClass(percentage)}">
               <span class="score-percentage">${percentage}%</span>
             </div>
             <div class="score-details">
               <div class="score-item">
-                <span class="score-label">Helyes válaszok:</span>
+                <span class="score-label">${i18n.t('quiz.results.correct')}</span>
                 <span class="score-value">${correctAnswers} / ${
       this.currentQuiz.questions.length
     }</span>
               </div>
               <div class="score-item">
-                <span class="score-label">Időtartam:</span>
-                <span class="score-value">${timeSpent} perc</span>
+                <span class="score-label">${i18n.t('quiz.results.duration')}</span>
+                <span class="score-value">${timeSpent} ${i18n.t('quiz.results.minutes')}</span>
               </div>
             </div>
           </div>
@@ -256,13 +258,13 @@ export class QuizEngine {
         </header>
 
         <div class="results-details">
-          <h2>📋 Részletes eredmények</h2>
+          <h2>${i18n.t('quiz.results.detailed')}</h2>
           ${resultsHtml}
         </div>
 
         <div class="results-actions">
-          <button onclick="location.hash='#/'" class="btn-secondary">← Főoldal</button>
-          <button onclick="location.reload()" class="btn-primary">🔄 Újra próbálkozás</button>
+          <button onclick="location.hash='#/'" class="btn-secondary">${i18n.t('quiz.results.home')}</button>
+          <button onclick="location.reload()" class="btn-primary">${i18n.t('quiz.results.retry')}</button>
         </div>
       </div>
     `
@@ -289,33 +291,29 @@ export class QuizEngine {
 
   formatAnswer(question, userAnswer) {
     if (question.type === 'multiple') {
-      return question.options[parseInt(userAnswer)] || 'Nem válaszolt'
+      return question.options[parseInt(userAnswer)] || i18n.t('quiz.noAnswer')
     } else if (question.type === 'true-false') {
       return userAnswer === 'true'
-        ? 'Igaz'
+        ? i18n.t('quiz.true')
         : userAnswer === 'false'
-        ? 'Hamis'
-        : 'Nem válaszolt'
+        ? i18n.t('quiz.false')
+        : i18n.t('quiz.noAnswer')
     }
-    return 'Ismeretlen'
+    return i18n.t('quiz.unknown')
   }
 
   formatCorrectAnswer(question) {
     if (question.type === 'multiple') {
       return question.options[question.correct]
     } else if (question.type === 'true-false') {
-      return question.correct ? 'Igaz' : 'Hamis'
+      return question.correct ? i18n.t('quiz.true') : i18n.t('quiz.false')
     }
-    return 'Ismeretlen'
+    return i18n.t('quiz.unknown')
   }
 
   getDifficultyLabel(difficulty) {
-    const labels = {
-      beginner: 'Kezdő',
-      intermediate: 'Haladó',
-      advanced: 'Profi',
-    }
-    return labels[difficulty] || difficulty
+    const key = `quiz.difficulty.${difficulty}`
+    return i18n.t(key, difficulty)
   }
 
   getScoreClass(percentage) {
@@ -326,24 +324,21 @@ export class QuizEngine {
   }
 
   getScoreMessage(percentage) {
-    if (percentage >= 90) return '🎉 Kiváló! Mester szinten ismered a témát!'
-    if (percentage >= 80) return '👏 Nagyszerű munka! Jól megy neked ez a téma.'
-    if (percentage >= 70)
-      return '👍 Jó eredmény! Még van mit tanulni, de jó úton jársz.'
-    if (percentage >= 60)
-      return '📚 Átlagos eredmény. Érdemes még tanulmányozni a témát.'
-    if (percentage >= 40)
-      return '💪 Kezdő szint. Ne add fel, a gyakorlás teszi a mestert!'
-    return '📖 Sok tanulnivaló van még. Nézd át újra az elméleti anyagot!'
+    if (percentage >= 90) return i18n.t('quiz.score.excellent')
+    if (percentage >= 80) return i18n.t('quiz.score.great')
+    if (percentage >= 70) return i18n.t('quiz.score.good')
+    if (percentage >= 60) return i18n.t('quiz.score.average')
+    if (percentage >= 40) return i18n.t('quiz.score.poor')
+    return i18n.t('quiz.score.veryPoor')
   }
 
   renderError(message) {
     return `
       <div class="quiz-error">
         <div class="error-icon">⚠️</div>
-        <h2>Kvíz hiba</h2>
+        <h2>${i18n.t('quiz.error.title')}</h2>
         <p>${message}</p>
-        <button onclick="history.back()" class="btn-secondary">← Vissza</button>
+        <button onclick="history.back()" class="btn-secondary">${i18n.t('quiz.error.back')}</button>
       </div>
     `
   }

@@ -2,6 +2,7 @@
 import { Router } from './router.js'
 import { StorageManager } from './storage.js'
 import { ThemeManager } from './theme.js'
+import { i18n } from './i18n.js'
 import './theory-mobile.js' // Initialize theory mobile drawer
 
 class App {
@@ -9,6 +10,7 @@ class App {
     this.router = new Router()
     this.themeManager = new ThemeManager()
     this.storageManager = new StorageManager()
+    this.i18n = i18n
 
     this.init()
   }
@@ -49,6 +51,9 @@ class App {
 
     // Initialize search functionality
     this.initSearch()
+
+    // Initialize language selector
+    this.initLanguageSelector()
 
     // Initialize router (should be last)
     this.router.init()
@@ -301,6 +306,30 @@ class App {
   performSearch(query) {
     // Placeholder for search functionality
     // Future implementation with Lunr.js or similar
+  }
+
+  initLanguageSelector() {
+    const languageSelector = document.getElementById('language-selector')
+    if (!languageSelector) return
+
+    // Set initial value
+    languageSelector.value = this.i18n.getCurrentLanguage()
+
+    // Handle language changes
+    languageSelector.addEventListener('change', (e) => {
+      const newLanguage = e.target.value
+      this.i18n.setLanguage(newLanguage)
+      
+      // Refresh current route to load content in new language
+      if (this.router) {
+        this.router.handleRoute()
+      }
+    })
+
+    // Listen for language changes from other sources
+    window.addEventListener('languageChanged', (e) => {
+      languageSelector.value = e.detail.language
+    })
   }
 
   setupPWAUpdates() {

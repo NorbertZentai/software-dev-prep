@@ -1,0 +1,41 @@
+[
+  {
+    "path": "./exercises/sql/01-joins.md",
+    "title": "SQL JOIN Operations",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 35,
+    "goals": [
+      "INNER/LEFT/RIGHT JOIN",
+      "Subqueries",
+      "Performance",
+      "Index usage"
+    ],
+    "route": "#/exercises/sql/01-joins"
+  },
+  {
+    "path": "./exercises/sql/02-index-tuning.md",
+    "title": "Index Optimization",
+    "difficulty": "advanced",
+    "estimatedMinutes": 40,
+    "goals": [
+      "B-tree indexes",
+      "Execution plan",
+      "Query tuning",
+      "Composite indexes"
+    ],
+    "route": "#/exercises/sql/02-index-tuning"
+  },
+  {
+    "path": "./exercises/sql/03-transactions.md",
+    "title": "Transaction Management",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 30,
+    "goals": [
+      "ACID properties",
+      "Isolation levels",
+      "Deadlock prevention",
+      "Rollback"
+    ],
+    "route": "#/exercises/sql/03-transactions"
+  }
+]

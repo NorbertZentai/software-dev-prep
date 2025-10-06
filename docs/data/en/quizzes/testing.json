@@ -1,0 +1,31 @@
+{
+  "title": "Software Testing Quiz",
+  "description": "Unit testing, TDD, mocking and testing best practices",
+  "category": "testing",
+  "difficulty": "intermediate",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "What does TDD stand for?",
+      "options": ["Test Driven Development", "Test Data Definition", "Technical Design Document", "Test Deployment Doctrine"],
+      "correct": 0,
+      "explanation": "TDD stands for Test Driven Development, a methodology where tests are written before the implementation."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "What is a mock object?",
+      "options": ["A real object", "A fake object that simulates behavior", "A broken object", "A database record"],
+      "correct": 1,
+      "explanation": "A mock object is a fake object that simulates the behavior of real objects in controlled ways."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "Unit tests should test multiple components together.",
+      "correct": false,
+      "explanation": "Unit tests should test individual components in isolation. Testing multiple components together is integration testing."
+    }
+  ]
+}

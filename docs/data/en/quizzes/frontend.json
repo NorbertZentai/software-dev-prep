@@ -1,0 +1,31 @@
+{
+  "title": "Frontend Development Quiz",
+  "description": "React, TypeScript, modern frontend frameworks and tools",
+  "category": "frontend",
+  "difficulty": "intermediate",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "What is React?",
+      "options": ["A database", "A JavaScript library for building user interfaces", "A CSS framework", "A web server"],
+      "correct": 1,
+      "explanation": "React is a JavaScript library developed by Facebook for building user interfaces, especially for web applications."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "What does TypeScript add to JavaScript?",
+      "options": ["Static typing", "Better performance", "New syntax", "Database connectivity"],
+      "correct": 0,
+      "explanation": "TypeScript adds static typing to JavaScript, helping catch errors at compile time."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "React components must be class-based.",
+      "correct": false,
+      "explanation": "React components can be either class-based or function-based. Function components with hooks are now preferred."
+    }
+  ]
+}

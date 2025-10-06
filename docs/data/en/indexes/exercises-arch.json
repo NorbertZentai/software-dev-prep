@@ -1,0 +1,41 @@
+[
+  {
+    "path": "./exercises/arch/01-rest-vs-grpc.md",
+    "title": "REST vs gRPC API Design",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 45,
+    "goals": [
+      "API design patterns",
+      "Protocol comparison",
+      "Performance analysis",
+      "Use case evaluation"
+    ],
+    "route": "#/exercises/arch/01-rest-vs-grpc"
+  },
+  {
+    "path": "./exercises/arch/02-message-queues.md",
+    "title": "Message Queue Patterns",
+    "difficulty": "advanced",
+    "estimatedMinutes": 50,
+    "goals": [
+      "Async messaging",
+      "Pub/sub patterns",
+      "Queue durability",
+      "Dead letter queues"
+    ],
+    "route": "#/exercises/arch/02-message-queues"
+  },
+  {
+    "path": "./exercises/arch/03-circuit-breaker.md",
+    "title": "Circuit Breaker Pattern",
+    "difficulty": "advanced",
+    "estimatedMinutes": 40,
+    "goals": [
+      "Resilience patterns",
+      "Failure handling",
+      "Monitoring",
+      "Recovery strategies"
+    ],
+    "route": "#/exercises/arch/03-circuit-breaker"
+  }
+]

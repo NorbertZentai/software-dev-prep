@@ -536,14 +536,15 @@ export class MarkdownRenderer {
         continue
       }
 
-      // Check if we're entering the Fogalmak section
-      if (line.startsWith('## Fogalmak')) {
+      // Check if we're entering the Fogalmak/Concepts section
+      if (line.startsWith('## Fogalmak') || line.startsWith('## Concepts')) {
         insideFogalmakSection = true
         continue
       }
 
-      // Check if we're leaving the Fogalmak section (next ## heading)
-      if (insideFogalmakSection && line.startsWith('## ') && !line.startsWith('## Fogalmak')) {
+      // Check if we're leaving the Fogalmak/Concepts section (next ## heading)
+      if (insideFogalmakSection && line.startsWith('## ') && 
+          !line.startsWith('## Fogalmak') && !line.startsWith('## Concepts')) {
         insideFogalmakSection = false
         // Save the last concept if exists before leaving section
         if (current) {

@@ -1,0 +1,56 @@
+{
+  "title": "Java Fundamentals Quiz",
+  "description": "Test your Java programming knowledge from the basics",
+  "difficulty": "beginner",
+  "estimatedTime": 15,
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "What is the correct way to define a Java class?",
+      "options": [
+        "class MyClass { }",
+        "public class MyClass { }",
+        "Class MyClass { }",
+        "define class MyClass { }"
+      ],
+      "correct": 1,
+      "explanation": "'public class MyClass { }' is the correct syntax. The 'class' keyword is required, and we often use the 'public' access modifier."
+    },
+    {
+      "id": 2,
+      "type": "true-false",
+      "question": "In Java, all primitive types have a default value of 0 or false.",
+      "correct": true,
+      "explanation": "True. Primitive types (int, boolean, etc.) automatically get default values: numbers get 0, boolean gets false."
+    },
+    {
+      "id": 3,
+      "type": "multiple",
+      "question": "Which is NOT a primitive type in Java?",
+      "options": ["int", "boolean", "String", "char"],
+      "correct": 2,
+      "explanation": "String is an object type, not primitive. int, boolean, and char are all primitive types."
+    },
+    {
+      "id": 4,
+      "type": "true-false",
+      "question": "The main() method must have public and static modifiers.",
+      "correct": true,
+      "explanation": "True. The main() method must have the signature 'public static void main(String[] args)'."
+    },
+    {
+      "id": 5,
+      "type": "multiple",
+      "question": "What happens when there are no more references to an object?",
+      "options": [
+        "Nothing, it remains in memory",
+        "It's automatically deleted by the Garbage Collector",
+        "The program throws an error",
+        "It gets a null value"
+      ],
+      "correct": 1,
+      "explanation": "The Garbage Collector automatically frees objects that have no more references to them."
+    }
+  ]
+}

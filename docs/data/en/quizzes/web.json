@@ -1,0 +1,31 @@
+{
+  "title": "Web Development Quiz",
+  "description": "HTML, CSS, JavaScript and web technology fundamentals",
+  "category": "frontend",
+  "difficulty": "beginner",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "What does HTML stand for?",
+      "options": ["Hypertext Markup Language", "Hyperlink Text Management Language", "Home Tool Markup Language", "Hypertext Modern Language"],
+      "correct": 0,
+      "explanation": "HTML stands for Hypertext Markup Language, the standard markup language for creating web pages."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "Which CSS property is used to change text color?",
+      "options": ["text-color", "font-color", "color", "text-style"],
+      "correct": 2,
+      "explanation": "The 'color' property in CSS is used to set the color of text."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "JavaScript is the same as Java.",
+      "correct": false,
+      "explanation": "JavaScript and Java are completely different programming languages with different purposes and syntax."
+    }
+  ]
+}

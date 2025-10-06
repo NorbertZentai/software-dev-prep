@@ -1,0 +1,41 @@
+[
+  {
+    "path": "./exercises/web/01-es6-basics.md",
+    "title": "ES6+ JavaScript Fundamentals",
+    "difficulty": "beginner",
+    "estimatedMinutes": 40,
+    "goals": [
+      "Arrow functions",
+      "Destructuring",
+      "Async/await",
+      "Modules"
+    ],
+    "route": "#/exercises/web/01-es6-basics"
+  },
+  {
+    "path": "./exercises/web/02-react-ts.md",
+    "title": "React with TypeScript",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 50,
+    "goals": [
+      "TypeScript types",
+      "React components",
+      "State management",
+      "Props validation"
+    ],
+    "route": "#/exercises/web/02-react-ts"
+  },
+  {
+    "path": "./exercises/web/03-accessibility.md",
+    "title": "Web Accessibility (A11y)",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 35,
+    "goals": [
+      "ARIA attributes",
+      "Semantic HTML",
+      "Keyboard navigation",
+      "Screen readers"
+    ],
+    "route": "#/exercises/web/03-accessibility"
+  }
+]

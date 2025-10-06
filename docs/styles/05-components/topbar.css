@@ -83,6 +83,28 @@
   transition: all var(--transition-fast);
 }
 
+.language-selector {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+  min-width: 80px;
+}
+
+.language-selector:hover {
+  border-color: var(--accent-primary);
+}
+
+.language-selector:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-primary-alpha);
+}
+
 .theme-btn {
   background: none;
   border: 1px solid var(--border-color);

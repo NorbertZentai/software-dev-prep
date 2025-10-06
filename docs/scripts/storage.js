@@ -16,7 +16,7 @@ export class StorageManager {
     if (!localStorage.getItem(this.keys.SETTINGS)) {
       this.saveSettings({
         theme: 'auto',
-        language: 'hu',
+        language: 'en',
         notifications: true,
       })
     }
@@ -492,7 +492,7 @@ export class StorageManager {
   getSettings() {
     const defaultSettings = {
       theme: 'auto',
-      language: 'hu',
+      language: 'en',
       notifications: true,
     }
 

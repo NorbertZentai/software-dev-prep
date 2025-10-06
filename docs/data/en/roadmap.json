@@ -1,0 +1,165 @@
+{
+  "title": "Software Developer Learning Path 2025",
+  "description": "Comprehensive learning roadmap for modern software development career",
+  "totalEstimatedHours": 220,
+  "modules": [
+    {
+      "id": "java-fundamentals",
+      "title": "Java Fundamentals",
+      "description": "OOP principles, Collections, Exception handling",
+      "route": "#/theory/java",
+      "exerciseRoute": "#/exercises/java",
+      "quizRoute": "#/quiz/java",
+      "estimatedHours": 12,
+      "difficulty": "beginner",
+      "prerequisites": [],
+      "learningGoals": ["JVM operation", "OOP principles", "Collections Framework", "Exception handling"]
+    },
+    {
+      "id": "spring-framework",
+      "title": "Spring Framework",
+      "description": "Dependency Injection, Spring Boot, REST API",
+      "route": "#/theory/spring",
+      "exerciseRoute": "#/exercises/java/02-spring-rest",
+      "quizRoute": "#/quiz/spring",
+      "estimatedHours": 18,
+      "difficulty": "intermediate",
+      "prerequisites": ["java-fundamentals"],
+      "learningGoals": ["Dependency Injection", "Spring Boot", "REST APIs", "Spring Data JPA"]
+    },
+    {
+      "id": "testing-fundamentals",
+      "title": "Testing",
+      "description": "Unit testing, TDD, Mock objects",
+      "route": "#/theory/testing",
+      "exerciseRoute": "#/exercises/java/03-testing",
+      "quizRoute": "#/quiz/testing",
+      "estimatedHours": 14,
+      "difficulty": "intermediate",
+      "prerequisites": ["java-fundamentals"],
+      "learningGoals": ["Unit testing", "JUnit 5", "Mockito", "TDD workflow"]
+    },
+    {
+      "id": "database-fundamentals",
+      "title": "SQL & Databases",
+      "description": "Relational databases, SQL queries",
+      "route": "#/theory/sql",
+      "exerciseRoute": "#/exercises/sql",
+      "quizRoute": "#/quiz/sql",
+      "estimatedHours": 16,
+      "difficulty": "beginner",
+      "prerequisites": [],
+      "learningGoals": ["SQL CRUD operations", "JOINs", "Indexing", "Transactions"]
+    },
+    {
+      "id": "web-development",
+      "title": "Web Development",
+      "description": "HTML, CSS, JavaScript, HTTP protocol",
+      "route": "#/theory/web",
+      "exerciseRoute": "#/exercises/web",
+      "quizRoute": "#/quiz/web",
+      "estimatedHours": 20,
+      "difficulty": "beginner",
+      "prerequisites": [],
+      "learningGoals": ["HTML/CSS/JS", "HTTP protocol", "REST APIs", "Modern frameworks"]
+    },
+    {
+      "id": "algorithms-data-structures",
+      "title": "Algorithms & Data Structures",
+      "description": "Classic algorithms, complexity analysis, problem solving",
+      "route": "#/theory/algorithms",
+      "exerciseRoute": null,
+      "quizRoute": null,
+      "estimatedHours": 40,
+      "difficulty": "intermediate",
+      "prerequisites": ["java-fundamentals"],
+      "learningGoals": ["Two Pointers", "Dynamic Programming", "Graph algorithms", "Backtracking", "String matching", "Complexity analysis"]
+    },
+    {
+      "id": "software-architecture",
+      "title": "Software Architecture",
+      "description": "Design patterns, microservices",
+      "route": "#/theory/arch",
+      "exerciseRoute": "#/exercises/arch",
+      "quizRoute": "#/quiz/arch",
+      "estimatedHours": 24,
+      "difficulty": "advanced",
+      "prerequisites": ["java-fundamentals", "spring-framework"],
+      "learningGoals": ["Design patterns", "Microservices", "Clean Architecture", "Scalability"]
+    },
+    {
+      "id": "version-control",
+      "title": "Git & Version Control",
+      "description": "Git workflow, branching strategies",
+      "route": "#/theory/git",
+      "exerciseRoute": null,
+      "quizRoute": "#/quiz/git",
+      "estimatedHours": 8,
+      "difficulty": "beginner",
+      "prerequisites": [],
+      "learningGoals": ["Git basic commands", "Branching", "Merging", "Team workflow"]
+    },
+    {
+      "id": "devops-fundamentals",
+      "title": "DevOps & CI/CD",
+      "description": "Docker, CI/CD pipelines, deployment",
+      "route": "#/theory/devops",
+      "exerciseRoute": null,
+      "quizRoute": "#/quiz/devops",
+      "estimatedHours": 20,
+      "difficulty": "intermediate",
+      "prerequisites": ["java-fundamentals", "version-control"],
+      "learningGoals": ["Docker", "CI/CD", "Cloud deployment", "Monitoring"]
+    },
+    {
+      "id": "frontend-fundamentals",
+      "title": "Frontend Development",
+      "description": "React, TypeScript, modern frontend tools",
+      "route": "#/theory/frontend",
+      "exerciseRoute": null,
+      "quizRoute": "#/quiz/frontend",
+      "estimatedHours": 28,
+      "difficulty": "intermediate",
+      "prerequisites": ["web-development"],
+      "learningGoals": ["React", "TypeScript", "State management", "Component design"]
+    },
+    {
+      "id": "soft-skills",
+      "title": "Soft Skills",
+      "description": "Communication, teamwork, interviews",
+      "route": "#/theory/softskills",
+      "exerciseRoute": null,
+      "quizRoute": "#/quiz/softskills",
+      "estimatedHours": 10,
+      "difficulty": "intermediate",
+      "prerequisites": [],
+      "learningGoals": ["Communication", "Teamwork", "Problem solving", "Interview skills"]
+    }
+  ],
+  "learningPaths": [
+    {
+      "name": "Backend Developer",
+      "description": "Java backend developer specialization",
+      "modules": ["java-fundamentals", "spring-framework", "testing-fundamentals", "database-fundamentals", "algorithms-data-structures", "software-architecture", "version-control", "devops-fundamentals", "soft-skills"],
+      "estimatedWeeks": 18
+    },
+    {
+      "name": "Full-stack Developer",
+      "description": "Full stack developer track",
+      "modules": ["java-fundamentals", "web-development", "frontend-fundamentals", "spring-framework", "testing-fundamentals", "database-fundamentals", "algorithms-data-structures", "software-architecture", "version-control", "soft-skills"],
+      "estimatedWeeks": 24
+    },
+    {
+      "name": "Interview Preparation",
+      "description": "Interview preparation with algorithms and system design",
+      "modules": ["java-fundamentals", "algorithms-data-structures", "software-architecture", "database-fundamentals", "soft-skills"],
+      "estimatedWeeks": 12
+    },
+    {
+      "name": "Quick Start",
+      "description": "Quick start with basics",
+      "modules": ["java-fundamentals", "spring-framework", "database-fundamentals", "version-control"],
+      "estimatedWeeks": 8
+    }
+  ]
+}

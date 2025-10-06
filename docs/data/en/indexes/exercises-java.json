@@ -1,0 +1,31 @@
+[
+  {
+    "path": "./exercises/java/01-oop-basics.md",
+    "title": "OOP Basics in Java",
+    "difficulty": "beginner",
+    "estimatedMinutes": 30,
+    "goals": ["OOP principles", "Encapsulation", "Inheritance", "Polymorphism"],
+    "route": "#/exercises/java/01-oop-basics"
+  },
+  {
+    "path": "./exercises/java/02-spring-rest.md",
+    "title": "Spring REST API",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 45,
+    "goals": [
+      "REST Controller",
+      "Spring Boot",
+      "JSON API",
+      "Exception Handling"
+    ],
+    "route": "#/exercises/java/02-spring-rest"
+  },
+  {
+    "path": "./exercises/java/03-testing.md",
+    "title": "Unit Testing JUnit 5",
+    "difficulty": "intermediate",
+    "estimatedMinutes": 40,
+    "goals": ["JUnit 5", "Mockito", "Test Coverage", "Integration Tests"],
+    "route": "#/exercises/java/03-testing"
+  }
+]

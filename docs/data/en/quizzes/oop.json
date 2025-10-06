@@ -1,0 +1,222 @@
+{
+  "title": "Object-Oriented Programming Quiz",
+  "description": "Test your OOP knowledge! Encapsulation, inheritance, polymorphism and SOLID principles.",
+  "category": "theory",
+  "difficulty": "beginner",
+  "estimatedMinutes": 15,
+  "tags": ["oop", "encapsulation", "inheritance", "polymorphism", "solid"],
+  "totalQuestions": 15,
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple-choice",
+      "question": "What is the principle of encapsulation?",
+      "options": [
+        "Separating data and methods",
+        "Bundling data and methods together, hiding internal implementation",
+        "Ensuring code reusability",
+        "Defining relationships between different classes"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Encapsulation means bundling data and methods that operate on that data together, while hiding the internal implementation from the outside world.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 2,
+      "type": "multiple-choice",
+      "question": "Which is NOT one of the four fundamental principles of OOP?",
+      "options": [
+        "Encapsulation",
+        "Inheritance", 
+        "Compilation",
+        "Polymorphism"
+      ],
+      "correctAnswer": 2,
+      "explanation": "The four fundamental principles of OOP are: Encapsulation, Inheritance, Polymorphism, and Abstraction. Compilation is not an OOP principle.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 3,
+      "type": "multiple-choice",
+      "question": "What does polymorphism mean?",
+      "options": [
+        "Creating multiple instances of a class",
+        "Different implementations behind the same interface",
+        "Inherited properties between classes",
+        "Hiding private fields"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Polymorphism allows different implementations behind the same interface, and the specific implementation is determined at runtime.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 4,
+      "type": "code-analysis",
+      "question": "What does this code demonstrate?\n\n```java\npublic class BankAccount {\n    private double balance;\n    \n    public void deposit(double amount) {\n        if (amount > 0) {\n            this.balance += amount;\n        }\n    }\n    \n    public double getBalance() {\n        return balance;\n    }\n}\n```",
+      "options": [
+        "Encapsulation example - balance is private, controlled access",
+        "Inheritance example - BankAccount inherits from another class",
+        "Polymorphism example - different deposit implementations",
+        "Abstraction example - defines abstract methods"
+      ],
+      "correctAnswer": 0,
+      "explanation": "This is an example of encapsulation: the balance field is private and can only be accessed through the defined methods.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 5,
+      "type": "multiple-choice", 
+      "question": "What does the 'S' stand for in SOLID principles?",
+      "options": [
+        "Simple Responsibility Principle",
+        "Single Responsibility Principle",
+        "Structured Responsibility Principle", 
+        "Solid Responsibility Principle"
+      ],
+      "correctAnswer": 1,
+      "explanation": "SRP (Single Responsibility Principle) states that a class should have only one reason to change.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 6,
+      "type": "multiple-choice",
+      "question": "When should you use composition over inheritance?",
+      "options": [
+        "Never, inheritance is always better",
+        "When there's a 'has-a' relationship between two classes",
+        "When there's an 'is-a' relationship between two classes",
+        "Only for performance reasons"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Composition is appropriate for 'has-a' relationships (e.g., Car has-a Engine), while inheritance is for 'is-a' relationships (e.g., Car is-a Vehicle).",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 7,
+      "type": "multiple-choice",
+      "question": "What's the difference between interface and abstract class in Java?",
+      "options": [
+        "No difference, they mean the same thing",
+        "Interface only has abstract methods, abstract class can have implementations too",
+        "Abstract class only has abstract methods, interface can have implementations too",
+        "Interface can be private, abstract class cannot"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Interface (before Java 8) could only contain abstract methods, while abstract class can contain implemented methods as well.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 8,
+      "type": "code-analysis",
+      "question": "Which SOLID principle does this code violate?\n\n```java\nclass Employee {\n    public void save() { /* DB save */ }\n    public void sendEmail() { /* Email */ }\n    public void calculateSalary() { /* Calculation */ }\n    public void generateReport() { /* Reporting */ }\n}\n```",
+      "options": [
+        "Single Responsibility Principle",
+        "Open/Closed Principle", 
+        "Liskov Substitution Principle",
+        "Interface Segregation Principle"
+      ],
+      "correctAnswer": 0,
+      "explanation": "This violates SRP because the Employee class has too many responsibilities (data saving, email, salary calculation, reporting).",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 9,
+      "type": "multiple-choice",
+      "question": "What does the 'favor composition over inheritance' principle mean?",
+      "options": [
+        "Never use inheritance",
+        "Build objects from smaller components instead",
+        "Inheritance is always faster",
+        "Composition is more complex than inheritance"
+      ],
+      "correctAnswer": 1,
+      "explanation": "This principle suggests building objects from smaller components (composition) rather than creating deep inheritance hierarchies.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 10,
+      "type": "multiple-choice",
+      "question": "Which design pattern ensures only one instance of a class exists?",
+      "options": [
+        "Factory Pattern",
+        "Observer Pattern",
+        "Singleton Pattern", 
+        "Strategy Pattern"
+      ],
+      "correctAnswer": 2,
+      "explanation": "The Singleton pattern ensures that only one instance of a class exists during the application's lifetime.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 11,
+      "type": "multiple-choice",
+      "question": "What does method overriding mean?",
+      "options": [
+        "Same method name, different parameters",
+        "Redefining a parent class method in a child class",
+        "Using private methods",
+        "Creating static methods"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Method overriding means that a child class redefines a method from its parent class.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 12,
+      "type": "multiple-choice",
+      "question": "What is the Liskov Substitution Principle (LSP)?",
+      "options": [
+        "Derived classes should be substitutable for their base classes",
+        "Classes should not depend on concrete implementations",
+        "A class should have one responsibility",
+        "Classes should be open for extension"
+      ],
+      "correctAnswer": 0,
+      "explanation": "LSP states that derived types should be completely substitutable for their base types without changing the program's behavior.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": 13,
+      "type": "code-analysis",
+      "question": "Which pattern does this code demonstrate?\n\n```java\ninterface PaymentMethod {\n    void pay(double amount);\n}\n\nclass ShoppingCart {\n    private PaymentMethod paymentMethod;\n    \n    public void setPaymentMethod(PaymentMethod method) {\n        this.paymentMethod = method;\n    }\n}\n```",
+      "options": [
+        "Factory Pattern",
+        "Observer Pattern", 
+        "Strategy Pattern",
+        "Singleton Pattern"
+      ],
+      "correctAnswer": 2,
+      "explanation": "This is an example of the Strategy pattern: the ShoppingCart object can switch between different payment strategies at runtime.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 14,
+      "type": "multiple-choice",
+      "question": "What does the Dependency Inversion Principle mean?",
+      "options": [
+        "Dependencies should be in reverse order",
+        "Depend on abstractions, not on concrete implementations", 
+        "Don't use dependency injection",
+        "Dependencies should be private"
+      ],
+      "correctAnswer": 1,
+      "explanation": "DIP states that high-level modules should not depend on low-level modules; both should depend on abstractions.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": 15,
+      "type": "multiple-choice",
+      "question": "Which is NOT a creational design pattern?",
+      "options": [
+        "Factory",
+        "Singleton",
+        "Observer",
+        "Builder"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Observer is a behavioral pattern. Creational patterns include: Factory, Singleton, Builder, Prototype, Abstract Factory.",
+      "difficulty": "intermediate"
+    }
+  ]
+}

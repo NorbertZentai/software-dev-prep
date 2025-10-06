@@ -1,0 +1,31 @@
+{
+  "title": "Spring Framework Quiz",
+  "description": "Spring Boot, Dependency Injection, and enterprise Java development",
+  "category": "framework",
+  "difficulty": "intermediate",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "What is Dependency Injection?",
+      "options": ["Manual object creation", "Automatic dependency management by framework", "Database connection pooling", "Code compilation process"],
+      "correct": 1,
+      "explanation": "Dependency Injection is a design pattern where the framework automatically provides dependencies to objects, reducing coupling."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "Which annotation marks a class as a Spring component?",
+      "options": ["@Bean", "@Component", "@Service", "@Repository"],
+      "correct": 1,
+      "explanation": "@Component is the general-purpose annotation for marking a class as a Spring-managed component."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "Spring Boot requires XML configuration.",
+      "correct": false,
+      "explanation": "Spring Boot promotes convention over configuration and can work entirely with annotations and auto-configuration."
+    }
+  ]
+}

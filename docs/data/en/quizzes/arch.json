@@ -1,0 +1,31 @@
+{
+  "title": "Software Architecture Quiz",
+  "description": "Design patterns, microservices, system design and architectural principles",
+  "category": "architecture",
+  "difficulty": "advanced",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "What is a microservice?",
+      "options": ["A small function", "An independent deployable service", "A database table", "A CSS class"],
+      "correct": 1,
+      "explanation": "A microservice is a small, independent service that can be deployed and scaled independently."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "What is the Repository pattern?",
+      "options": ["Data access abstraction layer", "UI component pattern", "Security pattern", "Performance optimization"],
+      "correct": 0,
+      "explanation": "The Repository pattern provides an abstraction layer between business logic and data access logic."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "Monolithic architecture is always worse than microservices.",
+      "correct": false,
+      "explanation": "Monolithic architecture can be simpler and more appropriate for smaller applications. The choice depends on requirements."
+    }
+  ]
+}

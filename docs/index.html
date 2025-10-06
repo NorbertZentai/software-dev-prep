@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- SEO Meta Tags -->
-    <title>Software Developer Prep - Állásfelkészítő Platform</title>
+    <title>Software Developer Prep - Job Preparation Platform</title>
     <meta
       name="description"
-      content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, algoritmusok, tesztelés, architektúra, DevOps, Frontend témákban. Ingyenes elméleti anyagok, gyakorlatok és kvízek."
+      content="Complete software developer job preparation platform. Java, Spring, SQL, algorithms, testing, architecture, DevOps, Frontend topics. Free theoretical materials, exercises and quizzes."
     />
     <meta
       name="keywords"
-      content="java, spring, sql, algoritmusok, adatstruktúrák, react, typescript, devops, docker, kubernetes, szoftverfejlesztés, álláskereső, felkészülés, programozás, backend, frontend, interjú"
+      content="java, spring, sql, algorithms, data structures, react, typescript, devops, docker, kubernetes, software development, job search, preparation, programming, backend, frontend, interview"
     />
     <meta name="author" content="Software Developer Prep" />
     <meta name="robots" content="index, follow" />
@@ -20,6 +20,11 @@
       rel="canonical"
       href="https://norbertzzentai.github.io/software-dev-prep/"
     />
+    
+    <!-- Language alternatives -->
+    <link rel="alternate" hreflang="hu" href="https://norbertzzentai.github.io/software-dev-prep/" />
+    <link rel="alternate" hreflang="en" href="https://norbertzzentai.github.io/software-dev-prep/" />
+    <link rel="alternate" hreflang="x-default" href="https://norbertzzentai.github.io/software-dev-prep/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -29,11 +34,11 @@
     />
     <meta
       property="og:title"
-      content="Software Developer Prep - Állásfelkészítő Platform"
+      content="Software Developer Prep - Job Preparation Platform"
     />
     <meta
       property="og:description"
-      content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, algoritmusok, tesztelés, architektúra témákban. Ingyenes elméleti anyagok, gyakorlatok és kvízek."
+      content="Complete software developer job preparation platform. Java, Spring, SQL, algorithms, testing, architecture, DevOps, Frontend topics. Free theoretical materials, exercises and quizzes."
     />
     <meta
       property="og:image"
@@ -45,7 +50,7 @@
       property="og:image:alt"
       content="Software Developer Prep platform logo"
     />
-    <meta property="og:locale" content="hu_HU" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Software Developer Prep" />
 
     <!-- Twitter -->
@@ -56,11 +61,11 @@
     />
     <meta
       property="twitter:title"
-      content="Software Developer Prep - Állásfelkészítő Platform"
+      content="Software Developer Prep - Job Preparation Platform"
     />
     <meta
       property="twitter:description"
-      content="Komplett szoftverfejlesztő állásfelkészítő platform. Java, Spring, SQL, tesztelés, architektúra témákban."
+      content="Complete software developer job preparation platform. Java, Spring, SQL, testing, architecture topics."
     />
     <meta
       property="twitter:image"
@@ -99,17 +104,17 @@
         "@context": "https://schema.org",
         "@type": "EducationalOrganization",
         "name": "Software Developer Prep",
-        "description": "Komplett szoftverfejlesztő állásfelkészítő platform",
+        "description": "Complete software developer job preparation platform",
         "url": "https://norbertzzentai.github.io/software-dev-prep/",
         "logo": "https://norbertzzentai.github.io/software-dev-prep/assets/logo.svg",
-        "educationalCredentialAwarded": "Szoftverfejlesztő készségek",
+        "educationalCredentialAwarded": "Software Development Skills",
         "teaches": [
-          "Java programozás",
+          "Java Programming",
           "Spring Framework",
-          "SQL és adatbázis kezelés",
-          "Szoftver tesztelés",
-          "Szoftver architektúra",
-          "Git verziókezelés"
+          "SQL and Database Management",
+          "Software Testing",
+          "Software Architecture",
+          "Git Version Control"
         ]
       }
     </script>
@@ -124,6 +129,7 @@
         aria-controls="sidebar"
         aria-expanded="false"
         title="Navigáció megnyitása"
+        data-i18n-title="nav.toggle"
       >
         ☰
       </button>
@@ -138,15 +144,19 @@
       </div>
       
       <nav class="main-nav">
-        <a href="#/theory/java" class="nav-link">📚 Elmélet</a>
-        <a href="#/exercises/java" class="nav-link">💻 Gyakorlat</a>
-        <a href="#/quiz/java" class="nav-link">🧩 Kvíz</a>
-        <a href="#/roadmap" class="nav-link">🗺️ Roadmap</a>
+        <a href="#/theory/java" class="nav-link" data-i18n="nav.theory">📚 Elmélet</a>
+        <a href="#/exercises/java" class="nav-link" data-i18n="nav.exercises">💻 Gyakorlat</a>
+        <a href="#/quiz/java" class="nav-link" data-i18n="nav.quiz">🧩 Kvíz</a>
+        <a href="#/roadmap" class="nav-link" data-i18n="nav.roadmap">🗺️ Roadmap</a>
       </nav>
       
       <div class="header-tools">
-        <input id="search-input" placeholder="🔍 Keresés..." />
-        <button id="theme-toggle" class="theme-btn" title="Sötét/Világos mód">
+        <input id="search-input" placeholder="🔍 Keresés..." data-i18n="search.placeholder" />
+        <select id="language-selector" class="language-selector" title="Language / Nyelv">
+          <option value="en">🇸 EN</option>
+          <option value="hu">🇭🇺 HU</option>
+        </select>
+        <button id="theme-toggle" class="theme-btn" title="Sötét/Világos mód" data-i18n-title="theme.toggle">
           🌙
         </button>
       </div>
@@ -158,52 +168,53 @@
         aria-controls="theory-sidebar"
         aria-expanded="false"
         title="Fogalmak megnyitása"
+        data-i18n-title="toc.toggle"
       >
         ☰
       </button>
     </div>
   </header>    <aside class="sidebar" id="sidebar">
       <div class="sidebar-content">
-        <h3>📖 Navigáció</h3>
+        <h3 data-i18n="sidebar.navigation">📖 Navigáció</h3>
         <div class="nav-group">
-          <h4>Elmélet</h4>
-          <a href="#/theory/java">☕ Java Alapok</a>
-          <a href="#/theory/oop">🧩 Objektumorientált Programozás</a>
-          <a href="#/theory/spring">🌱 Spring Framework</a>
-          <a href="#/theory/testing">🧪 Tesztelés</a>
-          <a href="#/theory/sql">🗄️ SQL & Adatbázis</a>
-          <a href="#/theory/web">🌐 Web Development</a>
-          <a href="#/theory/frontend">⚛️ Frontend (React, TypeScript)</a>
-          <a href="#/theory/algorithms">🧮 Algoritmusok & Adatstruktúrák</a>
-          <a href="#/theory/devops">🚀 CI/CD & DevOps</a>
-          <a href="#/theory/arch">🏗️ Architektúra</a>
-          <a href="#/theory/git">📚 Git & Verziókezelés</a>
+          <h4 data-i18n="sidebar.theory">Elmélet</h4>
+          <a href="#/theory/java" data-i18n="theory.java">☕ Java Alapok</a>
+          <a href="#/theory/oop" data-i18n="theory.oop">🧩 Objektumorientált Programozás</a>
+          <a href="#/theory/spring" data-i18n="theory.spring">🌱 Spring Framework</a>
+          <a href="#/theory/testing" data-i18n="theory.testing">🧪 Tesztelés</a>
+          <a href="#/theory/sql" data-i18n="theory.sql">🗄️ SQL & Adatbázis</a>
+          <a href="#/theory/web" data-i18n="theory.web">🌐 Web Development</a>
+          <a href="#/theory/frontend" data-i18n="theory.frontend">⚛️ Frontend (React, TypeScript)</a>
+          <a href="#/theory/algorithms" data-i18n="theory.algorithms">🧮 Algoritmusok & Adatstruktúrák</a>
+          <a href="#/theory/devops" data-i18n="theory.devops">🚀 CI/CD & DevOps</a>
+          <a href="#/theory/arch" data-i18n="theory.arch">🏗️ Architektúra</a>
+          <a href="#/theory/git" data-i18n="theory.git">📚 Git & Verziókezelés</a>
         </div>
 
         <div class="nav-group">
-          <h4>Gyakorlatok</h4>
-          <a href="#/exercises/java">☕ Java Feladatok</a>
-          <a href="#/exercises/sql">🗄️ SQL Feladatok</a>
-          <a href="#/exercises/web">🌐 Web Feladatok</a>
-          <a href="#/exercises/arch">🏗️ Architektúra</a>
+          <h4 data-i18n="sidebar.exercises">Gyakorlatok</h4>
+          <a href="#/exercises/java" data-i18n="exercises.java">☕ Java Feladatok</a>
+          <a href="#/exercises/sql" data-i18n="exercises.sql">🗄️ SQL Feladatok</a>
+          <a href="#/exercises/web" data-i18n="exercises.web">🌐 Web Feladatok</a>
+          <a href="#/exercises/arch" data-i18n="exercises.arch">🏗️ Architektúra</a>
         </div>
 
         <div class="nav-group">
-          <h4>Kvízek</h4>
-          <a href="#/quiz/java">☕ Java Teszt</a>
-          <a href="#/quiz/oop">🧩 OOP Teszt</a>
-          <a href="#/quiz/sql">🗄️ SQL Teszt</a>
-          <a href="#/quiz/web">🌐 Web Teszt</a>
-          <a href="#/quiz/frontend">⚛️ Frontend Teszt</a>
-          <a href="#/quiz/devops">🚀 DevOps Teszt</a>
-          <a href="#/quiz/arch">🏗️ Architektúra Teszt</a>
+          <h4 data-i18n="sidebar.quizzes">Kvízek</h4>
+          <a href="#/quiz/java" data-i18n="quiz.java">☕ Java Teszt</a>
+          <a href="#/quiz/oop" data-i18n="quiz.oop">🧩 OOP Teszt</a>
+          <a href="#/quiz/sql" data-i18n="quiz.sql">🗄️ SQL Teszt</a>
+          <a href="#/quiz/web" data-i18n="quiz.web">🌐 Web Teszt</a>
+          <a href="#/quiz/frontend" data-i18n="quiz.frontend">⚛️ Frontend Teszt</a>
+          <a href="#/quiz/devops" data-i18n="quiz.devops">🚀 DevOps Teszt</a>
+          <a href="#/quiz/arch" data-i18n="quiz.arch">🏗️ Architektúra Teszt</a>
         </div>
 
         <div class="nav-group">
-          <h4>Segédletek</h4>
-          <a href="#/checklists/interview">💼 Interjú Kérdések</a>
-          <a href="#/checklists/project-setup">⚙️ Projekt Setup</a>
-          <a href="#/checklists/db-cheatsheet">📋 SQL Cheatsheet</a>
+          <h4 data-i18n="sidebar.checklists">Segédletek</h4>
+          <a href="#/checklists/interview" data-i18n="checklist.interview">💼 Interjú Kérdések</a>
+          <a href="#/checklists/project-setup" data-i18n="checklist.setup">⚙️ Projekt Setup</a>
+          <a href="#/checklists/db-cheatsheet" data-i18n="checklist.db">📋 SQL Cheatsheet</a>
         </div>
       </div>
   </aside>
@@ -225,27 +236,27 @@
 
       <!-- Default welcome screen -->
       <div class="welcome-screen">
-        <h1>🎯 Üdvözöl a Software Developer Prep felkészítő platformon!</h1>
-        <p>
+        <h1 data-i18n="welcome.title">🎯 Üdvözöl a Software Developer Prep felkészítő platformon!</h1>
+        <p data-i18n="welcome.subtitle">
           Válassz a bal oldali menüből, vagy használd a navigációs linkeket.
         </p>
         <div class="quick-actions">
           <a href="#/roadmap" class="action-card">
-            <h3>🗺️ Tanulási Roadmap</h3>
-            <p>Tervezd meg a felkészülési útvonalad</p>
+            <h3 data-i18n="welcome.roadmap.title">🗺️ Tanulási Roadmap</h3>
+            <p data-i18n="welcome.roadmap.desc">Tervezd meg a felkészülési útvonalad</p>
           </a>
           <a href="#/theory/java" class="action-card">
-            <h3>📚 Kezdj az elmélettel</h3>
-            <p>Java alapok és Spring Framework</p>
+            <h3 data-i18n="welcome.theory.title">📚 Kezdj az elmélettel</h3>
+            <p data-i18n="welcome.theory.desc">Java alapok és Spring Framework</p>
           </a>
           <a href="#/quiz/java" class="action-card">
-            <h3>🧩 Teszteld a tudásod</h3>
-            <p>Interaktív kvízek minden témához</p>
+            <h3 data-i18n="welcome.quiz.title">🧩 Teszteld a tudásod</h3>
+            <p data-i18n="welcome.quiz.desc">Interaktív kvízek minden témához</p>
           </a>
         </div>
       </div>
       <noscript>
-        <div class="error-message">
+        <div class="error-message" data-i18n="error.javascript">
           Kérlek engedélyezd a JavaScriptet a teljes funkcionalitáshoz.
         </div>
       </noscript>
@@ -257,9 +268,9 @@
 
     <footer class="footer">
       <p>
-        © 2025 Software Developer Prep – Személyes tanulási platform |
-        <a href="https://github.com" target="_blank">GitHub</a> | Készítve: ❤️ +
-        ☕
+        <span data-i18n="footer.text">© 2025 Software Developer Prep – Személyes tanulási platform |</span>
+        <a href="https://github.com" target="_blank">GitHub</a> | <span data-i18n="footer.made">Készítve: ❤️ +
+        ☕</span>
       </p>
     </footer>
 
@@ -290,6 +301,9 @@
 
   <!-- Theme Management -->
   <script type="module" src="./scripts/theme.js"></script>
+
+  <!-- Internationalization -->
+  <script type="module" src="./scripts/i18n.js"></script>
 
   <!-- Active Menu Management -->
   <script type="module" src="./scripts/active-menu.js"></script>

@@ -1,0 +1,103 @@
+{
+  "index": [
+    {
+      "route": "#/theory/java",
+      "title": "Java Fundamentals",
+      "excerpt": "Object-oriented, platform-independent programming language. JVM, bytecode, garbage collection, collections framework and Stream API.",
+      "tags": ["java", "jvm", "oop", "collections", "streams"],
+      "category": "theory",
+      "difficulty": "beginner",
+      "estimatedMinutes": 20
+    },
+    {
+      "route": "#/theory/oop",
+      "title": "Object-Oriented Programming",
+      "excerpt": "OOP principles: encapsulation, inheritance, polymorphism, abstraction. SOLID principles, design patterns, composition vs inheritance.",
+      "tags": ["oop", "encapsulation", "inheritance", "polymorphism", "solid", "design-patterns"],
+      "category": "theory",
+      "difficulty": "beginner",
+      "estimatedMinutes": 25
+    },
+    {
+      "route": "#/theory/spring",
+      "title": "Spring Framework",
+      "excerpt": "Dependency injection, Spring Boot, REST APIs, Spring Data JPA, Spring Security. Enterprise Java development framework.",
+      "tags": ["spring", "dependency-injection", "spring-boot", "rest", "jpa"],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 30
+    },
+    {
+      "route": "#/theory/sql",
+      "title": "SQL & Database",
+      "excerpt": "Relational databases, SQL queries, JOINs, indexing, transactions, normalization. Database design and optimization.",
+      "tags": ["sql", "database", "joins", "indexing", "transactions"],
+      "category": "theory",
+      "difficulty": "beginner",
+      "estimatedMinutes": 25
+    },
+    {
+      "route": "#/theory/web",
+      "title": "Web Development",
+      "excerpt": "HTML, CSS, JavaScript, HTTP protocol, REST APIs, modern web frameworks and tools.",
+      "tags": ["html", "css", "javascript", "http", "rest", "web"],
+      "category": "theory",
+      "difficulty": "beginner",
+      "estimatedMinutes": 30
+    },
+    {
+      "route": "#/theory/frontend",
+      "title": "Frontend Development",
+      "excerpt": "React, TypeScript, component architecture, state management, modern frontend development tools and practices.",
+      "tags": ["react", "typescript", "frontend", "components", "state-management"],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 35
+    },
+    {
+      "route": "#/theory/algorithms",
+      "title": "Algorithms & Data Structures",
+      "excerpt": "Classic algorithms, complexity analysis, data structures, problem solving techniques for technical interviews.",
+      "tags": ["algorithms", "data-structures", "complexity", "interviews"],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 45
+    },
+    {
+      "route": "#/theory/testing",
+      "title": "Software Testing",
+      "excerpt": "Unit testing, TDD, mocking, integration testing, test coverage and testing best practices.",
+      "tags": ["testing", "tdd", "junit", "mockito", "unit-testing"],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 25
+    },
+    {
+      "route": "#/theory/devops",
+      "title": "DevOps & CI/CD",
+      "excerpt": "Docker, Kubernetes, CI/CD pipelines, deployment strategies, monitoring and infrastructure automation.",
+      "tags": ["devops", "docker", "kubernetes", "ci-cd", "deployment"],
+      "category": "theory",
+      "difficulty": "intermediate",
+      "estimatedMinutes": 30
+    },
+    {
+      "route": "#/theory/arch",
+      "title": "Software Architecture",
+      "excerpt": "Design patterns, microservices, system design, scalability, architectural principles and best practices.",
+      "tags": ["architecture", "microservices", "design-patterns", "scalability"],
+      "category": "theory",
+      "difficulty": "advanced",
+      "estimatedMinutes": 40
+    },
+    {
+      "route": "#/theory/git",
+      "title": "Git & Version Control",
+      "excerpt": "Git commands, branching strategies, merge conflicts, collaboration workflows and version control best practices.",
+      "tags": ["git", "version-control", "branching", "collaboration"],
+      "category": "theory",
+      "difficulty": "beginner",
+      "estimatedMinutes": 20
+    }
+  ]
+}

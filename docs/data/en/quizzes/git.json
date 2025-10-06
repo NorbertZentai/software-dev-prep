@@ -1,0 +1,31 @@
+{
+  "title": "Git & Version Control Quiz",
+  "description": "Git commands, branching strategies and version control workflows",
+  "category": "tools",
+  "difficulty": "beginner",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "Which command initializes a new Git repository?",
+      "options": ["git start", "git init", "git create", "git new"],
+      "correct": 1,
+      "explanation": "The 'git init' command initializes a new Git repository in the current directory."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "What does 'git clone' do?",
+      "options": ["Creates a copy of a repository", "Deletes a repository", "Renames a repository", "Merges repositories"],
+      "correct": 0,
+      "explanation": "'git clone' creates a local copy of a remote repository."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "Git commit saves changes to the remote repository.",
+      "correct": false,
+      "explanation": "Git commit saves changes to the local repository. To save to remote, you need 'git push'."
+    }
+  ]
+}

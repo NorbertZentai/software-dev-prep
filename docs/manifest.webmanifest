@@ -1,14 +1,14 @@
 {
   "name": "Software Developer Prep",
   "short_name": "Dev Prep",
-  "description": "Szoftverfejlesztő állásfelkészítő platform",
+  "description": "Software developer job preparation platform",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "portrait-primary",
   "categories": ["education", "productivity"],
-  "lang": "hu",
+  "lang": "en",
   "icons": [
     {
       "src": "./assets/icons/icon-192.svg",
@@ -31,23 +31,23 @@
   ],
   "shortcuts": [
     {
-      "name": "Java Elmélet",
+      "name": "Java Theory",
       "short_name": "Java",
-      "description": "Java alapok és Spring Framework",
+      "description": "Java fundamentals and Spring Framework",
       "url": "./#/theory/java",
       "icons": [{ "src": "./assets/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },
     {
-      "name": "Algoritmusok",
+      "name": "Algorithms",
       "short_name": "Algo",
-      "description": "Algoritmusok és adatstruktúrák",
+      "description": "Algorithms and data structures",
       "url": "./#/theory/algorithms",
       "icons": [{ "src": "./assets/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },
     {
-      "name": "Kvízek",
+      "name": "Quizzes",
       "short_name": "Quiz",
-      "description": "Interaktív tesztek",
+      "description": "Interactive tests",
       "url": "./#/quiz/java",
       "icons": [{ "src": "./assets/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     }

@@ -1,0 +1,31 @@
+{
+  "title": "DevOps & CI/CD Quiz",
+  "description": "Docker, Kubernetes, CI/CD pipelines and deployment strategies",
+  "category": "devops",
+  "difficulty": "intermediate",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "What is Docker?",
+      "options": ["A database", "A containerization platform", "A programming language", "A web server"],
+      "correct": 1,
+      "explanation": "Docker is a containerization platform that packages applications and their dependencies into containers."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "What does CI/CD stand for?",
+      "options": ["Continuous Integration/Continuous Deployment", "Code Integration/Code Deployment", "Central Integration/Central Deployment", "Complex Integration/Complex Deployment"],
+      "correct": 0,
+      "explanation": "CI/CD stands for Continuous Integration/Continuous Deployment, automating the software delivery process."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "Kubernetes is only for Docker containers.",
+      "correct": false,
+      "explanation": "While Kubernetes is commonly used with Docker, it can orchestrate other container runtimes as well."
+    }
+  ]
+}

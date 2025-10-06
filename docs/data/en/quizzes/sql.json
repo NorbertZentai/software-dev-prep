@@ -1,0 +1,57 @@
+{
+  "title": "SQL Fundamentals Quiz",
+  "description": "SQL queries and database management basics",
+  "category": "database",
+  "difficulty": "beginner",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple",
+      "question": "Which SQL command is used to retrieve data?",
+      "options": ["GET", "FETCH", "SELECT", "RETRIEVE"],
+      "correct": 2,
+      "explanation": "The SELECT command is the basic data retrieval statement in SQL. It allows us to select and query data from tables."
+    },
+    {
+      "id": 2,
+      "type": "multiple",
+      "question": "What is the purpose of a PRIMARY KEY?",
+      "options": [
+        "Faster queries",
+        "Unique identification",
+        "Data type definition",
+        "Index creation"
+      ],
+      "correct": 1,
+      "explanation": "A PRIMARY KEY uniquely identifies rows in a table. It cannot be NULL and must be unique for every row."
+    },
+    {
+      "id": 3,
+      "type": "true-false",
+      "question": "INNER JOIN returns all rows from both tables.",
+      "correct": false,
+      "explanation": "INNER JOIN only returns rows that have matching pairs in both tables. FULL OUTER JOIN returns all rows from both tables."
+    },
+    {
+      "id": 4,
+      "type": "multiple",
+      "question": "Which command is used to create a new table?",
+      "options": ["NEW TABLE", "CREATE TABLE", "MAKE TABLE", "ADD TABLE"],
+      "correct": 1,
+      "explanation": "The CREATE TABLE command is used to create new tables in the database. We must specify the table name and column definitions."
+    },
+    {
+      "id": 5,
+      "type": "multiple",
+      "question": "What's the difference between DELETE and TRUNCATE?",
+      "options": [
+        "No difference",
+        "DELETE removes rows, TRUNCATE removes tables",
+        "DELETE is conditional, TRUNCATE removes entire table content",
+        "DELETE is faster"
+      ],
+      "correct": 2,
+      "explanation": "DELETE command removes rows with conditions (WHERE) and can be rolled back, while TRUNCATE quickly removes entire table content but is not rollback-able."
+    }
+  ]
+}
