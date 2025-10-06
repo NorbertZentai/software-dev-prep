@@ -1,7 +1,10 @@
 // === Markdown Renderer ===
+import { StorageManager } from './storage.js'
+
 export class MarkdownRenderer {
   constructor() {
     this.marked = window.marked
+    this.storage = new StorageManager()
     this.scrollSpyObserver = null
     this.scrollSpyScrollHandler = null
     this.scrollSpyScrollTargets = []
@@ -444,7 +447,11 @@ export class MarkdownRenderer {
     try {
       this.cleanupTheoryPage()
       const { frontmatter, content } = this.parseFrontmatter(markdown)
-      const { mainTitle, concepts } = this.extractConceptsFromMd(content)
+      
+      // Extract topic from filePath (e.g., "theory/java.md" -> "java")
+      const topic = filePath ? filePath.split('/').pop().replace('.md', '') : 'unknown'
+      
+      const { mainTitle, concepts } = this.extractConceptsFromMd(content, topic)
 
       const appEl = document.getElementById('app')
       const sidebar = document.getElementById('theory-sidebar')
@@ -519,7 +526,7 @@ export class MarkdownRenderer {
     }
   }
 
-  extractConceptsFromMd(markdown) {
+  extractConceptsFromMd(markdown, topic = 'unknown') {
     const lines = markdown.split('\n')
     const concepts = []
     let current = null
@@ -574,9 +581,14 @@ export class MarkdownRenderer {
         }
         usedAnchors.add(uniqueAnchor)
 
+        // Generate unique concept ID: topic__anchor
+        const conceptId = `${topic}__${uniqueAnchor}`
+
         current = {
+          id: conceptId,
           title,
           anchor: uniqueAnchor,
+          topic,
           content: '',
         }
       } else if (insideFogalmakSection && current) {
@@ -634,7 +646,10 @@ export class MarkdownRenderer {
   buildTheorySidebar(concepts) {
     return `
       <div class="theory-toc">
-        <h3>📖 Fogalmak</h3>
+        <div class="toc-header-wrapper">
+          <h3>📖 Fogalmak</h3>
+          <button class="toc-close-btn" aria-label="Menü bezárása" style="display: none;">✕</button>
+        </div>
         <input id="toc-search" placeholder="Keresés fogalmak között..." type="text" />
         <ul class="toc-list">
           ${concepts
@@ -666,25 +681,9 @@ export class MarkdownRenderer {
       </header>
     `
 
-    // Generate articles from concepts
+    // Generate articles from concepts using buildConceptArticle
     const conceptArticles = concepts
-      .map((concept) => {
-        let processedContent = this.marked
-          ? this.marked.parse(concept.content.trim())
-          : concept.content.trim()
-
-        // Wrap tables in scroll containers for responsive design
-        processedContent = this.wrapTablesForScroll(processedContent)
-
-        return `
-          <article id="${concept.anchor}" class="concept-article">
-            <h3 class="concept-title">${concept.title}</h3>
-            <div class="concept-body">
-              ${processedContent}
-            </div>
-          </article>
-        `
-      })
+      .map((concept) => this.buildConceptArticle(concept))
       .join('')
 
     return `
@@ -715,17 +714,25 @@ export class MarkdownRenderer {
   }
 
   buildConceptArticle(concept) {
-    const processedContent = this.marked
-      ? this.marked.parse(concept.content)
-      : concept.content
+    let processedContent = this.marked
+      ? this.marked.parse(concept.content.trim())
+      : concept.content.trim()
+
+    // Wrap tables in scroll containers for responsive design
+    processedContent = this.wrapTablesForScroll(processedContent)
 
     return `
-      <article id="${concept.anchor}" class="concept-article" data-concept="${concept.anchor}">
+      <article id="${concept.anchor}" class="concept-article" data-concept="${concept.anchor}" data-concept-id="${concept.id}" data-topic="${concept.topic}">
         <h3 class="concept-title">
-          ${concept.title}
-          <button class="concept-read-toggle" title="Olvasottnak jelölés">
-            <span class="read-icon">✓</span>
-          </button>
+          <span class="concept-title-text">${concept.title}</span>
+          <div class="concept-actions">
+            <button class="concept-favorite-toggle" title="Kedvencekhez adás/eltávolítás" data-concept-id="${concept.id}">
+              <span class="favorite-icon">☆</span>
+            </button>
+            <button class="concept-read-toggle" title="Olvasottnak jelölés">
+              <span class="read-icon">✓</span>
+            </button>
+          </div>
         </h3>
         <div class="concept-body">
           ${processedContent}
@@ -746,6 +753,12 @@ export class MarkdownRenderer {
 
     // Setup deep link handling
     this.setupDeepLinkHandling()
+    
+    // Setup favorite star icons
+    this.setupFavoriteStars()
+    
+    // Setup favorite toggle handlers
+    this.setupFavoriteHandlers()
   }
 
   setupDeepLinkHandling() {
@@ -880,40 +893,26 @@ export class MarkdownRenderer {
 
     readButtons.forEach((button, index) => {
       const concept = concepts[index]
+      if (!concept) return
 
-      // Check if concept is read from localStorage directly for now
-      const conceptKey = `concept_${filePath}_${concept.anchor}`
-      const progress = JSON.parse(
-        localStorage.getItem('software_dev_prep_progress') || '{}'
-      )
-      const isRead =
-        progress[conceptKey] && progress[conceptKey].completionPercentage >= 100
-
+      // Check if concept is marked as read
+      const isRead = this.storage.isConceptRead(filePath, concept.anchor)
       if (isRead) {
         button.classList.add('read')
       }
 
-      button.addEventListener('click', () => {
+      // Handle click event
+      button.addEventListener('click', (e) => {
+        e.preventDefault()
         const wasRead = button.classList.toggle('read')
 
-        // Save to localStorage directly for now
-        const progress = JSON.parse(
-          localStorage.getItem('software_dev_prep_progress') || '{}'
-        )
-        if (wasRead) {
-          progress[conceptKey] = {
-            route: conceptKey,
-            completionPercentage: 100,
-            lastVisited: new Date().toISOString(),
-            visits: 1,
-          }
-        } else {
-          delete progress[conceptKey]
-        }
-        localStorage.setItem(
-          'software_dev_prep_progress',
-          JSON.stringify(progress)
-        )
+        // Save to storage
+        this.storage.markConceptRead(filePath, concept.anchor, wasRead)
+
+        // Show notification
+        this.showReadNotification(wasRead, concept.title)
+
+        // Update progress indicators if they exist
         this.updateProgressIndicators(concepts, filePath)
       })
     })
@@ -1292,7 +1291,7 @@ export class MarkdownRenderer {
             document.body.classList.remove('sidebar-open');
           }
           
-          const toggleBtn = document.getElementById('toc-toggle');
+          const toggleBtn = document.getElementById('mobile-toc-toggle');
           if (toggleBtn) {
             toggleBtn.setAttribute('aria-expanded', 'false');
           }
@@ -1346,7 +1345,7 @@ export class MarkdownRenderer {
   }
 
   setupMobileTocToggle() {
-    const toggleBtn = document.getElementById('toc-toggle')
+    const toggleBtn = document.getElementById('mobile-toc-toggle')
     const sidebar = document.querySelector('.theory-sidebar')
 
     if (!toggleBtn || !sidebar) return
@@ -1372,6 +1371,494 @@ export class MarkdownRenderer {
     // Show/hide toggle button based on current page
     const isTheoryPage = window.location.hash.startsWith('#/theory')
     toggleBtn.style.display = isTheoryPage ? 'block' : 'none'
+  }
+
+  setupFavoriteStars() {
+    // Update star icons based on favorite status
+    const favoriteButtons = document.querySelectorAll('.concept-favorite-toggle')
+    
+    favoriteButtons.forEach(button => {
+      const conceptId = button.dataset.conceptId
+      if (this.storage.isConceptFavorite(conceptId)) {
+        const icon = button.querySelector('.favorite-icon')
+        if (icon) {
+          icon.textContent = '★' // Filled star
+          button.classList.add('is-favorite')
+        }
+      }
+    })
+  }
+
+  setupFavoriteHandlers() {
+    // Event delegation for favorite toggle buttons
+    const contentEl = document.getElementById('theory-content')
+    if (!contentEl) return
+
+    contentEl.addEventListener('click', (e) => {
+      const button = e.target.closest('.concept-favorite-toggle')
+      if (!button) return
+
+      const conceptId = button.dataset.conceptId
+      const article = button.closest('.concept-article')
+      if (!article) return
+
+      const conceptTitle = article.querySelector('.concept-title-text')?.textContent?.trim() || 'Untitled'
+      const topic = article.dataset.topic || 'unknown'
+      const anchor = article.dataset.concept || ''
+
+      // Toggle favorite status
+      const isFavorite = this.storage.toggleConceptFavorite(conceptId, conceptTitle, topic, anchor)
+      
+      // Update icon appearance
+      const icon = button.querySelector('.favorite-icon')
+      if (icon) {
+        icon.textContent = isFavorite ? '★' : '☆'
+        button.classList.toggle('is-favorite', isFavorite)
+      }
+
+      // Optional: Show a brief notification
+      this.showFavoriteNotification(isFavorite)
+    })
+  }
+
+  showFavoriteNotification(isFavorite) {
+    // Create a simple toast notification
+    const toast = document.createElement('div')
+    toast.className = 'favorite-toast'
+    toast.textContent = isFavorite ? '★ Kedvencekhez adva' : '☆ Kedvencekből eltávolítva'
+    document.body.appendChild(toast)
+
+    // Auto-remove after 2 seconds
+    setTimeout(() => {
+      toast.classList.add('fade-out')
+      setTimeout(() => toast.remove(), 300)
+    }, 2000)
+  }
+
+  showReadNotification(isRead, conceptTitle = 'Fogalom') {
+    // Create a simple toast notification
+    const toast = document.createElement('div')
+    toast.className = 'read-toast'
+    const truncatedTitle = conceptTitle.length > 30 ? conceptTitle.substring(0, 30) + '...' : conceptTitle
+    toast.textContent = isRead ? `✓ Olvasottnak jelölve: ${truncatedTitle}` : `✗ Eltávolítva: ${truncatedTitle}`
+    document.body.appendChild(toast)
+
+    // Auto-remove after 2 seconds
+    setTimeout(() => {
+      toast.classList.add('fade-out')
+      setTimeout(() => toast.remove(), 300)
+    }, 2000)
+  }
+
+  async renderFavoriteConcepts() {
+    const favorites = this.storage.getConceptFavorites()
+    const appEl = document.getElementById('app')
+    const sidebar = document.getElementById('theory-sidebar')
+    const welcomeScreen = document.querySelector('.welcome-screen')
+
+    // Hide welcome screen
+    if (welcomeScreen) {
+      welcomeScreen.style.display = 'none'
+    }
+
+    // Activate theory-like layout for favorites
+    appEl.classList.add('theory-layout')
+    document.body.classList.add('theory-active', 'is-theory')
+
+    // Load content for each favorite
+    const favoritesWithContent = await Promise.all(
+      favorites.map(async (fav) => {
+        try {
+          const response = await fetch(`./theory/${fav.topic}.md`)
+          if (!response.ok) return { ...fav, content: '' }
+          const markdown = await response.text()
+          
+          // Extract the specific concept content
+          const conceptContent = this.extractConceptContent(markdown, fav.anchor)
+          return { ...fav, content: conceptContent }
+        } catch (error) {
+          console.error(`Failed to load content for ${fav.topic}:`, error)
+          return { ...fav, content: '' }
+        }
+      })
+    )
+
+    // Build sidebar navigation
+    if (sidebar && favorites.length > 0) {
+      sidebar.classList.remove('hidden')
+      sidebar.style.display = 'block'
+      sidebar.innerHTML = this.buildFavoritesSidebar(favoritesWithContent)
+    } else if (sidebar) {
+      sidebar.classList.add('hidden')
+      sidebar.style.display = 'none'
+      sidebar.innerHTML = ''
+    }
+
+    // Build favorites page content
+    const favoritesHTML = `
+      <div class="favorites-page">
+        <header class="theory-header">
+          <h1>★ Kedvenc Fogalmak</h1>
+          <p class="theory-summary">${favorites.length} fogalom a kedvencek között</p>
+        </header>
+
+        ${favorites.length === 0 ? `
+          <div class="empty-state">
+            <div class="empty-icon">☆</div>
+            <h3>Még nincsenek kedvenc fogalmak</h3>
+            <p>A theory oldalakon a fogalmak mellett található csillag ikonra kattintva hozzáadhatod őket a kedvenceidhez.</p>
+            <a href="#/theory/java" class="btn btn-primary">Theory oldalak böngészése</a>
+          </div>
+        ` : `
+          <div class="favorites-controls">
+            <input 
+              type="text" 
+              id="favorites-search" 
+              placeholder="Keresés a kedvencek között..." 
+              class="toc-search-input"
+            />
+            <select id="favorites-filter" class="favorites-filter-select">
+              <option value="all">Összes téma</option>
+              ${this.getUniqueTopics(favorites).map(topic => 
+                `<option value="${topic}">${this.formatTopicName(topic)}</option>`
+              ).join('')}
+            </select>
+          </div>
+
+          <div class="concepts-container">
+            ${favoritesWithContent.map(fav => this.buildFavoriteConceptCard(fav)).join('')}
+          </div>
+        `}
+      </div>
+    `
+
+    // Render to theory-content or app element
+    const contentEl = document.getElementById('theory-content')
+    if (contentEl) {
+      contentEl.innerHTML = favoritesHTML
+    } else {
+      appEl.innerHTML = favoritesHTML
+    }
+
+    // Setup search and filter functionality
+    if (favorites.length > 0) {
+      this.setupFavoritesSearch()
+      this.setupFavoritesFilter()
+      this.setupFavoriteRemoveHandlers()
+      this.setupFavoritesSidebarNavigation()
+    }
+  }
+
+  buildFavoritesSidebar(favorites) {
+    if (favorites.length === 0) return ''
+
+    // Group favorites by topic
+    const groupedByTopic = favorites.reduce((acc, fav) => {
+      if (!acc[fav.topic]) {
+        acc[fav.topic] = []
+      }
+      acc[fav.topic].push(fav)
+      return acc
+    }, {})
+
+    const topicGroups = Object.entries(groupedByTopic)
+      .map(([topic, concepts]) => {
+        const conceptLinks = concepts
+          .map(concept => `
+            <li>
+              <a href="javascript:void(0)" class="toc-link" data-anchor="favorite-${concept.id}">
+                ${concept.title}
+              </a>
+            </li>
+          `)
+          .join('')
+
+        return `
+          <div class="toc-group">
+            <h4 class="toc-group-title">${this.formatTopicName(topic)}</h4>
+            <ul class="toc-list">
+              ${conceptLinks}
+            </ul>
+          </div>
+        `
+      })
+      .join('')
+
+    return `
+      <div class="theory-toc">
+        <div class="toc-header-wrapper">
+          <h3>📑 Tartalom</h3>
+          <button class="toc-close-btn" aria-label="Menü bezárása" style="display: none;">✕</button>
+        </div>
+        ${topicGroups}
+      </div>
+    `
+  }
+
+  setupFavoritesSidebarNavigation() {
+    // Wait for DOM to be ready
+    setTimeout(() => {
+      const tocLinks = document.querySelectorAll('#theory-sidebar .toc-link')
+      
+      tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          
+          const anchor = link.dataset.anchor
+          const targetElement = document.getElementById(anchor)
+          
+          if (!targetElement) {
+            console.warn('Target element not found:', anchor)
+            return
+          }
+          
+          console.log('Scrolling to:', anchor, targetElement)
+          
+          // Close sticky TOC if open
+          const sidebar = document.getElementById('theory-sidebar')
+          if (sidebar && sidebar.classList.contains('sticky-toc-visible')) {
+            sidebar.classList.remove('sticky-toc-visible')
+            const hamburger = document.querySelector('.theory-hamburger')
+            if (hamburger) {
+              hamburger.textContent = '☰'
+              hamburger.setAttribute('aria-label', 'Fogalmak menü megnyitása')
+            }
+            const closeBtn = sidebar.querySelector('.toc-close-btn')
+            if (closeBtn) closeBtn.style.display = 'none'
+            const overlay = document.querySelector('.sticky-toc-overlay')
+            if (overlay) {
+              overlay.classList.remove('visible')
+              setTimeout(() => overlay.remove(), 300)
+            }
+          }
+          
+          // Scroll to element
+          const headerHeight = document.querySelector('.topbar')?.offsetHeight || 64
+          const targetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20
+          
+          window.scrollTo({
+            top: targetTop,
+            behavior: 'smooth'
+          })
+          
+          // Update active link
+          tocLinks.forEach(l => l.classList.remove('active'))
+          link.classList.add('active')
+        })
+      })
+    }, 100)
+  }
+
+  extractConceptContent(markdown, anchor) {
+    // Split markdown into lines
+    const lines = markdown.split('\n')
+    let content = []
+    let capturing = false
+    let headerLevel = 0
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i]
+      
+      // Check if this is the start of our concept
+      if (line.startsWith('### ')) {
+        const { title: lineTitle, anchor: lineAnchor } = this.parseHeadingWithAnchor(line.replace(/^###\s+/, ''))
+        
+        if (lineAnchor === anchor) {
+          capturing = true
+          headerLevel = 3
+          continue // Skip the heading itself
+        } else if (capturing) {
+          // We've hit another ### heading, stop capturing
+          break
+        }
+      }
+      
+      // Stop if we hit another heading of same or higher level
+      if (capturing && line.startsWith('###')) {
+        break
+      }
+      
+      if (capturing) {
+        content.push(line)
+      }
+    }
+
+    return content.join('\n').trim()
+  }
+
+  buildFavoriteConceptCard(favorite) {
+    const formattedDate = new Date(favorite.addedAt).toLocaleDateString('hu-HU', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+
+    // Check if concept is marked as read
+    const filePath = `theory/${favorite.topic}.md`
+    const isRead = this.storage.isConceptRead(filePath, favorite.anchor)
+
+    // Process markdown content to HTML
+    let processedContent = ''
+    if (favorite.content) {
+      processedContent = this.marked 
+        ? this.marked.parse(favorite.content)
+        : favorite.content
+      
+      // Wrap tables in scroll containers
+      processedContent = this.wrapTablesForScroll(processedContent)
+    }
+
+    return `
+      <article id="favorite-${favorite.id}" class="concept-article favorite-concept-card" data-concept-id="${favorite.id}" data-topic="${favorite.topic}" data-anchor="${favorite.anchor}">
+        <h3 class="concept-title">
+          <span class="concept-title-text">${favorite.title}</span>
+          <div class="concept-actions">
+            <button class="concept-favorite-toggle is-favorite" title="Eltávolítás a kedvencekből" data-concept-id="${favorite.id}">
+              <span class="favorite-icon">★</span>
+            </button>
+            <button class="concept-read-toggle ${isRead ? 'read' : ''}" title="Olvasottnak jelölés" data-file-path="${filePath}" data-anchor="${favorite.anchor}">
+              <span class="read-icon">✓</span>
+            </button>
+          </div>
+        </h3>
+        <div class="concept-body">
+          <div class="favorite-meta">
+            <span class="favorite-topic-badge">${this.formatTopicName(favorite.topic)}</span>
+            <span class="favorite-date">Hozzáadva: ${formattedDate}</span>
+          </div>
+          ${processedContent ? `
+            <div class="favorite-content">
+              ${processedContent}
+            </div>
+          ` : `
+            <p class="favorite-no-content">A tartalom nem érhető el.</p>
+          `}
+          <div class="favorite-actions">
+            <a href="#/theory/${favorite.topic}#${favorite.anchor}" class="view-original-link">
+              → Megtekintés az eredeti oldalon
+            </a>
+          </div>
+        </div>
+      </article>
+    `
+  }
+
+  getUniqueTopics(favorites) {
+    const topics = favorites.map(fav => fav.topic)
+    return [...new Set(topics)].sort()
+  }
+
+  formatTopicName(topic) {
+    const topicNames = {
+      'java': 'Java',
+      'oop': 'OOP',
+      'spring': 'Spring',
+      'testing': 'Tesztelés',
+      'sql': 'SQL',
+      'web': 'Web',
+      'arch': 'Architektúra',
+      'git': 'Git',
+      'devops': 'DevOps',
+      'frontend': 'Frontend',
+      'algorithms': 'Algoritmusok'
+    }
+    return topicNames[topic] || topic.charAt(0).toUpperCase() + topic.slice(1)
+  }
+
+  setupFavoritesSearch() {
+    const searchInput = document.getElementById('favorites-search')
+    if (!searchInput) return
+
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase()
+      const cards = document.querySelectorAll('.favorite-concept-card')
+
+      cards.forEach(card => {
+        const title = card.querySelector('.concept-title-text')?.textContent.toLowerCase() || ''
+        const matches = title.includes(query)
+        card.style.display = matches ? '' : 'none'
+      })
+    })
+  }
+
+  setupFavoritesFilter() {
+    const filterSelect = document.getElementById('favorites-filter')
+    if (!filterSelect) return
+
+    filterSelect.addEventListener('change', (e) => {
+      const selectedTopic = e.target.value
+      const cards = document.querySelectorAll('.favorite-concept-card')
+
+      cards.forEach(card => {
+        const topic = card.dataset.topic
+        const matches = selectedTopic === 'all' || topic === selectedTopic
+        card.style.display = matches ? '' : 'none'
+      })
+    })
+  }
+
+  setupFavoriteRemoveHandlers() {
+    const contentEl = document.getElementById('app')
+    if (!contentEl) return
+
+    contentEl.addEventListener('click', (e) => {
+      const button = e.target.closest('.concept-favorite-toggle')
+      if (!button || !button.classList.contains('is-favorite')) return
+
+      e.preventDefault()
+      e.stopPropagation()
+      
+      const conceptId = button.dataset.conceptId
+      
+      // Remove from storage
+      this.storage.removeConceptFavorite(conceptId)
+      
+      // Remove card from DOM with animation
+      const card = button.closest('.concept-article')
+      if (card) {
+        card.style.animation = 'fadeOut 0.3s ease-out'
+        setTimeout(() => {
+          card.remove()
+          
+          // Update count
+          const countEl = document.querySelector('.theory-summary')
+          const remainingCards = document.querySelectorAll('.favorite-concept-card').length
+          if (countEl) {
+            countEl.textContent = `${remainingCards} fogalom a kedvencek között`
+          }
+          
+          // Show empty state if no favorites left
+          if (remainingCards === 0) {
+            this.renderFavoriteConcepts()
+          }
+        }, 300)
+      }
+      
+      // Show notification
+      this.showFavoriteNotification(false)
+    })
+
+    // Setup read toggle handlers for favorites page
+    contentEl.addEventListener('click', (e) => {
+      const button = e.target.closest('.concept-read-toggle')
+      if (!button) return
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      const filePath = button.dataset.filePath
+      const anchor = button.dataset.anchor
+      const card = button.closest('.concept-article')
+      const conceptTitle = card?.querySelector('.concept-title-text')?.textContent || 'Fogalom'
+
+      // Toggle read status
+      const wasRead = button.classList.toggle('read')
+      this.storage.markConceptRead(filePath, anchor, wasRead)
+
+      // Show notification
+      this.showReadNotification(wasRead, conceptTitle)
+    })
   }
 }
 

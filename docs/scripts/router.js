@@ -11,6 +11,9 @@ export class Router {
     this.storage = new StorageManager()
     this.currentRoute = null
 
+    // Expose renderer globally for debugging
+    window.renderer = this.renderer
+
     // Define all routes
     this.routes = {
       // Theory routes - new concept-based format
@@ -138,6 +141,7 @@ export class Router {
       '#/roadmap': () => this.renderRoadmap(),
       '#/search': () => this.renderSearchResults(),
       '#/favorites': () => this.renderFavorites(),
+      '#/favorites/concepts': () => this.renderFavoriteConcepts(),
       '#/progress': () => this.renderProgress(),
     }
   }
@@ -213,11 +217,11 @@ export class Router {
   }
 
   manageTocToggle(hash) {
-    const tocToggle = document.getElementById('toc-toggle')
+    const tocToggle = document.getElementById('mobile-toc-toggle')
     if (tocToggle) {
       const isTheoryPage = hash.startsWith('#/theory')
       const isMobile = window.matchMedia('(max-width: 768px)').matches
-      tocToggle.style.display = isTheoryPage && isMobile ? 'block' : 'none'
+      tocToggle.style.display = isTheoryPage && isMobile ? 'flex' : 'none'
 
       // Reset TOC state when leaving theory pages
       if (!isTheoryPage) {
@@ -555,6 +559,10 @@ export class Router {
         }
       </div>
     `
+  }
+
+  renderFavoriteConcepts() {
+    this.renderer.renderFavoriteConcepts()
   }
 
   renderProgress() {

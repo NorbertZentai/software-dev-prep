@@ -21,6 +21,8 @@
 @import url('./05-components/cards.css');
 @import url('./05-components/theory.css');
 @import url('./05-components/toc.css');
+@import url('./05-components/favorites.css');
+@import url('./05-components/scroll-to-top.css');
 @import url('./05-components/components-misc.css');
 
 /* 06 – Utilities */

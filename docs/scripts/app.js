@@ -3,7 +3,7 @@ import { Router } from './router.js'
 import { StorageManager } from './storage.js'
 import { ThemeManager } from './theme.js'
 import { i18n } from './i18n.js'
-import './theory-mobile.js' // Initialize theory mobile drawer
+// theory-mobile.js is loaded separately in index.html with cache-bust version
 
 class App {
   constructor() {
@@ -151,7 +151,7 @@ class App {
     const ensureRightVisibility = () => {
       // Show header toggles on mobile only
       const isTheory = window.location.hash.startsWith('#/theory/')
-      const tocToggle = document.getElementById('toc-toggle')
+      const tocToggle = document.getElementById('mobile-toc-toggle')
       if (mql.matches) {
         toggle.style.display = 'inline-flex'
         if (tocToggle) tocToggle.style.display = isTheory ? 'inline-flex' : 'none'

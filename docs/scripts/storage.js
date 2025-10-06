@@ -7,6 +7,7 @@ export class StorageManager {
       BOOKMARKS: 'software_dev_prep_bookmarks',
       SETTINGS: 'software_dev_prep_settings',
       STUDY_SESSIONS: 'software_dev_prep_study_sessions',
+      CONCEPT_FAVORITES: 'software_dev_prep_concept_favorites',
     }
   }
 
@@ -527,6 +528,51 @@ export class StorageManager {
       progress[conceptKey] &&
       progress[conceptKey].completionPercentage >= 100
     )
+  }
+
+  // === Concept Favorites ===
+  addConceptFavorite(conceptId, conceptTitle, topic, anchor) {
+    const favorites = this.getConceptFavorites()
+    
+    // Check if already favorited
+    if (!favorites.find(f => f.id === conceptId)) {
+      favorites.push({
+        id: conceptId,
+        title: conceptTitle,
+        topic: topic,
+        anchor: anchor,
+        addedAt: new Date().toISOString()
+      })
+      localStorage.setItem(this.keys.CONCEPT_FAVORITES, JSON.stringify(favorites))
+      return true
+    }
+    return false
+  }
+
+  removeConceptFavorite(conceptId) {
+    const favorites = this.getConceptFavorites()
+    const filtered = favorites.filter(f => f.id !== conceptId)
+    localStorage.setItem(this.keys.CONCEPT_FAVORITES, JSON.stringify(filtered))
+    return true
+  }
+
+  getConceptFavorites() {
+    return JSON.parse(localStorage.getItem(this.keys.CONCEPT_FAVORITES) || '[]')
+  }
+
+  isConceptFavorite(conceptId) {
+    const favorites = this.getConceptFavorites()
+    return favorites.some(f => f.id === conceptId)
+  }
+
+  toggleConceptFavorite(conceptId, conceptTitle, topic, anchor) {
+    if (this.isConceptFavorite(conceptId)) {
+      this.removeConceptFavorite(conceptId)
+      return false
+    } else {
+      this.addConceptFavorite(conceptId, conceptTitle, topic, anchor)
+      return true
+    }
   }
 
   // === Clear Data ===

@@ -5,7 +5,7 @@
   let ticking = false;
 
   function isTheory() {
-    return location.hash.startsWith('#/theory/');
+    return location.hash.startsWith('#/theory/') || location.hash.startsWith('#/favorites/');
   }
   
   function setCollapsed(on) {
@@ -64,27 +64,79 @@
 
     // Sticky TOC megjelenítés hamburger gombbal - X funkcióval
     document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('theory-sidebar');
+      const hamburger = document.querySelector('.theory-hamburger');
+      
+      // Hamburger button toggle
       if (e.target.classList.contains('theory-hamburger')) {
         e.preventDefault();
-        const sidebar = document.getElementById('theory-sidebar');
-        const hamburger = e.target;
         
         if (sidebar) {
-          // Toggle sticky TOC visibility
           if (sidebar.classList.contains('sticky-toc-visible')) {
-            // Bezárás
-            sidebar.classList.remove('sticky-toc-visible');
-            hamburger.textContent = '☰';
-            hamburger.setAttribute('aria-label', 'Fogalmak menü megnyitása');
+            closeStickyTOC(sidebar, hamburger);
           } else {
-            // Megnyitás
-            sidebar.classList.add('sticky-toc-visible');
-            hamburger.textContent = '✕';
-            hamburger.setAttribute('aria-label', 'Fogalmak menü bezárása');
+            openStickyTOC(sidebar, hamburger);
           }
         }
       }
+      
+      // Close button click
+      if (e.target.classList.contains('toc-close-btn')) {
+        e.preventDefault();
+        closeStickyTOC(sidebar, hamburger);
+      }
+      
+      // Overlay click to close
+      if (e.target.classList.contains('sticky-toc-overlay')) {
+        e.preventDefault();
+        closeStickyTOC(sidebar, hamburger);
+      }
     });
+  }
+  
+  function openStickyTOC(sidebar, hamburger) {
+    sidebar.classList.add('sticky-toc-visible');
+    if (hamburger) {
+      hamburger.textContent = '✕';
+      hamburger.setAttribute('aria-label', 'Fogalmak menü bezárása');
+    }
+    
+    // Show close button
+    const closeBtn = sidebar.querySelector('.toc-close-btn');
+    if (closeBtn) {
+      closeBtn.style.display = 'flex';
+    }
+    
+    // Add overlay
+    let overlay = document.querySelector('.sticky-toc-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'sticky-toc-overlay';
+      document.body.appendChild(overlay);
+    }
+    // Trigger animation
+    setTimeout(() => overlay.classList.add('visible'), 10);
+  }
+  
+  function closeStickyTOC(sidebar, hamburger) {
+    sidebar.classList.remove('sticky-toc-visible');
+    if (hamburger) {
+      hamburger.textContent = '☰';
+      hamburger.setAttribute('aria-label', 'Fogalmak menü megnyitása');
+    }
+    
+    // Hide close button
+    const closeBtn = sidebar?.querySelector('.toc-close-btn');
+    if (closeBtn) {
+      closeBtn.style.display = 'none';
+    }
+    
+    // Remove overlay
+    const overlay = document.querySelector('.sticky-toc-overlay');
+    if (overlay) {
+      overlay.classList.remove('visible');
+      setTimeout(() => overlay.remove(), 300);
+    }
   }
 
   function unbind() {

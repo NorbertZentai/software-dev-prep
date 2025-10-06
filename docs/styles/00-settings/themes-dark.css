@@ -8,4 +8,27 @@
   --text-muted: #94a3b8;
   --border-color: #475569;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  /* RGB values for alpha transparency */
+  --bg-primary-rgb: 15, 23, 42;
+  --bg-secondary-rgb: 30, 41, 59;
+  --bg-accent-rgb: 51, 65, 85;
+  --bg-hover: #334155;
+  
+  /* Code syntax highlighting colors - Dark Mode */
+  --code-keyword: #60a5fa;      /* Brighter blue for keywords */
+  --code-string: #34d399;       /* Brighter green for strings */
+  --code-comment: #94a3b8;      /* Light gray for comments - readable */
+  --code-operator: #a78bfa;     /* Brighter purple for operators */
+  --code-punctuation: #cbd5e1;  /* Light gray for punctuation */
+  --code-number: #fb923c;       /* Brighter orange for numbers */
+  --code-function: #22d3ee;     /* Brighter cyan for functions */
+  --code-variable: #e2e8f0;     /* Light for variables */
+  --code-boolean: #fb923c;      /* Brighter orange for booleans */
+  --code-type: #60a5fa;         /* Brighter blue for types/classes */
+  --code-property: #22d3ee;     /* Brighter cyan for properties */
+  
+  /* Selection colors */
+  --selection-bg: #3b82f640;    /* Blue with transparency */
+  --selection-text: #f8fafc;    /* Light text */
 }

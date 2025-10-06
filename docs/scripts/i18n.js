@@ -49,6 +49,13 @@ export class I18nManager {
         'sidebar.exercises': 'Gyakorlatok',
         'sidebar.quizzes': 'Kvízek',
         'sidebar.checklists': 'Segédletek',
+        'sidebar.favorites': 'Kedvencek',
+        
+        // Favorites
+        'favorites.concepts': '★ Kedvenc Fogalmak',
+        
+        // Scroll to top
+        'scrollTop.label': 'Vissza az oldal tetejére',
         
         // Theory topics
         'theory.java': '☕ Java Alapok',
@@ -240,6 +247,13 @@ export class I18nManager {
         'sidebar.exercises': 'Exercises',
         'sidebar.quizzes': 'Quizzes',
         'sidebar.checklists': 'Checklists',
+        'sidebar.favorites': 'Favorites',
+        
+        // Favorites
+        'favorites.concepts': '★ Favorite Concepts',
+        
+        // Scroll to top
+        'scrollTop.label': 'Back to top',
         
         // Theory topics
         'theory.java': '☕ Java Fundamentals',
