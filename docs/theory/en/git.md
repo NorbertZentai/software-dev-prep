@@ -26,10 +26,10 @@ Git is a distributed version control system that fundamentally changed how devel
 
 ### Repository {#repo-repository}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A Git repository is like a time machine vault: it stores every version of your project, lets you travel back in time, and creates parallel timelines (branches) for different experiments.*
+📋 **Concept Definition**  
+**Distributed Version Control System (DVCS)** storing complete project history locally. **Structure**: Working Directory (current files), Staging Area/Index (prepared changes), Local Repository (.git directory with commits), Remote Repository (GitHub, GitLab, Bitbucket). **Core objects**: Blob (file content), Tree (directory structure), Commit (snapshot with metadata), Tag (named reference). **Distributed nature**: every clone contains full history, enabling offline work, fast operations, redundancy. Git uses SHA-1 hashes for integrity, content-addressable storage.
 
 </div>
 
@@ -137,10 +137,10 @@ git clone --bare https://github.com/user/repo.git
 
 ### .gitignore {#gitignore}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*The .gitignore file is like a bouncer at a club: it tells Git which files/folders can enter version control and which should be kept out.*
+📋 **Concept Definition**  
+**Pattern-based file exclusion system** specifying which files Git should ignore. **Syntax**: wildcards (* for multiple chars, ? for single), directory patterns (trailing /), negation (! to whitelist), comments (#). **Common patterns**: build outputs (target/, dist/, *.class), dependencies (node_modules/, vendor/), IDE files (.idea/, *.iml, .vscode/), OS files (.DS_Store, Thumbs.db), secrets (.env, *.key). **Scope**: project root .gitignore (committed), global ~/.gitignore_global (user-wide), .git/info/exclude (local only). Templates: github.com/github/gitignore.
 
 </div>
 
@@ -323,10 +323,10 @@ echo "src/main.js" | git check-ignore --stdin
 
 ### Commit {#commit}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A commit is like taking a snapshot: it captures the exact state of your project at that moment, with a description of what changed and why.*
+📋 **Concept Definition**  
+**Immutable snapshot of repository state** with metadata. **Components**: Tree object (file/directory structure), parent commit(s) (history chain), author info (name, email, timestamp), committer info (can differ from author), commit message (subject + body). **Best practices**: Conventional Commits (feat:, fix:, docs:), atomic commits (single logical change), imperative mood ("Add feature" not "Added"), explain why not what. **Amending**: git commit --amend modifies last commit (avoid on pushed commits). SHA-1 hash uniquely identifies each commit.
 
 </div>
 
@@ -455,10 +455,10 @@ git log --pretty=format:"%C(yellow)%h %C(red)%d %C(reset)%s %C(green)(%cr) %C(bl
 
 ### Branch {#branch}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Branches are like parallel universes: you can experiment in one universe without affecting the main timeline, then merge successful experiments back.*
+📋 **Concept Definition**  
+**Lightweight movable pointer to commit** enabling parallel development. **Types**: local branches (git branch), remote-tracking branches (origin/main), tracking branches (local linked to remote). **Common workflows**: Git Flow (main, develop, feature/*, release/*, hotfix/*), GitHub Flow (main + feature branches), Trunk-Based Development (short-lived branches). **Operations**: git branch (create), git checkout/switch (move HEAD), git branch -d (delete). **HEAD**: special pointer to current branch. Branches are cheap (just 41 bytes), making liberal branching practical.
 
 </div>
 
@@ -557,10 +557,10 @@ git commit -m "Initial GitHub Pages commit"
 
 ### Merge vs Rebase {#merge-vs-rebase}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Merge is like combining two rivers - you can see where each river came from. Rebase is like redirecting one river to flow from a different source - cleaner but rewrites history.*
+📋 **Concept Definition**  
+**Two strategies for integrating changes**: **Merge** creates new commit with two parents, preserving complete history (three-way merge, fast-forward merge). **Rebase** replays commits onto new base, rewriting history for linear sequence. **Golden rule**: never rebase public/shared branches (causes divergent histories). **Merge strategies**: recursive (default), ours/theirs, octopus (multiple branches). **Interactive rebase** (git rebase -i): squash commits, reorder, edit messages, split commits. **Use merge**: public branches, preserving context. **Use rebase**: cleaning local history before pushing.
 
 </div>
 
@@ -693,10 +693,10 @@ git commit -m "Add complete user authentication system"
 
 ### Pull Request / Merge Request {#pull-request}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A Pull Request is like submitting a proposal: you present your changes, others review and discuss them, then the proposal is accepted or rejected.*
+📋 **Concept Definition**  
+**Platform-specific feature** (GitHub, GitLab, Bitbucket) for proposing and reviewing code changes before merging. **Workflow**: create feature branch, push to remote, open PR with description, CI/CD runs (tests, linting), reviewers comment/approve/request changes, address feedback, merge when approved. **Review practices**: line-by-line comments, suggestion feature, resolve conversations, required approvals, CODEOWNERS file. **Merge strategies**: merge commit, squash and merge (single commit), rebase and merge (linear history). **Draft PRs**: work-in-progress visibility.
 
 </div>
 
@@ -854,10 +854,10 @@ Co-authored-by: Jane Smith <jane@example.com>"
 
 ### GitFlow Workflow {#gitflow}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*GitFlow is like a factory assembly line: features move through development → staging → production with strict quality control at each step.*
+📋 **Concept Definition**  
+**Branching model** (Vincent Driessen) for release management with defined branch types and merge rules. **Branches**: main/master (production-ready), develop (integration branch), feature/* (new features from develop), release/* (release preparation, version bump), hotfix/* (emergency production fixes from main). **Flow**: feature branches merge to develop → release branch created from develop → release testing → merge to main AND develop → tag version. **Alternatives**: GitHub Flow (simpler, main + features), Trunk-Based Development (very short-lived branches), GitLab Flow (environment branches).
 
 </div>
 
@@ -1062,10 +1062,10 @@ git push origin --tags            # All tags
 
 ### Advanced Git Techniques {#advanced-techniques}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Advanced Git techniques are like a master craftsman's toolkit: while basic tools get the job done, specialized tools solve complex problems elegantly.*
+📋 **Concept Definition**  
+**Sophisticated Git operations** beyond basic workflow: **Cherry-pick** (apply specific commit to another branch), **Bisect** (binary search for bug-introducing commit), **Reflog** (recover lost commits, undo mistakes), **Stash** (temporarily shelve changes), **Submodules/Subtrees** (nested repositories), **Worktrees** (multiple working directories), **Filter-branch/filter-repo** (rewrite history at scale), **Sparse checkout** (partial repository checkout). **Debugging**: git blame (line-by-line authorship), git log --graph (visualize history), git diff --stat (summary statistics).
 
 </div>
 
@@ -1319,10 +1319,10 @@ git fetch --unshallow             # Convert to full clone later
 
 ### Git Tags (Annotated vs Lightweight) {#git-tags}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Git tags are like milestones on a road: they mark important points along the journey. Lightweight tags are simple signs "v1.0", annotated tags are information boards with full descriptions: who set it, when, and why.*
+📋 **Concept Definition**  
+**Named reference to specific commit** marking important points (releases, milestones). **Types**: Lightweight tag (simple pointer, like branch that doesn't move: git tag v1.0.0), Annotated tag (full Git object with tagger name, email, date, message, GPG signature: git tag -a v1.0.0 -m "Release v1.0.0"). **Semantic Versioning**: MAJOR.MINOR.PATCH (v2.1.3), breaking.feature.bugfix. **Operations**: git tag (list), git tag -d (delete local), git push --tags (push all tags), git push origin :refs/tags/v1.0 (delete remote). Best practice: use annotated tags for releases.
 
 </div>
 
@@ -1544,10 +1544,10 @@ git describe --dirty               # Add -dirty if working directory modified
 
 ### Git Security {#git-security}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Git security is like digital fortress protection: you need secure gates (SSH keys), guards (access controls), and audit logs (commit signing) to protect your code treasures.*
+📋 **Concept Definition**  
+**Authentication and verification mechanisms**: **SSH keys** (asymmetric encryption for secure git push/pull, ed25519 recommended), **GPG commit signing** (verify commit authenticity: git commit -S, GitHub "Verified" badge), **Personal Access Tokens** (HTTPS authentication alternative to passwords), **Protected branches** (require PR reviews, status checks, force push prevention). **Security practices**: rotate credentials, .gitignore for secrets, git-secrets tool (prevent credential commits), use credential managers (git-credential-manager). **Two-factor authentication** (2FA) for platform accounts mandatory for security.
 
 </div>
 
@@ -1806,10 +1806,10 @@ EOF
 
 ### Git Performance {#git-performance}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Git performance optimization is like tuning a race car: regular maintenance, removing unnecessary weight, and using the right fuel makes everything run faster.*
+📋 **Concept Definition**  
+**Repository optimization techniques**: **Shallow clone** (git clone --depth 1: recent history only, faster CI/CD), **Partial clone** (git clone --filter=blob:none: download blobs on-demand), **Sparse checkout** (checkout subset of files), **Git LFS** (Large File Storage for binary files: pointers instead of full files), **Garbage collection** (git gc: compress objects, remove unreachable), **Reflog expiry** (clean old references), **Repack** (optimize pack files). **Large repo strategies**: monorepo tools (Git submodules, git-subtree, Bazel), history squashing for old branches.
 
 </div>
 
@@ -2079,10 +2079,10 @@ echo "0 2 * * * cd /path/to/repo && ./git-maintenance.sh" | crontab -
 
 ### Git Best Practices Summary {#best-practices-summary}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Git best practices are like rules of the road: following them prevents accidents, ensures smooth traffic flow, and makes everyone's journey more predictable.*
+📋 **Concept Definition**  
+**Team conventions and workflows**: **Commit message standards** (Conventional Commits: type(scope): description), **Branch naming** (feature/USER-123-add-login, bugfix/fix-memory-leak), **Never force push** to shared branches, **Pull before push** (avoid conflicts), **Delete merged branches** (keep repo clean), **Protect main/master** (require PR + approvals), **Sign commits** (GPG verification), **Small focused commits** (atomic changes), **Keep history clean** (interactive rebase before PR). **Documentation**: README.md, CONTRIBUTING.md, CODEOWNERS file.
 
 </div>
 
@@ -2181,10 +2181,10 @@ echo "0 2 * * * cd /path/to/repo && ./git-maintenance.sh" | crontab -
 
 ### Clone vs Fork {#clone-vs-fork}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Clone is like photocopying a book to read at home. Fork is like getting your own copy to edit and potentially publish your version.*
+📋 **Concept Definition**  
+**Clone**: creates local copy of repository (git clone <url>), maintains link to origin, pull/push directly if permissions allow. **Fork**: server-side copy under your account (GitHub/GitLab feature), independent remote repository, pull from upstream, push to your fork. **Open-source workflow**: fork upstream repo → clone your fork → add upstream remote (git remote add upstream <original-url>) → create feature branch → push to fork → open PR to upstream. **Sync fork**: git fetch upstream, git merge upstream/main. Fork preserves connection to original for PR workflow.
 
 </div>
 
@@ -2279,10 +2279,10 @@ gh pr create --title "Add awesome feature" --body "Description of changes"
 
 ### Staging Area (Index) {#staging-area}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Staging area is like a shopping cart: you put items (changes) in the cart before checking out (committing). You can add, remove, or modify items before finalizing the purchase.*
+📋 **Concept Definition**  
+**Index/staging area** between working directory and repository: intermediate layer for preparing commits. **Operations**: git add (stage changes), git add -p (interactive patch mode, stage hunks), git reset HEAD (unstage), git diff (working vs staged), git diff --staged (staged vs last commit). **Partial staging**: stage specific lines/hunks from files. **Use cases**: create atomic commits from multiple file changes, review changes before commit, split work-in-progress into logical commits. **Three states**: modified (working directory), staged (index), committed (repository).
 
 </div>
 

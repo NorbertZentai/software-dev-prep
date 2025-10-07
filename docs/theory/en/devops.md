@@ -8,10 +8,10 @@ DevOps is a cultural and technological approach to improve collaboration between
 
 ### Continuous Integration (CI) Fundamentals {#continuous-integration}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Imagine CI as a dishwasher in a kitchen: every plate (commit) goes through an automatic program (CI pipeline) with washing, rinsing, and drying (build, test, validate) to ensure clean plates (working code) before going to the cabinet (main branch).*
+📋 **Concept Definition**  
+**Practice of frequently integrating code changes** to shared repository with automated verification. **Workflow**: developer commits → automated build → unit tests → integration tests → static analysis → artifact creation. **Build tools**: Jenkins, GitLab CI, GitHub Actions, CircleCI, Travis CI. **Success criteria**: build must complete in <10 minutes, all tests pass, code quality gates met. **Benefits**: early bug detection (shift-left testing), reduced integration conflicts, continuous feedback. **Challenges**: test suite maintenance, flaky tests, build infrastructure costs. **Best practices**: commit daily, keep builds fast, fix broken builds immediately, fail fast on errors.
 
 </div>
 
@@ -412,10 +412,10 @@ pipeline {
 
 ### Continuous Deployment (CD) {#continuous-deployment}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Continuous Deployment is like an automated production line: once a product (code) passes all quality checks, it automatically moves to the shipping dock (production) without human intervention.*
+📋 **Concept Definition**  
+**Automated release of validated changes to production** without manual intervention. **vs Continuous Delivery**: CD deploys automatically, Continuous Delivery requires manual approval. **Pipeline stages**: CI pipeline → staging deployment → automated acceptance tests → production deployment. **Deployment strategies**: blue-green (two environments, instant switch), canary (gradual rollout), rolling update. **Prerequisites**: comprehensive automated tests, robust monitoring, fast rollback mechanisms. **Feature toggles**: deploy code disabled, enable for users incrementally. **Tools**: Spinnaker, ArgoCD, Flux, AWS CodeDeploy. **Risk mitigation**: small batches, feature flags, progressive delivery.
 
 </div>
 
@@ -690,10 +690,10 @@ jobs:
 
 ### Docker Containerization {#docker}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Docker is like a shipping container: your application and all its dependencies are packaged together, so it runs the same way whether it's on your laptop, staging server, or production cluster.*
+📋 **Concept Definition**  
+**Containerization platform** packaging application with dependencies into isolated, portable units. **Components**: Docker Engine (daemon), Images (immutable templates), Containers (running instances), Dockerfile (build instructions), Registry (Docker Hub, private registries). **vs VMs**: shares kernel (lighter), process-level isolation, faster startup. **Layered filesystem**: copy-on-write, image layers cached and reused. **Networking**: bridge (default), host (no isolation), overlay (multi-host). **Volumes**: persist data beyond container lifecycle. **Security**: namespaces, cgroups, capabilities, seccomp. **Multi-stage builds**: optimize image size. **Best practices**: minimal base images (Alpine), non-root users, .dockerignore, health checks.
 
 </div>
 
@@ -1034,10 +1034,10 @@ docker volume prune
 
 ### Infrastructure as Code (IaC) {#infrastructure-as-code}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Infrastructure as Code is like having architectural blueprints for a building: you can recreate the exact same structure anywhere, track changes to the design, and collaborate on modifications.*
+📋 **Concept Definition**  
+**Managing infrastructure through machine-readable definition files** rather than manual configuration. **Declarative vs Imperative**: declarative (Terraform, CloudFormation - define desired state), imperative (Ansible scripts - define steps). **Key tools**: **Terraform** (multi-cloud, HCL language, state management), **Ansible** (agentless, YAML playbooks, configuration management), **CloudFormation** (AWS native), **Pulumi** (use general-purpose languages). **Benefits**: version control (Git), code review process, automated testing (terraform plan), idempotency. **State management**: remote state (S3, Terraform Cloud), state locking, drift detection. **Modules**: reusable infrastructure components. **Best practices**: immutable infrastructure, separate environments, secrets management.
 
 </div>
 
@@ -1533,10 +1533,10 @@ spec:
 
 ### Kubernetes Orchestration {#kubernetes}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Kubernetes is like an intelligent city manager: it automatically assigns housing (pods) to neighborhoods (nodes), manages traffic (networking), ensures services are running (health checks), and scales resources based on demand.*
+📋 **Concept Definition**  
+**Container orchestration platform** for automating deployment, scaling, and management of containerized applications. **Architecture**: Control Plane (API server, scheduler, controller manager, etcd) + Worker Nodes (kubelet, kube-proxy, container runtime). **Core resources**: **Pod** (smallest unit, one or more containers), **Deployment** (declarative updates, replica management), **Service** (stable network endpoint), **ConfigMap/Secret** (configuration), **Ingress** (HTTP routing). **Scheduling**: resource requests/limits, node affinity, taints/tolerations. **Self-healing**: restarts failed pods, replaces nodes, kills unresponsive containers. **Scaling**: Horizontal Pod Autoscaler (HPA based on metrics), Vertical Pod Autoscaler. **Networking**: CNI plugins (Calico, Flannel), NetworkPolicies. **Helm**: package manager for Kubernetes.
 
 </div>
 
@@ -2109,10 +2109,10 @@ kubectl delete namespace ecommerce-prod
 
 ### Monitoring & Observability {#monitoring}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Monitoring is like having a comprehensive health monitoring system for your body: metrics are vital signs (heart rate, temperature), logs are symptoms (what hurts), and traces are medical scans (how systems interact).*
+📋 **Concept Definition**  
+**Three pillars of observability**: **Metrics** (time-series numeric data: CPU, latency, request rate), **Logs** (timestamped event records), **Traces** (request flow through distributed system). **Metrics tools**: Prometheus (pull-based, time-series DB), Grafana (visualization), StatsD. **Logging**: ELK stack (Elasticsearch, Logstash, Kibana), Fluentd, Loki. **Tracing**: Jaeger, Zipkin, OpenTelemetry (unified standard). **Key metrics**: RED (Rate, Errors, Duration for services), USE (Utilization, Saturation, Errors for resources). **Alerting**: Alertmanager, PagerDuty, threshold-based and anomaly detection. **SLO/SLI**: Service Level Objectives/Indicators, error budgets. **APM**: Application Performance Monitoring (New Relic, Datadog).
 
 </div>
 

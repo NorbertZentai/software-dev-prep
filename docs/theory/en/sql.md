@@ -28,10 +28,10 @@ SQL (Structured Query Language) is the standard language for managing relational
 
 ### CRUD Operations {#crud}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*CRUD is like a file cabinet: Create = adding new files, Read = finding and viewing files, Update = modifying files, Delete = removing files.*
+📋 **Concept Definition**  
+**Four basic database operations**: **Create** (INSERT), **Read** (SELECT), **Update** (UPDATE), **Delete** (DELETE). **INSERT**: adds new rows with specified column values, can specify columns or use defaults. **SELECT**: retrieves rows matching WHERE clause, with projections (column selection), joins, aggregations (COUNT, SUM, AVG), ordering, limiting. **UPDATE**: modifies existing rows matching WHERE condition. **DELETE**: removes rows matching WHERE clause (no WHERE = delete all). **Batch operations**: INSERT INTO...SELECT, UPDATE with subqueries, transactions for consistency. **Best practices**: use WHERE clause carefully, test on small datasets first, use transactions for multi-step operations, consider cascading deletes for foreign keys.
 
 </div>
 
@@ -160,10 +160,10 @@ WHERE last_login < CURRENT_DATE - INTERVAL '2 years';
 
 ### Indexes {#indexes}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*An index is like a book's table of contents: you find what you're looking for quickly, but writing the book becomes slower because you need to update the table of contents too.*
+📋 **Concept Definition**  
+**Data structure improving query performance** at cost of write overhead. **Types**: **B-tree** (default, balanced tree for range queries), **Hash** (exact matches, O(1)), **Bitmap** (low cardinality columns), **Full-text** (text search), **Spatial** (geographic data). **Clustered vs Non-clustered**: clustered determines physical row order (1 per table, often primary key), non-clustered has separate structure pointing to rows (multiple allowed). **Composite indexes**: multiple columns (order matters, leftmost prefix rule). **Trade-offs**: SELECT faster, INSERT/UPDATE/DELETE slower (index maintenance), storage overhead. **Query planner**: uses statistics to decide index usage (EXPLAIN ANALYZE). **Best practices**: index foreign keys, WHERE/JOIN/ORDER BY columns, avoid over-indexing.
 
 </div>
 
@@ -331,10 +331,10 @@ ORDER BY pg_relation_size(indexrelid) DESC;
 
 ### Normalization {#normalization}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Normalization is like organizing a messy room: 1NF = everything in its place, 2NF = group related items, 3NF = eliminate duplicates, but sometimes you leave commonly used items out for convenience (denormalization).*
+📋 **Concept Definition**  
+**Database design process** eliminating redundancy and dependency anomalies. **Normal Forms**: **1NF** (atomic columns, no repeating groups, primary key), **2NF** (1NF + no partial dependencies on composite key), **3NF** (2NF + no transitive dependencies), **BCNF** (Boyce-Codd, stricter 3NF), **4NF/5NF** (multi-valued dependencies). **Benefits**: data integrity (single source of truth), reduced storage, easier updates. **Denormalization**: intentional redundancy for read performance (analytics, reporting), trade consistency for speed. **Star schema**: denormalized for data warehouses (fact + dimension tables). **Best practices**: normalize to 3NF by default, denormalize with caching/views, consider use case (OLTP vs OLAP).
 
 </div>
 
@@ -518,10 +518,10 @@ GROUP BY o.id, c.name, c.email, o.order_date, o.status;
 
 ### Transactions {#transactions}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A transaction is like a bank transfer: either both the debit and credit happen completely, or neither happens at all. No partial transfers allowed.*
+📋 **Concept Definition**  
+**Logical unit of work** comprising one or more SQL statements, executed atomically. **Commands**: BEGIN/START TRANSACTION, COMMIT (make permanent), ROLLBACK (undo all changes), SAVEPOINT (partial rollback). **ACID guarantees**: Atomicity (all-or-nothing), Consistency (valid state), Isolation (concurrent transactions isolated), Durability (committed changes persist). **Isolation levels**: READ UNCOMMITTED (dirty reads), READ COMMITTED (default in most DBs), REPEATABLE READ, SERIALIZABLE (strictest, prevents phantoms). **Concurrency control**: locking (pessimistic), MVCC (Multi-Version Concurrency Control, optimistic). **Deadlocks**: two transactions waiting for each other's locks, DB detects and aborts one. **Best practices**: keep transactions short, avoid user input during transaction, handle rollback scenarios.
 
 </div>
 
@@ -669,10 +669,10 @@ COMMIT;
 
 ### ACID Properties {#acid}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*ACID is like a bank's security system: Atomicity = all-or-nothing deposits, Consistency = balance rules never broken, Isolation = transactions don't peek at each other, Durability = permanent records in the vault.*
+📋 **Concept Definition**  
+**Four properties guaranteeing reliable transactions**: **Atomicity** (all operations succeed or all fail, no partial execution), **Consistency** (database moves from valid state to valid state, constraints maintained), **Isolation** (concurrent transactions don't see intermediate states, achieved via locking/MVCC), **Durability** (committed changes survive crashes, via Write-Ahead Logging). **Implementation**: **Atomicity** via undo logs, **Consistency** via constraint checking, **Isolation** via locks or snapshots, **Durability** via redo logs flushed to disk. **Trade-offs**: strict ACID impacts performance, NoSQL databases often relax for scalability (BASE: Basically Available, Soft state, Eventually consistent). **Use cases**: financial systems, inventory, bookings require strong ACID.
 
 </div>
 
@@ -766,10 +766,10 @@ COMMIT;
 
 ### Window Functions {#window-functions}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Window functions are like looking through different windows of your data: you can see rankings, running totals, or comparisons with neighboring rows without changing the view itself.*
+📋 **Concept Definition**  
+**SQL functions performing calculations across row sets** related to current row without grouping. **Structure**: function() OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE ...). **Functions**: **Ranking** (ROW_NUMBER, RANK, DENSE_RANK, NTILE), **Aggregate** (SUM, AVG, COUNT over window), **Analytical** (LAG, LEAD for prev/next row, FIRST_VALUE, LAST_VALUE). **PARTITION BY**: divides rows into groups (like GROUP BY but doesn't collapse rows). **ORDER BY**: defines order within partition. **Frame clause**: ROWS BETWEEN ... (physical rows) or RANGE BETWEEN ... (logical range). **Use cases**: running totals, moving averages, rank within category, compare to previous period. **vs GROUP BY**: window functions retain all rows.
 
 </div>
 
@@ -869,10 +869,10 @@ FROM sales;
 
 ### DDL/DML {#ddl-dml}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*DDL is like an architect: designs and builds the structure. DML is like a resident: lives in and uses the structure.*
+📋 **Concept Definition**  
+**Two SQL language categories**: **DDL (Data Definition Language)** defines schema structure, **DML (Data Manipulation Language)** modifies data. **DDL commands**: CREATE (tables, indexes, views), ALTER (modify schema), DROP (delete objects), TRUNCATE (delete all rows, faster than DELETE). **DML commands**: SELECT, INSERT, UPDATE, DELETE. **Additional categories**: **DCL** (Data Control Language: GRANT, REVOKE), **TCL** (Transaction Control: COMMIT, ROLLBACK). **Implicit commits**: DDL auto-commits in most databases (can't rollback CREATE TABLE). **Migrations**: version-controlled DDL scripts (Flyway, Liquibase) for schema evolution. **Permissions**: DBAs have DDL rights, applications typically only DML.
 
 </div>
 
@@ -997,10 +997,10 @@ WHERE expires_at < CURRENT_TIMESTAMP;
 
 ### JOINs (INNER/LEFT/RIGHT) {#joins}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*JOINs are like family tree research: INNER JOIN shows only confirmed relatives, LEFT JOIN shows all ancestors + known descendants, RIGHT JOIN is the reverse.*
+📋 **Concept Definition**  
+**Combining rows from multiple tables** based on related columns. **INNER JOIN**: returns only matching rows from both tables (intersection). **LEFT (OUTER) JOIN**: all rows from left table + matches from right (NULLs for non-matches). **RIGHT (OUTER) JOIN**: all rows from right table + matches from left. **FULL (OUTER) JOIN**: all rows from both tables (NULLs where no match). **CROSS JOIN**: Cartesian product (all combinations). **SELF JOIN**: table joined with itself. **Join conditions**: ON clause (any boolean), USING (equal column names). **Performance**: indexed join columns, avoid Cartesian products, consider join order. **Execution**: nested loops, hash joins, merge joins (query planner chooses).
 
 </div>
 

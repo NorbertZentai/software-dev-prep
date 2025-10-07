@@ -53,10 +53,10 @@ To implement OOP principles in practice within a Java environment, it's worth un
 
 ### Encapsulation {#encapsulation}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Encapsulation is like a medicine capsule: the internal workings are hidden, only the necessary interface is accessible from the outside.*
+📋 **Concept Definition**  
+**Bundling data and methods** operating on that data within single unit (class), restricting direct access to internal state. **Access modifiers**: private (class only), protected (class + subclasses), public (everywhere), package-private/default (same package). **Implementation**: private fields with public getter/setter methods (properties), validation in setters. **Benefits**: prevents invalid state, controlled access, implementation flexibility (change internals without breaking clients). **Information hiding**: expose minimal necessary interface. Java: JavaBeans convention (getX/setX/isX methods).
 
 </div>
 
@@ -206,10 +206,10 @@ Don't call methods on objects returned by other objects. E.g., car.start() inste
 
 ### Inheritance {#inheritance}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Inheritance is like family traits: children inherit characteristics from parents but also have their own unique features.*
+📋 **Concept Definition**  
+**IS-A relationship** where subclass inherits fields and methods from superclass, extending/overriding behavior. **Java syntax**: extends keyword (single inheritance), super() calls parent constructor, @Override annotation. **Types**: single inheritance (one parent), multilevel (chain), hierarchical (multiple children from one parent). **Method overriding**: subclass provides specific implementation of parent method (runtime polymorphism). **Protected access**: allows subclass access. **Composition over inheritance**: prefer HAS-A relationship (composition) for flexibility. **Abstract classes**: cannot instantiate, may have abstract methods (contract for subclasses).
 
 </div>
 
@@ -340,10 +340,10 @@ myCar.openTrunk();  // Car-specific method
 
 ### Polymorphism {#polymorphism}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Polymorphism is like a universal remote: the same button (interface) can control different devices (implementations).*
+📋 **Concept Definition**  
+**Single interface with multiple implementations**: object can take many forms. **Types**: **Compile-time polymorphism** (method overloading: same name, different parameters), **Runtime polymorphism** (method overriding: subclass replaces parent implementation, resolved via dynamic dispatch). **Mechanism**: virtual method table (vtable) for runtime lookup, Object reference can hold subclass instance (Shape shape = new Circle()). **Covariant return types**: overriding method can return subtype. **Interface polymorphism**: implement multiple interfaces. Enables writing generic code working with different types through common interface.
 
 </div>
 
@@ -470,10 +470,10 @@ for (Shape shape : shapes) {
 
 ### Abstraction {#abstraction}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Abstraction is like using a smartphone: you use apps without knowing the complex hardware and software underneath.*
+📋 **Concept Definition**  
+**Hiding implementation complexity**, exposing only essential characteristics and behaviors. **Mechanisms**: **Abstract classes** (0-100% abstract methods, can have state/concrete methods), **Interfaces** (100% abstract pre-Java 8, now allows default/static methods). **Abstract methods**: declared without body, subclass must implement. **Purpose**: define contract (what operations available), defer implementation details to subclasses. **Template Method pattern**: abstract class defines algorithm skeleton, subclasses fill steps. **Abstraction levels**: high-level concepts (shapes, vehicles) to low-level implementation (rendering, engine mechanics).
 
 </div>
 
@@ -605,10 +605,10 @@ db.executeQuery("SELECT * FROM users");  // Abstract interface
 
 ### Polymorphism {#polymorphism}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Polymorphism is like a universal remote: the same button (interface) can control different devices (implementations).*
+📋 **Concept Definition**  
+**Single interface with multiple implementations**: object can take many forms. **Types**: **Compile-time polymorphism** (method overloading: same name, different parameters), **Runtime polymorphism** (method overriding: subclass replaces parent implementation, resolved via dynamic dispatch). **Mechanism**: virtual method table (vtable) for runtime lookup, Object reference can hold subclass instance (Shape shape = new Circle()). **Covariant return types**: overriding method can return subtype. **Interface polymorphism**: implement multiple interfaces. Enables writing generic code working with different types through common interface.
 
 </div>
 
@@ -659,10 +659,10 @@ for (Shape shape : shapes) {
 
 ### Abstraction {#abstraction}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Abstraction is like using a smartphone: you use apps without knowing the complex hardware and software underneath.*
+📋 **Concept Definition**  
+**Hiding implementation complexity**, exposing only essential characteristics and behaviors. **Mechanisms**: **Abstract classes** (0-100% abstract methods, can have state/concrete methods), **Interfaces** (100% abstract pre-Java 8, now allows default/static methods). **Abstract methods**: declared without body, subclass must implement. **Purpose**: define contract (what operations available), defer implementation details to subclasses. **Template Method pattern**: abstract class defines algorithm skeleton, subclasses fill steps. **Abstraction levels**: high-level concepts (shapes, vehicles) to low-level implementation (rendering, engine mechanics).
 
 </div>
 
@@ -703,10 +703,10 @@ class Car extends Vehicle {
 
 ## SOLID Principles {#solid-principles}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*SOLID is like the five fundamental rules of architecture: if you follow them, you get a stable, flexible building (software).*
+📋 **Concept Definition**  
+**Five object-oriented design principles** (Robert C. Martin): **S**ingle Responsibility (class has one reason to change), **O**pen/Closed (open for extension, closed for modification), **L**iskov Substitution (subtypes must be substitutable for base types), **I**nterface Segregation (many specific interfaces better than one general), **D**ependency Inversion (depend on abstractions not concretions, high-level modules shouldn't depend on low-level). **Implementation**: use interfaces, dependency injection, favor composition. **Benefits**: maintainable, testable, flexible code. **Trade-offs**: may increase initial complexity, over-engineering risk.
 
 </div>
 
@@ -974,10 +974,10 @@ class OrderService {
 
 ### Object Lifecycle & Invariants {#object-lifecycle}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Object lifecycle is like a living organism: birth (construction), life (operations), and death (garbage collection).*
+📋 **Concept Definition**  
+**Object creation to destruction process**: constructor (initialization), usage (method calls), finalization (cleanup, garbage collection). **Object invariant**: condition remaining true throughout object's lifecycle. Constructor ensures valid initial state, public methods preserve invariant. Immutable objects have simpler lifecycle management. **Java specifics**: constructor chaining (this/super), finalize() deprecated (use try-with-resources, AutoCloseable), garbage collection (reachability-based). **Design patterns**: Factory (centralized creation), Singleton (controlled lifecycle), Object Pool (reuse expensive objects), Prototype (clone-based creation).
 
 </div>
 
@@ -1067,10 +1067,10 @@ try (DatabaseConnection db = new DatabaseConnection("jdbc:mysql://localhost")) {
 
 ### Cohesion & Coupling {#cohesion-coupling}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Cohesion is like a well-organized toolbox where all tools serve one purpose. Coupling is like entangled Christmas lights - hard to change one without affecting others.*
+📋 **Concept Definition**  
+**Cohesion**: degree to which elements within module belong together (high cohesion = focused responsibility). **Coupling**: degree of interdependence between modules (low coupling = minimal dependencies). **Cohesion types**: functional (best), sequential, communicational, procedural, temporal, logical, coincidental (worst). **Coupling types**: content (worst), common, external, control, stamp, data (best), message (best). **Goal**: high cohesion + low coupling. **Techniques**: encapsulation, dependency injection, interfaces, events. **Metrics**: LCOM (Lack of Cohesion of Methods), afferent/efferent coupling.
 
 </div>
 
@@ -1173,10 +1173,10 @@ class OrderProcessor {
 
 ### Law of Demeter {#law-of-demeter}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Don't talk to strangers - only communicate with your direct neighbors, don't ask them about their friends.*
+📋 **Concept Definition**  
+**Principle of Least Knowledge**: object should only call methods of: itself, parameters passed, objects it creates, its direct component objects. **Avoid**: chaining calls through intermediate objects (a.getB().getC().doSomething()). **Benefits**: reduces coupling, makes code resilient to changes in distant objects. **Violation example**: order.getCustomer().getAddress().getCity() - knows too much about Customer and Address structure. **Better**: order.getCustomerCity() - encapsulates navigation. **Trade-off**: may require wrapper methods. Also called "Don't Talk to Strangers" or "Principle of Least Knowledge".
 
 </div>
 
@@ -1338,10 +1338,10 @@ Delegation pattern: add wrapper methods that hide internal structure.
 
 ### Value Object vs Entity {#value-object-entity}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Value Objects are like money bills - two $20 bills are identical. Entities are like people - even twins have different identities.*
+📋 **Concept Definition**  
+**Domain-Driven Design concepts**: **Value Objects** defined by attributes (equality by value: two Money(100, USD) are same), immutable, no identity, e.g., Money, Address, DateRange. **Entities** defined by identity (equality by ID: two Person objects with same data but different IDs are different), mutable, continuous identity throughout lifecycle, e.g., User, Order, Product. **Implementation**: Value Objects override equals/hashCode based on all fields, Entities use ID field only. **Benefits**: Value Objects are thread-safe (immutable), Entities track state changes. Java Records perfect for Value Objects.
 
 </div>
 
@@ -1534,10 +1534,10 @@ class Subject {
 
 ### Interface vs Abstract Class {#interface-vs-abstract-class}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Interface = contract ("what to do"), Abstract Class = partially finished template ("how to do it, but you decide some parts").*
+📋 **Concept Definition**  
+**Interface**: 100% abstraction (pre-Java 8), pure contract, no state, multiple inheritance, all methods public. Java 8+: default methods (implementation in interface), static methods. **Abstract Class**: 0-100% abstraction, can have state (fields), constructors, single inheritance, any access modifiers. **When to use Interface**: defining capability (Serializable, Comparable), unrelated classes implementing same contract, multiple inheritance needed. **When Abstract Class**: sharing code among related classes, protected/private members needed, non-static/non-final fields required. **Modern Java**: prefer interfaces with default methods for flexibility.
 
 </div>
 
@@ -1704,10 +1704,10 @@ class Circle extends Shape implements Drawable {
 
 ### Access Modifiers & Visibility {#access-modifiers}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Access modifiers are like security clearance levels: they control who can access what information.*
+📋 **Concept Definition**  
+**Visibility control keywords** in Java: **private** (class only, most restrictive), **default/package-private** (no keyword, same package), **protected** (same package + subclasses in any package), **public** (everywhere, least restrictive). **Best practices**: fields private by default, methods public only if part of API, prefer getters/setters over public fields. **Encapsulation**: private fields with controlled access. **Class-level**: public (one per file, matches filename) or package-private (internal use). **Module system** (Java 9+): additional encapsulation layer beyond packages.
 
 </div>
 
@@ -1835,10 +1835,10 @@ class DifferentPackageSubclass extends AccessExample {
 
 #### Singleton Pattern
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Singleton is like a president of a country: there can only be one at a time.*
+📋 **Concept Definition**  
+**Creational pattern** ensuring class has only one instance with global access point. **Implementation**: private constructor, static getInstance() method, static instance variable. **Thread-safety**: Double-Checked Locking (volatile + synchronized), Eager initialization (class loading time), Bill Pugh Singleton (static inner class - lazy + thread-safe), Enum Singleton (best, serialization-safe). **Use cases**: configuration managers, logging, database connections, caches. **Drawbacks**: global state (testing difficulty), violates Single Responsibility, hidden dependencies. **Modern alternative**: Dependency Injection frameworks (Spring @Scope("singleton")).
 
 </div>
 
@@ -1872,10 +1872,10 @@ public class DatabaseManager {
 
 #### Factory Pattern
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Factory is like a restaurant kitchen: you order what you want, but you don't need to know how it's made.*
+📋 **Concept Definition**  
+**Creational pattern** delegating object instantiation to factory method/class. **Types**: **Simple Factory** (static method returning interface/abstract class), **Factory Method** (subclasses decide which class to instantiate, Template Method for creation), **Abstract Factory** (families of related objects). **Benefits**: encapsulates object creation logic, promotes loose coupling, adheres to Open/Closed Principle. **Use cases**: complex construction logic, object type determined at runtime, dependency injection. **Example**: DocumentFactory.create("PDF") returns PDFDocument instance. Modern: use with Dependency Injection.
 
 </div>
 
@@ -1915,10 +1915,10 @@ vehicle.start();
 
 #### Observer Pattern
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Observer is like a newsletter subscription: when something interesting happens, all subscribers get notified.*
+📋 **Concept Definition**  
+**Behavioral pattern** defining one-to-many dependency: when one object (Subject) changes state, all dependents (Observers) are notified automatically. **Components**: Subject (maintains observers list, notifies changes), Observer (interface with update method), ConcreteObserver (implements reaction to notifications). **Push vs Pull**: push (Subject sends data), pull (Observer retrieves data from Subject). **Use cases**: event handling systems, MVC architecture (Model notifies View), reactive programming. **Java**: java.util.Observable (deprecated), PropertyChangeListener, modern reactive libraries (RxJava, Project Reactor). **Pub-Sub** pattern is related but more decoupled.
 
 </div>
 
@@ -1989,10 +1989,10 @@ agency.setNews("Breaking: OOP principles explained!");
 
 #### Strategy Pattern
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Strategy is like choosing different routes to the same destination: the goal is the same, but the method varies.*
+📋 **Concept Definition**  
+**Behavioral pattern** defining family of algorithms, encapsulating each, making them interchangeable. **Structure**: Strategy interface (common algorithm signature), ConcreteStrategy classes (different implementations), Context (uses Strategy). **Benefits**: Open/Closed Principle (add strategies without modifying context), eliminates conditionals (no switch/if-else), runtime algorithm selection. **Use cases**: payment methods, sorting algorithms, compression algorithms, route planning. **Java**: Comparator interface is Strategy pattern. **vs State pattern**: Strategy chosen by client, State changes internally.
 
 </div>
 
@@ -2064,10 +2064,10 @@ cart.checkout(); // Pays with PayPal
 
 ### Thread-Safety in OOP {#thread-safety-oop}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Thread-safety is like traffic rules: they prevent accidents when multiple cars (threads) use the same road (shared resources).*
+📋 **Concept Definition**  
+**Property ensuring correct behavior** when multiple threads access shared mutable state. **Techniques**: **Immutability** (thread-safe by nature), **Synchronization** (synchronized keyword, locks), **Atomic operations** (AtomicInteger, compare-and-swap), **Thread confinement** (ThreadLocal, no sharing), **Concurrent collections** (ConcurrentHashMap, CopyOnWriteArrayList). **Java Memory Model**: visibility guarantees (volatile, synchronized), happens-before relationship. **Thread-safe classes**: String, Integer (immutable), Collections.synchronizedList(), concurrent packages. **Performance**: contention overhead, prefer immutability or lock-free structures. **Testing**: challenging due to non-deterministic behavior.
 
 </div>
 
@@ -2258,10 +2258,10 @@ class Stack {
 
 ### GRASP Principles {#grasp-principles}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*GRASP is like good hosting rules: who should do what so the party (code) runs smoothly.*
+📋 **Concept Definition**  
+**General Responsibility Assignment Software Patterns** (Craig Larman): nine principles for assigning responsibilities. **Key patterns**: **Information Expert** (assign responsibility to class with needed information), **Creator** (who creates objects), **Controller** (handles system events), **Low Coupling/High Cohesion** (minimize dependencies, focused classes), **Polymorphism** (type-based behavior variation), **Pure Fabrication** (artificial class for cohesion), **Indirection** (intermediary reduces coupling), **Protected Variations** (shield from changes). **Complements SOLID**: more granular guidance for OO design decisions. **Domain-Driven Design** aligns well with GRASP.
 
 </div>
 
@@ -2456,10 +2456,10 @@ class CurrencyService {
 
 ### Thread-Safety in OOP {#thread-safety-oop}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Thread-safety is like traffic rules: without them, multiple cars (threads) accessing the same intersection (object) causes crashes.*
+📋 **Concept Definition**  
+**Property ensuring correct behavior** when multiple threads access shared mutable state. **Techniques**: **Immutability** (thread-safe by nature), **Synchronization** (synchronized keyword, locks), **Atomic operations** (AtomicInteger, compare-and-swap), **Thread confinement** (ThreadLocal, no sharing), **Concurrent collections** (ConcurrentHashMap, CopyOnWriteArrayList). **Java Memory Model**: visibility guarantees (volatile, synchronized), happens-before relationship. **Thread-safe classes**: String, Integer (immutable), Collections.synchronizedList(), concurrent packages. **Performance**: contention overhead, prefer immutability or lock-free structures. **Testing**: challenging due to non-deterministic behavior.
 
 </div>
 

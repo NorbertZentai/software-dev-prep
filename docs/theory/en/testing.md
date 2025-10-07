@@ -8,10 +8,10 @@ Software testing is a critical process for ensuring application quality. Based o
 
 ### Unit Test {#unit-test}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A unit test is like a medical lab test: it examines a specific function in isolation, eliminating external factors.*
+📋 **Concept Definition**  
+**Testing individual components in isolation** without external dependencies. **Scope**: single method/class, mocked dependencies. **Framework**: JUnit 5 (@Test, @BeforeEach, @AfterEach, assertions), TestNG. **Assertions**: assertEquals, assertTrue, assertThrows, assertTimeout. **AAA pattern**: Arrange (setup), Act (execute), Assert (verify). **Coverage**: aim for high coverage of business logic, not boilerplate. **Characteristics**: fast (<1s per test), deterministic, independent (no shared state). **Mocking frameworks**: Mockito (when/thenReturn, verify), EasyMock. **Test doubles**: mock (behavior verification), stub (state verification), fake (simple implementation). **Best practices**: one assertion concept per test, descriptive names (should_when_given), avoid logic in tests.
 
 </div>
 
@@ -327,10 +327,10 @@ void shouldCreateUserWithCustomData() {
 
 ### Integration Test {#integration-test}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Integration tests are like testing a car's engine with all parts connected: you verify that components work together correctly, not just individually.*
+📋 **Concept Definition**  
+**Testing multiple components together** with real dependencies (database, message queue, external services). **Scope**: multiple layers (service + repository + database), API endpoints, workflows. **Spring Boot**: @SpringBootTest (full context), @DataJpaTest (JPA slice), @WebMvcTest (controller layer), TestRestTemplate, MockMvc. **Database**: H2 in-memory for speed, Testcontainers for real databases (Postgres, MySQL in Docker). **Transaction rollback**: @Transactional on tests auto-rolls back after each test. **External services**: WireMock for HTTP stubbing, embedded Kafka. **Test containers**: Docker-based dependencies for CI/CD. **Trade-offs**: slower than unit tests, more complex setup. **Best practices**: test critical paths, realistic data, clean state between tests.
 
 </div>
 
@@ -703,10 +703,10 @@ class UserControllerSliceTest {
 
 ### Mocking {#mocking}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Mocking is like using a stunt double in movies: the double looks like the real actor but follows a script exactly, allowing you to control the scene perfectly.*
+📋 **Concept Definition**  
+**Creating controlled substitutes for dependencies** in tests. **Mockito API**: mock() creates mock, when().thenReturn() stubs behavior, verify() checks interactions, @Mock/@InjectMocks annotations. **Stubbing**: when(service.method(anyString())).thenReturn(result), thenThrow for exceptions. **Argument matchers**: any(), eq(), argThat(). **Verification**: verify(mock).method(), times(n), never(), atLeastOnce(). **Spies**: partial mocks (real object with some methods stubbed). **Behavior vs State**: mocks verify behavior (interactions), stubs provide state (return values). **Over-mocking pitfall**: mocking everything makes tests brittle and less valuable. **Best practices**: mock external dependencies, use real objects for domain logic, prefer fakes over mocks when simple.
 
 </div>
 
@@ -1028,10 +1028,10 @@ void antiPatternsToAvoid() {
 
 ### Test-Driven Development (TDD) {#tdd}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*TDD is like drawing a blueprint before building a house: you define what you want (test), build the minimum to satisfy it (code), then improve the structure (refactor).*
+📋 **Concept Definition**  
+**Development methodology: write test before code.** **Red-Green-Refactor cycle**: 1) Red (write failing test), 2) Green (minimal code to pass), 3) Refactor (improve code quality, tests still pass). **Benefits**: forces testable design, prevents over-engineering (YAGNI), high coverage by default. **Test naming**: should_returnTrue_when_inputIsValid. **Baby steps**: small increments, frequent commits. **Triangulation**: add test cases to generalize solution. **Challenges**: requires discipline, upfront time investment, learning curve. **vs Test-After**: TDD tests drive design, test-after tests verify design. **BDD** (Behavior-Driven Development): extends TDD with Given-When-Then format, focuses on behavior. **Frameworks**: JUnit, AssertJ for fluent assertions, Cucumber for BDD.
 
 </div>
 
@@ -1380,10 +1380,10 @@ public class StringCalculator {
 
 ### Performance Testing {#performance-testing}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Performance testing is like stress-testing a bridge: you need to know how much traffic it can handle before it buckles, and how it behaves under different loads.*
+📋 **Concept Definition**  
+**Evaluating system behavior under load conditions.** **Types**: **Load testing** (expected traffic), **Stress testing** (beyond capacity to find breaking point), **Spike testing** (sudden traffic surge), **Soak testing** (sustained load over time, detect memory leaks). **Metrics**: throughput (requests/sec), latency (p50, p95, p99 percentiles), error rate, resource utilization (CPU, memory). **Tools**: **JMeter** (GUI/CLI, distributed testing), **Gatling** (Scala DSL, HTML reports), **k6** (JavaScript, cloud integration), **Locust** (Python). **Profiling**: JProfiler, YourKit, VisualVM for bottleneck identification. **APM**: New Relic, Datadog for production monitoring. **Best practices**: test production-like environment, realistic scenarios, monitor database/external services.
 
 </div>
 
@@ -1713,10 +1713,10 @@ void shouldCompleteUserLookupWithinPerformanceBudget() {
 
 ### Test Best Practices {#test-best-practices}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Test best practices are like cooking guidelines: following them consistently ensures your tests are reliable, maintainable, and deliver the expected results every time.*
+📋 **Concept Definition**  
+**Principles for effective, maintainable tests.** **FIRST**: Fast (milliseconds), Independent (no order dependency), Repeatable (deterministic, no flaky tests), Self-validating (pass/fail clear), Timely (written with or before code). **Naming**: descriptive (should_throwException_when_inputIsNull), test behavior not implementation. **Arrange-Act-Assert**: clear test structure, single responsibility. **Test Data Builders**: fluent APIs for complex object creation. **Avoid**: logic in tests (loops, conditionals), sleeps (use awaitility), hardcoded values (constants), testing private methods. **Coverage**: aim for high business logic coverage, not 100% (diminishing returns). **Flaky tests**: disable temporarily, fix root cause (timing issues, shared state, external dependencies). **Test pyramid**: many unit, some integration, few E2E.
 
 </div>
 

@@ -8,10 +8,10 @@ Java is an object-oriented, platform-independent programming language built on t
 
 ### JVM (Java Virtual Machine) {#jvm-java-virtual-machine}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*The JVM is like an interpreter+compiler: first it interprets the code, then compiles frequently executed parts natively using JIT.*
+📋 **Concept Definition**  
+**Abstract computing machine** enabling platform independence through bytecode execution. **Components**: **Class Loader** (loads .class files), **Runtime Data Areas** (Method Area, Heap, Stack, PC Register, Native Method Stack), **Execution Engine** (Interpreter + JIT Compiler), **Native Interface** (JNI for native code). **JIT Compilation**: HotSpot detects "hot" methods (frequently executed) and compiles to native code for performance. **Memory Management**: Automatic GC (Garbage Collection) frees unreferenced objects. **Platform independence**: same bytecode runs on any OS with JVM. **Implementations**: HotSpot (Oracle), OpenJ9 (IBM), GraalVM (polyglot). **JVM languages**: Java, Kotlin, Scala, Groovy, Clojure.
 
 </div>
 
@@ -93,10 +93,10 @@ java HelloWorld          # JVM interprets bytecode, then runs native code after 
 
 ### JDK (Java Development Kit) {#jdk-java-development-kit}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*JDK is like a complete toolbox: everything you need to build, run, and debug Java applications.*
+📋 **Concept Definition**  
+**Complete development environment** for Java: compiler, runtime, tools, and libraries. **Components**: **javac** (compiler: .java → .class), **java** (launcher), **jar** (archive tool), **javadoc** (documentation generator), **jdb** (debugger), **jconsole/jvisualvm** (monitoring), **keytool** (security). **Includes JRE**: runtime environment bundled. **Standard libraries**: java.lang, java.util, java.io, java.nio, java.net, etc. **Versions**: LTS releases (8, 11, 17, 21), feature releases every 6 months. **Distributions**: Oracle JDK (commercial), OpenJDK (open-source), Adoptium, Amazon Corretto, Azul Zulu.
 
 </div>
 
@@ -159,10 +159,10 @@ JDK/
 
 ### JRE (Java Runtime Environment) {#jre-java-runtime-environment}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*JRE is like a theater stage: provides everything needed to run the show (Java application), but can't create new shows.*
+📋 **Concept Definition**  
+**Runtime subset of JDK** providing only execution capability, no development tools. **Components**: JVM + standard libraries (rt.jar in older versions, modules in Java 9+). **vs JDK**: JRE lacks javac, javadoc, debugger – can only run pre-compiled applications. **Use case**: deployment on end-user machines or servers where development isn't needed. **Module system** (Java 9+): jlink creates custom runtime images with only needed modules (smaller footprint). **Deprecated**: standalone JRE distribution discontinued after Java 11, use jlink or full JDK. **Docker**: Alpine-based OpenJDK images for minimal runtime containers.
 
 </div>
 
@@ -218,10 +218,10 @@ JDK: Develop + Run     (javac + java)
 
 ### Bytecode {#bytecode}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Bytecode is like universal sheet music: any JVM (like a musician) can read and perform it, regardless of the platform.*
+📋 **Concept Definition**  
+**Platform-independent intermediate representation** between source code and machine code. **Format**: .class files containing bytecode instructions (e.g., aload, istore, invokevirtual). **Compilation**: javac compiles .java → .class (bytecode). **Verification**: JVM verifies bytecode (type safety, stack overflow checks) before execution. **Execution**: Interpreter executes bytecode, JIT compiles hot paths to native code. **Advantages**: portability (same bytecode on all platforms), security (verification), optimization (runtime profiling). **Disassembly**: javap -c shows bytecode instructions. **Other JVM languages**: Kotlin, Scala compile to same bytecode format, enabling interoperability.
 
 </div>
 
@@ -282,10 +282,10 @@ public class Hello {
 
 ### Garbage Collector {#garbage-collector}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*GC is like an automatic janitor: periodically cleans up unused objects to free memory space.*
+📋 **Concept Definition**  
+**Automatic memory management** reclaiming unreachable objects from heap. **Generations**: **Young** (Eden + Survivor spaces, short-lived objects, minor GC), **Old** (long-lived objects, major GC), **Metaspace** (class metadata, replaced PermGen in Java 8). **Algorithms**: **Serial GC** (single-threaded), **Parallel GC** (throughput-focused), **CMS** (low-pause, deprecated), **G1 GC** (default since Java 9, region-based), **ZGC/Shenandoah** (ultra-low latency, <10ms pauses). **Reachability**: objects reachable from GC roots (stack, static fields) are retained. **Tuning**: -Xmx (max heap), -Xms (initial heap), -XX:+UseG1GC. **Trade-offs**: throughput vs latency, pause times vs CPU usage.
 
 </div>
 
@@ -359,10 +359,10 @@ System.gc();  // "Please run GC now"
 
 ### Class {#class}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A class is like a blueprint: defines what objects will look like and how they behave, but isn't the actual object.*
+📋 **Concept Definition**  
+**Template defining structure and behavior** of objects. **Components**: **Fields** (state/data), **Methods** (behavior), **Constructors** (initialization), **Nested classes** (inner/static). **Access modifiers**: public (everywhere), protected (package + subclasses), default/package-private (package only), private (class only). **Static members**: belong to class, not instances (e.g., Math.PI). **Final class**: cannot be extended. **Abstract class**: cannot be instantiated, may have abstract methods. **Class loading**: lazy (loaded when first referenced). **Object creation**: new keyword invokes constructor, allocates heap memory. **Class object**: Class<?> metadata accessible via reflection.
 
 </div>
 
@@ -433,10 +433,10 @@ myCar.start();  // Method call
 
 ### Interface {#interface}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*An interface is like a contract: defines what methods a class must implement, but not how to implement them.*
+📋 **Concept Definition**  
+**Pure abstraction** defining method signatures without implementation (contract). **Members**: abstract methods (implicitly public abstract), **default methods** (Java 8+, provide implementation), **static methods** (Java 8+), **constants** (public static final). **Multiple inheritance**: class implements multiple interfaces (vs single class inheritance). **Functional interfaces**: single abstract method, usable with lambdas (@FunctionalInterface). **Marker interfaces**: no methods (e.g., Serializable, Cloneable), indicate capability. **Evolution**: default methods enable API evolution without breaking implementations. **Polymorphism**: program to interface, not implementation (Dependency Inversion).
 
 </div>
 
@@ -513,10 +513,10 @@ shape.highlight();  // "Highlighting..." (default method)
 
 ### Package {#package}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Packages are like file folders: organize related classes together and provide namespaces to avoid naming conflicts.*
+📋 **Concept Definition**  
+**Namespace mechanism** grouping related classes and providing access control. **Naming convention**: reverse domain (com.company.project.module). **Directory structure**: mirrors package hierarchy (com/company/project/Module.java). **Import**: use classes from other packages (import statement, wildcard import). **Access control**: package-private (default) visibility restricts to same package. **JAR structure**: packages preserved in JAR file hierarchy. **Modules** (Java 9+): higher-level grouping with module-info.java, explicit dependencies, strong encapsulation. **Best practices**: one public class per file, match filename to class name, logical grouping by functionality.
 
 </div>
 
@@ -583,10 +583,10 @@ src/
 
 ### Exception {#exception}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Exceptions are like fire alarms: they signal when something goes wrong and provide a mechanism to handle the problem gracefully.*
+📋 **Concept Definition**  
+**Mechanism for handling runtime errors** through exception objects. **Hierarchy**: Throwable → Exception (recoverable) + Error (system-level, e.g., OutOfMemoryError). **Checked vs Unchecked**: **Checked** (extends Exception, must handle or declare: IOException, SQLException), **Unchecked** (RuntimeException: NullPointerException, IllegalArgumentException, no forced handling). **Try-catch-finally**: try (risky code), catch (handle exceptions), finally (always executes, cleanup). **Try-with-resources**: automatic resource closing (AutoCloseable). **Throws clause**: method declares checked exceptions it may throw. **Custom exceptions**: extend Exception or RuntimeException. **Best practices**: fail fast, specific exceptions, don't swallow exceptions, log properly.
 
 </div>
 
@@ -670,10 +670,10 @@ try {
 
 ### Collections Framework {#collections-framework}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Collections Framework is like a toolbox of containers: different containers (List, Set, Map) for different storage needs.*
+📋 **Concept Definition**  
+**Unified architecture for representing and manipulating collections.** **Interfaces**: **Collection** (root), **List** (ordered: ArrayList, LinkedList), **Set** (unique: HashSet, TreeSet), **Queue** (FIFO: LinkedList, PriorityQueue), **Map** (key-value: HashMap, TreeMap, LinkedHashMap). **Implementations**: ArrayList (dynamic array, fast random access), LinkedList (doubly-linked, fast insertion/deletion), HashSet (hash table, O(1) operations), TreeSet (red-black tree, sorted), HashMap (hash table), TreeMap (red-black tree, sorted keys). **Utility classes**: Collections (sort, shuffle, synchronizedList), Arrays. **Thread-safe**: Vector, Hashtable (legacy), ConcurrentHashMap, CopyOnWriteArrayList. **Generics**: type safety, avoid casting.
 
 </div>
 
@@ -760,10 +760,10 @@ Map<String, Integer> map = new HashMap<>();
 
 ### Thread {#thread}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Threads are like parallel workers: multiple tasks running simultaneously, but coordination is needed.*
+📋 **Concept Definition**  
+**Independent execution path** within a program, enabling concurrent execution. **Creation**: extend Thread class or implement Runnable/Callable. **Lifecycle**: New → Runnable → Running → Blocked/Waiting → Terminated. **Synchronization**: **synchronized** keyword (method or block), locks (ReentrantLock), **volatile** (visibility guarantee), **Atomic classes** (AtomicInteger, lock-free). **Thread pools**: ExecutorService (fixed, cached, scheduled thread pools), avoid manual thread creation. **Concurrency utilities**: CountDownLatch, CyclicBarrier, Semaphore, Phaser. **CompletableFuture**: asynchronous programming, chaining operations. **Thread-local**: ThreadLocal for per-thread data. **Best practices**: prefer high-level concurrency utilities, immutability, minimize shared state.
 
 </div>
 
@@ -853,10 +853,10 @@ NEW -> RUNNABLE -> BLOCKED/WAITING/TIMED_WAITING -> TERMINATED
 
 ### Stream API {#stream-api}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Stream API is like an assembly line: data flows through and gets transformed at each station.*
+📋 **Concept Definition**  
+**Functional-style operations on sequences** of elements. **Sources**: collections (list.stream()), arrays (Arrays.stream()), I/O (Files.lines()). **Intermediate operations** (lazy, return Stream): filter, map, flatMap, distinct, sorted, limit, skip. **Terminal operations** (trigger execution): forEach, collect, reduce, count, anyMatch, findFirst. **Lazy evaluation**: operations only execute when terminal operation called. **Parallel streams**: .parallelStream() or .parallel(), uses ForkJoinPool. **Collectors**: toList(), toSet(), toMap(), groupingBy(), partitioningBy(), joining(). **vs loops**: more declarative, easier parallelization, but not always faster. **Best practices**: prefer streams for bulk operations, avoid side effects in lambdas.
 
 </div>
 
@@ -945,10 +945,10 @@ Operations only execute when terminal operation is called, until then only pipel
 
 ### OOP Principles {#oop-principles}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*OOP principles are like building codes: fundamental rules that make software structures stable, maintainable, and extensible.*
+📋 **Concept Definition**  
+**Four fundamental concepts** of object-oriented design: **Encapsulation** (data hiding with access modifiers, controlled access via methods), **Inheritance** (IS-A relationship, code reuse via extends), **Polymorphism** (method overriding, runtime binding, substitutability), **Abstraction** (hiding complexity via abstract classes/interfaces, exposing essential features). **Benefits**: modularity, code reuse, extensibility, maintainability. **Java mechanisms**: classes, interfaces, abstract classes, access modifiers, method overriding. **Design patterns** leverage OOP: Factory, Strategy, Observer, Decorator. **vs Functional**: OOP models with objects and state, functional uses immutable data and pure functions.
 
 </div>
 
@@ -1064,10 +1064,10 @@ for (Animal animal : animals) {
 
 ### SOLID Principles {#solid-principles}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*SOLID principles are like architectural guidelines: they help create software that's easy to understand, flexible, and maintainable.*
+📋 **Concept Definition**  
+**Five object-oriented design principles** for maintainable software: **S**ingle Responsibility (class has one reason to change), **O**pen/Closed (open for extension, closed for modification), **L**iskov Substitution (subtypes substitutable for base types), **I**nterface Segregation (clients shouldn't depend on unused methods), **D**ependency Inversion (depend on abstractions, not concretions). **Benefits**: loose coupling, high cohesion, testability, extensibility. **Java applications**: Spring dependency injection (DIP), Strategy pattern (OCP), focused service classes (SRP). **vs GRASP**: SOLID is principles, GRASP is patterns for responsibility assignment. **Trade-offs**: may increase initial complexity, balance with YAGNI (You Aren't Gonna Need It).
 
 </div>
 

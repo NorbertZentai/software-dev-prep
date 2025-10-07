@@ -29,10 +29,10 @@ Modern frontend development is built on the React, TypeScript, and Node.js ecosy
 
 ### Node.js {#node-js}
 
-<div class="concept-section mental-model" data-filter="nodejs junior">
+<div class="concept-section definition" data-filter="nodejs junior">
 
-🚀 **Think of it this way**  
-*Node.js is like bringing JavaScript out of the browser's sandbox: it lets you run JavaScript on servers, build APIs, and create full-stack applications with one language.*
+� **Concept Definition**  
+**JavaScript runtime** built on Chrome's V8 engine for server-side execution. **Event-driven**: non-blocking I/O via event loop (single-threaded, handles concurrency through callbacks/promises). **Modules**: CommonJS (require/module.exports) or ES modules (import/export). **npm**: Node Package Manager with 2M+ packages. **Core modules**: fs (file system), http/https (servers), path, os, crypto. **Frameworks**: Express.js (minimalist web), NestJS (enterprise), Fastify (performance). **Use cases**: REST APIs, microservices, real-time apps (WebSockets), CLI tools, build tools (Webpack, Vite). **Performance**: fast I/O-bound operations, not ideal for CPU-bound tasks. **Best practices**: async/await over callbacks, error handling, clustering for multi-core.
 
 </div>
 
@@ -550,10 +550,10 @@ MAX_FILE_SIZE=5242880
 
 ### React {#react}
 
-<div class="concept-section mental-model" data-filter="react junior">
+<div class="concept-section definition" data-filter="react junior">
 
-⚛️ **Think of it this way**  
-*React is like building with LEGO blocks: you create small, reusable components that snap together to build complex user interfaces. Each component manages its own state and behavior.*
+📋 **Concept Definition**  
+**JavaScript library** for building component-based user interfaces. **Components**: functional (preferred, use Hooks) or class-based. **JSX**: JavaScript XML syntax for describing UI (transpiled by Babel). **Virtual DOM**: in-memory representation, reconciliation algorithm diffs changes for efficient updates. **Hooks**: useState (state), useEffect (side effects), useContext (context), useReducer (complex state), custom hooks. **Props**: immutable data passed from parent to child. **State**: mutable component-local data. **Lifecycle**: mounting, updating, unmounting (useEffect handles all). **State management**: Context API (built-in), Redux, Zustand, Recoil. **Rendering**: declarative (describe what, not how), unidirectional data flow. **Best practices**: component composition, lift state up, memoization (React.memo, useMemo).
 
 </div>
 
@@ -1353,10 +1353,10 @@ export default App;
 
 ### TypeScript {#typescript}
 
-<div class="concept-section mental-model" data-filter="typescript junior">
+<div class="concept-section definition" data-filter="typescript junior">
 
-🛡️ **Think of it this way**  
-*TypeScript is like adding a spell-checker to your code: it catches mistakes before they become runtime errors, and helps your IDE provide better suggestions and refactoring.*
+� **Concept Definition**  
+**Statically-typed superset of JavaScript** compiling to plain JavaScript. **Type system**: primitives (string, number, boolean), arrays, tuples, enums, any, unknown, never, union/intersection types. **Type inference**: compiler infers types when not explicitly declared. **Interfaces**: define object shapes, contracts for classes. **Generics**: type-safe reusable components (<T>). **Type guards**: typeof, instanceof, custom predicates. **Compile-time checking**: catches type errors before runtime. **Configuration**: tsconfig.json (strict mode, target ES version, module system). **Advanced types**: mapped types, conditional types, utility types (Partial<T>, Pick<T, K>, Omit<T, K>). **Best practices**: strict mode, avoid any, use unknown for unknowns, leverage type inference.
 
 </div>
 

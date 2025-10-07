@@ -59,10 +59,10 @@ Algorithms are the building blocks of problem-solving that define structured ste
 
 ### Two Pointers {#two-pointers}
 
-<div class="concept-section mental-model" data-filter="arrays strings junior">
+<div class="concept-section definition" data-filter="arrays strings junior">
 
-🧩 **Think of it this way**  
-*Two Pointers is like two people working together on a line: one approaches from the beginning, the other from the end, meeting in the middle. It provides optimal solutions for problems where we search for pairings in sorted data structures or want to meet certain conditions.*
+📋 **Concept Definition**  
+**Algorithm pattern using two indices** traversing data structure simultaneously. **Variants**: **Opposite directions** (left=0, right=n-1, converge), **Same direction** (slow/fast pointers for cycle detection), **Sliding window** (expand/contract window). **Use cases**: pair sum in sorted array, palindrome checking, removing duplicates, linked list cycle detection (Floyd's algorithm). **Complexity**: typically O(n) time with O(1) space. **Requirements**: often requires sorted array for opposite-direction variant. **Techniques**: move pointers based on conditions (sum > target: right--, sum < target: left++). **Interview applications**: 3Sum, container with most water, linked list middle/cycle.
 
 </div>
 
@@ -525,10 +525,10 @@ A: Fast/slow is for cycle detection and finding middle elements. Left/right is f
 
 ### Sliding Window {#sliding-window}
 
-<div class="concept-section mental-model" data-filter="arrays strings junior">
+<div class="concept-section definition" data-filter="arrays strings junior">
 
-🪟 **Think of it this way**  
-*Sliding Window is like looking through a window on a moving train: you maintain a fixed or variable-sized view that slides across the data, keeping track of what's currently visible while efficiently adding new elements and removing old ones.*
+📋 **Concept Definition**  
+**Pattern for contiguous subarray/substring problems** maintaining window of elements. **Types**: **Fixed-size** (window size k constant), **Variable-size** (expand/contract based on condition). **Mechanics**: two pointers (left, right), right expands window, left contracts when condition violated. **State tracking**: hash map for frequencies, variable for sum/product. **Use cases**: max/min subarray sum of size k, longest substring without repeating characters, minimum window substring. **Complexity**: O(n) time (each element visited at most twice), O(k) space for state. **vs Two Pointers**: sliding window maintains contiguous segment, tracks state within window. **Interview applications**: anagrams, subarrays with sum/product, character replacement.
 
 </div>
 
@@ -1044,10 +1044,10 @@ A: Yes, but the approach may change. For subarray sum problems with negatives, y
 
 ### Binary Search {#binary-search}
 
-<div class="concept-section mental-model" data-filter="search junior">
+<div class="concept-section definition" data-filter="search junior">
 
-🔍 **Think of it this way**  
-*Binary Search is like playing a number guessing game where you always guess the middle number: if your guess is too high, you eliminate the upper half; if too low, you eliminate the lower half. This way, you cut the search space in half with each guess.*
+� **Concept Definition**  
+**Divide-and-conquer search algorithm** on sorted data, halving search space each iteration. **Complexity**: O(log n) time, O(1) space (iterative), O(log n) space (recursive stack). **Implementation**: left=0, right=n-1, mid=(left+right)/2 (or left+(right-left)/2 to avoid overflow), compare arr[mid] with target. **Variants**: **Lower bound** (first occurrence), **Upper bound** (last occurrence), **Search in rotated array**, **Binary search on answer** (find minimum/maximum satisfying condition). **Requirements**: array must be sorted (or monotonic function). **Edge cases**: empty array, single element, target not found. **Applications**: std::lower_bound, database indexes, optimization problems.
 
 </div>
 
@@ -1626,10 +1626,10 @@ A: Determine which half is properly sorted, then check if target lies in that ra
 
 ### Sorting Algorithms {#sorting}
 
-<div class="concept-section mental-model" data-filter="sorting junior">
+<div class="concept-section definition" data-filter="sorting junior">
 
-📊 **Think of it this way**  
-*Sorting is like organizing a deck of cards: you can bubble small cards to the front, merge sorted piles together, or quickly partition around a pivot. Each method has its strengths depending on the data size and characteristics.*
+� **Concept Definition**  
+**Algorithms for arranging elements in order.** **Comparison-based**: **Bubble Sort** (O(n²), swap adjacent), **Insertion Sort** (O(n²), insert into sorted portion), **Selection Sort** (O(n²), select minimum), **Merge Sort** (O(n log n), divide-conquer-merge, stable), **Quick Sort** (O(n log n) average, pivot partitioning, unstable), **Heap Sort** (O(n log n), max-heap). **Non-comparison**: **Counting Sort** (O(n+k), integer range), **Radix Sort** (O(d·n), digit-by-digit), **Bucket Sort** (O(n+k), distribute to buckets). **Stability**: stable preserves relative order of equal elements (Merge, Insertion), unstable doesn't (Quick, Heap). **Space**: in-place (O(1): Quick, Heap), out-of-place (O(n): Merge). **Java**: Arrays.sort (dual-pivot Quick Sort), Collections.sort (Tim Sort).
 
 </div>
 

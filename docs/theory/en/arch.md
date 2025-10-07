@@ -8,10 +8,10 @@ Software architecture defines the structural and organizational principles of sy
 
 ### Monolith {#monolith}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A monolith is like a large department store: all products are in one building, easy to navigate, but if you want to expand, the entire structure is affected.*
+📋 **Concept Definition**  
+**Single deployment unit** containing all application functionality: UI, business logic, data access in one codebase. **Characteristics**: shared database, tight coupling, single process, unified deployment. **Advantages**: simpler development/testing initially, no distributed system complexity, easier debugging, transactions straightforward. **Disadvantages**: scaling entire app (not specific components), technology stack lock-in, large team coordination overhead, longer deployment cycles. Modern evolution: modular monolith (internal module boundaries, potential future microservices extraction).
 
 </div>
 
@@ -206,10 +206,10 @@ class OrderService {
 
 ### Microservices {#microservices}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Microservices are like specialized shops in a shopping mall: each shop has its own expertise, inventory, and cashier, but they work together to create a complete shopping experience.*
+📋 **Concept Definition**  
+**Distributed system architecture** decomposing application into loosely coupled, independently deployable services. Each service: owns its data (database per service pattern), has bounded context (Domain-Driven Design), communicates via APIs (REST, gRPC, message queues). **Key patterns**: API Gateway (single entry point), Service Discovery (dynamic service location), Circuit Breaker (fault tolerance), Saga Pattern (distributed transactions). **Trade-offs**: increased complexity (distributed debugging, network latency), eventual consistency, DevOps overhead. Modern tools: Kubernetes orchestration, service mesh (Istio, Linkerd).
 
 </div>
 
@@ -437,10 +437,10 @@ spec:
 
 ### Layered Architecture {#layered-architecture}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Layered architecture is like a skyscraper: each floor has a specific purpose, and you can only move between adjacent floors. You can't jump from ground floor directly to the penthouse.*
+📋 **Concept Definition**  
+**Hierarchical organization** separating application into horizontal layers with strict dependencies: Presentation Layer (UI, controllers, DTOs), Business/Service Layer (domain logic, orchestration), Data Access Layer (repositories, ORM), Database Layer (persistence). **Rules**: upper layers depend on lower layers only, no circular dependencies, communication through interfaces. **Variants**: 3-tier (presentation, business, data), N-tier (additional layers like caching, integration), Hexagonal/Ports & Adapters (domain center, adapters periphery). Spring typical structure: @Controller → @Service → @Repository.
 
 </div>
 
@@ -617,10 +617,10 @@ public class ApplicationConfig {
 
 ### Port-Adapter (Hexagonal) {#port-adapter-hexagonal}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Hexagonal architecture is like a medieval castle: the inner core (business logic) is protected, and can only be accessed through specific gates (ports) with adapter bridges.*
+📋 **Concept Definition**  
+**Ports and Adapters pattern** (Alistair Cockburn) isolating business logic from external dependencies. **Core concept**: domain center (business rules, entities, use cases), surrounded by ports (interfaces defining interactions), adapters (implementations for specific technologies). **Inbound ports**: API controllers, CLI, message consumers driving application. **Outbound ports**: database repositories, external APIs, message publishers. **Benefits**: technology-agnostic core, easy mocking for tests, plug-and-play adapters. Similar patterns: Clean Architecture (Uncle Bob), Onion Architecture.
 
 </div>
 
@@ -911,10 +911,10 @@ class UserServiceIntegrationTest {
 
 ### Event-Driven Architecture {#event-driven-architecture}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Event-driven architecture is like a news broadcasting system: when something important happens, everyone who cares gets notified instantly, but they can react in their own time.*
+📋 **Concept Definition**  
+**Asynchronous communication pattern** where services produce/consume events via message broker. **Components**: Event Producers (publish events), Event Broker/Bus (Kafka, RabbitMQ, AWS SNS/SQS), Event Consumers (subscribe and react). **Event types**: Domain Events (business facts: OrderPlaced), Integration Events (cross-service), Command Events (action requests). **Patterns**: Event Sourcing (store events as source of truth), CQRS (separate read/write models), Saga Pattern (distributed transactions via events). **Guarantees**: at-least-once, at-most-once, exactly-once delivery semantics.
 
 </div>
 
@@ -1276,10 +1276,10 @@ public class OrderProcessingSaga {
 
 ### Idempotency {#idempotency}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Idempotency is like pressing an elevator button: whether you press it once or ten times, the elevator comes to your floor exactly once.*
+📋 **Concept Definition**  
+**Property ensuring repeated identical requests produce same result** without additional side effects. **Implementation strategies**: Idempotency Key (unique request identifier, stored with result), Natural Idempotency (GET, PUT by design), Database Constraints (unique indexes prevent duplicates), Token-based (consume-once tokens). **HTTP methods**: GET, PUT, DELETE naturally idempotent; POST not idempotent (requires idempotency key). **Distributed systems**: critical for retry mechanisms, message delivery guarantees. Modern APIs: Stripe, PayPal mandate idempotency keys for payment operations. Window: typically 24h key validity.
 
 </div>
 
@@ -1560,10 +1560,10 @@ public class PaymentClient {
 
 ### Caching {#caching}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Caching is like keeping frequently used items on your desk instead of walking to the storage room every time you need them.*
+📋 **Concept Definition**  
+**Temporary data storage layer** reducing expensive operations (database queries, API calls, computations). **Cache levels**: Client-side (browser cache, LocalStorage), CDN (CloudFlare, Akamai for static assets), Application (Redis, Memcached in-memory), Database (query cache, materialized views). **Strategies**: Cache-Aside (lazy loading), Write-Through (update cache on write), Write-Behind (async write), Read-Through (cache loads on miss). **Eviction policies**: LRU (Least Recently Used), LFU (Least Frequently Used), TTL (Time To Live). **Patterns**: Cache warming, cache stampede prevention, distributed caching.
 
 </div>
 
@@ -1934,10 +1934,10 @@ public class ProductController {
 
 ### Resiliency (Fault Tolerance) {#resiliency}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Resiliency is like a building's earthquake safety features: the building might shake, but it won't collapse, and it continues to function.*
+📋 **Concept Definition**  
+**System's ability to handle and recover from failures** maintaining acceptable service levels. **Key patterns**: Circuit Breaker (prevent cascading failures, open/closed/half-open states), Retry with Backoff (exponential backoff, jitter), Bulkhead (isolate resources, prevent resource exhaustion), Timeout (fail fast), Fallback (degraded functionality). **Resilience4j library** (Java): CircuitBreaker, RateLimiter, Retry, TimeLimiter, Bulkhead modules. **Chaos Engineering**: intentionally inject failures (Netflix Chaos Monkey) to test resilience. **Metrics**: MTBF (Mean Time Between Failures), MTTR (Mean Time To Recovery).
 
 </div>
 
@@ -2338,10 +2338,10 @@ public class ResilientOrderService {
 
 ### Observability {#observability}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Observability is like having a comprehensive dashboard in your car: speedometer (metrics), GPS route history (traces), and warning lights (logs) tell you exactly what's happening and where you've been.*
+📋 **Concept Definition**  
+**Three pillars of system visibility**: Logs (discrete events, structured JSON logs, correlation IDs), Metrics (numerical measurements, time-series data, Prometheus/Grafana), Traces (request journey across services, OpenTelemetry, Jaeger/Zipkin). **Key concepts**: Distributed Tracing (span, trace context propagation), APM (Application Performance Monitoring), SLI/SLO/SLA (Service Level Indicators/Objectives/Agreements). **Tools stack**: ELK/EFK (Elasticsearch, Logstash/Fluentd, Kibana), Prometheus + Grafana, Jaeger/Tempo. **Modern approach**: OpenTelemetry standard (vendor-neutral instrumentation).
 
 </div>
 
@@ -2833,10 +2833,10 @@ public class MetricsController {
 
 ### Common Anti-patterns {#anti-patterns}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Anti-patterns are like architectural traps: they seem like good ideas at first, but they create more problems than they solve.*
+📋 **Concept Definition**  
+**Common software design mistakes** that seem beneficial initially but cause long-term problems. **Major anti-patterns**: God Object (one class with too many responsibilities), Spaghetti Code (tangled dependencies), Golden Hammer (one solution for all problems), Premature Optimization (optimize before profiling), Big Ball of Mud (no clear architecture). **Distributed systems**: Distributed Monolith (microservices with tight coupling), Chatty Services (excessive inter-service calls), Shared Database (services sharing same DB). **Microservices-specific**: Nano-services (too granular), API Versioning Hell, Distributed Transaction across services.
 
 </div>
 

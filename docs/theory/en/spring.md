@@ -28,10 +28,10 @@ The Spring Framework is a comprehensive Java application development framework b
 
 ### Bean {#bean}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*A Bean is like a "factory product": the Spring IoC container is the factory that creates, configures, and manages its lifecycle.*
+📋 **Concept Definition**  
+**Object managed by Spring IoC container** with lifecycle control. **Definition**: @Component, @Service, @Repository, @Controller stereotypes, or @Bean methods in @Configuration classes. **Scopes**: **singleton** (default, one instance per container), **prototype** (new instance per request), **request/session/application** (web-specific). **Lifecycle callbacks**: @PostConstruct (after DI), @PreDestroy (before removal), InitializingBean/DisposableBean interfaces. **Name**: default lowercase class name, customize with @Component("name"). **Lazy initialization**: @Lazy delays creation until first use. **Conditional beans**: @ConditionalOnProperty, @ConditionalOnClass. **BeanFactory vs ApplicationContext**: ApplicationContext is superset with event handling, internationalization.
 
 </div>
 
@@ -167,10 +167,10 @@ Spring can resolve circular dependencies with setter injection, but constructor 
 
 ### @RestController {#restcontroller}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*@RestController is like an "API endpoint factory": it combines @Controller and @ResponseBody annotations for RESTful web services.*
+📋 **Concept Definition**  
+**Combines @Controller + @ResponseBody** for RESTful web services. **Purpose**: all handler methods return data (JSON/XML) directly to HTTP response body, not view names. **HTTP mappings**: @GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping. **Path variables**: @PathVariable for URL parameters, @RequestParam for query params, @RequestBody for JSON request. **Response**: ResponseEntity<T> for full control (status, headers, body), or direct object (200 OK default). **Exception handling**: @ExceptionHandler methods, @ControllerAdvice for global handling. **Content negotiation**: produces/consumes in mapping annotations. **HATEOAS**: add hypermedia links with Spring HATEOAS.
 
 </div>
 
@@ -330,10 +330,10 @@ Use ResponseEntity when you need to control HTTP status codes and headers. Direc
 
 ### @Component {#component}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*@Component is like a "registration form": it tells Spring "please manage this class as a Bean in your container".*
+📋 **Concept Definition**  
+**Generic stereotype** marking class as Spring-managed bean. **Component scanning**: @ComponentScan (or @SpringBootApplication) discovers @Component classes in specified packages. **Specializations**: @Service (business logic layer), @Repository (persistence layer, exception translation), @Controller/@RestController (web layer). **Auto-detection**: Spring creates bean instances and manages lifecycle. **Naming**: default bean name is uncapitalized class name, override with @Component("customName"). **vs @Bean**: @Component on class (classpath scanning), @Bean on method in @Configuration (manual creation). **Best practice**: use specialized stereotypes for clarity (@Service, @Repository), @Component for general utilities.
 
 </div>
 
@@ -434,10 +434,10 @@ public class AppConfig {
 
 ### @Autowired {#autowired}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*@Autowired is like an "automatic wiring service": it automatically connects dependencies, but constructor injection is the best choice.*
+📋 **Concept Definition**  
+**Automatic dependency injection** by type (byType). **Injection types**: **Constructor** (preferred, immutable, required dependencies), **Setter** (optional dependencies), **Field** (not recommended, hard to test). **Resolution**: matches bean type, @Primary for preference, @Qualifier for disambiguation. **Required**: @Autowired(required=false) for optional dependencies, or use Optional<T>. **Collections**: inject List<T>, Map<String, T> of all matching beans. **vs @Inject**: @Autowired is Spring-specific, @Inject is JSR-330 standard. **Constructor injection**: modern Spring doesn't require @Autowired on single constructor. **Best practices**: prefer constructor injection (testability, immutability), avoid field injection.
 
 </div>
 
@@ -585,10 +585,10 @@ For optional dependencies that may or may not be available in the context.
 
 ### @Service {#service}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*@Service is like a "business manager": it handles business logic and coordinates between different parts of the application.*
+📋 **Concept Definition**  
+**Stereotype for business logic layer** (specialization of @Component). **Purpose**: marks service layer classes, semantically distinguishes from @Repository/@Controller. **Transaction boundary**: typically where @Transactional is applied for transactional consistency. **Business logic**: encapsulates domain logic, orchestrates repositories, implements use cases. **Best practices**: stateless, single responsibility, delegates to repositories for persistence. **Testing**: easy to unit test with mocked dependencies. **Architecture**: part of layered architecture (Controller → Service → Repository). **AOP**: common target for aspects (logging, security, caching).
 
 </div>
 
@@ -703,10 +703,10 @@ public class OrderService {
 
 </div>
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*DI is like having a personal assistant: instead of you finding and managing your dependencies, the framework provides them when needed.*
+📋 **Concept Definition**  
+**Design pattern where dependencies are provided** by external container, not created by object. **Inversion of Control**: framework controls object creation and lifecycle, not application code. **Types**: **Constructor injection** (preferred, immutable, explicit), **Setter injection** (optional dependencies), **Field injection** (reflection-based, not recommended). **Benefits**: loose coupling, testability (mock dependencies), single responsibility. **Spring implementation**: @Autowired, constructor injection, @Bean methods. **vs Service Locator**: DI pushes dependencies, Service Locator pulls. **Best practices**: prefer constructor injection, avoid circular dependencies, use interfaces.
 
 </div>
 
@@ -746,10 +746,10 @@ public class OrderService {
 
 ### Spring Boot {#spring-boot}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Spring Boot is like a smart home system: it automatically configures everything based on what it finds, with sensible defaults.*
+📋 **Concept Definition**  
+**Opinionated framework** simplifying Spring application development with auto-configuration and embedded servers. **Auto-configuration**: automatically configures beans based on classpath (e.g., H2 datasource if H2 present). **Starter dependencies**: spring-boot-starter-web, spring-boot-starter-data-jpa (curated dependency sets). **Embedded servers**: Tomcat (default), Jetty, Undertow embedded, no WAR deployment needed. **Actuator**: production-ready endpoints (/health, /metrics, /info). **Configuration**: application.properties/yml with type-safe @ConfigurationProperties. **Externalized config**: profiles (dev, prod), environment variables, command-line args. **@SpringBootApplication**: combines @Configuration, @EnableAutoConfiguration, @ComponentScan. **DevTools**: auto-restart on code changes.
 
 </div>
 
@@ -912,10 +912,10 @@ public class SecurityConfig {
 
 ### Spring WebFlux {#spring-webflux}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*WebFlux is like an "asynchronous pipeline": Mono = one element, Flux = stream, reactive = non-blocking flow.*
+📋 **Concept Definition**  
+**Reactive, non-blocking web framework** for high-concurrency scenarios. **Reactive types**: **Mono<T>** (0-1 element), **Flux<T>** (0-N elements), lazy evaluation. **Programming models**: annotated controllers (@RestController with Mono/Flux returns) or functional endpoints (RouterFunction). **Backpressure**: consumer controls data flow rate from producer. **Event loop**: Netty's event loop (default), few threads handle many connections. **WebClient**: non-blocking HTTP client (replaces RestTemplate). **vs Spring MVC**: WebFlux for I/O-bound apps with high concurrency, MVC for CPU-bound or traditional apps. **Operators**: map, flatMap, filter, zip, merge. **Testing**: StepVerifier for testing reactive streams.
 
 </div>
 
@@ -979,10 +979,10 @@ public interface ReactiveUserRepository extends ReactiveCrudRepository<User, Str
 
 ### Spring Boot Testing {#spring-boot-testing}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Spring Boot Testing is like a "testing toolkit": @SpringBootTest = full app, @WebMvcTest = controllers only, @DataJpaTest = repositories only.*
+📋 **Concept Definition**  
+**Test slicing framework** for efficient Spring context testing. **Annotations**: **@SpringBootTest** (full application context, integration tests), **@WebMvcTest** (web layer only, MockMvc), **@DataJpaTest** (JPA repositories, embedded DB), **@RestClientTest** (REST clients). **Auto-configuration**: test-specific auto-config, H2 in-memory DB by default. **Mocking**: @MockBean (replaces bean with mock), @SpyBean (partial mock). **TestRestTemplate**: integration testing for REST APIs. **@TestPropertySource**: override properties for tests. **Testcontainers**: Docker-based real databases/services. **Transaction rollback**: @Transactional on tests auto-rolls back. **Best practices**: use test slices for speed, @SpringBootTest sparingly.
 
 </div>
 
@@ -1130,10 +1130,10 @@ public class ProdConfig {
 
 ### Spring IoC Container {#ioc-container}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*IoC Container is like a "smart factory": it creates, configures, and manages object lifecycles, inverting the control from your code to the framework.*
+📋 **Concept Definition**  
+**Core container managing bean lifecycle and dependencies.** **Implementations**: **BeanFactory** (basic, lazy initialization), **ApplicationContext** (superset: event propagation, internationalization, resource loading). **Bean definition**: XML, annotations (@Component), Java config (@Configuration + @Bean). **Dependency resolution**: constructor injection, setter injection, field injection via reflection. **Lifecycle**: instantiate → populate properties → BeanNameAware/BeanFactoryAware → @PostConstruct → InitializingBean → custom init → bean ready → @PreDestroy → DisposableBean → custom destroy. **Scopes**: singleton (default), prototype, request, session. **BeanPostProcessor**: modify beans during initialization (AOP proxies). **Circular dependencies**: constructor injection fails, setter injection resolves.
 
 </div>
 
@@ -1210,10 +1210,10 @@ public class DatabaseService implements InitializingBean, DisposableBean {
 
 ### Spring Data JPA {#spring-data-jpa}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Spring Data JPA is like a "smart database assistant": it generates repository implementations automatically based on method names and annotations.*
+📋 **Concept Definition**  
+**Repository abstraction** eliminating boilerplate JPA code. **Interfaces**: extend JpaRepository<Entity, ID> or CrudRepository for CRUD operations. **Query derivation**: method names generate queries (findByLastName, findByAgeGreaterThan). **@Query**: custom JPQL or native SQL for complex queries. **Paging/Sorting**: Pageable, Sort parameters, Page<T> return type. **@Modifying**: for UPDATE/DELETE queries with @Query. **Specifications**: dynamic queries with Criteria API. **Auditing**: @CreatedDate, @LastModifiedDate, @CreatedBy with @EnableJpaAuditing. **Projections**: DTOs, interface-based or class-based. **Entity graphs**: @EntityGraph for fetch strategies. **Best practices**: repository per aggregate root (DDD), avoid N+1 queries.
 
 </div>
 
@@ -1318,10 +1318,10 @@ public class UserService {
 
 ### Spring Security {#spring-security}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Spring Security is like a "comprehensive security guard": it handles authentication, authorization, and protection against common security threats.*
+📋 **Concept Definition**  
+**Comprehensive security framework** for authentication and authorization. **Authentication**: verify identity via UserDetailsService, AuthenticationProvider. **Authorization**: role-based (@PreAuthorize("hasRole('ADMIN')"), hasAuthority), URL-based (http.authorizeRequests()). **Mechanisms**: form login, HTTP Basic, OAuth2, JWT, SAML. **Password encoding**: BCryptPasswordEncoder, Argon2. **Security filters**: FilterChainProxy, UsernamePasswordAuthenticationFilter. **CSRF protection**: enabled by default, token-based. **CORS**: configure CrossOrigin or global CORS. **Method security**: @EnableGlobalMethodSecurity, @Secured, @PreAuthorize. **Session management**: stateless for REST APIs, session fixation protection. **JWT**: stateless authentication with JwtDecoder.
 
 </div>
 
@@ -1441,10 +1441,10 @@ public class UserController {
 
 ### @Transactional {#transactional}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*@Transactional is like a "database safety net": automatic commit/rollback mechanism that ensures ACID properties.*
+📋 **Concept Definition**  
+**Declarative transaction management** via AOP proxies. **Propagation**: REQUIRED (default, join existing or create), REQUIRES_NEW (suspend current, create new), NESTED, MANDATORY, SUPPORTS. **Isolation**: READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE. **Rollback**: automatic on unchecked exceptions (RuntimeException), manual with rollbackFor/noRollbackFor. **Proxy-based**: only works on public methods called externally (self-invocation bypasses proxy). **Read-only**: readOnly=true optimizes for read operations. **Timeout**: transaction timeout in seconds. **Transaction manager**: PlatformTransactionManager (JDBC: DataSourceTransactionManager, JPA: JpaTransactionManager). **Best practices**: service layer, not repository, keep transactions short.
 
 </div>
 
@@ -1574,10 +1574,10 @@ Automatic rollback on RuntimeException and Error. Manual rollback configuration 
 
 ### Validation {#validation}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Validation is like a "data quality checkpoint": ensures data meets business rules before processing.*
+📋 **Concept Definition**  
+**Bean Validation (JSR-303/380)** for declarative validation. **Annotations**: @NotNull, @NotEmpty, @NotBlank (strings), @Size, @Min/@Max, @Email, @Pattern (regex), @Past/@Future (dates). **Validation trigger**: @Valid or @Validated on method parameters (controllers, service methods). **BindingResult**: captures validation errors in controllers. **Groups**: validate subset with validation groups. **Custom validators**: implement ConstraintValidator, create @Constraint annotation. **Hibernate Validator**: reference implementation with additional constraints. **Error messages**: message templates, i18n support. **Cascading**: @Valid on nested objects validates recursively. **Best practices**: validate at boundaries (controllers), immutable validated objects.
 
 </div>
 
@@ -1708,10 +1708,10 @@ public class UserService {
 
 ### Spring Actuator {#actuator}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Actuator is like an "application dashboard": production-ready monitoring endpoints for real-time tracking of application health, performance, and configuration.*
+📋 **Concept Definition**  
+**Production-ready endpoints** for monitoring and management. **Endpoints**: /actuator/health (liveness/readiness), /metrics (Micrometer metrics), /info (app info), /env (properties), /loggers (change log levels), /threaddump, /heapdump. **Exposure**: management.endpoints.web.exposure.include=* (all), or specific endpoints. **Health indicators**: database, disk space, custom indicators (HealthIndicator). **Metrics**: JVM memory, CPU, HTTP requests, custom metrics via MeterRegistry. **Prometheus**: /actuator/prometheus for scraping. **Security**: secure endpoints with Spring Security. **Custom endpoints**: @Endpoint, @ReadOperation, @WriteOperation. **Best practices**: expose minimally, secure properly, monitor critical metrics.
 
 </div>
 
@@ -1798,10 +1798,10 @@ public class DatabaseHealthIndicator implements HealthIndicator {
 
 ### Spring AOP {#spring-aop}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Spring AOP is like "invisible assistants": they automatically handle cross-cutting concerns (logging, security, transactions) without cluttering your business logic.*
+📋 **Concept Definition**  
+**Cross-cutting concerns** implementation via dynamic proxies or bytecode weaving. **Aspect**: @Aspect class encapsulating cross-cutting behavior. **Advice types**: @Before (before method), @After (after method), @AfterReturning (after successful return), @AfterThrowing (on exception), @Around (full control). **Pointcut**: expression selecting join points (@Pointcut("execution(* com.example.service.*.*(..))")). **Join point**: execution point (method call). **Proxy types**: JDK dynamic proxy (interface-based), CGLIB (class-based). **Use cases**: logging, security, transaction management, caching. **AspectJ**: full AOP framework, Spring AOP uses subset. **Limitations**: only method-level, only beans.
 
 </div>
 
@@ -1893,10 +1893,10 @@ public class UserService {
 
 ### Caching {#caching}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Spring Caching is like a "memory notebook": @Cacheable = taking notes, @CacheEvict = erasing, cache provider = notebook type.*
+📋 **Concept Definition**  
+**Provider-agnostic cache abstraction** for transparent caching. **Annotations**: **@Cacheable** (cache method result), **@CachePut** (update cache), **@CacheEvict** (remove from cache, allEntries for full clear). **@Caching**: combine multiple cache operations. **Providers**: ConcurrentMapCacheManager (simple), EhCache, Caffeine (high-performance local), Redis (distributed). **Key generation**: SpEL expressions (#id, #user.name), custom KeyGenerator. **Conditional caching**: condition, unless attributes. **@EnableCaching**: enable cache support. **Cache managers**: multiple CacheManager beans. **TTL**: provider-specific (Redis: @Cacheable with TTL config). **Best practices**: cache expensive operations, set appropriate TTL, monitor hit rates.
 
 </div>
 
@@ -2047,10 +2047,10 @@ public class CacheService {
 
 ### Event Handling {#event-handling}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*Spring Events are like a "notification system": publishers announce events, subscribers listen and react, all decoupled.*
+📋 **Concept Definition**  
+**Publish-subscribe pattern** for decoupled component communication. **Publishing**: ApplicationEventPublisher.publishEvent(event), or @EventListener method returning event. **Listening**: @EventListener methods consume events, parameter type determines event. **Event types**: extend ApplicationEvent (legacy) or any POJO (Spring 4.2+). **Async processing**: @Async on listener, requires @EnableAsync. **Order**: @Order annotation for listener execution order. **Conditional**: @EventListener(condition="#event.status == 'SUCCESS'"). **Transaction-bound**: @TransactionalEventListener (phases: AFTER_COMMIT, AFTER_ROLLBACK, AFTER_COMPLETION, BEFORE_COMMIT). **Use cases**: audit logging, notifications, workflow triggers. **Best practices**: immutable events, avoid heavy processing in sync listeners.
 
 </div>
 

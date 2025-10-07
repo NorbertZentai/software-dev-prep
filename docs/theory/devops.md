@@ -5453,20 +5453,14 @@ A: docker network inspect, container ping tests, port accessibility check, DNS r
 
 ### Docker Volumes {#docker-volumes}
 
-<div class="concept-section mental-model" data-filter="docker junior">
+<div class="concept-section definition" data-filter="docker junior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-A Docker Volumes olyan, mint **külső tárolók** és **megosztott mappák**:
-- **Named volumes** = **Biztonsági széf** amit Docker kezel, de bárhonnan elérhető
-- **Bind mounts** = **Szimbolikus link** host file system-re
-- **tmpfs mounts** = **Ideiglenes memória tároló** ami eltűnik restart után
-- **Volume drivers** = **Különböző tárolási technológiák** (local, cloud, network storage)
-
-Volumes **persistent data** tárolására szolgálnak, ami **túléli a container lifecycle-t**.
+**Perzisztens adattárolási mechanizmus** Docker container-ek számára. **Típusok**: **Named volumes** (Docker által kezelt, docker volume create), **Bind mounts** (host directory mapping: -v /host/path:/container/path), **tmpfs mounts** (memóriában, nem perzisztens), **Volume plugins** (hálózati tárolók: NFS, AWS EBS). **Lifecycle**: volumes túlélik a container törlését, újrafelhasználhatók. **Előnyök**: adatmegőrzés container újraindításnál, megosztás container-ek között, backup/restore egyszerűsítése, driver-ek különböző backend-ekhez. **Használati esetek**: adatbázis adatok, log fájlok, upload-olt file-ok, konfiguráció. **Best practice**: named volumes production-ben, bind mount fejlesztéshez, tmpfs érzékeny átmeneti adathoz.
 
 </div>
 
@@ -8092,27 +8086,20 @@ services:
 
 ### Docker Registry {#docker-registry}
 
-<div class="concept-section mental-model" data-filter="docker medior">
+<div class="concept-section definition" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Docker Registry** = **Könyvtár rendszer** Docker image-ek számára
+**Centralizált tároló Docker image-ekhez** push/pull műveletekhez. **Típusok**: **Public registry** (Docker Hub, ingyenes/fi zetős, nyilvános image-ek), **Private registry** (biztonságos, céges image-ek, authentikációval), **Self-hosted** (saját infrastruktúrán: Docker Registry, Harbor, Nexus, Artifactory). **Komponensek**: **Repository** (image neve: nginx, myapp), **Tag** (verzió: latest, v1.2.3, prod), **Manifest** (image metadata és layer-ek listája), **Layer** (újrafelhasználható rétegek, megosztva image-ek között). **Biztonság**: TLS/SSL, role-based access control, image signing (Docker Content Trust), vulnerability scanning. **Best practice**: private registry production-höz, image tagging stratégia, automated cleanup policák.
 
-**Registry types:**
-- **Public Registry (Docker Hub)** = **Nyilvános könyvtár** - mindenki hozzáfér
-- **Private Registry** = **Céges könyvtár** - restricted access
-- **Self-hosted Registry** = **Saját könyvtár** - full control
+</div>
 
-**Registry components:**
-- **Repository** = **Könyv sorozat** (pl. myapp, nginx)
-- **Tag** = **Könyv verzió** (latest, v1.2.3, production)
-- **Manifest** = **Tartalomjegyzék** - image layers és metadata
-- **Layer** = **Fejezetek** - reusable image components
+</details>
 
-**Access control:**
+</div>
 - **Public repos** = Free reading for everyone
 - **Private repos** = Authentication és authorization
 - **Team permissions** = Role-based access control
@@ -8553,14 +8540,14 @@ done
 
 ### CI/CD integration {#ci-cd-integration}
 
-<div class="concept-section mental-model" data-filter="docker senior">
+<div class="concept-section definition" data-filter="docker senior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**CI/CD + Docker** = **Automatizált gyár** kódból production-ready container-ek előállítására
+**CI/CD pipeline integráció Docker-rel** automatizált build-deploy workflow-hoz. **Pipeline fázisok**: **Source** (git checkout), **Build** (docker build, multi-stage Dockerfile), **Test** (container-alapú tesztek: unit, integration), **Security** (image scanning: Trivy, Clair, vulnerability checks), **Push** (registry-be: Docker Hub, ECR, GCR), **Deploy** (Kubernetes, ECS, Docker Swarm). **Tools**: Jenkins (Docker plugin), GitLab CI (Docker executor), GitHub Actions (Docker action), CircleCI, Travis CI. **Best practice**: cache layer-ek (BuildKit), parallel builds, test container-ekben (Testcontainers), image tagging (commit SHA, branch, semantic version), automated rollback, blue-green deployment.
 
 **Pipeline stages:**
 - **Source stage** = **Nyersanyag bekérés** (git checkout)
@@ -9113,14 +9100,14 @@ docker push $IMAGE_NAME:deps-cache
 
 ### Debugging containers {#debugging-containers}
 
-<div class="concept-section mental-model" data-filter="docker medior">
+<div class="concept-section definition" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Container debugging** = **Orvosi diagnózis** container "betegek" számára
+**Hibaelhárítási technikák** futó vagy crashed container-ekhez. **Diagnosztikai eszközök**: **docker logs** (stdout/stderr kimenet, --follow real-time), **docker exec** (parancs futtatása futó container-ben: docker exec -it <container> /bin/bash), **docker inspect** (részletes JSON konfiguráció, network, volumes), **docker stats** (real-time resource használat: CPU, memory, I/O), **docker events** (daemon eseményfolyam). **Debug stratégiák**: health check vizsgálat, environment változók ellenőrzése, network connectivity teszt (ping, curl), file system inspect (volumes, permissions), process lista (docker top), exit code elemzés. **Tools**: kubectl logs (Kubernetes), docker-compose logs, monitoring tools (Prometheus, Grafana). **Best practice**: structured logging, health endpoints, debug image készítése troubleshooting-hoz.
 
 **Diagnostic tools:**
 - **Logs** = **Tünetek leírása** - mi történt és mikor
@@ -9514,14 +9501,14 @@ docker exec container_name strace -p 1 -o /tmp/syscalls.log
 
 ### Container lifecycle management {#container-lifecycle-management}
 
-<div class="concept-section mental-model" data-filter="docker medior">
+<div class="concept-section definition" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Container lifecycle** = **Élőlény életciklus** birth-től death-ig
+**Container állapotok és átmenetek** létrehozástól törlésig. **Állapotok**: **Created** (létrehozva, de nem fut: docker create), **Running** (aktív futás: docker start/run), **Paused** (process-ek fagyasztva, memória megőrizve: docker pause), **Exited** (leállt, exit code-dal: docker stop), **Dead** (nem törölhető állapot hibánál), **Removed** (törölve: docker rm). **Átmenet parancsok**: docker run (create+start), docker restart (stop+start), docker kill (azonnali stop SIGKILL-lel), docker pause/unpause. **Auto-restart policy**: no, on-failure, always, unless-stopped. **Best practice**: graceful shutdown (SIGTERM majd SIGKILL), health check-ek, resource limits, cleanup (docker system prune).
 
 **Lifecycle stages:**
 - **Created** = **Fogantatás** - container létrehozva, de még nem fut
@@ -11859,21 +11846,14 @@ Tervezz és implementálj komplett DevOps workflow-t egy web alkalmazáshoz:
 
 ### Secrets Management {#secrets-management}
 
-<div class="concept-section mental-model" data-filter="iac medior">
+<div class="concept-section definition" data-filter="iac medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-A Secrets Management olyan, mint egy **digitális bank széf**:
-- **HashiCorp Vault** = **Főszéf** centralized secret storage-dzsel
-- **Kubernetes Secrets** = **Kisebb páncélszekrények** application-level secrets-hez
-- **Secret rotation** = **Rendszeres jelszóváltoztatás** automated módon
-- **Access policies** = **Széf hozzáférési jogok** role-based permissions-ökkel
-- **Audit logs** = **Biztonsági kamerák** who accessed what when
-
-Soha **hardcode secrets**, mindig **secure vault**-ból fetch-elni runtime-ban.
+**Biztonságos tárolás és kezelés érzékeny adatokhoz** (API kulcsok, jelszavak, tokenek). **Eszközök**: **HashiCorp Vault** (centralizált secret management, dynamic secrets, encryption-as-a-service), **Kubernetes Secrets** (base64 encoded, etcd-ben tárolva, volume vagy env var), **AWS Secrets Manager/Parameter Store**, **Azure Key Vault**, **Google Secret Manager**. **Funkciók**: **Encryption at rest** (titkosítás tároláskor), **Access control** (role-based permissions, policies), **Audit logging** (ki fért hozzá mikor), **Secret rotation** (automatikus jelszócserék), **Dynamic secrets** (on-demand generálás, TTL-lel). **Best practice**: soha ne hardcode-olj, ne commit-olj Git-be, használj environment-specific secrets-et, rendszeres rotáció.
 
 </div>
 
@@ -12559,19 +12539,14 @@ A: Regular schedule (30-90 days), after security incident, employee departure, c
 
 ### Environments {#environments}
 
-<div class="concept-section mental-model" data-filter="pipeline junior">
+<div class="concept-section definition" data-filter="pipeline junior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-Az Environments olyan, mint **különböző tesztpályák** autógyártásban:
-- **Development** = **Garage workshop** ahol a fejlesztők szabadon kísérleteznek
-- **Staging** = **Test track** production-like conditions-ökkel
-- **Production** = **Public roads** ahol real users használják az alkalmazást
-
-Minden environment **izolált**, **más konfigurációval**, és **különböző quality gates**-ekkel.
+**Izolált futtatási környezetek** különböző fejlesztési fázisokhoz. **Típusok**: **Development** (fejlesztői kísérletezés, gyakori változtatások, debug eszközök), **Testing/QA** (automatizált és manuális tesztelés, test adatok), **Staging/Pre-production** (production-szerű környezet, utolsó validáció, performance tesztek), **Production** (valódi felhasználók, magas rendelkezésre állás, monitorozás). **Jellemzők**: különböző konfigurációk (environment variables), izolált adatbázisok, külön hozzáférési jogok, promotion workflow (dev → staging → prod). **Best practice**: infrastructure as code mindenhol, parity (staging = prod), automated promotion, environment-specific secrets.
 
 </div>
 

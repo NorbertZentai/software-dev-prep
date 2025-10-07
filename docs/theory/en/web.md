@@ -8,10 +8,10 @@ Web development encompasses using HTML, CSS, and JavaScript technologies to crea
 
 ### HTML {#html}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Think of it this way**  
-*HTML is like a house's structural framework: it defines where the walls, doors, and windows go, but not their colors or styles.*
+📋 **Concept Definition**  
+**HyperText Markup Language** defining structure and semantics of web content. **Elements**: tags (<tagname>), attributes (id, class, data-*), semantic tags (header, nav, main, article, section, footer). **HTML5**: video, audio, canvas, SVG, form validation, local storage APIs. **Document structure**: <!DOCTYPE html>, <html>, <head> (metadata, title, links), <body> (content). **Forms**: input types (text, email, date, file), validation attributes (required, pattern, min/max). **Accessibility**: ARIA attributes (role, aria-label), semantic tags aid screen readers. **Best practices**: semantic HTML for meaning, validate markup, avoid inline styles, use alt for images, proper heading hierarchy (h1-h6).
 
 </div>
 
@@ -454,10 +454,10 @@ Web development encompasses using HTML, CSS, and JavaScript technologies to crea
 
 ### CSS {#css}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🎨 **Think of it this way**  
-*CSS is like interior design for your HTML house: it controls colors, layouts, fonts, and how everything looks and feels.*
+📋 **Concept Definition**  
+**Cascading Style Sheets** for styling HTML presentation. **Selectors**: element (p), class (.class), id (#id), attribute ([type="text"]), pseudo-classes (:hover, :nth-child), pseudo-elements (::before, ::after). **Box model**: content, padding, border, margin, box-sizing. **Layout**: **Flexbox** (1D layout, flex containers), **Grid** (2D layout, grid template areas), positioning (static, relative, absolute, fixed, sticky). **Responsive design**: media queries, viewport units (vw, vh), mobile-first approach. **Preprocessors**: Sass, LESS (variables, nesting, mixins). **Modern features**: CSS variables (--color), animations, transitions, transforms. **Specificity**: inline (1000) > id (100) > class (10) > element (1).
 
 </div>
 
@@ -1074,10 +1074,10 @@ p {
 
 ### JavaScript {#javascript}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-⚡ **Think of it this way**  
-*JavaScript is like the electrical system in your HTML house: it powers the lights, controls the appliances, and makes everything interactive.*
+📋 **Concept Definition**  
+**High-level, interpreted programming language** for web interactivity. **ES6+ features**: arrow functions, destructuring, spread operator, template literals, async/await, modules (import/export), classes. **DOM manipulation**: querySelector, addEventListener, createElement, classList. **Event handling**: bubbling, capturing, delegation, preventDefault. **Async programming**: callbacks, Promises, async/await, fetch API. **Data types**: primitives (string, number, boolean, null, undefined, symbol, bigint), objects, arrays. **Scope**: global, function, block (let/const). **Closures**: functions accessing outer scope. **Prototype-based inheritance**: prototypal chain, __proto__. **Frameworks**: React, Vue, Angular. **Runtime**: browser (V8, SpiderMonkey), Node.js (server-side).
 
 </div>
 
@@ -1550,10 +1550,10 @@ fetch('/api/users', {
 
 ## HTTP Protocol {#http-protocol}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🌐 **Think of it this way**  
-*HTTP is like the postal system for the internet: it defines how messages are formatted, addressed, sent, and received between computers.*
+📋 **Concept Definition**  
+**Application-layer protocol** for client-server communication on the web. **Methods**: GET (retrieve), POST (create), PUT (update/replace), PATCH (partial update), DELETE (remove), HEAD (metadata), OPTIONS (CORS preflight). **Status codes**: 1xx (informational), 2xx (success: 200 OK, 201 Created), 3xx (redirection: 301 Moved, 304 Not Modified), 4xx (client error: 400 Bad Request, 401 Unauthorized, 404 Not Found), 5xx (server error: 500 Internal Server Error, 503 Service Unavailable). **Headers**: request (Accept, Authorization, Cookie), response (Content-Type, Set-Cookie, Cache-Control), general (Date, Connection). **HTTP/2**: multiplexing, header compression, server push. **HTTP/3**: QUIC protocol, UDP-based. **HTTPS**: TLS/SSL encryption for secure communication.
 
 </div>
 
@@ -2086,10 +2086,10 @@ async function demonstrateHTTPCommunication() {
 
 ### Progressive Web Apps (PWA) {#pwa}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-📱 **Think of it this way**  
-*PWAs are like hybrid applications: they look and feel like native mobile apps but are built with web technologies and run in browsers.*
+� **Concept Definition**  
+**Web applications with native-like capabilities** using modern web technologies. **Requirements**: HTTPS, service worker, web app manifest (manifest.json). **Service worker**: JavaScript proxy intercepting network requests, enables offline functionality, background sync, push notifications. **Manifest**: app metadata (name, icons, theme color, display mode: standalone/fullscreen). **Capabilities**: installable (add to home screen), offline-first (cache assets), push notifications, background sync, camera/geolocation access. **Caching strategies**: cache-first, network-first, stale-while-revalidate. **Lighthouse**: audit tool for PWA compliance. **Use cases**: Twitter Lite, Starbucks, Uber. **vs Native apps**: single codebase, no app store approval, smaller size, but limited API access.
 
 </div>
 
@@ -2637,10 +2637,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 ### Performance Optimization {#performance}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🚀 **Think of it this way**  
-*Web performance is like optimizing a race car: every component needs to be tuned for speed, efficiency, and smooth operation.*
+� **Concept Definition**  
+**Techniques for improving web page speed and efficiency.** **Core Web Vitals**: **LCP** (Largest Contentful Paint <2.5s), **FID** (First Input Delay <100ms), **CLS** (Cumulative Layout Shift <0.1). **Resource optimization**: minification (CSS, JS), compression (gzip, Brotli), image formats (WebP, AVIF), lazy loading (images, iframes), code splitting (dynamic imports). **Caching**: HTTP cache headers (Cache-Control, ETag), service workers, CDN. **Critical rendering path**: minimize critical resources, defer non-critical CSS/JS, preload key assets. **JavaScript optimization**: tree shaking, code splitting, avoid blocking main thread. **Performance budgets**: set size limits for assets. **Tools**: Lighthouse, WebPageTest, Chrome DevTools Performance panel.
 
 </div>
 
@@ -3129,10 +3129,10 @@ const result = measureOperation('data-processing', () => {
 
 ### Web Security {#web-security}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🔒 **Think of it this way**  
-*Web security is like building a fortress: you need multiple layers of protection, careful access control, and constant vigilance against attacks.*
+� **Concept Definition**  
+**Practices protecting web applications from attacks.** **Common vulnerabilities**: **XSS** (Cross-Site Scripting: inject malicious scripts, prevent with sanitization/CSP), **CSRF** (Cross-Site Request Forgery: unauthorized actions, prevent with tokens), **SQL Injection** (malicious SQL, use parameterized queries), **Clickjacking** (trick users into clicking, X-Frame-Options header). **Security headers**: Content-Security-Policy (CSP), Strict-Transport-Security (HSTS), X-Content-Type-Options (nosniff). **Authentication**: JWT tokens, OAuth2, session management, secure cookies (httpOnly, secure, sameSite). **HTTPS**: TLS/SSL encryption, certificate validation. **Input validation**: sanitize user input, whitelist allowed values. **OWASP Top 10**: industry standard vulnerability list.
 
 </div>
 
@@ -3593,10 +3593,10 @@ const securityMonitor = new SecurityMonitor();
 
 ### Web APIs {#web-apis}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🌐 **Think of it this way**  
-*Web APIs are like standardized electrical outlets: they provide consistent interfaces that different devices (applications) can plug into to access specific functionality.*
+📋 **Concept Definition**  
+**Browser-provided JavaScript interfaces** for accessing device/browser features. **Common APIs**: **Fetch** (HTTP requests replacing XMLHttpRequest), **Geolocation** (navigator.geolocation), **Web Storage** (localStorage, sessionStorage), **IndexedDB** (client-side database), **Web Workers** (background threads), **Service Workers** (offline, push notifications), **Notifications** (system notifications), **Intersection Observer** (viewport visibility), **WebSockets** (bidirectional communication), **Canvas/WebGL** (graphics), **Web Audio** (sound processing), **Payment Request** (checkout). **Permissions**: user consent required for sensitive APIs (location, camera, notifications). **Feature detection**: check API availability before use.
 
 </div>
 
@@ -4124,10 +4124,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 ### Modern Web Frameworks {#modern-frameworks}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-⚡ **Think of it this way**  
-*Web frameworks are like pre-built toolkits for construction: instead of crafting every nail and screw yourself, you get standardized tools and patterns to build applications faster and more reliably.*
+📋 **Concept Definition**  
+**JavaScript libraries/frameworks** for building complex web applications. **React**: component-based library, virtual DOM, JSX, hooks (useState, useEffect), unidirectional data flow. **Vue**: progressive framework, template syntax, reactive data binding, composition API. **Angular**: full framework, TypeScript-based, dependency injection, RxJS observables. **Component architecture**: reusable UI components, props/events, state management. **State management**: Redux (React), Vuex/Pinia (Vue), NgRx (Angular), or modern: Zustand, Jotai. **Routing**: React Router, Vue Router, Angular Router (SPAs). **Build tools**: Vite (fast dev server), Webpack (bundler), Rollup. **SSR/SSG**: Next.js (React), Nuxt.js (Vue), Angular Universal. **Best practices**: component composition, separation of concerns, performance optimization.
 
 </div>
 
@@ -4738,10 +4738,10 @@ export class UserService {
 
 ### Progressive Web Apps (PWA) {#pwa}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🚀 **Think of it this way**  
-*PWAs are like native mobile apps disguised as websites: they can work offline, send notifications, and be installed on devices, but they're built with web technologies.*
+� **Concept Definition**  
+**Web applications with native-like capabilities** using modern web technologies. **Requirements**: HTTPS, service worker, web app manifest (manifest.json). **Service worker**: JavaScript proxy intercepting network requests, enables offline functionality, background sync, push notifications. **Manifest**: app metadata (name, icons, theme color, display mode: standalone/fullscreen). **Capabilities**: installable (add to home screen), offline-first (cache assets), push notifications, background sync, camera/geolocation access. **Caching strategies**: cache-first, network-first, stale-while-revalidate. **Lighthouse**: audit tool for PWA compliance. **Use cases**: Twitter Lite, Starbucks, Uber. **vs Native apps**: single codebase, no app store approval, smaller size, but limited API access.
 
 </div>
 
