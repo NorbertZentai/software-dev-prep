@@ -1699,8 +1699,8 @@ test('useCounter should increment', () => {
 
 <div class="concept-section mental-model" data-filter="javascript junior">
 
-🧭 **Így gondolj rá**  
-*Event Loop mint egy pincér étteremben: nem vár meg minden rendelést egyenként, hanem felveszi őket, továbbadja a konyhának, és közben más vendégeket szolgál ki. Az async/await pedig mint egy jól szervezett rendelési rendszer.*
+📋 **Fogalom meghatározása**  
+*Az Event Loop egy JavaScript runtime mechanizmus, amely lehetővé teszi a nem-blokkoló (non-blocking) aszinkron műveletek végrehajtását egyetlen szálon. A call stack, callback queue és Web API-k koordinálásával biztosítja, hogy az aszinkron műveletek ne blokkolják a fő végrehajtási szálat. Az async/await egy szintaktikai konstrukció, amely Promise-alapú aszinkron kódot szinkron módon olvashatóvá tesz.*
 
 </div>
 
@@ -1964,8 +1964,8 @@ A: AbortController + AbortSignal használatával.
 
 <div class="concept-section mental-model" data-filter="javascript junior">
 
-🧭 **Így gondolj rá**  
-*Callback mint régi telefonközpont: "kérem hívjon vissza ha kész". Promise mint modern futárszolgálat: "megígérem hogy elhozom, vagy mondok okot". Async/await mint személyes asszisztens: "várok míg elvégzi, közben mással foglalkozom".*
+📋 **Fogalom meghatározása**  
+*Callback egy függvény, amit paraméterként adunk át egy másik függvénynek, és az aszinkron művelet befejezésekor hívódik meg. Promise egy objektum, amely egy aszinkron művelet jövőbeli sikerét vagy sikertelenségét reprezentálja (pending, fulfilled, rejected állapotokkal). Az async/await egy szintaktikai cukor, amely Promise-alapú kódot szinkron szerkezetben teszi olvashatóvá, az async függvény mindig Promise-t ad vissza.*
 
 </div>
 
@@ -2201,8 +2201,8 @@ A: Sequential ha a következő függ az előzőtől, parallel ha függetlenek.
 
 <div class="concept-section mental-model" data-filter="typescript medior">
 
-🧭 **Így gondolj rá**  
-*TypeScript utility típusok mint szakács késkészlete: minden kés más feladatra (Partial = csökkent, Pick = kiválaszt, Omit = eltávolít, Record = katalógus). Mindegyik eszköz egy specifikus típus-manipulációra specializálódott.*
+📋 **Fogalom meghatározása**  
+*A TypeScript utility típusok beépített generic típusok, amelyek meglévő típusok transzformálására szolgálnak: Partial<T> az összes property-t opcionálissá teszi, Pick<T,K> kiválasztott kulcsokat tart meg, Omit<T,K> megadott kulcsokat eltávolít, Record<K,T> kulcs-érték párok típusát definiálja. Ezek compile-time típus manipulációt tesznek lehetővé kód duplikáció nélkül.*
 
 </div>
 
@@ -2636,8 +2636,8 @@ A: Record<K,V> konkrét kulcs típust vár, Index signature `{[key: string]: V}`
 
 <div class="concept-section mental-model" data-filter="typescript medior">
 
-🧭 **Így gondolj rá**  
-*Generic types mint univerzális adapter vagy template: egy sablon ami különböző típusokkal működik. Mint egy univerzális USB adapter ami minden eszközzel kompatibilis, de típusbiztonságot is nyújt.*
+📋 **Fogalom meghatározása**  
+*A Generics olyan típusparaméterek, amelyek lehetővé teszik típusbiztos, újrafelhasználható komponensek, függvények és osztályok létrehozását. A generic típusváltozók (pl. <T>) helyettesítő értékek, amelyek a típus konkrét használatakor helyettesítődnek be, így ugyanaz a kód többféle típussal működhet típusbiztonság megtartása mellett.*
 
 </div>
 
@@ -3179,8 +3179,8 @@ A: Generic ha ugyanaz a logika különböző típusokkal, overload ha teljesen k
 
 <div class="concept-section mental-model" data-filter="typescript medior">
 
-🧭 **Így gondolj rá**  
-*Type narrowing mint detektív munka: kezded egy széles gyanúsítotti körrel (union type), aztán bizonyítékokat gyűjtesz (type guards) hogy leszűkítsd a lehetőségeket, míg végül pontosan tudod ki a tettes (specific type).*
+📋 **Fogalom meghatározása**  
+*Type narrowing a TypeScript folyamata, amely során a compiler egy szélesebb típust (pl. union type) szűkebb típusra szűkít kontrollfolyamat-elemzés (control flow analysis) alapján. Type guards olyan kifejezések vagy függvények, amelyek runtime ellenőrzést végeznek és a compiler számára jelzik a típusszűkítést (typeof, instanceof, in operátor, custom type predicates).*
 
 </div>
 
@@ -3682,8 +3682,8 @@ A: Discriminated union plain object-ekhez, instanceof class instance-okhoz.
 
 <div class="concept-section mental-model" data-filter="react junior">
 
-🧭 **Így gondolj rá**  
-*JSX mint HTML és JavaScript házassága: írhatsz HTML-szerű kódot, de JavaScript képességekkel. Virtual DOM pedig mint egy terv a valódi házról: olcsóbb módosítani a tervet, aztán egyszerre építeni át a házat, mint minden apró változtatást azonnal megvalósítani.*
+📋 **Fogalom meghatározása**  
+*JSX (JavaScript XML) egy szintaktikai kiterjesztés, amely lehetővé teszi XML-szerű szintaxis használatát JavaScriptben, és transpiláláskor React.createElement() hívásokká alakul. A Virtual DOM egy könnyűsúlyú JavaScript reprezentációja a valódi DOM-nak, amely memóriában tárolódik és diffing algoritmussal összehasonlítva a valódi DOM-mal csak a szükséges változtatásokat alkalmazza (reconciliation).*
 
 </div>
 
@@ -4290,8 +4290,8 @@ A: React azonosítja mely elemek változtak/adódtak hozzá/törlődtek, optimal
 
 <div class="concept-section mental-model" data-filter="react medior">
 
-🧭 **Így gondolj rá**  
-*React lifecycle mint egy színházi előadás: Mounting = színpadra lépés és felkészülés, Updating = szerepváltozás és improvizáció, Unmounting = színpadról lelépés és takarítás. Hooks-szal mintha minden színész saját asszisztense lenne (useEffect) aki tudja mikor mit csináljon.*
+📋 **Fogalom meghatározása**  
+*A React lifecycle a komponens életciklusának fázisai: Mounting (komponens létrehozása és DOM-ba illesztése), Updating (props vagy state változás miatti újrarenderelés), Unmounting (komponens eltávolítása a DOM-ból). Modern hooks esetén a useEffect hook kezeli a lifecycle eseményeket: dependency array-vel megadható mikor fusson, cleanup függvénnyel az unmounting kezelhető.*
 
 </div>
 
@@ -4940,8 +4940,8 @@ A: useEffect dependency array-jel: `useEffect(() => {}, [prop1, prop2])` - futta
 
 <div class="concept-section mental-model" data-filter="react medior">
 
-🧭 **Így gondolj rá**  
-*Context API mint egy rádióállomás: egy helyen küldesz (Provider), bárhol a hierarchiában fogni tudod (useContext). Nincs szükség vezetékes telefonra (prop drilling) - a rádióhullám mindenhol elérhető ahol van vevő.*
+📋 **Fogalom meghatározása**  
+*A Context API egy React mechanizmus globális adatmegosztásra komponens hierarchián keresztül prop drilling nélkül. createContext() létrehoz egy context objektumot, a Provider komponens szolgáltatja az értéket, a useContext() hook vagy Consumer komponens olvassa az értéket. A context értéke változásakor minden fogyasztó komponens újrarenderelődik.*
 
 </div>
 
@@ -5628,8 +5628,8 @@ A: Default value-t kapod (ha van), de gyakran null/undefined, ezért error check
 
 <div class="concept-section mental-model" data-filter="react medior">
 
-🧭 **Így gondolj rá**  
-*Custom Hooks mint személyre szabott szerszámok a műhelyben: veszed a alap szerszámokat (useState, useEffect), és kombinálod őket egy specifikus feladatra specializált eszközzé. Minden hook egy újrafelhasználható "recept" egy gyakori problémára.*
+📋 **Fogalom meghatározása**  
+*Custom Hooks olyan újrafelhasználható függvények, amelyek React beépített hook-jait (useState, useEffect, useContext, stb.) kombinálják, hogy komplex stateful logikát egységbe zárjanak és több komponens között megoszthassanak. Konvenció szerint nevük "use" prefixszel kezdődik.*
 
 </div>
 
@@ -6413,8 +6413,8 @@ A: React Testing Library renderHook utility-vel, mock-olt dependencies-szel, act
 
 <div class="concept-section mental-model" data-filter="react medior">
 
-🧭 **Így gondolj rá**  
-*React Router mint egy múzeum térképe és útbaigazító rendszere: Route-ok = kiállítási termek, Link-ek = navigációs táblák, Outlet = "Itt lesz a következő kiállítás" hely. A browser URL = jelenlegi pozíciód a múzeumban.*
+📋 **Fogalom meghatározása**  
+*React Router egy deklaratív routing library Single Page Application-ökhöz. Fő komponensei: Route (URL pattern és renderelendő komponens összekapcsolása), Link/NavLink (deklaratív navigáció), Outlet (nested route-ok renderelési helye), useNavigate/useParams hook-ok (programmatic navigation és route paraméterek elérése).*
 
 </div>
 
@@ -7296,8 +7296,8 @@ A: Link declarative navigation-höz, navigate programmatic navigation-höz (form
 
 <div class="concept-section mental-model" data-filter="react medior">
 
-🧭 **Így gondolj rá**  
-*Error Boundary mint egy biztonsági háló a cirkuszban: ha egy akrobata (komponens) leesik (error-t dob), a háló (Error Boundary) elkapja, így a teljes előadás (alkalmazás) nem áll le, csak az adott szám cserélődik le egy tartalék műsorszámra.*
+📋 **Fogalom meghatározása**  
+*Error Boundary egy React komponens (class component), amely a componentDidCatch() és static getDerivedStateFromError() lifecycle metódusokat implementálja. Elfogja a gyermek komponens fában fellépő JavaScript hibákat render során, logolja azokat és fallback UI-t jelenít meg a hibás komponens fa helyett, megakadályozva az egész alkalmazás összeomlását.*
 
 </div>
 
@@ -8008,8 +8008,8 @@ A: Top-level (app szintű), feature-level (route/module szintű), component-leve
 
 <div class="concept-section mental-model" data-filter="react medior">
 
-🧭 **Így gondolj rá**  
-*Code splitting mint egy moduláris bútor: nem kell az egész nappalit egyszerre összerakni (teljes bundle letöltés), hanem csak azt a részt, amire most szükséged van (lazy load), és amikor kell, akkor hozod be a többi darabot (dynamic import).*
+📋 **Fogalom meghatározása**  
+*Code splitting egy optimalizációs technika, amely a JavaScript bundle-t több kisebb chunk-ra bontja, amelyek késlekedve (on-demand) töltődnek be. React.lazy() dinamikus import()-ot tesz lehetővé komponensekhez, amely csak akkor tölti be a komponens kódját, amikor az először renderelődik. A Suspense komponens fallback UI-t biztosít a betöltés alatt.*
 
 </div>
 
@@ -8615,8 +8615,8 @@ A: Kis komponenseknél, kritikus above-the-fold tartalmnál, gyakran használt s
 
 <div class="concept-section mental-model" data-filter="react medior">
 
-🧭 **Így gondolj rá**  
-*Suspense mint egy étterem rendszer: ha egy étel (komponens) még készül (loading), akkor nem blokkolja az egész asztalt (UI), hanem megjeleníti, hogy "hamarosan érkezik" (fallback), és közben más ételeket (komponenseket) lehet felszolgálni. Concurrent features = több szakács párhuzamosan dolgozik.*
+📋 **Fogalom meghatározása**  
+*Suspense egy React komponens, amely lehetővé teszi komponensek "várakozását" valamilyen feltétel teljesüléséig (pl. adat betöltés, lazy loading), közben fallback UI-t jelenítve meg. A Concurrent features (useTransition, useDeferredValue) lehetővé teszik alacsony prioritású renderelések megakasztását és magas prioritású frissítéseknek elsőbbséget adnak, javitva a responsive user experience-t.*
 
 </div>
 
@@ -10388,8 +10388,8 @@ Követelmények:
 
 <div class="concept-section mental-model" data-filter="node medior">
 
-🧭 **Így gondolj rá**  
-*Middleware mint egy futószalag gyárában: minden munkaállomás (middleware) elvégez egy konkrét feladatot (auth, logging, validation), majd továbbadja a terméket (request) a következő állomásnak. Ha valamelyik állomás hibát talál, megállíthatja a futószalagot.*
+📋 **Fogalom meghatározása**  
+*Middleware függvények olyan láncolt request/response processzorok, amelyek hozzáférnek a request és response objektumokhoz és a next() callback-hez. Felelősségük: request preprocessing (pl. authentication, logging, body parsing), response modification, error handling, vagy a request-response ciklus befejezése. Express.js és hasonló frameworkök alapvető építőkövei.*
 
 </div>
 
@@ -11063,8 +11063,8 @@ A: Error middleware 4 paramétert vár (err, req, res, next), és csak akkor hí
 
 <div class="concept-section mental-model" data-filter="node medior">
 
-🧭 **Így gondolj rá**  
-*Error handling mint egy kórház sürgősségi rendszere: különböző típusú "betegek" (hibák) érkeznek, triage (prioritás szerint osztályozás) alapján kezeled őket, dokumentálod (logging), és vagy meggyógyítod (recover), vagy átirányítod specialistához (escalate).*
+📋 **Fogalom meghatározása**  
+*Error handling strategies olyan tervezési minták és technikák, amelyek alkalmazáshibák kezelésére szolgálnak: try-catch blokkok szinkron hibákra, Promise rejection handling (.catch, Promise.catch), async/await error handling, centralized error middleware, error classification (operational vs programmer errors), structured logging, graceful degradation és circuit breaker pattern.*
 
 </div>
 
@@ -11880,8 +11880,8 @@ console.log('Error handling strategies examples loaded');
 
 <div class="concept-section mental-model" data-filter="node medior">
 
-🧭 **Így gondolj rá**  
-*Logging mint egy repülőgép fekete doboza: minden fontos eseményt rögzít különböző részletességi szinteken (log levels), hogy később elemezni tudd a problémákat. Monitoring pedig mint a légi irányítás radar rendszere - valós időben figyeli a rendszer állapotát és riasztást ad, ha valami nincs rendben.*
+📋 **Fogalom meghatározása**  
+*Logging az alkalmazási események struktúrált rögzítése különböző szinteken (debug, info, warn, error, fatal), timestamp-ekkel, context információval és metadata-val. Monitoring az alkalmazás állapotának valós idejű figyelmése metrikákkal (CPU, memória, response time), health check-ekkel, alert-ekkel és dashboard-okkal. Lehetővé teszi proaktív problémakézelést és teljesítény optimalizálást.*
 
 </div>
 
@@ -12667,15 +12667,15 @@ A: Hibát azonnal detektálni és jelezni (validation), ahelyett hogy tovább pr
 <div class="concept-section mental-model" data-filter="tooling medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-Képzeld el a bundler-t egy **intelligens csomagoló robot**ként, ami:
-- **Webpack** = Tapasztalt, megbízható dolgozó, minden feladatot megold, de kicsit lassabb
-- **Vite** = Fiatal, villámgyors gyakornok, modern trükköket használ
-- **Tree shaking** = Csak a ténylegesen használt könyveket pakol be
-- **Code splitting** = Több kisebb csomagot készít ahelyett, hogy egy óriási dobozt adna
+A **bundlerek** olyan build eszközök, amelyek modulokat és asset-eket optimalizált production bundle-kké alakítanak:
+- **Webpack** = Konfigurálható, teljes körű bundler loader és plugin rendszerrel
+- **Vite** = Modern, ESM-alapú dev server natív ES module importtal és gyors HMR-rel
+- **Tree shaking** = Dead code elimination: használaton kívüli exportok eltávolítása
+- **Code splitting** = Bundle felosztása kisebb chunk-okra lazy loading és parallel download céljából
 
 </div>
 
@@ -13158,21 +13158,15 @@ A: Dev: fast rebuild, hot reload, readable code. Prod: minification, optimizatio
 <div class="concept-section mental-model" data-filter="tooling medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**ESLint** = **Helyesírás-ellenőrző tanár**, aki:
-- Megtalálja a logikai hibákat és rossz practice-eket
-- Konzisztens kódolási szabályokat enforceol
-- Custom rules-okkal team-specifikus standardokat állít fel
+**ESLint** egy pluggable JavaScript linter, amely statikus kódelemzéssel azonosítja és jelenti a problémás mintákat, potenciális hibákat és code quality issues-t. Konfigurálható szabálykészletekkel (rules), extend-elhető pluginokkal és custom szabalyokkal.
 
-**Prettier** = **Tipográfus**, aki:
-- Csak a kód kinézetével foglalkozik (formatting)
-- Opinionated döntéseket hoz a code style-ról
-- Automatikusan javítja a formatting problémákat
+**Prettier** egy opinionated code formatter, amely automatikusan átformázza a kódot konzisztens stílusra (indentation, line breaks, quotes) AST-alapú parsolással és újra-printteléssel.
 
-**Együtt** = Olyan mint egy **automated code review system**.
+**Együtt** komplementális eszközök: ESLint a kód minőségét, Prettier a kód megjelenését kezel.
 
 </div>
 
@@ -13685,15 +13679,15 @@ A: ESLint cache enabling, specific file patterns, incremental linting, parallel 
 <div class="concept-section mental-model" data-filter="tooling medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-A testing frameworköt képzeld el egy **minőségbiztosítási rendszer**ként:
-- **Jest** = **Alapvető tesztelő labor**, ahol unit és integration teszteket futtatunk
-- **React Testing Library** = **User behavior simulator**, amely valós user interaction-öket modellezi
-- **Cypress** = **Robot quality assurance tester**, amely teljes user journey-ket végigmegy
-- **Test pyramid** = **Hierarchikus quality system**: sok unit, kevesebb integration, legkevesebb e2e
+A testing frameworkok automatizált tesztelési eszközök különböző szinteken:
+- **Jest** = All-in-one test runner, assertion library és mocking framework, snapshot testing támogatással
+- **React Testing Library** = User-centric testing library, amely DOM query-kkel és user interaction szimulációval tesztel implementációs részletek helyett
+- **Cypress** = End-to-end testing framework valós browser-ben, teljes user flow tesztelésére
+- **Test pyramid** = Unit (sok, gyors, izolált) > Integration (közepes) > E2E (kevés, lassú, draga) arány.
 
 </div>
 

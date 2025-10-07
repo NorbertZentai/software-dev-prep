@@ -74,8 +74,8 @@ Az OOP elvek gyakorlati megvalósításához Java környezetben érdemes ismerni
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Az enkapszuláció olyan, mint egy gyógyszerkapszula: a belső működés rejtve van, csak a szükséges interfész érhető el kívülről.*
+📋 **Fogalom meghatározása**  
+*Az enkapszuláció az OOP elve, amely az objektum belső állapotát (mezőket) elrejti és csak kontrollált hozzáférést biztosít nyilvános metódusokon (getter/setter) keresztül. A hozzáférés-módosítók (private, protected, public, package-private) szabályozzák a láthatóságot. Célja az adatintegritás védelme, az implementáció elrejtése és a kód rugalmasságának növelése.*
 
 </div>
 
@@ -227,8 +227,8 @@ Ne hívj metódusokat olyan objektumokon, amiket más objektum ad vissza. Péld�
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Az öröklődés olyan, mint a családi vonások: a gyerek örökli a szülő tulajdonságait, de saját egyedi jellemzői is vannak.*
+📋 **Fogalom meghatározása**  
+*Az öröklődés (inheritance) mechanizmus, amellyel egy új osztály (gyérek/subclass) átveheti egy létező osztály (szülő/superclass) tulajdonságait és metódusait. Az "extends" kulcsszóval történik, "is-a" kapcsolatot reprezentál. A subclass kiterjesztheti vagy felüldefiniálhatja (override) a szülő viselkedését. Támogatja a kód újrafelhasználást és a hierarchikus osztályozást.*
 
 </div>
 
@@ -355,8 +355,8 @@ public class Car extends Vehicle {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A polimorfizmus olyan, mint amikor azt mondod „vezess", de mindegy, hogy autót, motort vagy biciklit kapsz - mindegyik másképp, de mindegyik „vezet".*
+📋 **Fogalom meghatározása**  
+*A polimorfizmus az OOP azon képessége, hogy ugyanazon interfész vagy szülőosztály különböző implementációkkal rendelkezzen, és a konkrét metódushívás futásidőben (dynamic binding) dől el. Lehet compile-time (overloading, generics) vagy runtime (overriding, interface implementation) polimorfizmus. Lehetővé teszi a Liskov Substitution Principle-t és a rugalmas, bővíthető kódot.*
 
 </div>
 
@@ -494,8 +494,8 @@ A leszármazott típusok teljesen helyettesíthetők az alaptípussal anélkül,
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Az absztrakció olyan, mint egy autó vezetése: tudod, hogy a gázpedál gyorsít, de nem kell tudnod, hogyan működik belül a motor.*
+📋 **Fogalom meghatározása**  
+*Az absztrakció az OOP elve, amely a lényeges jellemzőket kiemeli és a megvalósítási részleteket elrejti. Abstract class-ok (abstract kulcsszóval) és interface-ek implementálják: definiálják a "mit", de nem a "hogyan"-t. Abstract metódusok törzsnélküliek, implementálást követelnek a subclass-tól. Célja a komplexitás csökkentése és a magas szintű interfész biztosítása.*
 
 </div>
 
@@ -629,8 +629,8 @@ public class MySQLConnection extends DatabaseConnection {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A SOLID olyan, mint az építészet öt alapszabálya: ha betartod őket, stabil, rugalmas épületet (szoftvert) kapsz.*
+📋 **Fogalom meghatározása**  
+*A SOLID öt objektumorientált tervezési elv rövidítése: Single Responsibility Principle (egy osztály egy változás oka), Open/Closed Principle (nyitott bővítésre, zárt módosításra), Liskov Substitution Principle (leszármazottak helyettesíthetők szülővel), Interface Segregation Principle (sok specifikus interface jobb mint egy általános), Dependency Inversion Principle (függés absztrakciótól, nem konkrét implementációtól). Robert C. Martin (Uncle Bob) fogalmazta meg.*
 
 </div>
 
@@ -885,8 +885,7 @@ class OrderService {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Az objektum élete olyan, mint egy szerződés: létrehozáskor érvényes állapotban kell lennie, és minden műveletnél meg kell őrizni az érvényességét.*
+📋 **Fogalom meghatározása**  \n*Az Object Lifecycle az objektum létrehozásától megsemmisülésig tartó folyamat: konstruktor (initialization), használat (method calls), finalizáció (cleanup, garbage collection). Az object invariant olyan feltétel, amely az objektum teljes életciklusa során igaz marad. A konstruktor biztosítja a valid kezdőállapotot, a public metódusok megőrzik az invariant-ot. Immutable objektumoknál egyszerűbb a lifecycle management.*
 
 </div>
 
@@ -1047,8 +1046,8 @@ Value objects esetén, thread-safety igényekor, vagy amikor az objektum identit
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*High Cohesion = családtagok együtt dolgoznak egy célért. Low Coupling = különböző családok függetlenül működnek.*
+📋 **Fogalom meghatározása**  
+*Cohesion (kohézió) azt méri, mennyire összefüggőek egy osztály elemei (metódusok, mezők): high cohesion = szorosan kapcsolódó felelősségek, low cohesion = sok különböző feladat. Coupling (kapcsoltság) az osztályok közötti függőséget mutatja: tight coupling = szoros függés konkrét implementációtól, loose coupling = független komponensek interface-eken keresztül. Cél: magas kohézió, alacsony kapcsoltság (high cohesion, low coupling).*
 
 </div>
 
@@ -1214,8 +1213,8 @@ Ugyanazon komponensen belül, value object-ek között, vagy performance-kritiku
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Ne beszélj idegenekkel - csak a közvetlen szomszédaiddal kommunikálj, ne kérdezz rájuk a barátaikról.*
+📋 **Fogalom meghatározása**  
+*A Law of Demeter (LoD) vagy Principle of Least Knowledge olyan tervezési irányelv, amely szerint egy objektum csak közvetlen "barátaival" kommunikálhat: saját mezők, metódus paraméterek, lokálisan létrehozott objektumok, this objektum. Tiltja a method chaining-et (a.getB().getC().doSomething()), mert így az osztály függ a belső struktúrától. Csökkenti a coupling-ot és növeli az encapsulation-t.*
 
 </div>
 
@@ -1382,8 +1381,8 @@ Delegation pattern: add hozzá wrapper method-okat, amik elrejtik a belső struk
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Value Object = pénz (100 Ft ugyanaz, bárhol is van). Entity = ember (egyedi azonosítóval, még ha ugyanúgy néznek is ki).*
+📋 **Fogalom meghatározása**  
+*Value Object olyan objektum, amely értéke alapján egyenlő (equals() minden mezőt figyelembe vesz), általában immutable, nincs identity-je. Entity olyan objektum, amely identity alapján egyenlő (equals() csak ID-t néz), mutable lehet, lifecycle management szükséges. Domain-Driven Design központi fogalmai: Value Object = Money, Address, DateRange; Entity = Customer, Order, Account. Különbség az egyenlőség szemantikában, hashCode implementációban és persistence strategy-ben.*
 
 </div>
 
@@ -1575,8 +1574,8 @@ Igen, gyakran. Pl. Customer entity tartalmaz Money value object-et.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Access modifier-ek olyan, mint a ház helyiségei: public=előszoba (mindenki), private=hálószoba (csak te), protected=családi szoba (család), package=szomszédok.*
+📋 **Fogalom meghatározása**  
+*Access modifiers (hozzáférési módosítók) szabályozzák az encapsulation-t Java-ban: private (csak osztályon belül), package-private/default (package-en belül), protected (package + leszármazottak), public (minden osztály). Határozzák meg az API surface area-t és a módosíthatóság hatókörét. Private mezők + public getter/setter = kontrollált hozzáférés. Protected template method pattern-ben vagy öröklődési hierarchiában hasznos.*
 
 </div>
 
@@ -1774,8 +1773,8 @@ Igen, de SecurityManager korlátozhatja, és code smell, ha production kódban h
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Inheritance = "is-a" (autó ÉS jármű), Composition = "has-a" (autó VAN motor).*
+📋 **Fogalom meghatározása**  
+*Inheritance (öröklődés) "is-a" kapcsolat, ahol leszármazott osztály szülő tulajdonságait és viselkedését örökli, code reuse és polimorfizmus céljából. Composition (kompozíció) "has-a" kapcsolat, ahol objektum másik objektumokat tartalmaz mezőként, delegációval valósítja meg a funkcionalitást. "Favor composition over inheritance" elv: rugalmasabb, kevésbé szoros kapcsolat, elkerüli a diamond problem-et és a fragile base class problem-et.*
 
 </div>
 
@@ -1916,8 +1915,8 @@ Composition használatával, vagy interface-ekkel (ahol default metódusok expli
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Interface = szerződés ("mit csinálj"), Abstract Class = részben kész sablon ("hogyan csináld, de egyes részeket te döntsd el").*
+📋 **Fogalom meghatározása**  
+*Interface tiszta szerződés (contract): metódus szignatúrák (Java 8+ óta default és static implementációkkal), nincs állapot, multiple implementálható. Abstract class részben implementált osztály: abstract metódusok + konkrét metódusok + mezők, single inheritance. Interface: "mit csináljon" definíció, loose coupling. Abstract class: közös implementáció + template method pattern, code reuse. Java 8+ interface default method-ok csökkentették a különbséget.*
 
 </div>
 
@@ -2075,8 +2074,8 @@ public class Button extends UIComponent implements Drawable, Clickable {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A design pattern-ek olyan, mint az építészeti minták: bevált megoldások gyakori problémákra.*
+📋 **Fogalom meghatározása**  
+*Design Patterns (tervezési minták) gyakran előforduló szoftvertervezési problémákra kidolgozott újrafelhasználható megoldási sablonok. Gang of Four (GoF) könyv 23 mintát definiál három kategóriában: Creational (objektum létrehozás: Singleton, Factory, Builder), Structural (objektum összeállítás: Adapter, Decorator, Facade), Behavioral (objektum interakció: Observer, Strategy, Command). Közös terminológiát biztosít fejlesztők között és best practice-eket kodifikál.*
 
 </div>
 
@@ -2261,8 +2260,8 @@ public class NewsPublisher {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*GRASP olyan, mint a jó házigazda szabályai: ki mit csináljon, hogy a parti (kód) zökkenőmentesen menjen.*
+📋 **Fogalom meghatározása**  
+*GRASP (General Responsibility Assignment Software Patterns) kilenc alapelv az OOP felelősségek allokálására: Information Expert (aki tudja az adatot, az végezze), Creator (ki hozzon létre objektumot), Controller (use case koordináció), Low Coupling, High Cohesion, Polymorphism (type variation kezelése), Pure Fabrication (helper osztályok), Indirection (közvetítő objektum), Protected Variations (interface mögé rejtés). Craig Larman dolgozta ki.*
 
 </div>
 
@@ -2458,8 +2457,8 @@ Ha egy osztálynak túl sok információ kell ahhoz, hogy döntést hozzon - akk
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Thread-safety olyan, mint a közös konyhában főzés: vagy mindenkinek külön eszköze van (immutable), vagy megbeszélik ki mikor használja (synchronization).*
+📋 **Fogalom meghatározása**  
+*Thread-safety azt jelenti, hogy objektum több thread egyidejű hozzáférése esetén is konzisztens állapotban marad, race condition nélkül. Megvalósítási stratégiák: immutability (állapot nem változhat), synchronization (synchronized block/method, locks), thread confinement (ThreadLocal, stack confinement), atomic operations (AtomicInteger, CAS), concurrent collections (ConcurrentHashMap). Java Memory Model definiálja a visibility és ordering garanciákat.*
 
 </div>
 

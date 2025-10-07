@@ -29,8 +29,8 @@ A web development magában foglalja az HTML, CSS és JavaScript technológiák h
 
 <div class="concept-section mental-model" data-filter="html junior">
 
-🧭 **Így gondolj rá**  
-*A HTML olyan, mint egy ház vázszerkezete: a falak, ajtók, ablakok helyét határozza meg, de nem a színüket vagy stílusukat.*
+📋 **Fogalom meghatározása**  
+*A HTML (HyperText Markup Language) egy markup nyelv weboldalak struktúrájának definiálására. Tag-ekkel (elements) határozza meg a tartalmat: <div>, <p>, <h1>, <img>, stb. Szemantikus elemek: <header>, <nav>, <main>, <article>, <footer>. Attribútumok kiegészítő információt adnak (id, class, src, href). HTML5 az aktuális standard.*
 
 </div>
 
@@ -149,8 +149,10 @@ A web development magában foglalja az HTML, CSS és JavaScript technológiák h
 
 <div class="concept-section mental-model" data-filter="css medior">
 
-🧭 **Így gondolj rá**  
-*CSS Grid olyan, mint egy építészeti tervrajz (2D layout), Flexbox pedig mint a bútorok elrendezése egy szobában (1D layout).*
+📋 **Fogalom meghatározása**  
+*CSS Grid kétdimenz
+
+iós layout system (rows és columns), CSS Flexbox egydimenziós layout system (main axis: row vagy column). Grid: grid-template-columns/rows, grid-area, gap properties, explicit 2D positioning. Flexbox: justify-content (main axis), align-items (cross axis), flex-direction, flex-wrap. Grid complex page layouts-hoz, Flexbox component-level alignment-hez. Mindkettő responsive-ready media query-kkel.*
 
 </div>
 
@@ -276,8 +278,8 @@ A web development magában foglalja az HTML, CSS és JavaScript technológiák h
 
 <div class="concept-section mental-model" data-filter="javascript medior">
 
-🧭 **Így gondolj rá**  
-*A modern JavaScript olyan, mint egy svájci bicska: arrow functions (rövidebb írás), destructuring (kicsomagolás), async/await (várakozás kezelés) - minden eszköz egy helyen.*
+📋 **Fogalom meghatározása**  
+*Modern JavaScript (ES6+ features): arrow functions (lexical this binding), destructuring (array/object unpacking), template literals (string interpolation), async/await (Promise-based async syntax sugar), classes (syntactic sugar over prototypes), modules (import/export), spread/rest operators, default parameters, Map/Set collections. Block-scoped let/const instead of var. Enhanced object literals, computed property names.*
 
 </div>
 
@@ -414,8 +416,8 @@ const debouncedSearch = debounce((query) => {
 
 <div class="concept-section mental-model" data-filter="http medior">
 
-🧭 **Így gondolj rá**  
-*A HTTP metódusok olyan, mint egy könyvtár szabályai: GET = olvasás (nincs változás), POST = új könyv beszerzése, PUT = könyv cseréje, DELETE = könyv kiselejtezése.*
+📋 **Fogalom meghatározása**  
+*HTTP metódusok (verbs) REST API request types semantic meaning-gel: GET (retrieve resource, safe+idempotent), POST (create resource, non-idempotent), PUT (update/replace resource, idempotent), PATCH (partial update, nem idempotent default), DELETE (remove resource, idempotent), HEAD (metadata only), OPTIONS (supported methods). Safe = read-only, Idempotent = multiple identical requests same effect. CRUD mapping: Create=POST, Read=GET, Update=PUT/PATCH, Delete=DELETE.*
 
 </div>
 
@@ -552,8 +554,8 @@ const patchUser = { email: "john@updated.com" };
 
 <div class="concept-section mental-model" data-filter="http medior">
 
-🧭 **Így gondolj rá**  
-*A HTTP státuszkódok olyan, mint egy orvosi diagnózis: 2xx = egészséges, 3xx = áthelyezés szükséges, 4xx = te hibáztál, 5xx = mi hibáztunk.*
+📋 **Fogalom meghatározása**  
+*HTTP status codes három-digit response codes: 1xx Informational (100 Continue, 101 Switching Protocols), 2xx Success (200 OK, 201 Created, 204 No Content), 3xx Redirection (301 Moved Permanently, 302 Found, 304 Not Modified), 4xx Client Errors (400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 429 Too Many Requests), 5xx Server Errors (500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable). First digit determines category.*
 
 </div>
 
@@ -687,8 +689,8 @@ DELETE /users/123 → 204 No Content (deleted)
 
 <div class="concept-section mental-model" data-filter="javascript junior">
 
-🧭 **Így gondolj rá**  
-*A DOM olyan, mint egy ház 3D modellje: minden szoba (elem) helyét, kapcsolatait és tulajdonságait ismerjük, és át tudjuk alakítani a házat (weboldalt) bármikor.*
+📋 **Fogalom meghatározása**  
+*DOM (Document Object Model) tree-structured representation of HTML document, browser által parsed és memóriában tartott object hierarchy. Every HTML element = node (Element, Text, Attribute, Comment nodes). DOM API: document.querySelector/querySelectorAll (CSS selector-based), getElementById, getElementsByClassName, createElement, appendChild, removeChild, innerHTML, textContent, setAttribute. Event listeners element-eken keresztül. DOM manipulation triggers reflow és repaint.*
 
 </div>
 
@@ -1072,8 +1074,8 @@ Magyarázat: JSON egyszerű, ember által olvasható adatformátum, de fontos a 
 
 <div class="concept-section mental-model" data-filter="javascript junior">
 
-🧭 **Így gondolj rá**  
-*Event Bubbling olyan, mint a víz alatt felszínre törő buborék: az esemény a mélyről (target elem) indul és felfelé halad a szülő elemeken keresztül.*
+📋 **Fogalom meghatározása**  
+*Event Bubbling = Event propagation mechanism a DOM tree-ben, ahol az esemény a target element-től kiindulva felfelé propagálódik minden parent element-en keresztül a document root-ig. Event delegation pattern alapja: egyetlen parent listener kezeli child element eseményeket. event.target (eredeti elem) vs event.currentTarget (listener elem) megkülönböztetése. event.stopPropagation() leállítja a bubbling-ot.*
 
 </div>
 
@@ -1416,8 +1418,8 @@ A: event.stopPropagation() hívásával, de óvatosan használd, mert másokat i
 
 <div class="concept-section mental-model" data-filter="javascript junior">
 
-🧭 **Így gondolj rá**  
-*LocalStorage olyan, mint a lakás tárolója (örökre megmarad), SessionStorage mint az asztal (addig amíg dolgozol), Cookies mint a postás üzenete (minden alkalommal viszi a szerverre).*
+📋 **Fogalom meghatározása**  
+*Client-side storage mechanisms három típusa: LocalStorage = persistent storage (no expiration, ~5-10MB limit, domain-specific), SessionStorage = tab-specific storage (page session lifetime, ~5-10MB), Cookies = HTTP request/response headers (4KB limit, server-rel kommunikál minden request-nél, expires/max-age beállítható, httpOnly/secure/sameSite flags security-hez). Web Storage API: getItem(), setItem(), removeItem(), clear() metódusok.*
 
 </div>
 
@@ -1963,8 +1965,8 @@ A: ~5-10MB limit, csak string tárolás, nincs automatic expiry, JavaScript-ből
 
 <div class="concept-section mental-model" data-filter="css junior">
 
-🧭 **Így gondolj rá**  
-*Responsive Design olyan, mint egy transzformáló robot: ugyanaz a tartalom, de különböző formákra alakul át attól függően, hogy milyen eszközön nézi a felhasználó.*
+📋 **Fogalom meghatározása**  
+*Responsive Design = mobile-first approach adaptive layout-okkal különböző screen size-okhoz. CSS media queries (@media screen and (min-width: 768px)) viewport breakpoint-oknál layout változtatásokat triggerelnek. Fluid grids (%, fr units), flexible images (max-width: 100%), CSS Grid/Flexbox multi-device support-hoz. Viewport meta tag (<meta name="viewport" content="width=device-width, initial-scale=1">). Modern CSS: clamp(), min(), max() functions, container queries.*
 
 </div>
 
@@ -2577,8 +2579,8 @@ A: rem/em (typography), vw/vh (viewport), % (flexible layouts), fr (grid), min/m
 
 <div class="concept-section mental-model" data-filter="html junior">
 
-🧭 **Így gondolj rá**  
-*Semantic HTML olyan, mint egy jól felépített újság: világos fejléc, főcikk, mellékszálak, és minden a helyén van - így az ember és a gép is érti.*
+📋 **Fogalom meghatározása**  
+*Semantic HTML = meaningful HTML5 elements content purpose-t kifejezve: <header> (page/section header), <nav> (navigation links), <main> (primary content, egyetlen per page), <article> (self-contained content), <section> (thematic grouping), <aside> (tangential content), <footer> (footer info). SEO előnyök: search engine crawlers szemantikus struktúrát értelmeznek. Accessibility: screen readers ARIA landmark role-okat használnak navigációhoz. Szemben: <div>/<span> generic containers.*
 
 </div>
 
@@ -3354,8 +3356,8 @@ A: Keresőmotorok jobban értelmezik a tartalom szerkezetét, featured snippets,
 
 <div class="concept-section mental-model" data-filter="html junior">
 
-🧭 **Így gondolj rá**  
-*Form validation olyan, mint egy éjjeliőr az éjszakai klubnál: ellenőrzi az ID-t (helyes formátum), korhatárt (validation rules), és csak akkor enged be (submit), ha minden rendben.*
+📋 **Fogalom meghatározása**  
+*Form validation = client-side és server-side data integrity checks. HTML5 built-in validation: required, minlength/maxlength, pattern (regex), type (email/url/number), min/max (number/date). Constraint Validation API: checkValidity(), setCustomValidity(), validity object (valueMissing, typeMismatch, patternMismatch). JavaScript custom validation: event.preventDefault() submit-nél, FormData API, real-time validation blur/input event-ekkel. ARIA attributes: aria-invalid, aria-describedby error message-ekhez.*
 
 </div>
 
@@ -4364,8 +4366,8 @@ A: Komplex üzleti szabályok, cross-field validation, real-time API ellenőrzé
 
 <div class="concept-section mental-model" data-filter="javascript junior">
 
-🧭 **Így gondolj rá**  
-*JSON olyan, mint egy jól szervezett ékszerdoboz (egyszerű, tiszta, könnyen átlátható), XML pedig mint egy antik szekrény sok fiókkal (részletes, strukturált, de bonyolultabb).*
+📋 **Fogalom meghatározása**  
+*JSON (JavaScript Object Notation) = lightweight data-interchange format, human-readable text-based, JavaScript object syntax-szal kompatibilis: objektumok {}, tömbök [], string/number/boolean/null primitívek. XML (eXtensible Markup Language) = markup language tag-based hierarchical structure-rel (<tag>value</tag>), attributes support, schema validation (XSD), namespace support. JSON előnyök: kisebb file size, gyorsabb parsing (native JavaScript support), egyszerűbb syntax. XML előnyök: self-describing, comment support, mixed content, XSLT transformation.*
 
 </div>
 
@@ -5072,8 +5074,8 @@ A: DOMParser getElementsByTagNameNS(), xpath queries, vagy specialized XML libra
 
 <div class="concept-section mental-model" data-filter="javascript medior">
 
-🧭 **Így gondolj rá**  
-*WebSocket olyan, mint egy telefonvonal: egyszer felveszed a kapcsolatot, aztán mindkét fél bármikor beszélhet anélkül, hogy újra kellene tárcsázni (ellentétben a HTTP-val, ami olyan mint postai levelezés).*
+📋 **Fogalom meghatározása**  
+*WebSocket = full-duplex communication protocol TCP connection-ön keresztül, persistent connection szerver és kliens között. HTTP handshake-kel indul (Upgrade: websocket header), utána low-latency bidirectional message exchange. Event-driven API: onopen, onmessage, onclose, onerror. Use case-ek: real-time chat, live notifications, gaming, collaborative editing, streaming data. WebSocket states: CONNECTING (0), OPEN (1), CLOSING (2), CLOSED (3). ws:// (insecure) vs wss:// (secure over TLS).*
 
 </div>
 
@@ -5788,8 +5790,8 @@ A: WebSocket bidirectional, SSE csak server→client, SSE egyszerűbb HTTP-based
 
 <div class="concept-section mental-model" data-filter="javascript medior">
 
-🧭 **Így gondolj rá**  
-*Service Worker olyan, mint egy intelligens postás: háttérben dolgozik, cache-eli a leveleket (erőforrásokat), offline is működik, és push értesítéseket is kézbesít.*
+📋 **Fogalom meghatározása**  
+*Service Worker = JavaScript worker script háttérben futó proxy szerver és web page között, network request-eket interceptálja. Progressive Web App (PWA) alapja: offline functionality (Cache API), push notifications (Push API), background sync. Lifecycle: install → activate → fetch events. Scope-based registration, HTTPS kötelező (biztonság miatt). Web App Manifest: metadata (name, icons, theme_color, display mode). Cache strategies: cache-first, network-first, stale-while-revalidate.*
 
 </div>
 
@@ -6616,8 +6618,8 @@ A: HTTPS, manifest.json, service worker, valid icons, start_url, display mode.
 
 <div class="concept-section mental-model" data-filter="javascript medior">
 
-🧭 **Így gondolj rá**  
-*Shadow DOM olyan, mint egy VIP szoba egy klubban: saját stílusa van, kívülről nem látszik be, belülről nem látszik ki, de kommunikálhat a külvilággal controllereken keresztül.*
+📋 **Fogalom meghatározása**  
+*Shadow DOM = encapsulated DOM tree element-hez csatolva, CSS és JavaScript isolation. Web Components = Custom Elements (customElements.define()), Shadow DOM (attachShadow()), HTML Templates (<template>), ES Modules. Component lifecycle callbacks: constructor(), connectedCallback(), disconnectedCallback(), attributeChangedCallback(). ::slotted() pseudo-element content projection-höz. CSS custom properties (:host, :host-context) penetrálják a shadow boundary-t. Framework-independent reusable UI components.*
 
 </div>
 
@@ -7603,8 +7605,8 @@ A: Custom events, attributes, properties, slots, vagy global state management pa
 
 <div class="concept-section mental-model" data-filter="css medior">
 
-🧭 **Így gondolj rá**  
-*CSS Variables olyan, mint a programozásban a konstansok: egyszer definiálod a színeket/méreteket, bárhol használhatod, és egy helyen megváltoztatva mindenhol frissül.*
+📋 **Fogalom meghatározása**  
+*CSS Variables (Custom Properties) = --property-name szintaxissal definiált értékek, var(--property-name) függvénnyel használhatók. Cascade és inheritance szerint működnek, :root-ban globális scope, element-specifikusan felülírhatók. Runtime theming: JavaScript-tel dinamikusan változtathatók (element.style.setProperty()), getComputedStyle() lekérdezéshez. Design system tokenek: spacing, colors, typography, shadows. Dark mode: [data-theme="dark"] attribute-based theme switching. calc() függvényben használhatók.*
 
 </div>
 
@@ -8756,8 +8758,8 @@ A: CSS Variables native performance, CSS-in-JS dinamikus styling complex logiká
 
 <div class="concept-section mental-model" data-filter="css medior">
 
-🧭 **Így gondolj rá**  
-*CSS positioning olyan, mint különböző típusú bútorok: static (beépített szekrény), relative (tolható szekrény), absolute (lebegő polc), fixed (fali TV), sticky (mágneses jegyzet ami követi az oldalt).*
+📋 **Fogalom meghatározása**  
+*CSS Positioning = position property értékei element elhelyezéséhez: static (default, normal flow), relative (offset original position-től, creates positioning context), absolute (removed from flow, positioned relative to nearest positioned ancestor), fixed (viewport-hoz kötött, scroll-lal nem mozog), sticky (threshold-ig relative, utána fixed). top/right/bottom/left properties offset-hez. z-index stacking context-et kontrollál. transform: translate() positioning alternative.*
 
 </div>
 
@@ -10149,8 +10151,8 @@ A: body { overflow: hidden } modal megnyitásakor, body { overflow: auto } bezá
 
 <div class="concept-section mental-model" data-filter="performance medior">
 
-🧭 **Így gondolj rá**  
-*Debounce mint lift: várja hogy több ember beszálljon mielőtt indul. Throttle mint buszmegálló: fix időközönként indul, függetlenül attól hányan várnak.*
+📋 **Fogalom meghatározása**  
+*Debounce = function execution delay-elve az utolsó hívás után (pl. 300ms), minden új hívás restart-olja a timer-t. Use case: search autocomplete, form validation, window resize. Throttle = function maximum egyszer fut adott time interval-ban (pl. 16ms = 60fps), első hívás azonnal execute-ol, továbbiak blocked. Use case: scroll events, mouse move tracking, API rate limiting. requestAnimationFrame() modernebb alternátíva smooth animations-hez.*
 
 </div>
 
@@ -11400,8 +11402,8 @@ A: Browser-optimalizált 60fps timing, automatic pausing háttérben, smooth ani
 
 <div class="concept-section mental-model" data-filter="security medior">
 
-🧭 **Így gondolj rá**  
-*Frontend security mint lakásbiztonság: XSS a betörő aki becsempészi magát (script injection), CSRF a személyiséglopó (fake requests), CSP a biztonsági kamerarendszer (content policy).*
+📋 **Fogalom meghatározása**  
+*Frontend Security = kliens oldali sebezékenségek elleni védelem. XSS (Cross-Site Scripting): malicious script injection user input-on keresztül, védelem: input sanitization, output encoding, textContent (nem innerHTML). CSRF (Cross-Site Request Forgery): unauthorized requests legitimate user nevében, védelem: CSRF token (X-CSRF-Token header), SameSite cookie attribute, double submit cookie pattern. CSP (Content Security Policy): HTTP header meghatározza trusted content sources (script-src, style-src, img-src directives), XSS mitigation. HTTPS enforcing, HttpOnly/Secure cookie flags.*
 
 </div>
 

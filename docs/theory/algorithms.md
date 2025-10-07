@@ -62,8 +62,8 @@ Az algoritmusok a problémamegoldás építőkövei, amelyek strukturált lépé
 
 <div class="concept-section mental-model">
 
-🧩 **Probléma megfogalmazása**  
-*A Two Pointers olyan, mint két személyt együtt dolgozik egy sorban: az egyik az elejéről, a másik a végéről közeledik egymás felé. Optimális megoldást ad olyan problémákra, ahol rendezett adatszerkezetben keresünk párosítást, vagy meg akarunk felelni bizonyos feltételeknek.*
+🧩 **Fogalom meghatározása**  
+*A Two Pointers egy algoritmus technika, amely két indexet (mutatót) használ egy lineáris adatszerkezeten történő bejáráshoz, jellemzően különböző pozíciókból indulva vagy különböző sebességgel haladva. Gyakran rendezett tömbökön vagy listákon alkalmazott módszer, amely O(n) időkomplexitással oldja meg azokat a problémákat, amelyek naiv megközelítéssel O(n²) komplexitást igényelnének.*
 
 </div>
 
@@ -398,8 +398,8 @@ Left-right: ellentétes irányból közeledik (pl. two sum). Slow-fast: ugyanabb
 
 <div class="concept-section mental-model">
 
-🧩 **Probléma megfogalmazása**  
-*A Sliding Window olyan, mint egy mozgó ablakon keresztül nézni: fix vagy változó méretű "ablakot" csúsztatunk az adatszerkezeten végig, és minden pozícióban kiszámítjuk a szükséges értéket. Nagyon hatékony subarray/substring problémákra, ahol összegeket, darabszámokat vagy optimumokat keresünk.*
+🧩 **Fogalom meghatározása**  
+*A Sliding Window egy algoritmus technika, amely egy rögzített vagy dinamikus méretű ablakot mozgat végig egy lineáris adatszerkezeten (tömb, string), miközben az ablakban lévő elemekkel kapcsolatos információkat követi. Az ablak csúsztatása inkrementális műveletekkel történik: új elem hozzáadása és régi elem eltávolítása, így elkerülhető az ismételt számítás. Hatékony megoldást nyújt subarray/substring problémákra, ahol összegeket, maximum/minimum értékeket, vagy egyéb aggregált adatokat keresünk O(n) időkomplexitással.*
 
 </div>
 
@@ -836,8 +836,8 @@ A bal pointer mozgatása, amíg az ablak nem felel meg a feltételeknek. Pl. ös
 
 <div class="concept-section mental-model">
 
-🧩 **Probléma megfogalmazása**  
-*A Prefix Sum olyan, mint egy futó összesítő táblázat: minden pozíciónál tároljuk az előző elemek összegét. Ez lehetővé teszi, hogy bármely tartomány összegét O(1) időben kiszámítsuk. A Difference Array ennek inverze: range update műveleteket tesz hatékonnyá.*
+🧩 **Fogalom meghatározása**  
+*A Prefix Sum (előtagösszeg) egy preprocessing technika, amely egy auxiliary tömböt hoz létre, ahol minden i-edik elem tartalmazza az eredeti tömb első i elemének összegét. Ez lehetővé teszi tartomány összegek O(1) idejű lekérdezését O(n) előfeldolgozási költséggel. A Difference Array (különbözeti tömb) fordított megközelítés: tárolja az egymást követő elemek különbségeit, ami lehetővé teszi tartomány frissítések O(1) idejű végrehajtását, míg a végső tömb rekonstruálása O(n) időt igényel.*
 
 </div>
 
@@ -1336,8 +1336,8 @@ Tárolja a prefix sum értékeket és előfordulási gyakoriságukat. sum[j] - s
 
 <div class="concept-section mental-model">
 
-🧩 **Probléma megfogalmazása**  
-*A Monotonic Stack olyan, mint egy szigorúan rendezett könyvkupac: mindig fenntartjuk a növekvő vagy csökkenő sorrendet. Amikor új elemet teszünk a tetejére, minden olyan könyvet (elemet) eldobunk, ami sérti a rendezést. Nagyon hasznos "következő nagyobb/kisebb elem" típusú problémákra.*
+🧩 **Fogalom meghatározása**  
+*A Monotonic Stack egy stack alapú adatszerkezet, amely szigorúan monoton növekvő vagy csökkenő sorrendet tart fenn az elemei között. Az algoritmus működése során, amikor új elemet push-olunk a stack-re, előbb minden olyan elemet pop-olunk, amely sérti a monoton tulajdonságot. Jellemzően "következő nagyobb/kisebb elem" típusú problémák O(n) időkomplexitású megoldására használatos, ahol minden elem legfeljebb egyszer kerül be és egyszer ki a stack-ből.*
 
 </div>
 
@@ -1844,8 +1844,8 @@ Minden csökkenő elem triggerel egy pop műveletet. A popped elem magasságát 
 
 <div class="concept-section mental-model">
 
-🧩 **Probléma megfogalmazása**  
-*Az Intervals olyan, mint tárgyalási naptár kezelése: átfedő időpontokat egyesíteni, ütközéseket feloldani, vagy optimális ütemezést találni. A sweep line technika pedig olyan, mint egy függőleges vonalat húzni az idővonalon és figyelni, mikor kezdődnek/végződnek események.*
+🧩 **Fogalom meghatározása**  
+*Az Interval (intervallum) algoritmusok olyan problémákat oldanak meg, amelyek időbeli vagy térbeli tartományokkal (kezdőpont, végpont párokkal) dolgoznak. A fő műveletek közé tartozik az intervallumok egyesítése (merge), átfedés detektálása, beszúrása, vagy az egyszerre aktív intervallumok számának meghatározása. A sweep line technika egy általános megközelítés, amely egy képzeletbeli vonalat "söpör" végig az eseménytéren, közben követve az aktív intervallumokat vagy eseményeket. Gyakran rendezéssel kezdődik (O(n log n)), majd lineáris feldolgozással folytatódik (O(n)).*
 
 </div>
 

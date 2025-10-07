@@ -30,8 +30,8 @@ A Spring Framework egy átfogó Java alkalmazásfejlesztési keretrendszer, amel
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Bean olyan, mint egy "gyári termék": a Spring IoC kontainer a gyár, amely létrehozza, konfigurálja és életciklusát kezeli.*
+📋 **Fogalom meghatározása**  
+*A Bean egy Spring IoC (Inversion of Control) konténer által kezelt objektum. A konténer létrehozza (instantiation), konfigurálja (wiring), és az életciklusát menedzseli (initialization, destruction). Bean-ek @Component, @Service, @Repository, @Controller annotációkkal vagy XML/Java konfigurációval definiálhatók. Scope-ok: singleton (default), prototype, request, session, application.*
 
 </div>
 
@@ -141,8 +141,8 @@ singleton (default), prototype, request, session, globalSession.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @Component olyan, mint egy "címke a boltban": megjelöli, hogy ez az osztály Spring Bean legyen, és automatikusan bekerül a kosárba (container).*
+📋 **Fogalom meghatározása**  
+*A @Component egy Spring stereotype annotáció, amely jelzi, hogy az osztály Spring-managed component. A component scanning (@ComponentScan) automatikusan detektálja és regisztrálja bean-ként az ApplicationContext-ben. Generic stereotype, specifikusabb változatai: @Service, @Repository, @Controller. Meta-annotációként használható custom stereotype-ok létrehozására.*
 
 </div>
 
@@ -247,8 +247,8 @@ public class UserController {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @Service olyan, mint "üzleti logikai egység": a service layer bean-ek, amelyek komplex üzleti műveleteket koordinálnak.*
+📋 **Fogalom meghatározása**  
+*A @Service egy specializált @Component annotáció, amely a service layer osztályokat jelöli. Szemantikailag jelzi, hogy az osztály üzleti logikát tartalmaz, de jelenleg funkcionálisan megegyezik a @Component-tel. Best practice szerint service rétegben használandó, ahol üzleti műveletek, tranzakció kezelés és több repository koordinálása történik.*
 
 </div>
 
@@ -369,8 +369,8 @@ AOP proxy támogatás, transaction boundary natural service method level.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @Repository olyan, mint "adatraktár kezelő": az adathozzáférési réteg bean-ek, amelyek adatbázis műveleteket kezelnek és exception translation-t biztosítanak.*
+📋 **Fogalom meghatározása**  
+*A @Repository egy specializált @Component annotáció adathozzáférési réteg (DAO - Data Access Object) osztályokhoz. Automatikus exception translation-t biztosít: platform-specifikus adatbázis exception-öket (SQLException) Spring DataAccessException hierarchiává alakítja. Jelzi, hogy az osztály adatpersistence műveleteket végez (CRUD, query execution).*
 
 </div>
 
@@ -489,8 +489,8 @@ Database-agnostic exception handling, Spring DataAccessException hierarchy.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @Configuration olyan, mint "assembly instructions": Java-alapú konfiguráció, amely meghatározza, hogyan épüljön fel az alkalmazás.*
+📋 **Fogalom meghatározása**  
+*A @Configuration egy Spring annotáció, amely jelzi, hogy az osztály bean definíciók forrása. A @Bean annotált metódusok bean-eket szolgáltatnak az ApplicationContext-nek. Java-alapú konfigurációt tesz lehetővé XML helyett, type-safe és refactoring-friendly. A CGLIB proxy biztosítja, hogy a @Bean metódusok hívásai singleton szemantikát kövessenek.*
 
 </div>
 
@@ -618,8 +618,8 @@ Multiple beans of same type esetén default választás megadására.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @ConfigurationProperties olyan, mint "automatic property mapper": külső konfigurációs értékeket type-safe Java objektumokká konvertál.*
+📋 **Fogalom meghatározása**  
+*A @ConfigurationProperties Spring Boot annotáció, amely külső konfigurációs értékeket (application.yml/properties) típusbiztos Java objektumokká konvertál. Prefix alapján hierarchikus property mapping-et biztosít, supports JSR-303 validation, relaxed binding (kebab-case, camelCase), és IDE autocomplete-et. Constructor binding-gel immutable configuration object-eket is támogat. @EnableConfigurationProperties aktiválja.*
 
 </div>
 
@@ -763,8 +763,8 @@ JSR-303 annotations (@NotNull, @Min, @Max) + @Validated annotation.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @Autowired olyan, mint "automatic wiring service": automatikusan bekötőzi a függőségeket, de constructor injection a legjobb választás.*
+📋 **Fogalom meghatározása**  
+*A @Autowired egy Spring annotáció automatikus dependency injection-höz. Használható constructor-on (recommended), setter-en, vagy field-en. A Spring típus alapján feloldja a függőséget az ApplicationContext-ből. @Qualifier specificikus bean-t, @Primary default bean-t jelöl. Required=false opcionálissá teszi. Constructor injection előnyösebb: immutable, testable.*
 
 </div>
 
@@ -898,8 +898,8 @@ Immutable objects, better testability, explicit dependencies, fail-fast.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @RestController olyan, mint "API endpoint factory": kombinálja a @Controller és @ResponseBody annotációkat RESTful web service-ekhez.*
+📋 **Fogalom meghatározása**  
+*A @RestController egy Spring MVC annotáció, amely kombinálja a @Controller és @ResponseBody-t. Minden metódus visszatérési értéke automatikusan serializálódik (JSON/XML) a HTTP response body-ba HttpMessageConverter-rel. RESTful web service-ek endpoint-jainak definiálására szolgál, @RequestMapping metódusokkal (@GetMapping, @PostMapping, stb.).*
 
 </div>
 
@@ -1043,8 +1043,8 @@ ResponseEntity: HTTP status control needed. Direct return: simple cases.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Profilok olyan, mint "környezeti kapcsolók": dev/test/prod specifikus konfigurációk aktiválása runtime-ban.*
+📋 **Fogalom meghatározása**  
+*A Profilok (Profiles) Spring környezet-specifikus konfiguráció és bean activation mechanizmus. @Profile annotációval bean-ek vagy configuration class-ok aktiválhatók adott környezetben (dev, test, prod). spring.profiles.active property-vel vagy környezeti változóval állítható. Több profil kombinálható. Profile-specific configuration file-ok: application-{profile}.yml. Conditional bean loading és feature toggling lehetővé tétele.*
 
 </div>
 
@@ -1191,8 +1191,8 @@ spring.profiles.active=dev,mysql vagy programmatically: SpringApplication.setAdd
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A RestTemplate/WebClient olyan, mint "HTTP kliens könyvtár": RestTemplate = hagyományos szinkron telefon, WebClient = modern aszinkron üzenetküldő.*
+📋 **Fogalom meghatározása**  
+*RestTemplate szinkron HTTP kliens Spring-ben (maintenance mode óta 2020), WebClient reaktív, non-blocking HTTP kliens (ajánlott új projektekhez). RestTemplate: blokkoló I/O, thread-per-request model. WebClient: Project Reactor alapú, reactive streams, backpressure support, high concurrency. Mindkettő támogatja message converters-t (JSON, XML), error handling-et, és interceptor-okat. WebClient használható blocking módon is .block()-kal.*
 
 </div>
 
@@ -1323,8 +1323,8 @@ High concurrency, reactive stack, non-blocking I/O, modern Spring apps.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Validation olyan, mint "data quality checkpoint": JSR-303/380 annotációk automatikusan ellenőrzik az adatok helyességét.*
+📋 **Fogalom meghatározása**  
+*A Validation Spring-ben JSR-303/380 (Bean Validation) specifikáció implementációja, amely declarative constraint annotation-ökkel (@NotNull, @Size, @Email, @Valid, stb.) automatikus input validációt biztosít. @Valid trigger-eli validation-t controller method parameter-eken, MethodArgumentNotValidException thrown invalid data esetén. Custom validator ConstraintValidator interface-szel. Validation groups-al conditional validation.*
 
 </div>
 
@@ -1463,8 +1463,8 @@ public class ValidationExceptionHandler {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Spring Data JPA olyan, mint "database code generator": automatikusan implementálja a repository interface-eket method név alapján.*
+📋 **Fogalom meghatározása**  
+*A Spring Data JPA egy repository abstraction layer a JPA felett, amely automatikusan implementálja CRUD és query method-okat interface definíciók alapján. Method name parsing-el (findBy, countBy, deleteBy) generál query-ket, @Query annotációval custom JPQL/SQL, Pageable/Sort támogatással. JpaRepository extends CrudRepository és PagingAndSortingRepository. Query derivation mechanism és projection support.*
 
 </div>
 
@@ -1591,8 +1591,8 @@ Complex joins, performance optimization, native SQL szükséges.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A @Transactional olyan, mint "database safety net": automatikus commit/rollback mechanizmus, amely biztosítja az ACID tulajdonságokat.*
+📋 **Fogalom meghatározása**  
+*A @Transactional Spring annotáció deklaratív tranzakciókezelésre, amely ACID tulajdonságokat biztosít AOP proxy-n keresztül. Configurable: propagation (REQUIRED, REQUIRES_NEW, NESTED), isolation level (READ_COMMITTED, REPEATABLE_READ), timeout, readOnly, rollbackFor. Default: rollback unchecked exception-öknél, commit checked exception-öknél. PlatformTransactionManager orchestrates transaction boundaries. Self-invocation nem működik proxy miatt.*
 
 </div>
 
@@ -1723,8 +1723,8 @@ Query operations, optimization hint for database, flush mode optimization.
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Az Actuator olyan, mint "application dashboard": production-ready monitoring endpoint-ok az alkalmazás állapotának, teljesítményének és konfigurációjának valós idejű követésére.*
+📋 **Fogalom meghatározása**  
+*Az Actuator Spring Boot production-ready monitoring és management endpoint-okat biztosít: /health (application health check), /metrics (Micrometer metrics), /info (application információk), /env (environment properties), /loggers (dynamic log level change). Customizable health indicators HealthIndicator interface-szel. Prometheus, Grafana integration. Security-ével védendő sensitive endpoint-ok. Management port külön konfigurálható.*
 
 </div>
 
@@ -1850,8 +1850,8 @@ HealthIndicator interface implementálása Health.up()/down() return-nel.
 
 ### Spring Security {#spring-security}
 
-🧭 **Így gondolj rá**  
-*A Spring Security olyan, mint egy "digitális kapuőr rendszer": authentication = személyazonosság ellenőrzés, authorization = belépési jogosultság.*
+📋 **Fogalom meghatározása**  
+**Comprehensive security framework** authentication/authorization-höz: **SecurityFilterChain** (request interceptors), **UserDetailsService** (user loading), **PasswordEncoder** (BCrypt/Argon2), **@PreAuthorize/@Secured** (method-level authorization). Architecture: filter chain (UsernamePasswordAuthenticationFilter, JwtAuthenticationFilter, OAuth2LoginAuthenticationFilter). Features: **JWT token validation**, **OAuth2** (client/resource server), **CSRF protection**, **session management**, **Remember-Me**. Access control: role-based (ROLE_ADMIN) és permission-based (@PreAuthorize("hasAuthority('DELETE')")). Integration: seamless Spring ecosystem (MVC, WebFlux).
 
 💡 **Miért számít?**
 - **Authentication**: felhasználói azonosítás különböző módszerekkel (form, JWT, OAuth2)
@@ -1947,8 +1947,8 @@ Authentication: "Ki vagy?" (login). Authorization: "Mit csinálhatsz?" (permissi
 
 ### Spring AOP {#spring-aop}
 
-🧭 **Így gondolj rá**  
-*Az AOP olyan, mint "kód injekció": cross-cutting concerns (logging, security, caching) automatikusan "beinjektálódnak" a metódusokba.*
+📋 **Fogalom meghatározása**  
+**Aspect-Oriented Programming** framework cross-cutting concerns-höz: **@Aspect** (advice container), **@Pointcut** (target selection expressions), **Advice types** (@Before, @After, @Around, @AfterReturning, @AfterThrowing). **JoinPoint** (execution metadata), **ProceedingJoinPoint** (proceed() method control). Proxy-based: **JDK dynamic proxy** (interface-based) vagy **CGLIB** (class-based). Use cases: **@Transactional** (transaction management), **@Cacheable** (caching), **@Async** (async execution), logging, security, auditing. Separation of concerns: business logic vs infrastructural code. Weaving: runtime proxy creation.
 
 💡 **Miért számít?**
 - **Separation of concerns**: üzleti logika és infrastrukturális kód szétválasztása
@@ -2049,8 +2049,8 @@ JoinPoint read-only info. ProceedingJoinPoint proceed() metódussal, csak @Aroun
 
 ### Caching {#caching}
 
-🧭 **Így gondolj rá**  
-*A Spring Caching olyan, mint "memória jegyzetfüzet": @Cacheable = jegyzet készítés, @CacheEvict = törlés, cache provider = füzet típusa.*
+📋 **Fogalom meghatározása**  
+**Cache abstraction layer** provider-agnostic API-val: **@EnableCaching** (activation), **@Cacheable** (cache-or-execute), **@CachePut** (always execute + update cache), **@CacheEvict** (invalidation). **CacheManager** implementations: Redis, Caffeine, EhCache, Hazelcast. **Key generation**: default (method params) vagy custom KeyGenerator. **Conditional caching**: SpEL expressions (#result, #root, condition). **Cache hit**: method skipped, **miss**: executed + cached. **Eviction strategies**: TTL (time-to-live), LRU (least recently used), size-based limits. Performance: reduces DB/API calls, scales backend.
 
 💡 **Miért számít?**
 - **Performance**: drága műveletek (DB query, API call) eredményének tárolása
@@ -2153,8 +2153,8 @@ Redis: distributed environment, shared cache. Local: single instance, gyorsabb a
 
 ### Event Handling {#event-handling}
 
-🧭 **Így gondolj rá**  
-*Az Event Handling olyan, mint "hírcsoport rendszer": ApplicationEventPublisher = hírfeladó, @EventListener = hírolvasó, async = asynchron kézbesítés.*
+📋 **Fogalom meghatározása**  
+**Event-driven communication** ApplicationContext szinten: **ApplicationEventPublisher** (event publishing), **@EventListener** vagy **ApplicationListener** interface (consumption). **ApplicationEvent** (legacy base class) vagy **POJO events** (Spring 4.2+). **@Async** (asynchronous processing), **@TransactionalEventListener** (transaction phases: BEFORE_COMMIT, AFTER_COMMIT, AFTER_ROLLBACK, AFTER_COMPLETION). **@Order** (listener ordering), **conditional filtering** (SpEL). Benefits: **decoupling** (loose coupling), **extensibility** (add features without modifying existing code), **audit trail** (event logging). Observer pattern implementation.
 
 💡 **Miért számít?**
 - **Decoupling**: szolgáltatások között laza kapcsolat event-ek segítségével
@@ -2283,8 +2283,8 @@ public class AsyncConfig {
 
 ### Spring WebFlux {#spring-webflux}
 
-🧭 **Így gondolj rá**  
-*A WebFlux olyan, mint "aszinkron csővezeték": Mono = egy elem, Flux = stream, reactive = non-blocking flow.*
+📋 **Fogalom meghatározása**  
+**Reactive non-blocking web framework** Project Reactor-based: **Mono<T>** (0-1 element), **Flux<T>** (0-N elements), **backpressure** (flow control). **WebClient** (reactive HTTP client), **RouterFunction** (functional endpoints), **@RestController** (annotated endpoints). **Event loop threading** (Netty default, Undertow, Tomcat). **Reactive repositories**: R2DBC (relational), Reactive MongoDB. **Operators**: map, flatMap, filter, merge, zip. **Error handling**: onErrorReturn, onErrorResume, onErrorMap. Benefits: **resource efficiency** (high concurrency low threads), **non-blocking I/O**, **composable streams**. Alternative: Spring MVC (traditional blocking).
 
 💡 **Miért számít?**
 - **Non-blocking I/O**: egyetlen thread több ezer concurrent request kezelésére képes
@@ -2419,8 +2419,8 @@ Consumer slower than producer case handling. Automatic flow control, buffer mana
 
 ### Spring Boot Testing {#spring-boot-testing}
 
-🧭 **Így gondolj rá**  
-*A Spring Boot Testing olyan, mint "tesztelési toolkit": @SpringBootTest = teljes alkalmazás, @WebMvcTest = controller réteg, Testcontainers = valós környezet.*
+📋 **Fogalom meghatározása**  
+**Test slice annotations** targeted component testing-hez: **@SpringBootTest** (full context), **@WebMvcTest** (MVC layer only), **@DataJpaTest** (JPA repositories + embedded DB), **@MockBean** (Spring bean mocking), **@SpyBean** (partial mocking). **MockMvc** (HTTP request simulation), **TestRestTemplate** (integration test HTTP client), **WebTestClient** (reactive testing). **Testcontainers** (Docker-based dependencies: PostgreSQL, Redis, Kafka). **@TestConfiguration** (custom test beans), **@DirtiesContext** (context cleanup). Benefits: faster tests (slice loading), realistic integration testing, production-like environment.
 
 💡 **Miért számít?**
 - **Test slicing**: csak a szükséges komponensek betöltése gyorsabb tesztekhez
@@ -2563,8 +2563,8 @@ class UserIntegrationTest {
 
 ### Custom Auto-Configuration {#custom-auto-configuration}
 
-🧭 **Így gondolj rá**  
-*A Custom Auto-Configuration olyan, mint "intelligens csomagolás": @ConditionalOnClass = ha megvan az összetevő, @EnableAutoConfiguration = automatikus összeszerelés.*
+📋 **Fogalom meghatározása**  
+**Spring Boot extensibility mechanism** custom starter-ek készítéséhez: **@Configuration** class **@Conditional** annotations-kel (@ConditionalOnClass, @ConditionalOnMissingBean, @ConditionalOnProperty, @ConditionalOnBean). **Registration**: META-INF/spring.factories (legacy) vagy META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports (Spring Boot 2.7+). **@EnableConfigurationProperties** (type-safe properties), **@AutoConfigureBefore/@AutoConfigureAfter** (ordering). **Convention over configuration**: sensible defaults. Use case: reusable library configuration, custom starter modules, framework extensions.
 
 💡 **Miért számít?**
 - **Convention over configuration**: sensible defaults automatikus beállítása
@@ -2713,8 +2713,8 @@ my-spring-boot-starter/
 
 ### Micrometer & Metrics {#micrometer-metrics}
 
-🧭 **Így gondolj rá**  
-*A Micrometer olyan, mint "application telemetria": metrics = műszerek, registries = adatgyűjtők, Prometheus/Grafana = dashboard.*
+📋 **Fogalom meghatározása**  
+**Vendor-neutral metrics facade** monitoring systems-hez (Prometheus, Grafana, Datadog, New Relic, CloudWatch): **MeterRegistry** (metrics registration), **Metric types**: Counter (monotonic), Gauge (current value), Timer (latency + throughput), DistributionSummary (value distribution). **@Timed/@Counted** (AOP-based auto-instrumentation), **custom metrics** (MeterRegistry API). **Dimensional metrics** (tags), **percentiles** (p50, p95, p99), **histogram buckets**. **Spring Boot Actuator** integration: /actuator/metrics, /actuator/prometheus. Use cases: performance monitoring, SLA tracking, business KPIs, alerting thresholds.
 
 💡 **Miért számít?**
 - **Observability**: alkalmazás belső állapotának monitorozása production-ben

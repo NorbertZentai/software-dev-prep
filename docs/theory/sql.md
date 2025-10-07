@@ -10,8 +10,8 @@ A relációs adatbázisok és SQL (Structured Query Language) az adattárolás �
 
 <div class="concept-section mental-model" data-filter="queries junior">
 
-🧭 **Így gondolj rá**  
-*A CRUD olyan, mint egy könyvtár alapműveletek: Create (új könyv beszerzése), Read (olvasás), Update (adatok frissítése), Delete (selejtezés).*
+📋 **Fogalom meghatározása**  
+*A CRUD a négy alapvető adatbázis-művelet rövidítése: **Create** (INSERT - új rekord létrehozása), **Read** (SELECT - adatok lekérdezése), **Update** (UPDATE - meglévő adatok módosítása), **Delete** (DELETE - rekordok törlése). Ezek alkotják a perzisztens adatok kezelésének alapját minden relációs adatbázis-rendszerben, és a REST API-k HTTP metódusainak (POST, GET, PUT/PATCH, DELETE) megfeleltethetők.*
 
 </div>
 
@@ -92,8 +92,8 @@ INSERT INTO products (name, price) VALUES
 
 <div class="concept-section mental-model" data-filter="queries junior">
 
-🧭 **Így gondolj rá**  
-*DDL olyan, mint egy ház tervezése (falak, szobák kialakítása), DML pedig a berendezés (bútorok mozgatása, cseréje).*
+📋 **Fogalom meghatározása**  
+*DDL (Data Definition Language) az adatbázis struktúráját definiáló SQL parancsok: CREATE (táblák, indexek létrehozása), ALTER (struktúra módosítása), DROP (objektumok törlése), TRUNCATE (táblaúritas). DML (Data Manipulation Language) az adatokkal dolgozó parancsok: SELECT, INSERT, UPDATE, DELETE. DDL autócommit, DML tranzakcióban futhat.*
 
 </div>
 
@@ -186,8 +186,8 @@ COMMIT; -- Vagy ROLLBACK ha hiba történt
 
 <div class="concept-section mental-model" data-filter="joins medior">
 
-🧭 **Így gondolj rá**  
-*A JOIN-ok olyan, mint a családfa kutatás: INNER JOIN csak a biztos rokonokat mutatja, LEFT JOIN az összes elődet + ismert leszármazókat, RIGHT JOIN fordítva.*
+📋 **Fogalom meghatározása**  
+*JOIN operations = több tábla relatív kapcsolat alapján való összekötése: INNER JOIN (csak matching rows mindkettőből, metszet), LEFT JOIN/LEFT OUTER JOIN (minden bal tábla row + matching jobb oldal, NULL if no match), RIGHT JOIN (fordítva), FULL OUTER JOIN (minden row mindkettőből, NULL-ok where no match), CROSS JOIN (Cartesian product). ON clause join condition, USING (column_name) shorthand common columns-hoz. Self-join: tábla saját magával (hierarchical data-hoz alias-ok kötelezőek).*
 
 </div>
 
@@ -279,10 +279,10 @@ Magyarázat: A JOIN típusok különböző módon kombinálják a táblák adata
 
 ### Indexek {#indexek}
 
-<div class="concept-section mental-model" data-filter="indexing performance medior">
+<div class="concept-section definition" data-filter="indexing performance medior">
 
-🧭 **Így gondolj rá**  
-*Az index olyan, mint egy könyv tartalomjegyzéke: gyorsan megtalálod amit keresel, de a könyv írása lassabb lesz, mert a tartalomjegyzéket is frissíteni kell.*
+📋 **Fogalom meghatározása**  
+**Data structure** (typically **B-tree** or **Hash**) gyors record retrieval-höz specific columns alapján. **Types**: **Simple index** (single column), **Composite/Multi-column index** (multiple columns, order matters!), **Unique index** (enforces uniqueness), **Partial index** (filtered subset), **Functional/Expression index** (computed values). **Trade-off**: faster SELECT, slower INSERT/UPDATE/DELETE (index maintenance). **EXPLAIN ANALYZE** shows index usage. PostgreSQL default: B-tree (balanced tree, O(log n) search). Clustered vs non-clustered index (table organization).
 
 </div>
 
@@ -475,8 +475,8 @@ Magyarázat: A normalizáció csökkenti a redundanciát, de sometimes denormali
 
 <div class="concept-section mental-model" data-filter="transactions medior">
 
-🧭 **Így gondolj rá**  
-*A tranzakció olyan, mint egy banki utalás: vagy minden lépés sikeres (pénz levonás + hozzáadás), vagy semmi sem történik meg.*
+📋 **Fogalom meghatározása**  
+*A **Tranzakció** logikailag összefüggő adatbázis műveletek sorozata, amely ACID tulajdonságokat biztosít: **Atomicity** (minden művelet végrehajtódik vagy egyik sem), **Consistency** (valid állapotból valid állapotba), **Isolation** (konkurens tranzakciók elégétése), **Durability** (committed adatok fennmaradnak hiba után is). BEGIN/START TRANSACTION kezdi, COMMIT véglegesíti, ROLLBACK visszavonja. Savepoint-okkal részleges rollback. Isolation level-ek szabályozzák a visibility-t.*
 
 </div>
 
@@ -868,8 +868,8 @@ Magyarázat: Az explain plan megmutatja a query optimizer döntéseit és segít
 
 <div class="concept-section mental-model" data-filter="constraints junior">
 
-🧭 **Így gondolj rá**  
-*A Primary Key olyan, mint a személyi igazolványszám: egyedileg azonosít minden rekordot. A Foreign Key pedig mint egy címjegyzék bejegyzés: mutatja, hogy ki kivel van kapcsolatban.*
+📋 **Fogalom meghatározása**  
+*A **Primary Key (PK)** egy vagy több oszlop egyedi azonosítója, amely biztosítja a táblában lévő minden rekord egyediségét (UNIQUE) és létezését (NOT NULL). Automatikusan clustered index jön létre rajta. A **Foreign Key (FK)** referenciális integritási constraint, amely egy tábla oszlopát egy másik tábla primary key-éhez köti. CASCADE, SET NULL, RESTRICT opciókkal szabályozza a parent rekordok módosításának vagy törlésének hatását a child rekordokra, így megakadályozva az orphan records kialakulását.*
 
 </div>
 
@@ -974,8 +974,8 @@ WHERE tc.constraint_type = 'FOREIGN KEY';
 
 <div class="concept-section mental-model" data-filter="constraints junior">
 
-🧭 **Így gondolj rá**  
-*A Unique constraint olyan, mint egy névjegyzék: nem lehet két ugyanolyan név. A Check constraint pedig mint egy kapus: csak megfelelő feltételekkel rendelkező adatok léphetnek be.*
+📋 **Fogalom meghatározása**  
+*A **UNIQUE constraint** biztosítja az oszlop vagy oszlopkombináció egyediségét a táblában, lehetővé téve NULL értékeket (pl. email cím egyedi, de opcionális telefonszám NULL lehet többször is). Automatikusan non-clustered index létrehozása. A **CHECK constraint** deklaratív módon érvényesít üzleti szabályokat SQL szinten (pl. price > 0, status IN ('active', 'inactive'), age >= 18), megakadályozva invalid adatok beszúrását még az alkalmazási logika előtt, így biztosítva az adatintegritást a perzisztencia rétegben.*
 
 </div>
 
@@ -1106,8 +1106,8 @@ WHERE conrelid = 'products'::regclass;
 
 <div class="concept-section mental-model" data-filter="schema junior">
 
-🧭 **Így gondolj rá**  
-*A Default érték olyan, mint az alapbeállítások egy új telefonnál: ha nem állítasz be semmit, valami ésszerű érték lesz beállítva automatikusan.*
+📋 **Fogalom meghatározása**  
+*A **DEFAULT constraint** előre definiált értéket rendel egy oszlophoz, ha az INSERT művelet explicit értéket nem ad meg. Lehet literál érték (0, 'active', FALSE), függvény (CURRENT_TIMESTAMP, uuid_generate_v4()), vagy szekvencia (nextval('seq')). Csökkenti a NOT NULL mezők terhelését az alkalmazásra, központosítja az üzleti logikát (pl. welcome credit, initial status), és konzisztens adatokat biztosít különböző kliens alkalmazások között.*
 
 </div>
 
@@ -1251,16 +1251,12 @@ ALTER TABLE users ALTER COLUMN credit_balance DROP DEFAULT;
 
 </div>
 
-</details>
-
-</div>
-
 ### Views (Nézetek) {#views}
 
-<div class="concept-section mental-model" data-filter="views junior">
+<div class="concept-section definition" data-filter="views junior">
 
-🧭 **Így gondolj rá**  
-*A View olyan, mint egy ablak: ugyanazt az adatot látod, de egy másik perspektívából, és nem foglal el extra helyet.*
+📋 **Fogalom meghatározása**  
+**Virtual table** based on SELECT query result: no physical data storage, query executed on access. **Benefits**: **abstraction layer** (hide complexity), **security** (column/row filtering), **code reuse** (centralized queries), **backward compatibility** (schema evolution). **Materialized view**: stores result physically, periodic refresh (REFRESH MATERIALIZED VIEW). **Updatable views**: simple views with INSERT/UPDATE/DELETE support. **WITH CHECK OPTION**: enforces view WHERE condition on modifications. Performance: no overhead (simple delegation), possible optimization by query planner.
 
 </div>
 
@@ -1635,8 +1631,8 @@ Követelmények:
 
 <div class="concept-section mental-model" data-filter="constraints junior">
 
-🧭 **Így gondolj rá**  
-*A Primary Key olyan, mint a személyi igazolványszám: egyedileg azonosít minden rekordot. A Foreign Key pedig mint egy címjegyzék bejegyzés: mutatja, hogy ki kivel van kapcsolatban.*
+📋 **Fogalom meghatározása**  
+*A **Primary Key (PK)** egy vagy több oszlop egyedi azonosítója, amely biztosítja a táblában lévő minden rekord egyediségét (UNIQUE) és létezését (NOT NULL). Automatikusan clustered index jön létre rajta. A **Foreign Key (FK)** referenciális integritási constraint, amely egy tábla oszlopát egy másik tábla primary key-éhez köti. CASCADE, SET NULL, RESTRICT opciókkal szabályozza a parent rekordok módosításának vagy törlésének hatását a child rekordokra, így megakadályozva az orphan records kialakulását.*
 
 </div>
 
@@ -1705,10 +1701,10 @@ CREATE TABLE employees (
 
 ### Unique és Check Constraint {#unique-check-constraint}
 
-<div class="concept-section mental-model" data-filter="constraints junior">
+<div class="concept-section definition" data-filter="constraints junior">
 
-🧭 **Így gondolj rá**  
-*A Unique constraint olyan, mint egy névjegyzék: nem lehet két ugyanolyan név. A Check constraint pedig mint egy kapus: csak megfelelő feltételekkel rendelkező adatok léphetnek be.*
+📋 **Fogalom meghatározása**  
+**Integrity constraints** data quality enforcement-hez: **UNIQUE** (no duplicate values, automatic index creation, NULL allowed multiple times), **CHECK** (custom boolean expression validation, business rules enforcement). **Composite UNIQUE**: multiple columns combination uniqueness (e.g., UNIQUE(user_id, role_id)). **Named constraints**: easier ALTER/DROP management. **Enforcement**: INSERT/UPDATE time validation, exception raised on violation. **Performance**: UNIQUE creates index (faster lookups), CHECK minimal overhead. Use cases: email uniqueness, price > 0, status enum validation, date range logic.
 
 </div>
 
@@ -1760,8 +1756,8 @@ CREATE TABLE user_roles (
 
 <div class="concept-section mental-model" data-filter="null-handling junior">
 
-🧭 **Így gondolj rá**  
-*A NULL olyan, mint egy üres doboz: nem tudjuk mi van benne (mert semmi), de a doboz maga létezik. Nem egyenlő semmivel, még egy másik üres dobozzal sem.*
+📋 **Fogalom meghatározása**  
+*A **NULL** az ismeretlen vagy nem alkalmazható érték reprezentációja SQL-ben, amely three-valued logic-ot eredményez: TRUE, FALSE, és UNKNOWN. NULL != NULL (eredménye NULL, nem TRUE), ezért az ellenőrzéshez IS NULL / IS NOT NULL operátorokat kell használni. Aggregációs függvények (COUNT, SUM, AVG) kihagyják a NULL értékeket. COALESCE(val1, val2, ...) visszaadja az első non-NULL értéket. NULL-ok kritikusak JOIN-okban és WHERE feltételekben, mert megváltoztatják a logikai kifejezések eredményét.*
 
 </div>
 
@@ -1831,8 +1827,8 @@ FROM users;
 
 <div class="concept-section mental-model" data-filter="advanced-queries medior">
 
-🧭 **Így gondolj rá**  
-*A CTE olyan, mint egy ideiglenes munkalap: komplex számításokat részletekre bontva, lépésről lépésre építed fel a végeredményt.*
+📋 **Fogalom meghatározása**  
+*A **CTE (Common Table Expression)** egy WITH clause-zal definiált elnevezett result set, amely egy query végrehajtása során elérhető. Strukturálja és modularizálja a komplex lekérdezéseket olvasható, újrafelhasználható részekre. **Recursive CTE** lehetővé teszi hierarchikus vagy gráf adatok (fa struktúrák, BOM, org charts) bejárását base case + recursive case mintával. CTE-k alternatívája a subquery-knek és temp table-öknek, gyakran jobb query optimizer támogatással és kevesebb overhead-del.*
 
 </div>
 
@@ -1978,8 +1974,8 @@ ORDER BY c.name, rp.rank_in_category;
 
 <div class="concept-section mental-model" data-filter="analytics medior">
 
-🧭 **Így gondolj rá**  
-*A Window function olyan, mint amikor egy mozgó ablakból nézel ki: minden sornál más-más "kilátásod" van a többi sorra, de az eredeti sorok megmaradnak.*
+📋 **Fogalom meghatározása**  
+*A **Window Functions** (analitikai függvények) aggregációs vagy ranking számításokat végeznek a result set egy "window"-ján (PARTITION BY által definiált csoportok) anélkül, hogy GROUP BY-ként összevonnák a sorokat. OVER() clause definiálja a window-t: PARTITION BY (csoportosítás), ORDER BY (sorrend), ROWS/RANGE (frame specification). Típusok: ranking (ROW_NUMBER, RANK, DENSE_RANK, NTILE), offset (LAG, LEAD), aggregate (SUM, AVG, COUNT OVER). Kritikusak reporting, time-series analysis, cohort analysis és percentile számításokhoz.*
 
 </div>
 
@@ -2072,10 +2068,10 @@ ORDER BY product_id, order_date;
 
 ### Views (Nézetek) {#views}
 
-<div class="concept-section mental-model" data-filter="views junior">
+<div class="concept-section definition" data-filter="views junior">
 
-🧭 **Így gondolj rá**  
-*A View olyan, mint egy ablak: ugyanazt az adatot látod, de egy másik perspektívából, és nem foglal el extra helyet.*
+📋 **Fogalom meghatározása**  
+**Virtual table** based on SELECT query result: no physical data storage, query executed on access. **Benefits**: **abstraction layer** (hide complexity), **security** (column/row filtering), **code reuse** (centralized queries), **backward compatibility** (schema evolution). **Materialized view**: stores result physically, periodic refresh (REFRESH MATERIALIZED VIEW). **Updatable views**: simple views with INSERT/UPDATE/DELETE support. **WITH CHECK OPTION**: enforces view WHERE condition on modifications. Performance: no overhead (simple delegation), possible optimization by query planner.
 
 </div>
 
@@ -2166,10 +2162,10 @@ SELECT * FROM order_summary WHERE customer_tier = 'VIP';
 
 ### Stored Procedures {#stored-procedures}
 
-<div class="concept-section mental-model" data-filter="procedures junior">
+<div class="concept-section definition" data-filter="procedures junior">
 
-🧭 **Így gondolj rá**  
-*A Stored Procedure olyan, mint egy recept a konyhában: összetett lépések sorozata, ami az adatbázisban tárolódik és bármikor előhívható.*
+📋 **Fogalom meghatározása**  
+**Precompiled SQL functions** stored in database: procedural logic (variables, loops, conditionals), **DECLARE** variables, **BEGIN/END** block, **EXCEPTION** handling, **RETURN** value. **Benefits**: **performance** (precompiled execution plan), **security** (SQL injection prevention, controlled access), **transaction atomicity** (COMMIT/ROLLBACK), **business logic centralization**. PostgreSQL: PL/pgSQL language. Oracle: PL/SQL. MySQL: stored procedures + functions. **Functions** (RETURNS value, used in SELECT) vs **Procedures** (IN/OUT parameters, called with CALL). Modern trend: business logic in application layer, DB for data integrity.
 
 </div>
 
@@ -2287,8 +2283,8 @@ SELECT * FROM process_order(1, '[{"product_id": 1, "quantity": 2}]'::jsonb);
 
 <div class="concept-section mental-model" data-filter="functions junior">
 
-🧭 **Így gondolj rá**  
-*A Function olyan, mint egy számológép: adatsz neki input értékeket, és visszaad egy eredményt. Scalar function egy számot ad vissza, table function egy egész táblázatot.*
+📋 **Fogalom meghatározása**  
+*A **Function** egy újrafelhasználható kódblokk, amely input paramétereket fogad és RETURNS clause-zal definiált értéket ad vissza. **Scalar function** egyetlen értéket (INT, DECIMAL, VARCHAR), **Table-valued function** result set-et (RETURNS TABLE vagy SETOF) ad vissza. Használható SELECT, WHERE, JOIN feltételekben. **Deterministic** (pure) vs **Non-deterministic** (NOW(), RANDOM()). **Inline** function-ök (SQL) vs **Procedural** (PL/pgSQL, PL/SQL). IMMUTABLE, STABLE, VOLATILE meghatározza az optimization lehetőségeket.*
 
 </div>
 
@@ -2411,8 +2407,8 @@ SELECT * FROM get_customer_orders(1, 5);
 
 <div class="concept-section mental-model" data-filter="sequences junior">
 
-🧭 **Így gondolj rá**  
-*A Sequence olyan, mint egy automatikus sorszámozó: minden alkalommal, amikor kérsz tőle egy számot, a következőt adja vissza, és megjegyzi, hogy hol tart.*
+📋 **Fogalom meghatározása**  
+*A **Sequence** egy adatbázis objektum, amely egyedi, egymást követő számokat generál thread-safe módon. Paréméterek: START WITH (kezdőérték), INCREMENT BY (lépésköz), MINVALUE/MAXVALUE (tartomány), CACHE (előre generált értékek száma), CYCLE (MAX után újrakezdés). **SERIAL** (PostgreSQL) és **AUTO_INCREMENT** (MySQL) shorthand syntax sequence-hez kötött PRIMARY KEY-hez. nextval() kéri a következő értéket, currval() az aktuálist, setval() állítja. UUID alternativa globally unique identifiers-hez.*
 
 </div>
 
@@ -2499,10 +2495,10 @@ SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 
 ### Default Értékek {#default-ertekek}
 
-<div class="concept-section mental-model" data-filter="schema junior">
+<div class="concept-section definition" data-filter="schema junior">
 
-🧭 **Így gondolj rá**  
-*A Default érték olyan, mint az alapbeállítások egy új telefonnál: ha nem állítasz be semmit, valami ésszerű érték lesz beállítva automatikusan.*
+📋 **Fogalom meghatározása**  
+**Column default value** specification: auto-populated on INSERT when no explicit value provided. **Types**: **literal constants** (0, 'active', FALSE), **functions** (CURRENT_TIMESTAMP, NOW(), UUID_GENERATE_V4()), **expressions** (calculations, concatenations). **Syntax**: DEFAULT keyword in CREATE TABLE. **ALTER TABLE** allows ADD/DROP DEFAULT. **NULL vs DEFAULT**: explicit NULL overrides default, omitted column uses default. PostgreSQL: supports complex expressions (e.g., DEFAULT (price * 1.2)). Use cases: timestamps (created_at), status flags, counters, sequential IDs (with sequences/serial types).
 
 </div>
 
@@ -2570,10 +2566,10 @@ ALTER TABLE users ALTER COLUMN credit_balance DROP DEFAULT;
 
 ### Aggregáció Advanced {#aggregacio-advanced}
 
-<div class="concept-section mental-model" data-filter="aggregation medior">
+<div class="concept-section definition" data-filter="aggregation medior">
 
-🧭 **Így gondolj rá**  
-*Az advanced aggregáció olyan, mint egy statisztikai elemzés: nem csak összegzed az adatokat, hanem csoportosítod, szűröd és feltételes összesítéseket készítesz.*
+📋 **Fogalom meghatározása**  
+**Advanced aggregation functions**: **ROLLUP** (hierarchical subtotals, e.g., category → total), **CUBE** (all combinations of grouping columns), **GROUPING SETS** (custom subtotal combinations). **FILTER clause**: conditional aggregation (COUNT(*) FILTER (WHERE status='active')). **WITHIN GROUP**: ordered-set aggregates (percentile_cont, mode). **Window functions**: RANK(), ROW_NUMBER(), LEAD(), LAG(), aggregates OVER (PARTITION BY ... ORDER BY ...). **HAVING clause**: filter after aggregation (vs WHERE before). Use cases: sales reports with subtotals, cohort analysis, time-series analytics, moving averages, YoY comparisons.
 
 </div>
 
@@ -2705,10 +2701,10 @@ WHERE status = 'active';
 
 ### Query Optimization {#query-optimization}
 
-<div class="concept-section mental-model" data-filter="performance medior">
+<div class="concept-section definition" data-filter="performance medior">
 
-🧭 **Így gondolj rá**  
-*A Query optimization olyan, mint egy autó tuning: megvizsgálod mi lassítja le, és systematikusan javítod a teljesítményt.*
+📋 **Fogalom meghatározása**  
+**Systematic performance improvement** via **EXPLAIN ANALYZE** (execution plan, actual timing, row counts, buffer usage). **Strategies**: **index optimization** (composite indexes, covering indexes, partial indexes), **query rewriting** (avoid SELECT *, limit result sets, use EXISTS vs IN), **join optimization** (join order matters, INNER JOIN before LEFT JOIN), **statistics update** (ANALYZE command for query planner). **Cost metrics**: Seq Scan (full table) vs Index Scan vs Index Only Scan, nested loops vs hash join vs merge join. **Monitoring**: slow query log, pg_stat_statements. Tools: EXPLAIN (ANALYZE, BUFFERS, VERBOSE). Modern: query planner hints (PostgreSQL extended stats).
 
 </div>
 
@@ -2896,8 +2892,8 @@ AND indexname NOT LIKE '%_pkey';  -- Exclude primary keys
 
 <div class="concept-section mental-model" data-filter="performance medior">
 
-🧭 **Így gondolj rá**  
-*A Materialized View olyan, mint egy előre elkészített jelentés: egyszer kiszámítod a komplex adatokat, eltárolod, és utána gyorsan eléred őket.*
+📋 **Fogalom meghatározása**  
+*A **Materialized View** egy fizikailag tárolt query result set, ellentétben a reguláris view-val, amely csak a query definícióját tárolja. Előre kiszámítja és cache-eli a komplex aggregációkat, JOIN-okat és window functions-öket. REFRESH MATERIALIZED VIEW [CONCURRENTLY] frissíti az adatokat. Index-elhető a performance javításához. Trade-off: storage space és refresh overhead cserébe drastikusan gyorsabb olvasás read-heavy workload-oknál. Incremental refresh stratégiákkal optimalizálható nagy táblákhoz.*
 
 </div>
 
@@ -3101,8 +3097,8 @@ DROP MATERIALIZED VIEW IF EXISTS old_analytics_view;
 
 <div class="concept-section mental-model" data-filter="locking medior">
 
-🧭 **Így gondolj rá**  
-*A Database locking olyan, mint a közösségi fürdő kabinok: ha valaki benn van (lock), mások várni kell, vagy átmennek másik kabinba (lock escalation/deadlock avoidance).*
+📋 **Fogalom meghatározása**  
+*A **Database Locking** mechanizmusok szabják a concurrent transaction-ök erőforrás-hozzáférését az adatkonzisztencia biztosítása érdekében. **Lock szintek**: table-level (SHARE, EXCLUSIVE), row-level (FOR UPDATE, FOR SHARE). **Deadlock**: két tranzakció körkörösen várja egymás lockjait - megoldás konzisztens lock ordering és lock_timeout. **Advisory locks**: alkalmazás-szintű koordináció kritikus műveletek exkluzív végrehajtásához. Lock escalation és lock contention csökkentése batch processing-gel.*
 
 </div>
 
@@ -3319,10 +3315,10 @@ END $$;
 
 ### Database Security {#database-security}
 
-<div class="concept-section mental-model" data-filter="security medior">
+<div class="concept-section definition" data-filter="security medior">
 
-🧭 **Így gondolj rá**  
-*A Database security olyan, mint egy bank biztonsági rendszere: több rétegű védelem, hogy csak a megfelelő személyek férjenek hozzá a megfelelő adatokhoz.*
+📋 **Fogalom meghatározása**  
+**Multi-layered protection**: **Authentication** (verify identity), **Authorization** (GRANT/REVOKE privileges), **Encryption** (at-rest: TDE, in-transit: SSL/TLS). **RBAC** (Role-Based Access Control): CREATE ROLE, GRANT role TO user, hierarchical roles. **Row-level security (RLS)**: policy-based row filtering (CREATE POLICY). **Audit logging**: track all database operations (pg_audit extension). **SQL injection prevention**: parameterized queries, prepared statements. **Principle of least privilege**: minimal necessary permissions. **Column-level encryption**: sensitive data (PII, PCI-DSS). **Connection security**: IP whitelisting, VPN, SSL certificates. Compliance: GDPR, HIPAA, SOX requirements.
 
 </div>
 

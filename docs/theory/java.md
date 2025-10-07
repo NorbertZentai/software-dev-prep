@@ -10,8 +10,8 @@ A Java egy objektumorientált, platform-független programozási nyelv, amely a 
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A JVM olyan, mint egy tolmács+fordító: először értelmezi a kódot, majd a gyakran futtatott részeket natívan fordítja le JIT segítségével.*
+📋 **Fogalom meghatározása**  
+*A JVM (Java Virtual Machine) egy absztrakt számítógép specifikació, amely Java bytecode-ot hajt végre. Betölti a .class fájlokat, verificálja őket, értelmezi vagy JIT (Just-In-Time) compilációval natív gépi kóddá fordítja, kezeli a memóriát (heap, stack) és a Garbage Collection-t. Platform függetleníti a Java alkalmazásokat.*
 
 </div>
 
@@ -145,8 +145,8 @@ JVM: futtatási motor; JRE: JVM + alap könyvtárak; JDK: JRE + fejlesztői eszk
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A JDK olyan, mint egy teljes fejlesztői műhely: tartalmazza a fordítót, futtatót és minden eszközt amire szükséged van Java fejlesztéshez.*
+📋 **Fogalom meghatározása**  
+*A JDK (Java Development Kit) a Java fejlesztési környezet teljes csomagja, amely tartalmazza a JRE-t, a javac compiler-t, debugging és monitoring eszközöket (jdb, jconsole, jvisualvm), dokumentáció generátort (javadoc), és egyéb development utility-kat. Különböző implementációk léteznek: Oracle JDK, OpenJDK, Azul Zulu, etc.*
 
 </div>
 
@@ -214,8 +214,8 @@ jar cf app.jar *.class   # JAR készítés
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A JRE olyan, mint egy motor autóban: futtatja a Java programokat, de nem tudod vele új autót építeni (fejleszteni).*
+📋 **Fogalom meghatározása**  
+*A JRE (Java Runtime Environment) a Java alkalmazások futtatásához szükséges minimális környezet. Tartalmazza a JVM-et, a Java standard library-t (rt.jar), és a futásidejű komponenseket. Nem tartalmaz fejlesztési eszközöket (javac, debugger). Java 9 óta a JRE különálló disztribúciója megszűnt, a modul rendszer teszi lehetővé custom runtime image-ek létrehozását.*
 
 </div>
 
@@ -270,8 +270,8 @@ public class SimpleApp {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A bytecode olyan, mint assembly kód, csak platform-független: köztes nyelv a Java és gépi kód között.*
+📋 **Fogalom meghatározása**  
+*A bytecode a Java forráskód compilálásának eredménye, egy platform független köztes reprezentáció (.class fájlokban). Alacsony szintű utasítások (opcodes) halmaza, amelyeket a JVM értelmez vagy JIT-tel natív kóddá fordít. Lehetővé teszi a "write once, run anywhere" elvet és a bytecode verificációval biztonságot nyujt.*
 
 </div>
 
@@ -328,8 +328,8 @@ System.out.println(x);
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A GC olyan, mint egy automatikus takarítószolgálat: folyamatosan figyeli a memóriát és eltakarítja a már nem használt objektumokat.*
+📋 **Fogalom meghatározása**  
+*A Garbage Collector (GC) a JVM automatikus memóriakezelési mechanizmusa, amely azonosítja és felszabadítja a heap-ben lévő el nem érhető objektumokat. Reachability analysis-t végez a GC roots-tól (stack változók, statikus változók) kiindulva. Különböző algoritmusok léteznek: Serial, Parallel, CMS, G1, ZGC, Shenandoah, mindegyik más throughput/latency trade-off-fal.*
 
 </div>
 
@@ -400,8 +400,8 @@ System.gc(); // Kérés a GC-nek (nem garantált)
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Class olyan, mint egy építési terv: meghatározza, hogy milyen adatok és funkciók lesznek egy objektumban.*
+📋 **Fogalom meghatározása**  
+*A Class egy objektumok blueprint-je, amely definiálja az objektum állapotát (mezők/field-ek), viselkedését (metódusok), és szerkezetét. Class-level tagok (static) az osztályhoz, instance tagok az objektum példányokhoz tartoznak. Támogatja az encapsulation-t (private/protected/public), öröklést (extends) és polimorfizmust. Minden class a java.lang.Object leszármazottja.*
 
 </div>
 
@@ -478,8 +478,8 @@ BankAccount account2 = new BankAccount();
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*Az Interface olyan, mint egy szerződés: meghatározza mit kell csinálni, de nem azt, hogy hogyan.*
+📋 **Fogalom meghatározása**  
+*Az Interface egy referencia típus, amely absztrakt metódusokat (Java 8 előtt), default és static metódusokat (Java 8+), és konstansokat tartalmazhat. Szerződést definiál amit implementáló osztályoknak teljesíteniük kell. Támogatja a multiple inheritance-t (egy osztály több interface-t implementálhat). Functional interface (@FunctionalInterface) egyetlen absztrakt metódust tartalmaz, lambda kifejezésekkel használható.*
 
 </div>
 
@@ -564,8 +564,8 @@ public class Circle implements Drawable {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Package olyan, mint egy mappa rendszer: logikusan csoportosítja a kapcsolódó osztályokat és elkerüli a névütközéseket.*
+📋 **Fogalom meghatározása**  
+*A Package egy namespace mechanizmus, amely logikusan csoportosítja az összefüggő osztályokat és interfészeket. Hierarchikus struktúrájú (pl. com.company.project.module), megfelel a könyvtárstruktúrának. Hozzáférés-szabályozást biztosít (package-private visibility), elkülöníti a komponenseket és elkerüli a névütközéseket. Az import utasítás rövidíti a teljes qualified name-eket.*
 
 </div>
 
@@ -637,10 +637,10 @@ public class UserService {
 
 ### Exception {#exception}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az Exception olyan, mint egy vészhelyzeti protokoll: strukturált módon kezeli a váratlan szituációkat.*
+📋 **Fogalom meghatározása**  
+Java **hiba kezelési mechanizmusa** Throwable hierarchiával: **Checked Exceptions** (compile-time, pl. IOException - kötelező kezelés), **Unchecked Exceptions** (runtime, RuntimeException hierarchy - pl. NullPointerException, IllegalArgumentException), **Error** (serious problems, pl. OutOfMemoryError). try-catch-finally blokkokkal vagy `throws` clause-zal kezeled. Best practice: **fail-fast** (IllegalArgumentException early validation), **custom exceptions** business logic-hez, no empty catch blocks.
 
 </div>
 
@@ -732,8 +732,8 @@ public void divide(int a, int b) {
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Collections olyan, mint egy eszköztár: különböző adatstruktúrák (List, Set, Map) egységes interface-szel.*
+📋 **Fogalom meghatározása**  
+*A Collections Framework egy egységes architektúra adatstruktúrák reprezentálására és manipulálására. Core interfészek: Collection (List, Set, Queue) és Map. Implementációk: ArrayList, LinkedList, HashSet, TreeSet, HashMap, TreeMap stb. Algoritmusokat nyújt (sort, search, shuffle) a Collections és Arrays utility osztályokban. Generézhető és Stream API-val integrálható.*
 
 </div>
 
@@ -826,8 +826,8 @@ ages.put("Anna", 25);
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Thread olyan, mint párhuzamos munkavégzés: több feladat egyszerre, de figyelni kell az összehangolásra.*
+📋 **Fogalom meghatározása**  
+*A Thread egy végrehajtási szál, a program legkisebb végrehajtási egysége. Minden thread saját call stack-kel, program counterrel és local változókkal rendelkezik, de megoszt a heap memóriát. Létrehozása: Thread osztály extend-elése vagy Runnable interface implementálása. Lifecycle: NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED. Szinkronizáció: synchronized, volatile, Lock API, atomic változók.*
 
 </div>
 
@@ -916,8 +916,8 @@ System.out.println("Main continues...");
 
 <div class="concept-section mental-model">
 
-🧭 **Így gondolj rá**  
-*A Stream API olyan, mint egy assembly line: adatok folynak rajta keresztül és minden állomáson átalakítódnak.*
+📋 **Fogalom meghatározása**  
+*A Stream API (Java 8+) egy funkcionális programozási absztrakció collection-ök és adatforrások feldolgozására. Deklarál pipeline-okat épít köztes (filter, map, flatMap, sorted) és terminál (collect, reduce, forEach, count) operációkból. Lazy evaluation-t használ, párhuzamosítható (parallelStream), nem módosítja a forrást. Lambda kifejezésekkel és method reference-szel kombinálható.*
 
 </div>
 
@@ -1006,10 +1006,10 @@ A műveletek csak terminal operation híváskor hajtódnak végre, addig csak pi
 
 ### OOP Alapelvek {#oop-alapelvek}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az OOP alapelvek olyan, mint egy jól szervezett vállalat: mindenki tudja a saját feladatát (encapsulation), vannak hierarchiák (inheritance), és ugyanaz a szerepkör különböző emberek által különbözőképp betölthető (polymorphism).*
+📋 **Fogalom meghatározása**  
+**Object-Oriented Programming négy alappillére**: **Encapsulation** (data hiding `private` fields, public getters/setters), **Inheritance** (code reuse `extends`, IS-A relationship), **Polymorphism** (method overriding, runtime dispatch, substitution principle), **Abstraction** (essential features only, `abstract` classes/interfaces). Benefits: modularity, code reuse, maintainability, flexibility. Java full OOP: minden class, primitives wrapper-ekkel (Integer, Double).
 
 </div>
 
@@ -1142,10 +1142,10 @@ public class ShapeCalculator {
 
 ### SOLID Alapelvek {#solid-alapelvek}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A SOLID olyan, mint az építészet alapszabályai: ha betartod őket, stabil, könnyen bővíthető épületet (kódot) kapsz, ha nem, akkor összeomlik az első nagyobb változtatásnál.*
+📋 **Fogalom meghatározása**  
+**Clean architecture design principles** Robert C. Martin-tól: **S**ingle Responsibility (egy osztály = egy felelősség), **O**pen/Closed (nyílt bővítésre, zárt módosításra), **L**iskov Substitution (aloszlay behelyettesíthetsz parent helyre), **I**nterface Segregation (kicsi, specifikus interfaces), **D**ependency Inversion (depend abstractions, not concretions). Result: testable, maintainable, extensible code. Common violations: God classes, tight coupling, concrete dependencies.
 
 </div>
 
@@ -1351,10 +1351,10 @@ class NotificationManager {
 
 ### Equals és HashCode {#equals-es-hashcode}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az equals és hashCode olyan, mint egy személyazonosító: ha két ember ugyanannak számít (equals), akkor az azonosítójuk (hashCode) is ugyanaz kell legyen.*
+📋 **Fogalom meghatározása**  
+**Object contract methods** konzisztens implementálásához: `equals()` (logical equality, reflexive/symmetric/transitive), `hashCode()` (integer hash code, **equals objects MUST have same hashCode**). HashMap/HashSet relies on both: hashCode determines bucket, equals determines identity. Violation breaks collections. IDE-generated vagy Lombok `@EqualsAndHashCode`, vagy `Objects.equals()/Objects.hash()` util methods. Contract: `a.equals(b) == true` → `a.hashCode() == b.hashCode()`.
 
 </div>
 
@@ -1440,10 +1440,10 @@ public class Person {
 
 ### Lambda Expressions {#lambda-expressions}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A Lambda olyan, mint egy rövidített recept: minden lényeges lépés benne van, de a felesleges szöveg (boilerplate) nélkül.*
+📋 **Fogalom meghatározása**  
+**Anonymous function syntax** Java 8+ functional interfaces-hez: `(parameters) -> expression` vagy `(parameters) -> { statements; }`. Single Abstract Method (SAM) requirement. Common types: `Predicate<T>` (boolean test), `Function<T,R>` (transformation), `Consumer<T>` (side effect), `Supplier<T>` (factory). Method references: `String::length` (bound/unbound), `System.out::println` (instance). Closures: access effectively final variables. Stream API natural fit: `list.stream().filter(x -> x > 0).map(String::valueOf)`.
 
 </div>
 
@@ -1556,10 +1556,10 @@ Lambda: functional interface, rövid logika. Anonymous: több metódus, komplex 
 
 ### Generics {#generics}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A Generics olyan, mint egy univerzális doboz sablon: előre megmondod milyen típust fogsz beletenni, így a fordító ellenőrizni tudja, hogy mindent jól csinálsz.*
+📋 **Fogalom meghatározása**  
+**Type parameterization** osztályokban/metódusokban compile-time type safety-ért: `<T>`, `<E>`, `<K,V>`. Wildcards: `<?>` (unbounded), `<? extends Number>` (upper bound), `<? super Integer>` (lower bound). **Type erasure**: runtime-ban generált típusok törlődnek Object/bound-ra. Collections Framework: `List<String>`, `Map<K,V>`. Cannot: generic arrays (`new T[]`), static generic fields. Benefits: type safety, no casting, reusability.
 
 </div>
 
@@ -1661,10 +1661,10 @@ public class GenericsExample {
 
 ### Immutability {#immutability}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az immutable objektum olyan, mint egy lezárt időkapszula: létrehozás után nem módosítható, de másolatot készíthetsz változtatásokkal.*
+📋 **Fogalom meghatározása**  
+**Unchangeable objects** after construction: `final` class, `final` fields, no setters, **defensive copies** for mutable fields (collections). Benefits: **thread-safe** (no synchronization needed), **hashable** (safe HashMap keys), **cacheable**, **predictable**. Examples: `String`, `Integer`, `LocalDate`. Immutable update pattern: `withX()` methods return new instances. Record classes (Java 14+) automatically immutable: `record Person(String name, int age) {}`.
 
 </div>
 
@@ -1765,10 +1765,10 @@ System.out.println(upper); // "HELLO"
 
 ### Autoboxing és Unboxing {#autoboxing-es-unboxing}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az autoboxing/unboxing olyan, mint automatikus csomagolás: a primitív értékek automatikusan "becsomagolódnak" objektumba és kicsomagolódnak vissza.*
+📋 **Fogalom meghatározása**  
+**Automatic conversion** primitives ↔ wrapper objects: `int` → `Integer.valueOf()` (autoboxing), `Integer` → `.intValue()` (unboxing). Collections require objects: `List<Integer>` stores wrappers. **Caching**: `-128 to 127` Integer cached, `==` comparison careful! NullPointerException risk: unboxing `null` wrapper throws NPE. Performance: boxing creates heap objects (slower than primitives). Avoid in hot loops. Prefer primitives when possible, wrappers only for Collections/generics.
 
 </div>
 
@@ -1859,10 +1859,10 @@ public class AutoboxingExample {
 
 ### Access Modifiers {#access-modifiers}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az access modifier-ek olyan, mint a ház helyiségei: public=előszoba (mindenki), private=hálószoba (csak te), protected=családi szoba (család), default=szomszédok.*
+📋 **Fogalom meghatározása**  
+Négy **visibility level** Java-ban: **public** (anywhere), **protected** (same package + subclasses), **package-private/default** (same package only), **private** (same class only). Encapsulation best practice: private fields, public methods. Class level: `public` or package-private only (no protected/private top-level classes). Inheritance: cannot reduce visibility (public method stays public in subclass). Common pattern: private fields + public getters/setters.
 
 </div>
 
@@ -1924,10 +1924,10 @@ public class AccessExample {
 
 ### Final Keyword {#final-keyword}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A final olyan, mint egy "Ne nyúlj hozzá!" tábla: megakadályozza a változtatást osztályokon, metódusokon és változókon.*
+📋 **Fogalom meghatározása**  
+**Immutability/prevention keyword** három context-ben: **final class** (cannot extend, pl. `String`), **final method** (cannot override), **final variable** (single assignment, constant). Final variable: **compile-time constant** (`static final int MAX = 100`) vagy **runtime constant** (constructor-assigned). Reference final: object reference immutable, content mutable (`final List<>` - list reference fixed, elements changeable). Effectively final: used in lambdas/inner classes.
 
 </div>
 
@@ -2006,10 +2006,10 @@ public class FinalExample {
 
 ### Static Keyword {#static-keyword}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A static olyan, mint egy osztály "közös tulajdona": minden példány ugyanazt a static elemet látja, és nincs szükség objektumra a használatához.*
+📋 **Fogalom meghatározása**  
+**Class-level members** instance nélküli használathoz: **static variables** (class-level state, shared across instances), **static methods** (utility functions, no `this` reference), **static blocks** (class initialization, runs once). Access: `ClassName.staticMethod()` vagy instance-ból. Memory: single copy in Method Area. Common use: constants (`static final`), utility classes (`Math`, `Collections`), singleton pattern, factory methods. Cannot: access instance members from static context.
 
 </div>
 
@@ -2098,10 +2098,10 @@ int maximum = StaticExample.max(10, 20);        // 20
 
 ### This és Super Keyword {#this-super-keyword}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A `this` olyan, mint "én magam", a `super` pedig "a szüleim": explicit hivatkozás a jelenlegi objektumra vagy a szülő osztályra.*
+📋 **Fogalom meghatározása**  
+**`this`**: current object reference (disambiguation, constructor chaining `this(args)`, return this for fluent API). **`super`**: parent class reference (parent constructor `super(args)` MUST be first, access parent methods `super.method()`, access shadowed fields). Constructor chaining: `this()` or `super()` first statement only. Common patterns: Builder pattern (`return this`), Template Method (`super.method()` extension). Cannot: use in static context.
 
 </div>
 
@@ -2191,10 +2191,10 @@ public class Child extends Parent {
 
 ### Constructor & Constructor Overloading {#constructor-overloading}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A konstruktor olyan, mint egy objektum "születési okmánya": meghatározza, hogyan jön létre egy objektum és milyen kezdeti értékekkel.*
+📋 **Fogalom meghatározása**  
+**Object initialization** speciális metódussal: same name as class, no return type, called with `new`. **Overloading**: több constructor különböző paraméterekkel. **Constructor chaining**: `this()` calls another constructor (must be first statement). **Master constructor pattern**: one full constructor, others delegate. Default: no-arg constructor (unless explicit constructor exists). Validation: constructor perfect place for invariants. Private constructor: singleton, utility class.
 
 </div>
 
@@ -2297,10 +2297,10 @@ Person p5 = new Person(p3);  // Copy constructor
 
 ### Method Overloading vs Method Overriding {#method-overloading-overriding}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Overloading = ugyanaz a név, különböző "aláírás" (compile-time). Overriding = ugyanaz az aláírás, különböző implementáció (runtime).*
+📋 **Fogalom meghatározása**  
+**Overloading** (compile-time polymorphism): same method name, different parameters (count/type/order), resolved at compile-time. **Overriding** (runtime polymorphism): same signature, different implementation in subclass, `@Override` annotation, resolved at runtime (dynamic dispatch). Overriding rules: cannot reduce visibility, cannot throw broader checked exceptions, return type covariant allowed. Overloading: static methods can be overloaded but NOT overridden. Key difference: overloading = API flexibility, overriding = behavioral specialization.
 
 </div>
 
@@ -2409,10 +2409,10 @@ cat.makeSound();          // "Meow!" - runtime decision
 
 ### Abstract Class {#abstract-class}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az abstract class olyan, mint egy félkész ház terve: van alapszerkezet és néhány kész szoba, de egyes részeket a "lakónak" kell befejezni.*
+📋 **Fogalom meghatározása**  
+**Partial implementation** class: `abstract` keyword, cannot instantiate, can have **abstract methods** (no body, subclass MUST implement) AND **concrete methods** (shared implementation). **Template Method Pattern**: define algorithm skeleton, subclasses fill details. Differences from interface: single inheritance, can have state (fields), constructors, any access modifiers. Use when: common behavior + mandatory customization, protected state sharing. Example: `AbstractList`, `HttpServlet`.
 
 </div>
 
@@ -2515,10 +2515,10 @@ Vehicle vehicle = car;                // OK: polymorphism
 
 ### Enum {#enum}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az Enum olyan, mint egy előre meghatározott lista: véges számú konstans érték típusbiztos módon.*
+📋 **Fogalom meghatározása**  
+**Type-safe constants** véges értékhalmazhoz: implicit `final` class, cannot extend, **singleton instances**. Can have fields, constructors (private), methods, implement interfaces. Built-in methods: `values()`, `valueOf(String)`, `ordinal()`, `name()`. Switch-compatible. Common patterns: **Strategy Pattern** (enum with behavior), **Singleton** (single constant). Examples: `DayOfWeek`, `HttpStatus`. Benefits: compile-time type safety, switch exhaustiveness, readability vs int constants.
 
 </div>
 
@@ -2621,10 +2621,10 @@ double result = Operation.PLUS.apply(10, 5); // 15
 
 ### Wrapper Classes {#wrapper-classes}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A Wrapper osztályok olyan, mint "objektum ruhák" primitív típusoknak: ugyanaz az érték, de objektum formában.*
+📋 **Fogalom meghatározása**  
+**Object representation** primitives-hez: `Integer` (int), `Double` (double), `Boolean` (boolean), `Character` (char), stb. Needed for: Collections (generic types require objects), null representation, utility methods (`parseInt()`, `valueOf()`). **Caching**: `-128 to 127` for Integer/Long, `true/false` for Boolean - `==` comparison careful! Immutable: thread-safe. Autoboxing/unboxing: automatic conversion. Performance: primitives faster (no heap allocation).
 
 </div>
 
@@ -2716,10 +2716,10 @@ public class WrapperExample {
 
 ### Annotations {#annotations}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az annotációk olyan, mint kód "címkék": metadata információt adnak a fordítónak, framework-öknek vagy futtatási környezetnek.*
+📋 **Fogalom meghatározása**  
+**Metadata mechanism** code elements-hez: `@interface` syntax. **Built-in**: `@Override`, `@Deprecated`, `@SuppressWarnings`, `@FunctionalInterface`. **Meta-annotations**: `@Retention` (SOURCE/CLASS/RUNTIME visibility), `@Target` (METHOD/FIELD/TYPE applicability), `@Inherited`, `@Documented`. Custom annotations: define with `@interface`, access via Reflection API. Framework usage: Spring (`@Autowired`, `@Controller`), JPA (`@Entity`, `@Id`), validation (`@NotNull`). Compile-time processing: Lombok, annotation processors.
 
 </div>
 
@@ -2816,10 +2816,10 @@ public class AnnotationProcessor {
 
 ### Serialization {#serialization}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A serialization olyan, mint az objektumok "befagyasztása": átalakítja őket byte stream-mé, hogy később "felolvasszák" őket.*
+📋 **Fogalom meghatározása**  
+**Object-to-byte-stream conversion** persistence-hez: implement `Serializable` marker interface, `ObjectOutputStream.writeObject()` serialize, `ObjectInputStream.readObject()` deserialize. **serialVersionUID**: version control (class changes compatibility). **transient**: skip field serialization. **static**: not serialized (class-level). Custom serialization: `writeObject()`/`readObject()` methods. Security risks: deserialization vulnerabilities. Alternatives: JSON (Jackson, Gson), Protobuf, MessagePack - preferred over Java serialization.
 
 </div>
 
@@ -2929,10 +2929,10 @@ public class SerializationExample {
 
 ### Reflection API {#reflection-api}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A Reflection olyan, mint egy "kód röntgen": futásidőben megvizsgálhatod és módosíthatod az osztályok belső szerkezetét.*
+📋 **Fogalom meghatározása**  
+**Runtime introspection és manipulation**: `Class.forName()`, `getDeclaredMethods()`, `getDeclaredFields()`, `getConstructors()`. Access private: `setAccessible(true)` bypasses access modifiers. Dynamic invocation: `Method.invoke(object, args)`. Framework usage: Spring (dependency injection), Hibernate (entity scanning), JUnit (test discovery). Performance: slower than direct calls. Security: requires permission (`ReflectPermission`). Alternatives: Method Handles (Java 7+), bytecode manipulation (ASM, ByteBuddy).
 
 </div>
 
@@ -3067,10 +3067,10 @@ public class ReflectionExample {
 
 ### Optional {#optional}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az Optional olyan, mint egy "biztonsági doboz": expliciten jelzi, hogy egy érték lehet null, és biztonságos módokat ad a kezelésére.*
+📋 **Fogalom meghatározása**  
+**Null-safe container** Java 8+: `Optional.of(value)`, `Optional.empty()`, `Optional.ofNullable(value)`. Methods: `isPresent()`, `ifPresent(Consumer)`, `orElse(default)`, `orElseGet(Supplier)`, `orElseThrow()`, `map()`, `flatMap()`, `filter()`. Anti-patterns: `get()` without `isPresent()` (defeats purpose), Optional fields/parameters (use nullable instead). Use for: return types where absence meaningful. Not for: collections (use empty list), primitives (use OptionalInt/Long/Double).
 
 </div>
 
@@ -3195,10 +3195,10 @@ public class OptionalExample {
 
 ### Record {#record}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A Record olyan, mint egy "data class on steroids": automatikusan generálja az equals, hashCode, toString és gettereket immutable adatokhoz.*
+📋 **Fogalom meghatározása**  
+**Immutable data carrier** Java 14+ (stable 16+): `record Person(String name, int age) {}`. Auto-generated: `final` class, private `final` fields, public accessor methods, `equals()`, `hashCode()`, `toString()`, canonical constructor. Custom constructors: compact (`Person { if (age < 0) throw... }`), explicit. Can: implement interfaces, have static members, custom methods. Cannot: extend classes (implicitly extends Record), declare instance fields, be abstract. Pattern matching (Java 16+): `if (obj instanceof Person(String name, int age))`. Serialization-friendly.
 
 </div>
 
@@ -3346,10 +3346,10 @@ public class RecordExample {
 
 ### Modules (Java 9+) {#modules-java9}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A modulok olyan, mint "szoftver csomagok": meghatározzák, mit exportálnak és mit igényelnek más moduloktól.*
+📋 **Fogalom meghatározása**  
+**Java Platform Module System (JPMS)** Java 9+: `module-info.java` descriptor. **requires**: declare dependencies, **exports**: make packages accessible, **opens**: reflection access, **uses/provides**: service loader. Transitive dependencies: `requires transitive`. Strong encapsulation: internal packages inaccessible. Benefits: reliable configuration, smaller runtime (jlink), better security. Migration: unnamed module (classpath compatibility), automatic modules (JAR on module-path). JDK modularized: `java.base` (core), `java.sql`, `java.xml`, etc.
 
 </div>
 
@@ -3485,10 +3485,10 @@ module com.example.client {
 
 ### Java Memory Model (JMM) {#java-memory-model}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A JMM olyan, mint a "forgalmi szabályzat" multi-threaded kódban: meghatározza, mikor és hogyan látják a thread-ek egymás változtatásait.*
+📋 **Fogalom meghatározása**  
+**Visibility és ordering rules** multi-threaded environment-ben: **happens-before relationship** (if A happens-before B, A's changes visible to B). Synchronization mechanisms: **volatile** (visibility guarantee, no caching), **synchronized** (mutual exclusion + visibility), **final** (safe publication). Memory barriers prevent reordering. CPU caching: each thread has local cache, updates not immediately visible. Data race: concurrent non-synchronized access to same variable (undefined behavior). JSR-133 specification. Modern: VarHandle (Java 9+) for fine-grained control.
 
 </div>
 
@@ -3667,10 +3667,10 @@ Constructor részlegesen initialized object-et láthatna más thread, mert nincs
 
 ### Garbage Collector Types {#garbage-collector-types}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A GC típusok olyan, mint különböző takarítási stratégiák: mindegyik más-más helyzetben optimális (kis ház vs nagy irodaépület).*
+📋 **Fogalom meghatározása**  
+Különböző **GC algorithms** tradeoffs-szal: **Serial GC** (single-threaded, `-XX:+UseSerialGC`, kis apps), **Parallel GC** (multi-threaded, throughput-focused, default Java 8), **CMS** (Concurrent Mark Sweep, low-latency, deprecated), **G1 GC** (Garbage First, balanced latency/throughput, default Java 9+, region-based heap), **ZGC** (ultra-low latency <10ms, Java 11+, scalable terabytes), **Shenandoah** (low-latency, concurrent evacuation). Tuning: `-Xms`/`-Xmx` (heap size), `-XX:MaxGCPauseMillis` (pause target), `-XX:G1HeapRegionSize`.
 
 </div>
 
@@ -3818,10 +3818,10 @@ public class GCMonitoring {
 
 ### Concurrency API {#concurrency-api}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A Concurrency API olyan, mint egy "thread menedzsment rendszer": ExecutorService a munkaerő irányítás, CompletableFuture az aszinkron pipeline.*
+📋 **Fogalom meghatározása**  
+**java.util.concurrent package** high-level concurrency tools-szal: **ExecutorService** (thread pool management - FixedThreadPool, CachedThreadPool, ScheduledThreadPool), **CompletableFuture** (async programming, chaining, exception handling), **ConcurrentHashMap** (lock-free reads, segment-based writes), **BlockingQueue** (producer-consumer pattern), **CountDownLatch/CyclicBarrier/Semaphore** (coordination primitives), **Atomic classes** (lock-free variables). ForkJoinPool: work-stealing algorithm CPU-intensive tasks-hez. Benefits: thread lifecycle management, composable async operations.
 
 </div>
 
@@ -4026,10 +4026,10 @@ Work-stealing: idle threads "lopnak" munkát busy threads-től, jobb CPU utiliza
 
 ### Streams – Advanced {#streams-advanced}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az advanced streams olyan, mint egy "házi assembly line": parallel streams = több worker, custom collector = specialized packaging station.*
+📋 **Fogalom meghatározása**  
+Advanced **Stream API features**: **parallel streams** (`parallelStream()`, automatic CPU core utilization, ForkJoinPool), **custom Collectors** (`Collector.of()`, mutable reduction), **flatMap** (nested structure flattening), **reduce** (custom aggregation), **peek** (debugging/side effects), **takeWhile/dropWhile** (Java 9+ conditional slicing). Performance: lazy evaluation (intermediate ops), short-circuiting (`findFirst`, `anyMatch`). Caution: parallelStream overhead small datasets, stateful operations (sorted, distinct) expensive. `Collectors.groupingBy()`, `partitioningBy()`, `teeing()` (Java 12+).
 
 </div>
 
@@ -4259,10 +4259,10 @@ Single pipeline, primitive streams, short-circuit operations, megfelelő collect
 
 ### JDBC and Database Connectivity {#jdbc-database}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A JDBC olyan, mint egy "database protocol translator": DriverManager = kapcsolat broker, PreparedStatement = safe SQL template.*
+📋 **Fogalom meghatározása**  
+**Java Database Connectivity API** relational DB access-hez: `DriverManager.getConnection()`, **Connection** (transaction boundary), **Statement** (simple queries, SQL injection risk!), **PreparedStatement** (parameterized, precompiled, **SQL injection safe**), **CallableStatement** (stored procedures), **ResultSet** (query results). Connection pooling: HikariCP (fastest), Apache DBCP, c3p0. Batch operations: `addBatch()`/`executeBatch()`. Transactions: `setAutoCommit(false)`, `commit()`, `rollback()`. Modern alternatives: JPA/Hibernate, jOOQ, MyBatis.
 
 </div>
 
@@ -4566,10 +4566,10 @@ Production environment, concurrent users, connection creation expensive.
 
 ### Security Fundamentals {#security-fundamentals}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A Java Security olyan, mint egy "digital fortress system": SecurityManager = gate keeper, Permissions = access cards, Cryptography = secret codes.*
+📋 **Fogalom meghatározása**  
+Java **security mechanisms**: **Cryptography** (`MessageDigest` SHA-256 hashing, `Cipher` AES/RSA encryption, `KeyGenerator`, `SecureRandom`), **Password hashing** (PBKDF2WithHmacSHA256, Bcrypt, Argon2), **Digital signatures** (RSA/DSA sign/verify), **SSL/TLS** (HTTPS communication), **SecurityManager** (deprecated Java 17+), **Permissions** (file/network access control). Best practices: salted passwords, high iteration counts (100k+), never store plaintext passwords, use HTTPS, input validation, OWASP Top 10 awareness.
 
 </div>
 
@@ -4867,10 +4867,10 @@ public class SecurityExample {
 
 ### Logging Frameworks {#logging-frameworks}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*A logging olyan, mint egy "event recording system": Logger = news reporter, Appender = news channel, Level = news importance.*
+📋 **Fogalom meghatározása**  
+Professional logging: **SLF4J** (Simple Logging Facade, API abstraction), **Logback** (native SLF4J implementation, config via XML/Groovy), **Log4j2** (async logging, performance). Log levels: TRACE < DEBUG < INFO < WARN < ERROR. Components: **Logger** (entry point), **Appender** (output destination - console, file, socket), **Layout/Pattern** (format). **MDC** (Mapped Diagnostic Context - request-scoped data), **Markers** (categorization). Best practices: parameterized logging `logger.info("User {}", userId)` (no string concat), conditional logging, structured JSON logs.
 
 </div>
 
@@ -5247,10 +5247,10 @@ Request tracing, user context, correlation ID-k multi-threaded environment-ben.
 
 ### Advanced Annotations {#advanced-annotations}
 
-<div class="concept-section mental-model">
+<div class="concept-section definition">
 
-🧭 **Így gondolj rá**  
-*Az advanced annotations olyan, mint "code metadata system": Custom Annotations = metadata template, Reflection = metadata reader, Processors = build-time metadata handler.*
+📋 **Fogalom meghatározása**  
+Advanced **annotation techniques**: **Annotation Processor Tool (APT)** (compile-time code generation, Lombok, MapStruct), **repeatable annotations** (`@Repeatable`, Java 8+), **type annotations** (`@NonNull List<@NonNull String>`, Java 8+), **meta-annotations** composition. Framework integration: **Spring** (`@Component`, `@Autowired`), **JPA** (`@Entity`, `@ManyToOne`), **JAX-RS** (`@Path`, `@GET`), **Bean Validation** (`@NotNull`, `@Size`). Reflection-based processing: `Class.getAnnotations()`, `Method.isAnnotationPresent()`. Custom annotation processors: `AbstractProcessor` subclass, `META-INF/services` registration.
 
 </div>
 

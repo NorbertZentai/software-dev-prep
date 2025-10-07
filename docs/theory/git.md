@@ -29,8 +29,8 @@ A Git egy elosztott verziókezelő rendszer, amely lehetővé teszi a kód vált
 
 <div class="concept-section mental-model" data-filter="basics junior">
 
-🧭 **Így gondolj rá**  
-*A Git repository olyan, mint egy időutazó könyvtár: minden változásnak megvan a saját "időpecsétje", és bármikor visszaugorhatsz egy korábbi verzióhoz.*
+📋 **Fogalom meghatározása**  
+*A Git repository egy verziókezelési adatstruktúra, amely tárolja a projekt teljes történetét commit-ok gráfja formájában. A .git mappában tárolódnak az objektumok (blobs, trees, commits, tags), referenciák (branches, tags), konfiguráció és a teljes verziótörténet. Minden repository teljes és független, lehetővé teszi az elosztott munkafolyamatot.*
 
 </div>
 
@@ -146,8 +146,8 @@ Magyarázat: A repository a Git alapegysége, amely tartalmazza a project teljes
 
 <div class="concept-section mental-model" data-filter="basics junior">
 
-🧭 **Így gondolj rá**  
-*Clone mint fénymásolás: azonos másolatot készítesz egy dokumentumról. Fork mint egy könyv saját kiadásának készítése: van saját ISBN-ed, de az eredeti tartalom alapján dolgozol.*
+📋 **Fogalom meghatározása**  
+*Clone egy Git parancs, amely lokális másolatot készít egy remote repository-ról, lemásolva a teljes történetet és beállítva az "origin" remote-ot. Fork egy platform-specifikus (GitHub, GitLab) funkció, amely szerver oldalon készít egy saját tulajdonú másolatot egy repository-ról, lehetővé téve a független fejlesztést és pull request-eket az eredeti repo felé.*
 
 </div>
 
@@ -340,8 +340,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="basics junior">
 
-🧭 **Így gondolj rá**  
-*A Staging Area olyan, mint egy csomagolóasztal a postán: itt rendezed össze, mit akarsz elküldeni (commit-olni). Nem minden fájl megy egyből a csomagba - válogatod, rendezed, ellenőrzöd, majd összecsomagolod.*
+📋 **Fogalom meghatározása**  
+*A Staging Area (Index) egy köztes terület a working directory és a Git repository között, amely tárolja a következő commit-ba kerülő változtatásokat. A "git add" parancs hozzáadja a változtatásokat a staging area-hoz, ahol előkészített állapotban várják a "git commit"-ot. Lehetővé teszi a szelektív commit-olást és a változtatások logikai csoportosítását.*
 
 </div>
 
@@ -582,8 +582,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="basics junior">
 
-🧭 **Így gondolj rá**  
-*A .gitignore olyan, mint egy bouncer egy klubban: megmondja, ki/mi mehet be és ki nem. A Git figyelmen kívül hagyja a .gitignore-ban felsorolt fájlokat és mappákat, mintha ott sem lennének.*
+📋 **Fogalom meghatározása**  
+*A .gitignore egy konfigurációs fájl, amely glob pattern-ekkel határozza meg azokat a fájlokat és könyvtárakat, amelyeket a Git figyelmen kívül hagy (untracked). A pattern-ek hierarchikusan öröklődnek: globális, repository szintű és directory-specifikus .gitignore fájlok. Jellemzően build artifactok, dependencies, ide fájlok, érzékeny adatok kerülnek ide.*
 
 </div>
 
@@ -949,8 +949,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="basics junior">
 
-🧭 **Így gondolj rá**  
-*A remote-ok olyan, mint a telefonkönyvedben lévő névjegyek: nem maga a személy, hanem egy név és cím, hogy hogyan éred el őket. Origin a "home", upstream a "headquarters".*
+📋 **Fogalom meghatározása**  
+*Remote egy elérési út név alatti hivatkozás egy távoli Git repository-ra (URL formában: HTTPS vagy SSH). Az "origin" a default remote név clone esetén, ahonnan a repository-t lemásoltuk. Az "upstream" konvenció szerint az eredeti repository fork esetén. Több remote is konfigurálható, mindegyik különböző repository-ra mutat.*
 
 </div>
 
@@ -1223,8 +1223,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="merging junior">
 
-🧭 **Így gondolj rá**  
-*Fast-forward olyan, mint amikor egy vonat egyenes sínen halad: nincs akadály, egyszerűen továbbmegy. No-fast-forward olyan, mint amikor két út találkozik: explicit találkozási pont (merge commit) jelzi, hogy itt két irány egyesült.*
+📋 **Fogalom meghatározása**  
+*Fast-forward merge akkor történik, amikor a target branch egyenes leszármazottja a merge-elt branch-nek, így a Git egyszerűen továbblépteti a branch pointert anélkül, hogy merge commit-ot hozna létre. No-fast-forward merge (--no-ff flag) mindig létrehoz egy új merge commit-ot, még akkor is, ha fast-forward lehetséges, megorzve így a branch történetének láthatóságát a gráfban.*
 
 </div>
 
@@ -1533,8 +1533,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="advanced medior">
 
-🧭 **Így gondolj rá**  
-*Git tag-ek olyan, mint mérföldkövek egy úton: jelzik a fontos pontokat az útvonalban. Lightweight tag egy egyszerű tábla "v1.0", annotated tag egy információs tábla teljes leírással: ki állította, mikor és miért.*
+📋 **Fogalom meghatározása**  
+*Git tag egy névvel ellátott referencia egy specifikus commit-ra, jellemzően release verziók jelölésére. Lightweight tag egy egyszerű pointer egy commit-ra (mint egy branch, de nem mozog). Annotated tag egy teljes Git objektum: tárolja a tagger nevét, e-mailt, dátumot, üzenetet és GPG signálást is tartalmazhat, ajánlott production release-ekhez.*
 
 </div>
 

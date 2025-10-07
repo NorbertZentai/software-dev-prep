@@ -10,8 +10,8 @@ A szoftver architektúra a rendszerek szerkezeti és szervezési elveit határoz
 
 <div class="concept-section mental-model" data-filter="patterns junior">
 
-🧭 **Így gondolj rá**  
-*A monolit olyan, mint egy nagy áruház: minden termék egy épületben van, könnyű navigálni, de ha bővíteni akarsz, az egész építmény érintett.*
+🏢 **Fogalom meghatározása**  
+*A monolitikus architektúra egy szoftvertervezési minta, amelyben az alkalmazás minden komponense (UI, üzleti logika, adatelérési réteg) egyetlen, egységes kódbázisban és deployment egységben van összeépítve. Minden funkció szorosan összekapcsolódik, közös memóriaterületen fut, és általában egyetlen adatbázist használ. A deployment, skálázás és verziókezelés az egész alkalmazásra vonatkozik egyszerre.*
 
 </div>
 
@@ -117,8 +117,8 @@ public class MonolithicECommerceApplication {
 
 <div class="concept-section mental-model" data-filter="microservices medior">
 
-🧭 **Így gondolj rá**  
-*A mikroszolgáltatások olyan, mint egy bevásárlóközpont: minden bolt (szolgáltatás) független, saját tulajdonossal, készlettel, de együtt alkotnak egy nagyobb egységet.*
+🔧 **Fogalom meghatározása**  
+*A mikroszolgáltatás architektúra (microservices) egy szoftvertervezési megközelítés, amelyben az alkalmazást kis, független, lazán csatolt szolgáltatásokra bontjuk. Minden mikroszolgáltatás egy konkrét üzleti funkcionalitást valósít meg, saját adatbázissal rendelkezik, független életciklusú (külön deploy-olható), és jól definiált API-n keresztül kommunikál más szolgáltatásokkal. A szolgáltatások eltérő technológiákat használhatnak, és külön-külön skálázhatók.*
 
 </div>
 
@@ -309,8 +309,8 @@ Magyarázat: Minden réteg csak az alatta lévő rétegre támaszkodik, tiszta e
 
 <div class="concept-section mental-model" data-filter="patterns medior">
 
-🧭 **Így gondolj rá**  
-*A hexagonal architektúra olyan, mint egy középkori vár: a belső mag (üzleti logika) védett, és csak meghatározott kapukon (portok) keresztül lehet hozzáférni adapteres hidakkal.*
+⬡ **Fogalom meghatározása**  
+*A Hexagonal Architecture (más néven Ports and Adapters) egy szoftver architektúra minta, amely elválasztja az alkalmazás központi üzleti logikáját (domain core) a külső függőségektől (adatbázisok, UI, external services). A **portok** absztrakciók (interface-ek), amelyeken keresztül a core kommunikál a külvilággal, míg az **adapterek** konkrét implementációk, amelyek a portokhoz csatlakoznak. Ez lehetővé teszi a külső technológiák cseréjét anélkül, hogy az üzleti logikát módosítani kellene.*
 
 </div>
 
@@ -491,8 +491,8 @@ Magyarázat: Minden bounded context-ben a User fogalma más jelentéssel bír, a
 
 <div class="concept-section mental-model" data-filter="resilience medior">
 
-🧭 **Így gondolj rá**  
-*Az idempotencia olyan, mint egy villanykapcsoló: akárhányszor megnyomod, a lámpa állapota nem változik többet (már fel van kapcsolva).*
+🔁 **Fogalom meghatározása**  
+*Az idempotencia egy matematikai és számítástechnikai tulajdonság, amely szerint egy művelet többszöri végrehajtása ugyanazt az eredményt produkálja, mint az egyszeri végrehajtás. Elosztott rendszerekben kritikus koncepció: lehetővé teszi, hogy biztonságosan újra próbálkozhassunk sikertelen műveletekkel (retry) anélkül, hogy káros mellékhatásokat okoznánk (pl. duplikált tranzakciók, többszörös levonások). HTTP szempontból: GET, PUT, DELETE természetüknél fogva idempotensek, POST általában nem az.*
 
 </div>
 
@@ -890,8 +890,8 @@ Magyarázat: Observability segít gyorsan azonosítani és diagnosztizálni a pr
 
 <div class="concept-section mental-model" data-filter="microservices junior">
 
-🧭 **Így gondolj rá**  
-*Az API Gateway olyan, mint egy recepciós az irodaházban: minden látogató ide érkezik először, ő irányítja őket a megfelelő irodába, ellenőrzi a jogosultságokat, és nyilvántartja a forgalmat.*
+🚪 **Fogalom meghatározása**  
+*Az API Gateway egy központi belépési pont (single entry point) mikroszolgáltatás alapú rendszerekben, amely a kliensek és a backend szolgáltatások között közvetítő rétegként működik. Fő funkciói: routing (kérések továbbítása a megfelelő service-hez), authentication/authorization, rate limiting, load balancing, protocol translation, request/response transformation, és monitoring. Az API Gateway implementálja a cross-cutting concerns-öket, így ezeket nem kell minden egyes mikroszolgáltatásban újra implementálni.*
 
 </div>
 
@@ -1144,8 +1144,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="microservices junior">
 
-🧭 **Így gondolj rá**  
-*A Service Discovery olyan, mint egy telefonkönyv vagy GPS navigáció: nem kell fejből tudni minden szolgáltatás címét, csak megkérdezed a "telefonkönyvet", és ő megmondja, hol találod a keresett szolgáltatást.*
+📍 **Fogalom meghatározása**  
+*A Service Discovery egy mechanizmus mikroszolgáltatás környezetekben, amely automatikusan felderíti és nyilvántartja a hálózatban elérhető service instance-ok címeit és portjait. Két fő komponensből áll: **Service Registry** (központi katalógus, ahol a szolgáltatások regisztrálják magukat), és **Service Discovery Client** (amely lekérdezi a registry-t és kiválasztja a megfelelő instance-t). Támogatja a dinamikus IP címzést, auto-scaling-et, és health checking-et, így csak az egészséges instance-ok szerepelnek a registry-ben.*
 
 </div>
 
@@ -1415,8 +1415,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="resilience junior">
 
-🧭 **Így gondolj rá**  
-*A Circuit Breaker olyan, mint az otthoni áramköri megszakító: ha túl sok áram folyik és veszélyes lenne, automatikusan kikapcsolja az áramot, megvédve a házat. Egy idő után újra próbálkozik, hátha már rendben van.*
+⚡ **Fogalom meghatározása**  
+*A Circuit Breaker egy hibatolerancia tervezési minta elosztott rendszerekben, amely megakadályozza a kaszkádos hibákat (cascading failures) azáltal, hogy monitorozza a downstream szolgáltatások hívásait és automatikusan megszakítja a kapcsolatot, ha a hibaarány meghalad egy küszöböt. Három állapota van: **Closed** (normál működés), **Open** (hívások blokkolása, fast-fail), és **Half-Open** (próba jellegű hívások az újraindításhoz). Ez védi a rendszert az erőforrások kimerülésétől (thread pool exhaustion, connection timeout) és gyorsabb hibajelzést biztosít.*
 
 </div>
 
@@ -1702,8 +1702,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="patterns medior">
 
-🧭 **Így gondolj rá**  
-*A CQRS olyan, mint egy könyvesbolt: van egy pénztár (írás) ahol fizetni kell és sorba állni, és van egy böngészési terület (olvasás) ahol szabadon nézegethetsz. Mindkettő optimalizált a saját céljára.*
+📖 **Fogalom meghatározása**  
+*A CQRS (Command Query Responsibility Segregation) egy architektúra minta, amely szétválasztja az adatok olvasási (query) és írási (command) műveleteit külön modellekre. A **Command model** az állapotváltozásokat kezeli (create, update, delete), míg a **Query model** az adatok lekérdezésére optimalizált (gyakran denormalizált, read-only). Ez lehetővé teszi az egyes modellek független skálázását, optimalizálását, és akár különböző adatbázis technológiák használatát. Gyakran kombinálják Event Sourcing mintával és eventual consistency megközelítéssel.*
 
 </div>
 
@@ -1993,8 +1993,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="patterns medior">
 
-🧭 **Így gondolj rá**  
-*Az Event Sourcing olyan, mint egy bankszámla kivonat: nem csak a végeredményt tárolod (egyenleg: 1000 Ft), hanem minden egyes tranzakciót, ami odavezetett (+500 Ft fizetés, -200 Ft vásárlás, +700 Ft utalás).*
+📜 **Fogalom meghatározása**  
+*Az Event Sourcing egy adattárolási minta, amelyben az alkalmazás állapotát nem közvetlenül tároljuk, hanem az állapotváltozásokat kiváltó események immutábilis sorozataként (event stream). Minden állapotváltozás egy domain event-ként kerül rögzítésre egy event store-ban időbélyeggel. A jelenlegi állapot az események visszajátszásával (replay) rekonstruálható. Előnyök: teljes audit trail, időutazás (temporal queries), event-driven architecture támogatása, bug javítás utólagos újraszámítással. Hátránya a komplexitás növekedése és az eventual consistency kezelése.*
 
 </div>
 
@@ -2482,8 +2482,8 @@ graph TD
 
 <div class="concept-section mental-model" data-filter="distributed medior">
 
-🧭 **Így gondolj rá**  
-*A Saga Pattern olyan, mint egy esküvő szervezése: sok különálló feladat (helyszín, catering, zenész, fotós), ha bármelyik nem sikerül, vissza kell mondani mindent, vagy alternatívát keresni. Minden lépésnek van "undo" gombja.*
+📋 **Fogalom meghatározása**  
+*A Saga Pattern egy elosztott tranzakciókezelési mintázat, amely egy hosszú üzleti műveletet lokális tranzakciók sorozatára bont. Minden lépésnek van kompenzációs (compensating) művelete hiba esetén. Két implementáció: Choreography (esemény-alapú, decentralizált) és Orchestration (központi koordinátor). Eventual consistency-t biztosít elosztott rendszerekben.*
 
 </div>
 
@@ -3501,8 +3501,8 @@ spec:
 
 <div class="concept-section mental-model" data-filter="patterns senior">
 
-🧭 **Így gondolj rá**  
-*A DDD olyan, mint egy szakmai zsargont használó csapat: a fejlesztők és üzleti szakértők ugyanazt a nyelvezetet használják, a szoftver pedig tükrözi a valós üzleti folyamatokat és szabályokat.*
+📋 **Fogalom meghatározása**  
+*A Domain-Driven Design egy szoftverfejlesztési megközelítés, amely a komplex üzleti logikát (domain) helyezi középpontba. Fő elemei: Ubiquitous Language (közös nyelv), Bounded Context (kontextus határok), Entities, Value Objects, Aggregates, Repositories, Domain Events. A modell az üzleti szabályokat és folyamatokat tükrözi, nem a technikai implementációt.*
 
 </div>
 
@@ -3704,8 +3704,8 @@ public class JpaCustomerRepository implements CustomerRepository {
 
 <div class="concept-section mental-model" data-filter="cloud senior">
 
-🧭 **Így gondolj rá**  
-*A Serverless olyan, mint egy taxi szolgáltatás: nem kell saját autód, csak akkor fizetsz amikor utazol, a sofőrt és karbantartást más biztosítja, te csak az úti célra koncentrálsz.*
+📋 **Fogalom meghatározása**  
+*A Serverless architektúra egy cloud computing modell, ahol a cloud provider dinamikusan menedzseli a szerverinfrastruktúrát. A fejlesztő csak a kódra koncentrál (Function as a Service - FaaS), a scaling, provisioning, szerverkarbantartás automatikus. Eseményalapú, stateless függvények, fizetés csak a tényleges futtatási időért (AWS Lambda, Azure Functions, Google Cloud Functions).*
 
 </div>
 

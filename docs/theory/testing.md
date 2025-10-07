@@ -29,8 +29,8 @@ A szoftvertesztelés kritikus folyamat az alkalmazások minőségének biztosít
 
 <div class="concept-section mental-model" data-filter="unit junior">
 
-🧭 **Így gondolj rá**  
-*A Unit teszt olyan, mint egy orvosi laborvizsgálat: egy konkrét funkciót izoláltan vizsgál, külső tényezők kiküszöbölésével.*
+📋 **Fogalom meghatározása**  
+*A **Unit Test** egy egyedi komponens (osztály, metódus, függvény) izolált tesztelése, minden külső dependencia mock-olásával vagy stub-olásával. Célja a legkisebb tesztelhető egység helyes működésének validálása különböző inputokkal (valid, boundary, invalid, edge cases). **AAA pattern** (Arrange-Act-Assert) vagy **Given-When-Then** struktúra. Gyors (<100ms), független (nem függ más tesztek sorrendjétől), repeatable (determinisztikus eredmény). JUnit 5, TestNG, Jest keretrendszerek.*
 
 </div>
 
@@ -145,8 +145,8 @@ void shouldAddTwoPositiveNumbers() {
 
 <div class="concept-section mental-model" data-filter="integration medior">
 
-🧭 **Így gondolj rá**  
-*Az Integration teszt olyan, mint egy összeszerelési vonal tesztelése: nem az egyes alkatrészeket, hanem azok együttműködését vizsgálja.*
+📋 **Fogalom meghatározása**  
+*Az Integration teszt több komponens vagy réteg együttműködését teszteli (pl. service + repository + database). Valódi vagy test-specifikus infrastruktúrával dolgozik (testcontainers, embedded DB). Ellenőrzi az interfész kompatibilitást, adatfolyamot, tranzakciókezelést. Lassúbb mint unit test, de realistább. Spring Boot: @SpringBootTest.*
 
 </div>
 
@@ -214,8 +214,8 @@ class UserServiceIntegrationTest {
 
 <div class="concept-section mental-model" data-filter="unit junior">
 
-🧭 **Így gondolj rá**  
-*A JUnit 5 olyan, mint egy modern tesztelési laboratorium: annotációkkal jelöld ki mit és hogyan tesztelj, az execution engine pedig automatikusan lefuttatja.*
+📋 **Fogalom meghatározása**  
+*A **JUnit 5** a Java de facto standard unit testing framework-je, moduláris architektúrával: **JUnit Platform** (test launcher), **JUnit Jupiter** (új API és engine), **JUnit Vintage** (backward compatibility JUnit 3/4-hez). Annotáció-alapú: @Test, @BeforeEach/@AfterEach, @DisplayName. **Parameterized tests** (@ParameterizedTest, @ValueSource, @CsvSource), **nested tests** (@Nested), **conditional execution** (@EnabledOnOs, @DisabledIf). Extension model (@ExtendWith) custom behavior-höz. Assertion library: assertEquals, assertTrue, assertThrows, assertAll.*
 
 </div>
 
@@ -475,8 +475,8 @@ Magyarázat: A lifecycle annotációk biztosítják a megfelelő setup/cleanup s
 
 <div class="concept-section mental-model" data-filter="mocking medior">
 
-🧭 **Így gondolj rá**  
-*A Mockito olyan, mint egy színészi ügynökség: "dublőröket" (mock objektumokat) biztosít a valós függőségek helyett, akik pontosan azt teszik, amit mondasz nekik.*
+📋 **Fogalom meghatározása**  
+*A **Mockito** Java mocking framework, amely **test double** objektumokat hoz létre dependency-k helyettesítésére unit testekben. **@Mock** annotációval mock objektumot, **@InjectMocks**-kal a test subject-et hozza létre auto-injected mock-okkal. **Stubbing**: when().thenReturn() definiálja a mock viselkedését. **Verification**: verify() ellenőrzi a metódus hívásokat (times, never, atLeast). **Argument captors** (@Captor) és **argument matchers** (any(), eq(), argThat()) rugalmas ellenőrzéshez. Spy-ok (@Spy) részleges mock-olásra.*
 
 </div>
 
@@ -582,8 +582,8 @@ assertEquals("John", capturedUser.getName());
 
 <div class="concept-section mental-model" data-filter="integration medior">
 
-🧭 **Így gondolj rá**  
-*A Testcontainers olyan, mint egy mágikus labor: valós adatbázisokat és szolgáltatásokat idéz elő Docker containerekben a tesztek futtatására.*
+📋 **Fogalom meghatározása**  
+*A **Testcontainers** Java library, amely Docker container-eket indít és kezel integration tesztekhez. Valós adatbázisokat (PostgreSQL, MySQL, MongoDB), message broker-eket (Kafka, RabbitMQ), cache-eket (Redis) és egyéb szolgáltatásokat futtat izolált környezetben. **@Container** annotáció lifecycle management-hez, **@Testcontainers** JUnit 5 extension. Automatikus port mapping, network isolation, cleanup after tests. GenericContainer custom image-ekhez. Alternatíva az embedded/in-memory mock adatbázisokhoz, realistább integrációs tesztelést biztosít.*
 
 </div>
 
@@ -592,7 +592,7 @@ assertEquals("John", capturedUser.getName());
 💡 **Miért számít?**
 - **Valós környezet**: valódi PostgreSQL, MySQL, Redis, Kafka fut a tesztekben
 - **Isolation**: minden teszt friss container-t kap, nincs state sharing
-- **CI/CD friendly**: Docker-el futó örnyezetekben zökkenőmentesen működik
+- **CI/CD friendly**: Docker-el futó környezetekben zökkenőmentesen működik
 - **No mocking needed**: valós adatbázis operációk, nincs mock adatbázis
 
 </div>
@@ -670,8 +670,8 @@ static GenericContainer<?> app1 = new GenericContainer<>("myapp:latest")
 
 <div class="concept-section mental-model" data-filter="spring medior">
 
-🧭 **Így gondolj rá**  
-*A slice tesztek olyan, mint egy sebészeti beavatkozás: csak a szükséges részt "nyitják fel" az alkalmazásból, nem az egészet.*
+📋 **Fogalom meghatározása**  
+*A **Spring Boot Test Slices** specifikus alkalmazás-rétegek izolált tesztelését teszik lehetővé minimális context betöltéssel. **@WebMvcTest** csak a web layer-t (Controllers, @ControllerAdvice, filters) tölti be MockMvc-vel, auto-configure-álja a Spring MVC infrastruktúrát. **@DataJpaTest** csak JPA komponenseket (Repositories, EntityManager) tölt be embedded adatbázissal, transaction rollback after each test. **@MockBean** mock-olja a missing dependencies-t. Gyorsabbak mint @SpringBootTest, mert nem töltik be a teljes application context-et. Egyéb slices: @WebFluxTest, @RestClientTest, @JsonTest.*
 
 </div>
 
@@ -681,7 +681,7 @@ static GenericContainer<?> app1 = new GenericContainer<>("myapp:latest")
 - **Gyors futtatás**: csak a szükséges Spring komponenseket tölti be
 - **Izolált tesztelés**: egy réteg (web, data, security) tesztelése
 - **Mock integráció**: @MockBean automatikusan mock-olja a függőségeket
-- **Realistárius setup**: valós Spring context, de csak a releváns résszel
+- **Realistikus setup**: valós Spring context, de csak a releváns résszel
 
 </div>
 
@@ -777,8 +777,8 @@ mockMvc.perform(post("/api/users")
 
 <div class="concept-section mental-model" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*A Test Pyramid olyan, mint egy étkezési piramis: alul sok, egyszerű, gyors unit teszt (mint a gabonafélék), középen kevesebb integration teszt, tetején kevés E2E teszt (mint az édességek - kis mennyiségben fogyasztandó).*
+📋 **Fogalom meghatározása**  
+*A **Test Pyramid** stratégiai tesztelési modell, amely a teszt típusok optimális arányát definiálja: **Base (70-80%)**: Unit tests - gyors, izolált, sok. **Middle (15-20%)**: Integration tests - komponensek együttműködése, közepes sebesség. **Top (5-10%)**: E2E/UI tests - teljes user flow, lassú, fragile. Mike Cohn vezette be 2009-ben. Elv: minél magasabb a piramis szintje, annál költségesebb (írás, futás, maintenance), ezért kevesebbet írunk belőle. Alternatív modellek: Test Trophy (Kent C. Dodds), Testing Diamond.*
 
 </div>
 
@@ -864,10 +864,10 @@ class UserRegistrationE2ETest {
 
 ### Smoke Test / Sanity Test {#smoke-test}
 
-<div class="concept-section mental-model" data-filter="junior">
+<div class="concept-section definition" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*A Smoke test olyan, mint amikor bekapcsolod a villanyt egy új lakásban: nem teszteled minden kapcsolót, csak azt hogy alapvetően működik az áram.*
+📋 **Fogalom meghatározása**  
+**Gyors validációs teszt** deployment után amely critical path functionality-t ellenőrzi. "Does the application launch and basic features work?". Typically: application startup, health endpoints, database connectivity, core API availability. **Smoke testing** deployment verification (go/no-go decision), míg **Sanity testing** változtatások utáni quick rationality check. Pár perc, minimal test set, automatizálva CI/CD pipeline-ban `@Tag("smoke")` JUnit tag-gel.
 
 </div>
 
@@ -951,8 +951,8 @@ class ApplicationSmokeTest {
 
 <div class="concept-section mental-model" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*A Regression test olyan, mint a régi fényképek átnézése: ellenőrzöd, hogy a múltban működő dolgok még mindig rendben vannak-e.*
+📋 **Fogalom meghatározása**  
+*A **Regression Test** korábban működő funkcionalitás validálása kódváltoztatások (bug fix, refactoring, új feature) után, biztosítva hogy nem "regressált" (romlott el) semmi. Automatizált test suite-ok, amelyek az existing behavior-t ellenőrzik. CI/CD pipeline integrálva minden commit/merge-re fut. **Selective regression**: csak az érintett területeket teszteli (risk-based). **Full regression**: teljes test suite fut (release előtt). Regression test suite folyamatosan bővül új bug fix-ekkel és edge case-ekkel. Test maintenance kritikus - elavult teszteket törölni kell.*
 
 </div>
 
@@ -1047,8 +1047,8 @@ class RegressionTestSuite {
 
 <div class="concept-section mental-model" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*A Parameterized test olyan, mint egy keksz forma: egyszer megírod a tesztet, aztán különböző "tésztákkal" (paraméterekkel) futtatod le.*
+📋 **Fogalom meghatározása**  
+*A **Parameterized Test** ugyanazt a teszt logikát futtatja le különböző input paraméterekkel, elkerülve a kód duplikációt. JUnit 5: **@ParameterizedTest** annotáció + argument source (@ValueSource, @CsvSource, @MethodSource, @EnumSource, @ArgumentsSource). Minden paraméter külön test instance-ként jelenik meg a report-ban. **Data-driven testing** megvalósítása. Boundary value analysis és equivalence partitioning teszt technikák implementálására ideális. @DisplayName dinamikus placeholder-ekkel ({0}, {1}) parameter értékeket jeleníti meg.*
 
 </div>
 
@@ -1147,8 +1147,8 @@ class ParameterizedTestExamples {
 
 <div class="concept-section mental-model" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*Assertion olyan, mint egy szigorú tanár: "Ez MUSZÁJ így legyen!" Assumption olyan, mint egy óvatos ember: "HA ez igaz, akkor folytatjuk, különben abbahagyjuk."*
+📋 **Fogalom meghatározása**  
+*Az **Assertion** a teszt elvárt eredményének validálása - ha fail, a teszt FAILED státuszt kap (assertEquals, assertTrue, assertThrows). Az **Assumption** feltételes teszt végrehajtás - ha fail, a teszt ABORTED/SKIPPED státuszt kap, nem FAILED (assumeTrue, assumingThat). Assumptions környezet-függő tesztekhez (OS, Java verzió, external service availability). JUnit 5: Assumptions.assumeTrue(), Assertions.assertEquals(). Assertion = "MUST", Assumption = "IF". Assumptions a teszt elején, assertions az act után.*
 
 </div>
 
@@ -1257,8 +1257,8 @@ class AssertionsVsAssumptionsTest {
 
 <div class="concept-section mental-model" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*A teszt elnevezés olyan, mint egy könyv címe: első ránézésre el kell mondania mit fogsz találni benne.*
+📋 **Fogalom meghatározása**  
+*A **Test Naming Convention** konzisztens elnevezési szabvány teszt metódusokhoz és osztályokhoz, amely önmagban dokumentálja a teszt célját. Popúláris minták: **should_ExpectedBehavior_When_StateUnderTest** (pl. shouldReturnUser_WhenValidIdProvided), **given_Precondition_when_Action_then_Result** (BDD style), **test[FeatureName]** (JUnit 3 legacy). JUnit 5 @DisplayName annotáció human-readable nevet ad. Test class naming: [ClassUnderTest]Test vagy [ClassUnderTest]Spec. Package structure: test/java tükrözi a main/java struktúráját.*
 
 </div>
 
@@ -1399,10 +1399,10 @@ class UserServiceRegressionTest { }          // Regression tests
 
 ### CI/CD Integration {#cicd-integration}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A CI/CD integration olyan, mint egy minőségbiztosítási szalag: minden kódváltozás automatikusan átmegy a tesztelési "állomásokon" mielőtt a termék kifut a gyárból.*
+📋 **Fogalom meghatározása**  
+Automated testing pipeline **Continuous Integration / Continuous Deployment** rendszerben. GitHub Actions, Jenkins vagy GitLab CI segítségével minden commit automatikusan triggerel **test execution, coverage report, quality gates** ellenőrzést. Pipeline stages: **unit tests (gyors feedback)**, **integration tests (DB/API checks)**, **E2E tests (full scenario)**, deployment csak successful tests után.
 
 </div>
 
@@ -1534,10 +1534,10 @@ class UserRegistrationE2ETest { }
 
 ### Code Coverage {#code-coverage}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Code coverage olyan, mint egy térképen a már bejárt útvonalak: megmutatja, hogy a kódod melyik részét "látogatták meg" a tesztek.*
+📋 **Fogalom meghatározása**  
+Metrika amely méri a **tesztekkel lefedett kód százalékos arányát**. JaCoCo, Cobertura vagy Istanbul tool-okkal számolva. Coverage típusok: **Line Coverage** (sorokban), **Branch Coverage** (if/else ágakban), **Method Coverage** (metódusokban), **Instruction Coverage** (bytecode utasításokban). Industry standard: **70-80% minimum**, de 100% coverage nem garantál bug-free kódot - test quality fontosabb mint quantity.
 
 </div>
 
@@ -1686,10 +1686,10 @@ class UserServiceCoverageTest {
 
 ### Test Suites {#test-suites}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Test Suite olyan, mint egy zenekar különböző zenekari csoportjai: a vonósok, fafúvósok és rézfúvósok külön-külön is játszhatnak, de együtt adják ki a teljes szimfóniát.*
+📋 **Fogalom meghatározása**  
+Logikailag csoportosított **teszt gyűjtemények** JUnit 5 `@Suite`, `@SelectClasses`, `@IncludeTags`, `@ExcludeTags` annotációkkal. Selective execution: `@Tag("smoke")` critical path-hez, `@Tag("integration")` adatbázis tesztekhez, `@Tag("slow")` long-running tesztekhez. CI/CD optimization: unit tests minden commit-nál, integration tests PR merge előtt, E2E tests nightly build-ben. Maven Surefire `-Dgroups="smoke,regression"` paraméterrel futtatható.
 
 </div>
 
@@ -1819,10 +1819,10 @@ mvn test -DexcludedGroups="slow,external"     # Lassú és külső tesztek nélk
 
 ### Fixture Management {#fixture-management}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Fixture management olyan, mint egy színház kulisszakészítő műhelye: minden előadás előtt előkészíti a díszletet, és utána takarít, hogy a következő előadás tiszta lappal indulhasson.*
+📋 **Fogalom meghatározása**  
+Testadatok **központosított előkészítése és cleanup** mechanizmusa. **Test Data Builder Pattern** fluent API-val (`UserTestDataBuilder.aUser().withName("John").build()`), **Object Mother Pattern** előre definiált fixture-okkal (`UserMother.adminUser()`). Spring `@BeforeEach/@AfterEach` lifecycle hooks, `@Transactional/@Rollback` automatic cleanup, vagy Flyway `V999__test_data.sql` migrációk. Célja: **test isolation** - minden teszt független, fresh state-tel indul.
 
 </div>
 
@@ -2000,10 +2000,10 @@ class InMemoryDatabaseTest {
 
 ### Property-based Testing {#property-based-testing}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Property-based testing olyan, mint egy matematikai tétel bizonyítása: nem konkrét példákat adunk meg, hanem tulajdonságokat definiálunk, és a teszt tool generál ezer random példát hogy megcáfolja őket.*
+📋 **Fogalom meghatározása**  
+Tesztelési megközelítés ahol **univerzális tulajdonságokat (properties)** definiálsz az example-based konkrét esetek helyett. jqwik vagy QuickCheck library `@Property` annotációval generál random input adatokat (`@ForAll int number`), és validálja hogy a property **mindig teljesül** (pl. `Math.abs(x) >= 0`). Automatic shrinking: ha bug talál, minimalizálja a failing case-t. Hasznos matematikai függvényekhez, üzleti szabályokhoz, invariánsokhoz.
 
 </div>
 
@@ -2165,10 +2165,10 @@ class PropertyBasedTestingExamples {
 
 ### Mutation Testing {#mutation-testing}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Mutation testing olyan, mint egy víruslabor: szándékosan "megfertőzöd" a kódodat kis hibákkal, és nézed, hogy a tesztjeid elkapják-e ezeket a "vírusokat".*
+📋 **Fogalom meghatározása**  
+**Teszt minőség mérési technika** ahol PIT (Pitest) szabályszerűen módosítja a forráskódot (**mutants** generálása) és ellenőrzi hogy a tesztek elkapják-e a hibákat. Mutation operators: arithmetic (`+` → `-`), relational (`>` → `>=`), conditional boundary (`if (x > 0)` → `if (x >= 0)`), negate conditionals, void method call removal. **Mutation score = killed mutants / total mutants**. 80-90% jó cél, 100% coverage nem jelent 100% mutation score.
 
 </div>
 
@@ -2355,10 +2355,10 @@ target/pit-reports/[timestamp]/index.html
 
 ### JUnit 4 vs JUnit 5 {#junit4-vs-junit5}
 
-<div class="concept-section mental-model" data-filter="junior">
+<div class="concept-section definition" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*JUnit 4 vs 5 olyan, mint egy régi autó vs egy modern hibrid: mindkettő elvisz A-ból B-be, de az új modell sokkal több funkcióval, jobb üzemanyag-hatékonysággal és karbantarthatósággal rendelkezik.*
+📋 **Fogalom meghatározása**  
+JUnit verziók közötti architekturális és API különbségek. **JUnit 5 (Jupiter)**: moduláris (Platform, Jupiter, Vintage), `@BeforeEach/@AfterEach` (vs `@Before/@After`), `assertThrows()` lambda-val (vs `@Rule ExpectedException`), `@DisplayName/@Nested` jobb test organizációhoz, `@ParameterizedTest/@RepeatedTest` extension API, Java 8+ lambda/stream support. JUnit 5 backward compatible `junit-vintage-engine`-nel JUnit 3/4 tesztek futtatására.
 
 </div>
 
@@ -2530,10 +2530,10 @@ JUnit 4 → JUnit 5 mapping:
 
 ### Test Lifecycle Hooks {#test-lifecycle-hooks}
 
-<div class="concept-section mental-model" data-filter="junior">
+<div class="concept-section definition" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*A Test lifecycle hooks olyan, mint egy étterem működése: felkészülés (setup), vendégkiszolgálás (teszt), takarítás (cleanup) - minden lépésnek megvan a maga helye és ideje.*
+📋 **Fogalom meghatározása**  
+JUnit annotációk **teszt előkészítés és cleanup kezetésére**: `@BeforeAll` (egyszer, test class előtt - static), `@BeforeEach` (minden teszt előtt - instance), `@AfterEach` (minden teszt után - cleanup), `@AfterAll` (egyszer, test class után - static). `@TestInstance(Lifecycle.PER_CLASS)` lehetővé teszi non-static `@BeforeAll/@AfterAll` metódusokat. Hasznos DB connection management, fixture setup, resource allocation/deallocation esetén.
 
 </div>
 
@@ -2732,10 +2732,10 @@ tearDownClass()        // @AfterAll - egyszer
 
 ### Advanced Assertions API {#advanced-assertions-api}
 
-<div class="concept-section mental-model" data-filter="junior">
+<div class="concept-section definition" data-filter="junior">
 
-🧭 **Így gondolj rá**  
-*Az Advanced Assertions olyan, mint egy profi szakács késkészlete: az alapkés (assertEquals) jó, de ha speciális feladatod van, akkor speciális eszközök kellenek.*
+📋 **Fogalom meghatározása**  
+JUnit 5 bővített **assertion metódusok** complex validációkhoz: `assertAll()` több assertion group-osítására (minden lefut, nem áll meg az első hibánál), `assertThrows(Exception.class, () -> {...})` exception testing lambda-val, `assertTimeout(Duration, () -> {...})` timeout validáció, `assertInstanceOf()` type checking, AssertJ fluent API (`assertThat(user).hasName("John").isActive()`). Jobb error messages, readable assertions, soft assertions support.
 
 </div>
 
@@ -2949,10 +2949,10 @@ assertAll(executables...);
 
 ### Tagging & Filtering {#tagging-filtering}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Tagging olyan, mint egy könyvtárban a címkék: "thriller", "sci-fi", "románc" - így gyorsan megtalálod azt a fajta könyvet, amit éppen szeretnél olvasni.*
+📋 **Fogalom meghatározása**  
+Testek **kategórizálása és selective execution** JUnit 5 `@Tag` annotációval. Common tags: `@Tag("smoke")` critical path, `@Tag("integration")` database/external services, `@Tag("slow")` long-running tests, `@Tag("security")` penetration tests. Maven Surefire/Failsafe `-Dgroups="smoke,regression"` paraméterrel szűrés, `-DexcludedGroups="slow"` kizárás. CI/CD pipeline-okban különböző stages különböző tag combinations-t futtatnak.
 
 </div>
 
@@ -3169,10 +3169,10 @@ mvn test -P all-tests                         # Minden teszt
 
 ### Custom Extensions {#custom-extensions}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Custom Extension olyan, mint egy svájci bicska: alapból hasznos a teszt keretrendszer, de saját "szerszámokat" is készíthetsz a specifikus igényeidhez.*
+📋 **Fogalom meghatározása**  
+JUnit 5 **Extension API** saját teszt behavior implementálására. Callback interfaces: `BeforeEachCallback/AfterEachCallback` (setup/cleanup), `ParameterResolver` (custom dependency injection), `TestInstancePostProcessor` (test instance initializálás), `ConditionEvaluationContext` (conditional test execution). Reusable logic: timing measurements, resource management, logging, database cleanup. `@ExtendWith(MyExtension.class)` annotációval aktivizlálható.
 
 </div>
 
@@ -3385,10 +3385,10 @@ public @interface TestConfiguration {
 
 ### @SpringBootTest {#springboottest}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*@SpringBootTest olyan, mint egy teljes színház előadása: felépíti a teljes díszletet (Spring context), minden szereplővel (beans), míg a slice tesztek csak egy jelenetet próbálnak.*
+📋 **Fogalom meghatározása**  
+Spring Boot annotáció **teljes application context teszteléséhez**, minden bean és configuration betöltésével. WebEnvironment modes: `MOCK` (MockMvc, nincs HTTP server), `RANDOM_PORT` (valós embedded server random port-on), `DEFINED_PORT` (server.port-tal), `NONE` (no web environment). `TestRestTemplate` vagy `WebTestClient` HTTP requests-hez. Lassú (full context loading), prefer **test slices** (@WebMvcTest, @DataJpaTest) gyorsabb teszteléshez.
 
 </div>
 
@@ -3615,10 +3615,10 @@ class ContextDirtyingTest {
 
 ### MockMvc Deep Dive {#mockmvc-deep-dive}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*MockMvc olyan, mint egy színházi próba: a valós előadás (HTTP server) nélkül gyakorolhatod a darabot (API endpoint-okat), de mégis teljes díszlettel és jelmezekkel.*
+📋 **Fogalom meghatározása**  
+Spring MVC **controller layer testing framework** valós HTTP server nélkül. `MockMvcRequestBuilders` (GET, POST, PUT, DELETE HTTP kérések), `MockMvcResultMatchers` (status, content, headers validálás), `jsonPath()` JSON response testing. Full MVC stack lefut: filters, interceptors, exception handlers, validation. `@WebMvcTest` annotációval gyors controller teszt, `@MockBean` dependency injection-höz. Performance: gyorsabb mint `@SpringBootTest(webEnvironment=RANDOM_PORT)`.
 
 </div>
 
@@ -3890,10 +3890,10 @@ multipart("/path").file(mockFile)
 
 ### Embedded Databases {#embedded-databases}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*Az Embedded database olyan, mint egy tábláskámpa: gyorsan felállítod a teszteléshez, használod, majd összecsomagolod - nincs külső infrastruktúra függőség.*
+📋 **Fogalom meghatározása**  
+**In-memory database** teszteléshez: H2 (`jdbc:h2:mem:testdb`), HSQLDB, Apache Derby. Spring Boot `@DataJpaTest` automatikusan configurálja. Advantages: gyors (memóriában fut, nincs disk I/O), test isolation (minden teszt fresh DB-t kap), no external dependencies (nincs külső DB server). `MODE=PostgreSQL` compatibility mode production-like SQL-hez. Alternatíva: **Testcontainers** valódi PostgreSQL/MySQL Docker container-rel.
 
 </div>
 
@@ -4141,10 +4141,10 @@ class DatabaseStateManagementTest {
 
 ### Flaky Tests {#flaky-tests}
 
-<div class="concept-section mental-model" data-filter="medior">
+<div class="concept-section definition" data-filter="medior">
 
-🧭 **Így gondolj rá**  
-*A Flaky test olyan, mint egy rossz internetkapcsolat: néha működik, néha nem, és sosem tudod előre melyik lesz - ezáltal megbízhatatlan és frusztráló.*
+📋 **Fogalom meghatározása**  
+**Instabil tesztek** amik ugyanazon kóddal sometimes pass, sometimes fail non-deterministically. Common causes: **timing issues** (race conditions, sleep statements), **external dependencies** (network, file system), **shared mutable state** (static variables, DB state), **random data generation** (non-seeded randomness). Fixes: `@Timeout` proper timeout handling, `Awaitility` library async operations-hez, test isolation `@Transactional/@Rollback`, fixed seed `Random(42)`. Flaky tests erode CI/CD pipeline trust.
 
 </div>
 

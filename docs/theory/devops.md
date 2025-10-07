@@ -32,18 +32,20 @@ A DevOps kulturális és technológiai megközelítés a fejlesztési és üzeme
 <div class="concept-section mental-model" data-filter="pipeline junior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>🔄 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-Képzeld el a CI-t mint egy **konyhai mosogatógép**et:
-- **Minden tányér** = minden kód commit
-- **Automatikus program** = CI pipeline
-- **Mosás, öblítés, szárítás** = build, test, validate
-- **Tiszta tányérok** = integrált, működő kód
-- **Hibás program riasztás** = build failure notification
+A **Continuous Integration (CI)** egy szoftverfejlesztési gyakorlat, amelyben a fejlesztők gyakran (akár naponta többször is) integrálják kódváltoztatásaikat egy közös verziókezelő repositoryba. Minden integráció után automatikus build és tesztelési folyamat fut le, amely azonnal visszajelzést ad a kód minőségéről. 
 
-A CI biztosítja, hogy minden kód "tiszta" legyen, mielőtt "a szekrénybe kerülne" (main branch).
+**Fő elemei:**
+- **Gyakori commit-ok** a verziókezelő rendszerbe (Git)
+- **Automatikus build process** minden commit után
+- **Automatikus tesztelés** (unit, integration tests)
+- **Azonnali feedback** a fejlesztőknek hiba esetén
+- **Kód minőség ellenőrzés** (linting, code analysis)
+
+A CI célja a korai hibafeltárás és a folyamatos kódintegráció fenntartása, csökkentve az integráció konfliktusokat és gyorsítva a fejlesztési ciklust.
 
 </div>
 
@@ -411,22 +413,27 @@ A: Environment variables, CI/CD platform secret stores, soha commit-ba, encrypti
 <div class="concept-section mental-model" data-filter="pipeline medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📦 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Continuous Delivery** = **Étterem konyha** ahol minden étel elkészül, de a felszolgáló dönt, mikor viszi ki
-**Continuous Deployment** = **Automatikus ételkiadó** ahol minden elkészült étel azonnal az asztalra kerül
+A **Continuous Delivery (CD)** és **Continuous Deployment** gyakran összetévesztett, de fontos különbségekkel bíró fogalmak:
 
-**Delivery (CD1):**
-- Kód mindig deployment-ready
-- Manual trigger production release-hez
-- Human approval gate
+**Continuous Delivery:**
+- A kód mindig **deployment-ready** állapotban van
+- Minden commit automatikusan átmegy a teljes build, test és release pipeline-on
+- **Manuális jóváhagyás** szükséges a production deployment-hez
+- Human gate van a végső éles környezetbe jutás előtt
+- Deployment döntés üzleti vagy stratégiai megfontolásból történik
 
-**Deployment (CD2):**
-- Kód automatikusan production-be megy
-- Zero human intervention
-- Full automation with rollback
+**Continuous Deployment:**
+- **Teljes automatizáció**: minden sikeres commit automatikusan production-be kerül
+- Nincs manuális beavatkozás a deployment folyamatban
+- Automatic rollback mechanizmusokkal rendelkezik
+- Magas fokú automatizált tesztelést és monitoring-ot igényel
+- Gyorsabb feedback loop a felhasználóktól
+
+**Fő különbség:** Delivery-nél lehet dönteni, mikor deployolunk. Deployment-nél minden zöld build automatikusan élesbe megy.
 
 </div>
 
@@ -804,20 +811,20 @@ A: Decouple deployment from release, gradual rollout, instant rollback, A/B test
 <div class="concept-section mental-model" data-filter="pipeline junior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-Képzeld el a pipeline stages-eket mint egy **autógyártó futószalag** állomásait:
+A CI/CD pipeline stages szekvenciális vagy párhuzamos lépések, amelyek a kód életciklusát reprezentálják source-tól production-ig:
 
-**1. Source Stage** = **Alkatrész raktár** (kód checkout)
-**2. Build Stage** = **Összeszerelő állomás** (compilation, packaging)  
-**3. Test Stage** = **Minőségellenőrző** (automated testing)
-**4. Security Stage** = **Biztonsági ellenőrzés** (vulnerability scanning)
-**5. Deploy Stage** = **Kiszállítási pont** (production deployment)
-**6. Release Stage** = **Értékesítési aktiválás** (feature availability)
+**1. Source Stage** = Kód checkout version control-ból (Git clone/pull)
+**2. Build Stage** = Compilation, dependency resolution, artifact creation (Maven/Gradle/npm build)
+**3. Test Stage** = Automated testing (unit, integration, E2E), code quality checks (SonarQube)
+**4. Security Stage** = Vulnerability scanning (SAST, DAST, dependency check), secrets detection
+**5. Deploy Stage** = Environment-specifikus deployment (dev/staging/prod), infrastructure provisioning
+**6. Release Stage** = Production traffic routing, feature flag activation, blue-green/canary deployment
 
-Minden állomás **quality gate** - ha valami nem stimmel, a "futószalag megáll".
+Minden stage **quality gate**-tel validálja az artifact-ot a következő lépés előtt.
 
 </div>
 
@@ -1756,24 +1763,15 @@ run: npm test -- --shard=${{ matrix.test-chunk }}/4
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Docker Compose** = **Családi ház** egyszerű szobaosztással
-**Kubernetes** = **Felhőkarcoló** komplex irodaházmenedzsmenttel
+**Docker Compose** = Single-host multi-container orchestration tool YAML definition-nel (docker-compose.yml), service dependencies, volume és network management. Local development és simple deployment use case-ekhez. Compose file definiálja service-eket, port mapping-et, environment variables-t.
 
-**Docker Compose:**
-- **Egyszerű setup** helyi fejlesztéshez
-- **Single host** limitation
-- **Manual scaling** és management
+**Kubernetes** = Production-grade container orchestration platform multi-node cluster-en, declarative configuration (YAML manifests), automatic scaling (HPA, VPA), self-healing, load balancing, rolling updates, service discovery. Pod, Deployment, Service, ConfigMap, Secret primitívekkel.
 
-**Kubernetes:**
-- **Production-grade** orchestration
-- **Multi-host cluster** support
-- **Automatic scaling**, healing, és management
-
-Compose **development-hez**, K8s **production-hoz**.
+Compose **development/testing**, K8s **production/enterprise** complex workload-okhoz.
 
 </div>
 
@@ -2449,18 +2447,18 @@ A: Compose = named volumes, bind mounts. K8s = PersistentVolumes, PersistentVolu
 <div class="concept-section mental-model" data-filter="iac medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-Az Infrastructure as Code olyan, mint egy **építési terv** digitális infrastruktúrához:
-- **Terraform/CloudFormation** = **Építészeti tervrajzok** (declarative)
-- **Ansible** = **Kivitelezési utasítások** (imperative)
-- **Version control** = **Tervtár** ahol minden változtatás nyomon követhető
-- **State management** = **Építési napló** ami tudja, mi van megépítve
-- **Modules** = **Standard építőelemek** újrafelhasználható komponensekkel
+Az Infrastructure as Code (IaC) infrastruktúra provisioning és management kóddal version control alatt:
+- **Terraform/CloudFormation** = Declarative IaC (desired state definition), provider-agnostic (Terraform) vagy cloud-specific (CFN)
+- **Ansible/Chef/Puppet** = Configuration management tools, imperative vagy declarative approach, agent-based (Chef/Puppet) vagy agentless (Ansible)
+- **Version control** = Git-based infrastructure change tracking, code review, rollback capability
+- **State management** = Current infrastructure state tracking (terraform.tfstate), drift detection
+- **Modules/Roles** = Reusable infrastructure components, DRY principle, parameterized templates
 
-Az infrastruktúra **kód**, nem manual konfigurálás.
+Az infrastruktúra immutable, reproducible, version-controlled **kód**, eliminálva a manual configuration drift-et és snowflake servers-t.
 
 </div>
 
@@ -3484,19 +3482,19 @@ Magyarázat: Komplex pipeline parallel testing-gel, security scan-nal és deploy
 <div class="concept-section mental-model" data-filter="docker junior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-A Docker alapfogalmakat képzeld el mint egy **szállítási és logisztikai rendszer**:
-- **Image** = **Sablonterv** (blueprint) egy standardizált konténerhez
-- **Container** = **Futó konténer** az árukkal (alkalmazás + dependencies)
-- **Dockerfile** = **Építési útmutató** step-by-step instructions
-- **Registry** = **Konténer kikötő** ahol tárolod és megosztod az image-eket
-- **Volume** = **Külső tárolók** persistent data-hoz
-- **Network** = **Szállítási útvonalak** container kommunikációhoz
+Docker container-ek és alapkoncepciók:
+- **Image** = Read-only template layered filesystem-mel (base image + application layers), built from Dockerfile
+- **Container** = Runtime instance of an image, isolated process with own filesystem, network, process tree
+- **Dockerfile** = Declarative build instructions (FROM, RUN, COPY, CMD, ENTRYPOINT, ENV, EXPOSE), creates reproducible images
+- **Registry** = Centralized image repository (Docker Hub, ECR, ACR, GCR), push/pull images
+- **Volume** = Persistent data storage outside container lifecycle (named volumes, bind mounts, tmpfs)
+- **Network** = Container networking (bridge, host, overlay), service discovery via DNS
 
-Minden konténer **izolált**, **portable**, és **reprodukálható**.
+Minden konténer **process isolation**, **filesystem isolation**, **network isolation**-nel, share host OS kernel (vs VM hypervisor).
 
 </div>
 
@@ -3899,18 +3897,11 @@ A: Unchanged layers reused builds között. Order optimization critical - stable
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-A Docker Image optimization olyan, mint **csomagolás optimalizálás** költözködéskor:
-- **Multi-stage builds** = **Külön dobozok** build tools-nak és final items-nek
-- **Layer caching** = **Smart packing** ahol unchanged items nem kerülnek újra be
-- **Base image selection** = **Jó alapdoboz** választás (alpine vs full distributions)
-- **.dockerignore** = **Felesleges dolgok kihagyása** a csomagolásból
-- **Security scanning** = **Biztonsági ellenőrzés** minden packaged item-re
-
-A cél: **smallest, fastest, most secure** package.
+Docker Image optimization = image size és build time csökkentése strategiák: Multi-stage builds (FROM...AS pattern, build dependencies külön stage-ben, csak artifacts copy-olva final image-be), Layer caching (Dockerfile instruction order optimalizálása, frequently changing parts last), Base image selection (alpine vs slim vs distroless, vulnerability surface minimizálás), .dockerignore file (node_modules, .git, test files excludálása), Image squashing/flattening layers. Security scanning: Trivy, Snyk, Clair vulnerability detection. Build optimization: BuildKit, caching mount types.
 
 </div>
 
@@ -4397,19 +4388,11 @@ A: Vulnerability scanning, non-root users, minimal base images, regular updates,
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-A Docker Security olyan, mint egy **többrétegű biztonsági rendszer**:
-- **Image scanning** = **Röntgen ellenőrzés** minden csomagra
-- **Non-root users** = **Korlátozott hozzáférés** principle of least privilege
-- **Resource limits** = **Biztonsági korlátok** hogy ne tudjon mindent elfogyasztani
-- **Network isolation** = **Elkülönített kommunikációs csatornák**
-- **Secret management** = **Páncélszekrény** sensitive data-hoz
-- **Read-only filesystem** = **Védett terület** ami nem módosítható
-
-Defense in depth approach **multiple security layers**-szel.
+Docker Security = defense-in-depth container biztonság: Image scanning (Trivy/Snyk vulnerability detection, base image updates), Non-root users (USER instruction Dockerfile-ban, principle of least privilege), Resource limits (--memory, --cpus flags container escape prevention-höz), Network isolation (custom bridge networks, firewall rules), Secret management (Docker secrets, environment variables avoidálása), Read-only filesystem (--read-only flag, tmpfs mounts temporary writes-hoz), Capabilities dropping (--cap-drop, minimal permissions), SELinux/AppArmor mandatory access control. Container runtime security: seccomp profiles, namespace isolation.
 
 </div>
 
@@ -4938,19 +4921,11 @@ A: Minimal base images, vulnerability scanning, multi-stage builds, dependency u
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-A Docker Networking olyan, mint egy **intelligens telefonközpont**:
-- **Bridge network** = **Belső telefonhálózat** egy épületen belül
-- **Host network** = **Közvetlen vonal** a külvilághoz
-- **Overlay network** = **Nemzetközi hálózat** több lokáció között
-- **None network** = **Izolált szoba** kommunikáció nélkül
-- **Port mapping** = **Telefonszám átirányítás** külső hívásokhoz
-- **DNS resolution** = **Telefonkönyv** container name → IP translation
-
-Minden container **saját IP címmel** rendelkezik és **name-based discovery** lehetséges.
+Docker Networking = container communication management network drivers-szel: Bridge network (default, single-host container isolation, custom bridge networks DNS resolution-nel), Host network (container directly host network stack-et használ, no isolation), Overlay network (multi-host communication Swarm-ban, encrypted by default), None network (network isolation, no connectivity), Macvlan network (container-ek saját MAC address-szel physical network-höz csatlakoznak). Port mapping (-p flag, host:container port binding). Service discovery: embedded DNS server container name resolution-höz. Network namespaces isolation.
 
 </div>
 
@@ -6453,21 +6428,11 @@ README.md
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Docker Compose** = **Zenekar karmester** aki koordinálja az összes zenészt (container)
-
-**Multi-container alkalmazás:**
-- **Frontend** = Hegedűs (UI szolgáltatás)
-- **Backend** = Zongorista (API szolgáltatás) 
-- **Database** = Basszusgitáros (adattárolás)
-- **Redis** = Dobos (cache és session)
-
-**Compose file** = **Kotta** ami megmondja mindenkinek, mit tegyen és mikor
-**Volumes** = **Hangszerek** amik megmaradnak a koncert után
-**Networks** = **Színpadi elrendezés** hogy ki kivel kommunikáljon
+Docker Compose = multi-container application orchestration tool YAML config file-lal (docker-compose.yml). Services definition (image, build, ports, volumes, environment, depends_on), Networks automatic creation service discovery-vel, Volumes persistent storage management. Commands: docker-compose up/down/ps/logs. Environment-specific configs (.env files, multiple compose files override-olhatók). Development parity: local environment production-hoz hasonló. Scaling: docker-compose up --scale service=3. Health checks és restart policies.
 
 </div>
 
@@ -6848,22 +6813,11 @@ docker-compose top
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Multi-stage builds** = **Autógyártás assembly line** ahol minden lépésnek más a célja
-
-**Build stages:**
-- **Stage 1 (Compiler)**: **Anyagok előkészítése** - dependencies letöltése, kód compilation
-- **Stage 2 (Optimizer)**: **Finomhangolás** - tests futtatása, optimalizálás
-- **Stage 3 (Packager)**: **Csomagolás** - csak a szükséges fájlok, production artifacts
-- **Stage 4 (Runner)**: **Szállítási forma** - minimális runtime environment
-
-**Minden stage-ben:**
-- **Külön base image** lehet (pl. node:build vs node:alpine)
-- **Csak a szükséges részek** másolódnak tovább
-- **Intermediate layers** nem kerülnek a final image-be
+Multi-stage Builds = Dockerfile optimization pattern multiple FROM statements-szel, külön build stages-ek (FROM...AS name syntax). Build dependencies külön stage-ben (compiler, dev tools, test frameworks), csak compiled artifacts/production dependencies final stage-be copy-olva (COPY --from=builder). Image size reduction (build tools excluded from final image), Security improvement (attack surface minimalization), Build caching per-stage level-en. Use cases: compiled languages (Java, Go, C++), Node.js (dev dependencies filtered), Python (wheel building separate).
 
 </div>
 
@@ -7268,27 +7222,11 @@ docker history myapp:latest
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Docker Healthcheck** = **Orvosi rendszeres vizsgálat** a container "egészségének" ellenőrzésére
-
-**Healthcheck folyamat:**
-- **Pulzus mérés** = HTTP endpoint ping (GET /health)
-- **Vérnyomás** = Database connection check
-- **Re flexek** = External service availability
-- **Láz mérés** = Memory és CPU utilization
-
-**Healthcheck állapotok:**
-- **Healthy** = Összes check sikeres 🟢
-- **Unhealthy** = Checks failed multiple times 🔴
-- **Starting** = Container bootup közben 🟡
-
-**Orchestrator reakció:**
-- **Kubernetes** = Pod restart unhealthy containers
-- **Docker Swarm** = Traffic redirect healthy nodes-ra
-- **Load Balancer** = Remove unhealthy endpoints
+Docker Healthcheck = HEALTHCHECK instruction Dockerfile-ban vagy --health-cmd flag-gel container "egészségének" monitorozására. Exit code 0 = healthy, 1 = unhealthy. Parameters: --interval (check frequency), --timeout (command timeout), --start-period (initialization time), --retries (consecutive failures threshold). Health states: starting → healthy/unhealthy. Orchestrator reakció: Kubernetes Pod restart, Docker Swarm traffic rerouting, Load balancer endpoint removal. HTTP endpoint check (/health), database connection test, dependency service availability.
 
 </div>
 
@@ -7726,27 +7664,11 @@ curl -s http://localhost:8080/health/detailed | jq '.'
 <div class="concept-section mental-model" data-filter="docker medior">
 
 <details>
-<summary>🧭 <strong>Így gondolj rá</strong></summary>
+<summary>📋 <strong>Fogalom meghatározása</strong></summary>
 
 <div>
 
-**Resource limits** = **Apartman bérlés korlátok** container-ek számára
-
-**Resource types:**
-- **CPU limit** = **Elektromos áram korlát** - maximum processing power
-- **Memory limit** = **Lakás méret** - maximum RAM használat
-- **Disk I/O** = **Internet sebesség** - maximum disk access
-- **Network bandwidth** = **Távközlési korlát** - network throughput
-
-**Limit types:**
-- **Soft limit (Request)** = **Garancial minimu** - guaranteed resources
-- **Hard limit (Limit)** = **Maximum keret** - never exceed threshold
-- **Burstable** = **Időszakos többet** - can use more if available
-
-**Mi történik korlát túllépéskor:**
-- **CPU throttling** = Slower execution
-- **OOM (Out of Memory) kill** = Container termination
-- **Disk quota exceeded** = Write failures
+Resource Limits = container erőforrás-használat korlátozása host system védelme érdekében: --memory (RAM limit, OOM kill threshold), --cpus (CPU cores limit, throttling), --memory-reservation (soft limit, guaranteed minimum), --cpuset-cpus (specific CPU pinning), --pids-limit (process count limit). Kubernetes: resources.requests (guaranteed), resources.limits (maximum). Monitoring: docker stats, cAdvisor metrics. Consequence: CPU throttling (slower execution), OOM killer (container termination), I/O throttling. Prevent noisy neighbor problem.
 
 </div>
 
