@@ -2218,6 +2218,1332 @@ A: Insertion sort performs excellently (O(n)) on nearly sorted data, or TimSort 
 
 </div>
 
+### File Read & Parse {#file-read-parse}
+
+<div class="concept-section definition" data-filter="java algorithms junior">
+
+📋 **Concept Definition**  
+**Common pattern for processing structured text files** line-by-line with validation. **Steps**: read file with Files.lines() or BufferedReader, split each line (String.split), filter valid lines (check length, non-empty fields), map to domain objects, handle exceptions. **Best practices**: use try-with-resources for automatic closing, validate before parsing, handle malformed data gracefully, use streams for large files. **Common formats**: CSV (comma-separated), TSV (tab-separated), custom delimiters. **Edge cases**: empty lines, comments, headers, incomplete rows, special characters.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Data import**: reading configuration files, CSV data, logs
+- **Validation**: ensuring data quality before processing
+- **Stream processing**: handle large files efficiently with lazy evaluation
+- **Real-world skill**: common in data processing applications
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.*;
+
+// Parse CSV file with validation
+public class FileParseExample {
+    
+    public static class Record {
+        private String name;
+        private String category;
+        private int value;
+        
+        public Record(String name, String category, int value) {
+            this.name = name;
+            this.category = category;
+            this.value = value;
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("Record{name='%s', category='%s', value=%d}", 
+                               name, category, value);
+        }
+    }
+    
+    public static List<Record> parseFile(Path path) throws Exception {
+        try (Stream<String> lines = Files.lines(path)) {
+            return lines
+                // Trim whitespace
+                .map(String::trim)
+                
+                // Filter out empty lines and comments
+                .filter(line -> !line.isEmpty() && !line.startsWith("#"))
+                
+                // Split by comma
+                .map(line -> line.split(",", -1))  // -1 keeps trailing empty strings
+                
+                // Filter valid rows (at least 3 fields, all non-blank)
+                .filter(parts -> parts.length >= 3 && 
+                               Arrays.stream(parts).noneMatch(String::isBlank))
+                
+                // Map to Record objects
+                .map(parts -> {
+                    try {
+                        String name = parts[0].trim();
+                        String category = parts[1].trim();
+                        int value = Integer.parseInt(parts[2].trim());
+                        return new Record(name, category, value);
+                    } catch (NumberFormatException e) {
+                        // Skip invalid numbers
+                        return null;
+                    }
+                })
+                
+                // Filter out null records (parsing failures)
+                .filter(Objects::nonNull)
+                
+                // Collect to list
+                .toList();
+        }
+    }
+    
+    // Alternative: manual approach with more control
+    public static List<Record> parseFileManual(String filePath) {
+        List<Record> records = new ArrayList<>();
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int lineNumber = 0;
+            
+            while ((line = reader.readLine()) != null) {
+                lineNumber++;
+                line = line.trim();
+                
+                // Skip empty lines and comments
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                
+                String[] parts = line.split(",");
+                
+                // Validate field count
+                if (parts.length < 3) {
+                    System.err.println("Line " + lineNumber + ": Not enough fields");
+                    continue;
+                }
+                
+                // Check for blank fields
+                boolean hasBlank = Arrays.stream(parts)
+                    .limit(3)
+                    .anyMatch(String::isBlank);
+                
+                if (hasBlank) {
+                    System.err.println("Line " + lineNumber + ": Blank field detected");
+                    continue;
+                }
+                
+                try {
+                    String name = parts[0].trim();
+                    String category = parts[1].trim();
+                    int value = Integer.parseInt(parts[2].trim());
+                    
+                    records.add(new Record(name, category, value));
+                } catch (NumberFormatException e) {
+                    System.err.println("Line " + lineNumber + ": Invalid number format");
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        
+        return records;
+    }
+    
+    public static void main(String[] args) throws Exception {
+        // Example file content:
+        // # This is a comment
+        // Apple,Fruit,5
+        // Banana,Fruit,3
+        // 
+        // Carrot,Vegetable,7
+        // ,,  (invalid - blank fields)
+        // Tomato,Vegetable,invalid (invalid - bad number)
+        
+        Path testFile = Path.of("data.csv");
+        List<Record> records = parseFile(testFile);
+        
+        System.out.println("Parsed " + records.size() + " records:");
+        records.forEach(System.out::println);
+    }
+}
+```
+*Notice: Stream-based parsing is concise and handles large files efficiently with lazy evaluation.*
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Stream API` · `File I/O` · `Data Validation` · `Exception Handling` · `CSV Processing` · `String Manipulation`
+
+</div>
+
+### String Separation & Parsing {#string-separation}
+
+<div class="concept-section definition" data-filter="java junior strings">
+
+📋 **Concept Definition**  
+**String splitting techniques** for parsing delimited data. **Methods**: **String.split()** (regex-based, returns array), **StringTokenizer** (legacy, performance), **Pattern.compile()** (reusable regex), **Scanner** (delimiter-based reading). **Common delimiters**: comma, semicolon, tab (\\t), pipe (|), whitespace (\\s+). **Regex patterns**: special characters need escaping (\\. \\| \\$ etc.), character classes [a-z], quantifiers (+, *, ?). **Edge cases**: empty strings, consecutive delimiters, trailing delimiters, quotes with delimiters inside. **Advanced**: CSV with quoted fields, multi-character delimiters, conditional splitting. **Performance**: compile Pattern once for repeated splits.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Data parsing**: CSV, TSV, log files, configuration
+- **Text processing**: tokenization, word extraction
+- **Interview common**: string manipulation questions
+- **Real-world**: API responses, file imports, data transformation
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model - Comprehensive String Separation**
+```java
+import java.util.*;
+import java.util.regex.*;
+import java.util.stream.*;
+
+public class StringSeparationExamples {
+    
+    public static void main(String[] args) {
+        
+        // ========== BASIC SPLIT ==========
+        
+        // 1. Simple comma split
+        String csv = "apple,banana,cherry";
+        String[] fruits = csv.split(",");
+        // Output: [apple, banana, cherry]
+        
+        // 2. Split with limit
+        String data = "a:b:c:d:e";
+        String[] parts1 = data.split(":", 3);  // limit to 3 parts
+        // Output: [a, b, c:d:e]
+        
+        // 3. Split preserving trailing empty strings
+        String trailing = "a,b,c,,";
+        String[] parts2 = trailing.split(",", -1);  // -1 keeps trailing empty
+        // Output: [a, b, c, , ]  (length = 5)
+        
+        String[] parts3 = trailing.split(",");  // default drops trailing
+        // Output: [a, b, c]  (length = 3)
+        
+        
+        // ========== DIFFERENT DELIMITERS ==========
+        
+        // Semicolon
+        String semiData = "name;age;city";
+        String[] semiParts = semiData.split(";");
+        // Output: [name, age, city]
+        
+        // Tab-separated
+        String tsvData = "Alice\t25\tNYC";
+        String[] tsvParts = tsvData.split("\\t");  // \\t for tab
+        // Output: [Alice, 25, NYC]
+        
+        // Pipe delimiter (needs escaping)
+        String pipeData = "John|Doe|30";
+        String[] pipeParts = pipeData.split("\\|");  // \\| escapes pipe
+        // Output: [John, Doe, 30]
+        
+        // Whitespace (one or more spaces/tabs)
+        String spaceData = "alpha   beta  gamma";
+        String[] spaceParts = spaceData.split("\\s+");  // \\s+ = one or more whitespace
+        // Output: [alpha, beta, gamma]
+        
+        // Multiple delimiters (comma OR semicolon)
+        String mixedData = "a,b;c,d;e";
+        String[] mixedParts = mixedData.split("[,;]");  // character class
+        // Output: [a, b, c, d, e]
+        
+        // Dot delimiter (needs escaping)
+        String dotData = "192.168.1.1";
+        String[] dotParts = dotData.split("\\.");  // \\. escapes dot
+        // Output: [192, 168, 1, 1]
+        
+        
+        // ========== ADVANCED REGEX PATTERNS ==========
+        
+        // Split on digits
+        String alphanumeric = "abc123def456ghi";
+        String[] alphaParts = alphanumeric.split("\\d+");  // \\d+ = one or more digits
+        // Output: [abc, def, ghi]
+        
+        // Split on non-alphanumeric
+        String special = "hello@world#test";
+        String[] alphaOnlyParts = special.split("[^a-zA-Z]+");  // [^...] = negation
+        // Output: [hello, world, test]
+        
+        // Split on word boundaries
+        String sentence = "Hello, world! How are you?";
+        String[] words = sentence.split("\\W+");  // \\W = non-word character
+        // Output: [Hello, world, How, are, you]
+        
+        // Multi-character delimiter
+        String multiDelim = "name::age::city";
+        String[] multiParts = multiDelim.split("::");
+        // Output: [name, age, city]
+        
+        
+        // ========== PATTERN COMPILATION (PERFORMANCE) ==========
+        
+        // Compile pattern once for repeated use
+        Pattern pattern = Pattern.compile(",");
+        
+        String[] data1 = pattern.split("a,b,c");
+        String[] data2 = pattern.split("x,y,z");
+        
+        // Faster than calling String.split() multiple times
+        
+        
+        // ========== CSV WITH QUOTED FIELDS ==========
+        
+        // Handle CSV with commas inside quotes: "Smith, John",30,"New York, NY"
+        String complexCsv = "\"Smith, John\",30,\"New York, NY\"";
+        
+        // Regex: split on comma not inside quotes
+        String regex = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
+        String[] csvParts = complexCsv.split(regex);
+        // Output: ["Smith, John", 30, "New York, NY"]
+        
+        // Remove quotes
+        String[] cleaned = Arrays.stream(csvParts)
+            .map(s -> s.replaceAll("^\"|\"$", ""))  // remove leading/trailing quotes
+            .toArray(String[]::new);
+        // Output: [Smith, John, 30, New York, NY]
+        
+        
+        // ========== STRINGTOKENIZER (LEGACY) ==========
+        
+        String tokenData = "apple,banana;cherry:date";
+        StringTokenizer tokenizer = new StringTokenizer(tokenData, ",;:");
+        
+        List<String> tokens = new ArrayList<>();
+        while (tokenizer.hasMoreTokens()) {
+            tokens.add(tokenizer.nextToken());
+        }
+        // Output: [apple, banana, cherry, date]
+        
+        
+        // ========== SCANNER WITH DELIMITER ==========
+        
+        String scanData = "10,20,30,40,50";
+        Scanner scanner = new Scanner(scanData);
+        scanner.useDelimiter(",");
+        
+        List<Integer> numbers = new ArrayList<>();
+        while (scanner.hasNextInt()) {
+            numbers.add(scanner.nextInt());
+        }
+        scanner.close();
+        // Output: [10, 20, 30, 40, 50]
+        
+        
+        // ========== PRACTICAL EXAMPLES ==========
+        
+        // Parse log entry
+        String logEntry = "2024-01-15 10:30:45 ERROR UserService Failed to save user";
+        String[] logParts = logEntry.split("\\s+", 5);  // limit to 5 parts
+        String date = logParts[0];         // 2024-01-15
+        String time = logParts[1];         // 10:30:45
+        String level = logParts[2];        // ERROR
+        String service = logParts[3];      // UserService
+        String message = logParts[4];      // Failed to save user
+        
+        // Parse URL query string
+        String queryString = "name=John&age=30&city=NYC";
+        Map<String, String> params = Arrays.stream(queryString.split("&"))
+            .map(param -> param.split("="))
+            .collect(Collectors.toMap(
+                parts -> parts[0],
+                parts -> parts.length > 1 ? parts[1] : ""
+            ));
+        // Output: {name=John, age=30, city=NYC}
+        
+        // Parse version string
+        String version = "1.2.3-beta";
+        String[] versionParts = version.split("[-.]");
+        int major = Integer.parseInt(versionParts[0]);    // 1
+        int minor = Integer.parseInt(versionParts[1]);    // 2
+        int patch = Integer.parseInt(versionParts[2]);    // 3
+        String tag = versionParts[3];                     // beta
+        
+        // Split camelCase string
+        String camelCase = "thisIsACamelCaseString";
+        String[] camelParts = camelCase.split("(?=[A-Z])");  // lookahead for uppercase
+        // Output: [this, Is, A, Camel, Case, String]
+        
+        // Split on multiple spaces but keep single spaces
+        String multiSpace = "word1  word2   word3    word4";
+        String normalized = multiSpace.replaceAll("\\s{2,}", " ");  // replace 2+ spaces with 1
+        String[] normalizedParts = normalized.split(" ");
+        // Output: [word1, word2, word3, word4]
+        
+        
+        // ========== VALIDATION & ERROR HANDLING ==========
+        
+        String input = "name,age,email";
+        String[] fields = input.split(",");
+        
+        if (fields.length != 3) {
+            System.err.println("Expected 3 fields, got " + fields.length);
+        }
+        
+        // Trim whitespace from each field
+        String[] trimmed = Arrays.stream(fields)
+            .map(String::trim)
+            .toArray(String[]::new);
+        
+        // Filter empty fields
+        String[] nonEmpty = Arrays.stream(fields)
+            .filter(s -> !s.isEmpty())
+            .toArray(String[]::new);
+        
+        
+        // ========== PERFORMANCE COMPARISON ==========
+        
+        String largeData = String.join(",", Collections.nCopies(10000, "value"));
+        
+        // Method 1: String.split() (creates array)
+        long start1 = System.nanoTime();
+        String[] result1 = largeData.split(",");
+        long end1 = System.nanoTime();
+        System.out.println("String.split(): " + (end1 - start1) + "ns");
+        
+        // Method 2: Pattern.compile().split() (reusable)
+        Pattern p = Pattern.compile(",");
+        long start2 = System.nanoTime();
+        String[] result2 = p.split(largeData);
+        long end2 = System.nanoTime();
+        System.out.println("Pattern.split(): " + (end2 - start2) + "ns");
+        
+        // Method 3: StringTokenizer (no regex overhead)
+        long start3 = System.nanoTime();
+        StringTokenizer st = new StringTokenizer(largeData, ",");
+        List<String> result3 = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            result3.add(st.nextToken());
+        }
+        long end3 = System.nanoTime();
+        System.out.println("StringTokenizer: " + (end3 - start3) + "ns");
+        
+        
+        // ========== ADVANCED: CUSTOM DELIMITER LOGIC ==========
+        
+        // Split but respect quotes and brackets
+        String complexString = "method(arg1, arg2), other, \"text, with, commas\"";
+        List<String> smartSplit = smartSplit(complexString, ',');
+        // Output: [method(arg1, arg2), other, "text, with, commas"]
+    }
+    
+    // Custom split respecting nested structures
+    public static List<String> smartSplit(String input, char delimiter) {
+        List<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        int depth = 0;
+        boolean inQuotes = false;
+        
+        for (char c : input.toCharArray()) {
+            if (c == '"') {
+                inQuotes = !inQuotes;
+                current.append(c);
+            } else if (!inQuotes && (c == '(' || c == '[' || c == '{')) {
+                depth++;
+                current.append(c);
+            } else if (!inQuotes && (c == ')' || c == ']' || c == '}')) {
+                depth--;
+                current.append(c);
+            } else if (c == delimiter && depth == 0 && !inQuotes) {
+                result.add(current.toString().trim());
+                current = new StringBuilder();
+            } else {
+                current.append(c);
+            }
+        }
+        
+        if (current.length() > 0) {
+            result.add(current.toString().trim());
+        }
+        
+        return result;
+    }
+}
+```
+*Notice: String splitting has many edge cases. Choose the right method based on your delimiter complexity and performance requirements.*
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Not escaping special regex characters (. | $ etc.) in split()
+- Forgetting split() drops trailing empty strings by default
+- Not handling quotes in CSV data
+- Using split() in tight loops instead of compiled Pattern
+- Not trimming whitespace after splitting
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Regex` · `String.split()` · `Pattern` · `CSV Parsing` · `Tokenization` · `Data Validation`
+
+</div>
+
+### Try-Catch-Finally Behavior {#try-catch-finally}
+
+<div class="concept-section definition" data-filter="java junior">
+
+📋 **Concept Definition**  
+**Exception handling flow** demonstrating finally block always executes. **Execution order**: try → exception occurs → catch → finally (always runs). **Return behavior**: finally executes even if try/catch returns. **Key insight**: finally runs before method returns, enabling cleanup (close resources, release locks). **Try-with-resources**: modern alternative for auto-closing resources. **Edge cases**: finally doesn't run if JVM exits (System.exit()) or thread killed.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Resource cleanup**: ensures resources are released even on errors
+- **Guaranteed execution**: finally always runs (except JVM exit)
+- **Interview favorite**: tests understanding of exception flow
+- **Production code**: critical for database connections, file handles
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+public class TryCatchFinallyExample {
+    
+    // Demonstrates execution flow
+    public static int testFlow(int divisor) {
+        System.out.println("=== Testing with divisor: " + divisor + " ===");
+        
+        try {
+            System.out.println("1. Entering try block");
+            int result = 10 / divisor;
+            System.out.println("2. Try block completed, result: " + result);
+            return result;
+        } catch (ArithmeticException e) {
+            System.out.println("3. Caught exception: " + e.getMessage());
+            return -1;
+        } finally {
+            System.out.println("4. Finally block ALWAYS executes");
+            // This runs BEFORE the method returns!
+        }
+    }
+    
+    // Finally overwrites return value (bad practice)
+    public static int finallyOverridesReturn() {
+        try {
+            return 1;  // This value will be discarded
+        } finally {
+            return 2;  // BAD: Finally should not return
+        }
+    }
+    
+    // Proper resource cleanup pattern
+    public static void resourceCleanupExample() {
+        Connection connection = null;
+        try {
+            connection = openDatabaseConnection();
+            // Do database operations
+            connection.executeQuery("SELECT * FROM users");
+        } catch (SQLException e) {
+            System.err.println("Database error: " + e.getMessage());
+        } finally {
+            // Cleanup: ALWAYS close connection
+            if (connection != null) {
+                try {
+                    connection.close();
+                    System.out.println("Connection closed");
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection");
+                }
+            }
+        }
+    }
+    
+    // Modern approach: try-with-resources (Java 7+)
+    public static void tryWithResourcesExample() {
+        // AutoCloseable resources automatically closed
+        try (Connection conn = openDatabaseConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users")) {
+            
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                System.out.println(rs.getString("name"));
+            }
+            // No finally needed - resources auto-closed
+        } catch (SQLException e) {
+            System.err.println("Database error: " + e.getMessage());
+        }
+    }
+    
+    // Demonstrate execution order
+    public static void main(String[] args) {
+        // Test case 1: Normal execution
+        System.out.println("\n--- Test 1: Normal execution ---");
+        int result1 = testFlow(2);
+        System.out.println("Returned value: " + result1 + "\n");
+        
+        // Output:
+        // === Testing with divisor: 2 ===
+        // 1. Entering try block
+        // 2. Try block completed, result: 5
+        // 4. Finally block ALWAYS executes
+        // Returned value: 5
+        
+        // Test case 2: Exception thrown
+        System.out.println("\n--- Test 2: Exception case ---");
+        int result2 = testFlow(0);
+        System.out.println("Returned value: " + result2 + "\n");
+        
+        // Output:
+        // === Testing with divisor: 0 ===
+        // 1. Entering try block
+        // 3. Caught exception: / by zero
+        // 4. Finally block ALWAYS executes
+        // Returned value: -1
+        
+        // Test case 3: Finally overrides return (bad practice)
+        System.out.println("\n--- Test 3: Finally override ---");
+        int result3 = finallyOverridesReturn();
+        System.out.println("Returned value: " + result3);  // Prints 2, not 1!
+    }
+}
+```
+*Notice: Finally block executes BEFORE the method returns, making it perfect for cleanup operations.*
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Not knowing finally always executes (even with return in try)
+- Thinking finally runs after return statement
+- Using return in finally block (anti-pattern)
+- Not understanding try-with-resources vs manual finally
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Exception Handling` · `Resource Management` · `Try-with-Resources` · `Flow Control` · `Cleanup Patterns`
+
+</div>
+
+### Static Counter Pattern {#static-counter}
+
+<div class="concept-section definition" data-filter="java oop junior">
+
+📋 **Concept Definition**  
+**Static variable pattern** tracking class-level state across all instances. **Use case**: counting total instances created, shared configuration, caching. **Static vs instance**: static belongs to class (one copy), instance belongs to object (copy per object). **Thread safety**: static variables shared between threads require synchronization. **Memory**: static lives in method area, exists for application lifetime. **Inheritance**: static variables not inherited (each class has own).
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Class-level state**: track information across all instances
+- **Instance counting**: useful for resource management and debugging
+- **Interview question**: tests understanding of static vs instance
+- **Design pattern**: basis for Singleton and Factory patterns
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// Interface for animal sounds
+interface Sound {
+    void makeSound();
+}
+
+// Dog class with static counter
+class Dog implements Sound {
+    private String name;
+    
+    // Static variable - shared by ALL Dog instances
+    public static int count = 0;
+    
+    public Dog(String name) {
+        this.name = name;
+        count++;  // Increment for every new Dog
+    }
+    
+    @Override
+    public void makeSound() {
+        System.out.println(name + " says: Woof!");
+    }
+    
+    public static int getCount() {
+        return count;
+    }
+}
+
+// Cat class with static counter
+class Cat implements Sound {
+    private String name;
+    
+    // Static variable - shared by ALL Cat instances
+    public static int count = 0;
+    
+    public Cat(String name) {
+        this.name = name;
+        count++;  // Increment for every new Cat
+    }
+    
+    @Override
+    public void makeSound() {
+        System.out.println(name + " says: Meow!");
+    }
+    
+    public static int getCount() {
+        return count;
+    }
+}
+
+// Bird class with static counter
+class Bird implements Sound {
+    private String name;
+    
+    public static int count = 0;
+    
+    public Bird(String name) {
+        this.name = name;
+        count++;
+    }
+    
+    @Override
+    public void makeSound() {
+        System.out.println(name + " says: Tweet!");
+    }
+    
+    public static int getCount() {
+        return count;
+    }
+}
+
+// Demonstration
+public class StaticCounterExample {
+    public static void main(String[] args) {
+        System.out.println("=== Creating Animals ===\n");
+        
+        // Create dogs
+        Dog dog1 = new Dog("Rex");
+        Dog dog2 = new Dog("Max");
+        Dog dog3 = new Dog("Buddy");
+        
+        // Create cats
+        Cat cat1 = new Cat("Whiskers");
+        Cat cat2 = new Cat("Luna");
+        
+        // Create birds
+        Bird bird1 = new Bird("Tweety");
+        
+        System.out.println("\n=== Animal Sounds ===\n");
+        
+        // Make sounds
+        dog1.makeSound();
+        dog2.makeSound();
+        dog3.makeSound();
+        cat1.makeSound();
+        cat2.makeSound();
+        bird1.makeSound();
+        
+        System.out.println("\n=== Animal Counts ===\n");
+        
+        // Access static counters
+        System.out.println("Total Dogs created: " + Dog.count);        // 3
+        System.out.println("Total Cats created: " + Cat.count);        // 2
+        System.out.println("Total Birds created: " + Bird.count);      // 1
+        
+        // Alternative: use static method
+        System.out.println("\nUsing static methods:");
+        System.out.println("Dogs: " + Dog.getCount());
+        System.out.println("Cats: " + Cat.getCount());
+        System.out.println("Birds: " + Bird.getCount());
+        
+        System.out.println("\n=== Creating More Animals ===\n");
+        
+        // Create more animals
+        Dog dog4 = new Dog("Charlie");
+        Cat cat3 = new Cat("Simba");
+        
+        dog4.makeSound();
+        cat3.makeSound();
+        
+        System.out.println("\n=== Updated Counts ===\n");
+        System.out.println("Total Dogs: " + Dog.count);   // 4
+        System.out.println("Total Cats: " + Cat.count);   // 3
+        System.out.println("Total Birds: " + Bird.count); // 1 (unchanged)
+        
+        // Demonstrate polymorphism with counters
+        System.out.println("\n=== Polymorphic Array ===\n");
+        
+        Sound[] animals = {
+            new Dog("Fido"),
+            new Cat("Garfield"),
+            new Bird("Polly"),
+            new Dog("Spot"),
+            new Cat("Felix")
+        };
+        
+        System.out.println("Making all animals sound:");
+        for (Sound animal : animals) {
+            animal.makeSound();
+        }
+        
+        System.out.println("\n=== Final Counts ===\n");
+        System.out.println("Total Dogs: " + Dog.count);   // 6
+        System.out.println("Total Cats: " + Cat.count);   // 5
+        System.out.println("Total Birds: " + Bird.count); // 2
+    }
+}
+
+/* OUTPUT:
+=== Creating Animals ===
+
+=== Animal Sounds ===
+
+Rex says: Woof!
+Max says: Woof!
+Buddy says: Woof!
+Whiskers says: Meow!
+Luna says: Meow!
+Tweety says: Tweet!
+
+=== Animal Counts ===
+
+Total Dogs created: 3
+Total Cats created: 2
+Total Birds created: 1
+
+Using static methods:
+Dogs: 3
+Cats: 2
+Birds: 1
+
+=== Creating More Animals ===
+
+Charlie says: Woof!
+Simba says: Meow!
+
+=== Updated Counts ===
+
+Total Dogs: 4
+Total Cats: 3
+Total Birds: 1
+
+=== Polymorphic Array ===
+
+Making all animals sound:
+Fido says: Woof!
+Garfield says: Meow!
+Polly says: Tweet!
+Spot says: Woof!
+Felix says: Meow!
+
+=== Final Counts ===
+
+Total Dogs: 6
+Total Cats: 5
+Total Birds: 2
+*/
+```
+*Notice: Each class maintains its own static counter, independent of other classes.*
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "Static variables are shared between all classes" → Each class has its own static variables
+- "Can access instance variables from static context" → Static can only access static members
+- "Static is always thread-safe" → Requires explicit synchronization for thread safety
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain difference between static and instance variables
+- Don't understand when static counter resets (never, unless explicitly)
+- Confuse static variables with instance variables in inheritance
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Static Variables` · `Class Variables` · `Instance Counting` · `Singleton Pattern` · `Thread Safety`
+
+</div>
+
+### Binary Tree & Types {#binary-tree}
+
+<div class="concept-section definition" data-filter="trees junior medior">
+
+📋 **Concept Definition**  
+**Hierarchical data structure** where each node has at most two children (left, right). **Node structure**: value/key, left pointer, right pointer, optional parent pointer. **Types**: **Binary Search Tree (BST)** (left < parent < right, O(log n) search), **Complete Binary Tree** (all levels filled except possibly last, filled left-to-right), **Full Binary Tree** (every node has 0 or 2 children), **Perfect Binary Tree** (all leaves at same level), **Balanced Tree** (AVL, Red-Black ensure O(log n) height). **Traversals**: **In-order** (left, root, right - gives sorted order in BST), **Pre-order** (root, left, right - tree copy), **Post-order** (left, right, root - deletion), **Level-order** (BFS, level-by-level). **Height**: longest path from root to leaf. **Applications**: file systems, expression parsing, databases, priority queues.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Efficient search**: BST provides O(log n) search, insert, delete
+- **Hierarchical data**: natural representation of tree-like structures
+- **Interview staple**: extremely common in coding interviews
+- **Foundation**: basis for advanced structures (AVL, Red-Black, B-trees)
+- **Real-world**: file systems, DOM tree, decision trees, parsing
+
+</div>
+
+<div class="concept-section performance">
+
+📊 **Time and space complexity**
+
+**Binary Search Tree (BST)**:
+- **Search/Insert/Delete**: O(log n) average, O(n) worst case (unbalanced)
+- **Space**: O(n) for storing nodes, O(h) recursion stack where h = height
+
+**Balanced Trees (AVL, Red-Black)**:
+- **All operations**: O(log n) guaranteed
+- **Space**: O(n) with overhead for balance information
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// Binary Tree Node structure
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    
+    TreeNode(int val) {
+        this.val = val;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+// Binary Search Tree implementation
+class BinarySearchTree {
+    private TreeNode root;
+    
+    // INSERT into BST
+    public void insert(int val) {
+        root = insertRec(root, val);
+    }
+    
+    private TreeNode insertRec(TreeNode node, int val) {
+        // Base case: empty spot found
+        if (node == null) {
+            return new TreeNode(val);
+        }
+        
+        // Recursive case: go left or right
+        if (val < node.val) {
+            node.left = insertRec(node.left, val);
+        } else if (val > node.val) {
+            node.right = insertRec(node.right, val);
+        }
+        // If val == node.val, don't insert duplicates
+        
+        return node;
+    }
+    
+    // SEARCH in BST
+    public boolean search(int val) {
+        return searchRec(root, val);
+    }
+    
+    private boolean searchRec(TreeNode node, int val) {
+        // Base cases
+        if (node == null) return false;
+        if (node.val == val) return true;
+        
+        // Recursive search
+        if (val < node.val) {
+            return searchRec(node.left, val);
+        } else {
+            return searchRec(node.right, val);
+        }
+    }
+    
+    // DELETE from BST
+    public void delete(int val) {
+        root = deleteRec(root, val);
+    }
+    
+    private TreeNode deleteRec(TreeNode node, int val) {
+        if (node == null) return null;
+        
+        // Find the node to delete
+        if (val < node.val) {
+            node.left = deleteRec(node.left, val);
+        } else if (val > node.val) {
+            node.right = deleteRec(node.right, val);
+        } else {
+            // Node found - handle 3 cases
+            
+            // Case 1: Leaf node (no children)
+            if (node.left == null && node.right == null) {
+                return null;
+            }
+            
+            // Case 2: One child
+            if (node.left == null) {
+                return node.right;
+            }
+            if (node.right == null) {
+                return node.left;
+            }
+            
+            // Case 3: Two children
+            // Find inorder successor (smallest in right subtree)
+            TreeNode successor = findMin(node.right);
+            node.val = successor.val;
+            node.right = deleteRec(node.right, successor.val);
+        }
+        
+        return node;
+    }
+    
+    private TreeNode findMin(TreeNode node) {
+        while (node.left != null) {
+            node = node.left;
+        }
+        return node;
+    }
+    
+    // TRAVERSALS
+    
+    // In-order: Left → Root → Right (gives sorted order)
+    public void inorder() {
+        System.out.print("In-order: ");
+        inorderRec(root);
+        System.out.println();
+    }
+    
+    private void inorderRec(TreeNode node) {
+        if (node != null) {
+            inorderRec(node.left);
+            System.out.print(node.val + " ");
+            inorderRec(node.right);
+        }
+    }
+    
+    // Pre-order: Root → Left → Right
+    public void preorder() {
+        System.out.print("Pre-order: ");
+        preorderRec(root);
+        System.out.println();
+    }
+    
+    private void preorderRec(TreeNode node) {
+        if (node != null) {
+            System.out.print(node.val + " ");
+            preorderRec(node.left);
+            preorderRec(node.right);
+        }
+    }
+    
+    // Post-order: Left → Right → Root
+    public void postorder() {
+        System.out.print("Post-order: ");
+        postorderRec(root);
+        System.out.println();
+    }
+    
+    private void postorderRec(TreeNode node) {
+        if (node != null) {
+            postorderRec(node.left);
+            postorderRec(node.right);
+            System.out.print(node.val + " ");
+        }
+    }
+    
+    // Level-order: BFS traversal
+    public void levelorder() {
+        if (root == null) return;
+        
+        System.out.print("Level-order: ");
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            System.out.print(node.val + " ");
+            
+            if (node.left != null) queue.offer(node.left);
+            if (node.right != null) queue.offer(node.right);
+        }
+        System.out.println();
+    }
+    
+    // UTILITY METHODS
+    
+    // Get height of tree
+    public int height() {
+        return heightRec(root);
+    }
+    
+    private int heightRec(TreeNode node) {
+        if (node == null) return 0;
+        return 1 + Math.max(heightRec(node.left), heightRec(node.right));
+    }
+    
+    // Check if tree is balanced
+    public boolean isBalanced() {
+        return checkBalance(root) != -1;
+    }
+    
+    private int checkBalance(TreeNode node) {
+        if (node == null) return 0;
+        
+        int leftHeight = checkBalance(node.left);
+        if (leftHeight == -1) return -1;
+        
+        int rightHeight = checkBalance(node.right);
+        if (rightHeight == -1) return -1;
+        
+        // Check if balanced
+        if (Math.abs(leftHeight - rightHeight) > 1) {
+            return -1;  // Not balanced
+        }
+        
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+    
+    // Validate BST property
+    public boolean isBST() {
+        return isBSTRec(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    
+    private boolean isBSTRec(TreeNode node, long min, long max) {
+        if (node == null) return true;
+        
+        // Current node must be within range
+        if (node.val <= min || node.val >= max) {
+            return false;
+        }
+        
+        // Recursively check left and right subtrees
+        return isBSTRec(node.left, min, node.val) &&
+               isBSTRec(node.right, node.val, max);
+    }
+}
+
+// DEMONSTRATION
+public class BinaryTreeDemo {
+    public static void main(String[] args) {
+        BinarySearchTree bst = new BinarySearchTree();
+        
+        System.out.println("=== Building BST ===\n");
+        
+        // Insert values
+        int[] values = {50, 30, 70, 20, 40, 60, 80};
+        System.out.println("Inserting: " + Arrays.toString(values));
+        
+        for (int val : values) {
+            bst.insert(val);
+        }
+        
+        /*
+         * Tree structure:
+         *        50
+         *       /  \
+         *      30   70
+         *     / \   / \
+         *    20 40 60 80
+         */
+        
+        System.out.println("\n=== Traversals ===\n");
+        bst.inorder();      // 20 30 40 50 60 70 80 (sorted!)
+        bst.preorder();     // 50 30 20 40 70 60 80
+        bst.postorder();    // 20 40 30 60 80 70 50
+        bst.levelorder();   // 50 30 70 20 40 60 80
+        
+        System.out.println("\n=== Tree Properties ===\n");
+        System.out.println("Height: " + bst.height());           // 3
+        System.out.println("Is BST: " + bst.isBST());           // true
+        System.out.println("Is Balanced: " + bst.isBalanced()); // true
+        
+        System.out.println("\n=== Search Operations ===\n");
+        System.out.println("Search 40: " + bst.search(40));  // true
+        System.out.println("Search 25: " + bst.search(25));  // false
+        
+        System.out.println("\n=== Delete Operations ===\n");
+        
+        // Delete leaf node
+        System.out.println("Deleting 20 (leaf)");
+        bst.delete(20);
+        bst.inorder();  // 30 40 50 60 70 80
+        
+        // Delete node with one child
+        System.out.println("\nDeleting 30 (one child)");
+        bst.delete(30);
+        bst.inorder();  // 40 50 60 70 80
+        
+        // Delete node with two children
+        System.out.println("\nDeleting 50 (two children)");
+        bst.delete(50);
+        bst.inorder();  // 40 60 70 80
+    }
+}
+
+/* OUTPUT:
+=== Building BST ===
+
+Inserting: [50, 30, 70, 20, 40, 60, 80]
+
+=== Traversals ===
+
+In-order: 20 30 40 50 60 70 80 
+Pre-order: 50 30 20 40 70 60 80 
+Post-order: 20 40 30 60 80 70 50 
+Level-order: 50 30 70 20 40 60 80 
+
+=== Tree Properties ===
+
+Height: 3
+Is BST: true
+Is Balanced: true
+
+=== Search Operations ===
+
+Search 40: true
+Search 25: false
+
+=== Delete Operations ===
+
+Deleting 20 (leaf)
+In-order: 30 40 50 60 70 80 
+
+Deleting 30 (one child)
+In-order: 40 50 60 70 80 
+
+Deleting 50 (two children)
+In-order: 40 60 70 80 
+*/
+```
+*Notice: BST maintains left < parent < right property, enabling efficient O(log n) operations when balanced.*
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "All binary trees are binary search trees" → BST has specific ordering property
+- "BST always gives O(log n) operations" → Worst case is O(n) when unbalanced (sorted insertion)
+- "Balanced tree means perfect binary tree" → Balanced means height difference ≤ 1, not all leaves at same level
+- "In-order traversal works for any binary tree to get sorted order" → Only for BST
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Not understanding the difference between Complete, Full, and Perfect binary trees
+- Forgetting to handle all 3 delete cases in BST (leaf, one child, two children)
+- Not validating BST property correctly (must check entire subtree ranges, not just direct children)
+- Confusing DFS traversals (in-order, pre-order, post-order) with BFS (level-order)
+- Not considering unbalanced tree performance degradation
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-questions" data-filter="trees">
+
+<details>
+<summary>💼 <strong>Interview questions</strong></summary>
+
+<div>
+
+**Q: What's the difference between Complete and Full binary tree?**
+A: Complete: all levels filled except possibly last (filled left-to-right). Full: every node has 0 or 2 children.
+
+**Q: When does BST degrade to O(n) complexity?**
+A: When tree becomes unbalanced (e.g., inserting sorted data creates linked list). Use AVL or Red-Black trees for guaranteed O(log n).
+
+**Q: Which traversal gives sorted order in BST?**
+A: In-order traversal (left → root → right) produces sorted sequence.
+
+**Q: How do you validate if a binary tree is a BST?**
+A: Check that every node's value is within valid range based on ancestors. Left subtree must have all values < node, right subtree all values > node.
+
+**Q: What's the advantage of balanced trees (AVL, Red-Black)?**
+A: Guarantee O(log n) height through rotations, preventing worst-case O(n) degradation.
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Binary Search Tree` · `Tree Traversal` · `Balanced Trees` · `AVL Tree` · `Red-Black Tree` · `Heap` · `Recursion`
+
+</div>
+
 ## Summary
 
 Algorithms and data structures form the foundation of efficient problem-solving in computer science. The journey from basic patterns like Two Pointers and Sliding Window to advanced techniques like Binary Search and various Sorting algorithms demonstrates the evolution from brute force to optimized solutions.

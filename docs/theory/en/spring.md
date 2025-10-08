@@ -579,6 +579,587 @@ For optional dependencies that may or may not be available in the context.
 
 </div>
 
+### Dependency Injection Types {#dependency-injection-types}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Three injection methods in Spring**: **Constructor injection** (preferred, immutable, required dependencies), **Setter injection** (optional dependencies, mutable), **Field injection** (not recommended, reflection-based). **Interface Injection**: NOT supported by Spring (pattern where classes implement injection interface). **Constructor injection**: parameters in constructor, enables immutability with final fields. **Setter injection**: @Autowired on setter methods, allows null values. **Field injection**: @Autowired directly on fields, hardest to test. **Best practices**: constructor for required, setter for optional, avoid field injection entirely in production code.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Testability**: constructor injection easiest to test without Spring
+- **Immutability**: constructor injection enables final fields
+- **Explicit dependencies**: constructor shows all required dependencies
+- **Design clarity**: injection type communicates dependency necessity
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// CONSTRUCTOR INJECTION (RECOMMENDED)
+@Service
+public class UserService {
+    private final UserRepository userRepository; // Can be final
+    private final EmailService emailService;
+    
+    // Constructor injection - Spring 4.3+ doesn't require @Autowired
+    public UserService(UserRepository userRepository, EmailService emailService) {
+        this.userRepository = userRepository;
+        this.emailService = emailService;
+    }
+    
+    // Benefits:
+    // ✅ Immutable (final fields)
+    // ✅ Easy to test (just call constructor in tests)
+    // ✅ Fail-fast (missing dependencies detected at startup)
+    // ✅ Explicit contract (all dependencies visible)
+}
+
+// SETTER INJECTION (for optional dependencies)
+@Service
+public class ReportService {
+    private ReportRepository reportRepository; // Required
+    private NotificationService notificationService; // Optional
+    
+    public ReportService(ReportRepository reportRepository) {
+        this.reportRepository = reportRepository;
+    }
+    
+    @Autowired(required = false) // Optional dependency
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
+    
+    public void generateReport() {
+        // ...
+        if (notificationService != null) {
+            notificationService.notify("Report ready");
+        }
+    }
+}
+
+// FIELD INJECTION (AVOID - for completeness only)
+@Service
+public class OrderService {
+    @Autowired // NOT RECOMMENDED
+    private PaymentService paymentService;
+    
+    // Problems:
+    // ❌ Can't be final (not immutable)
+    // ❌ Hard to test (needs Spring context)
+    // ❌ Hidden dependencies (not in constructor signature)
+    // ❌ Null pointer risk
+}
+
+// INTERFACE INJECTION - NOT SUPPORTED BY SPRING
+// This is a pattern where classes implement an injection interface:
+// public interface ServiceInjector {
+//     void injectService(SomeService service);
+// }
+// Spring does NOT support this pattern!
+```
+*Notice: Constructor injection is preferred for its immutability, testability, and explicit dependency declaration.*
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Claiming Spring supports "Interface Injection" (it doesn't!)
+- Not knowing when to use each injection type
+- Can't explain why field injection is problematic
+- Don't understand difference between required and optional dependencies
+
+</div>
+</details>
+
+</div>
+
+<div class="tags">
+<span class="tag">spring</span>
+<span class="tag">dependency-injection</span>
+<span class="tag">medior</span>
+<span class="tag">core</span>
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Constructor Injection` · `Setter Injection` · `Field Injection` · `@Autowired` · `Testability` · `@Qualifier` · `@Primary` · `Circular Dependencies`
+
+</div>
+
+### Advanced Dependency Injection {#advanced-di}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Advanced DI concepts** for complex scenarios. **@Qualifier**: disambiguate when multiple beans of same type exist. **@Primary**: mark default bean when multiple candidates. **Circular dependencies**: A depends on B, B depends on A (constructor injection fails, setter injection works). **Injection points**: constructor, setter, field, method parameters. **Bean scopes**: singleton (default), prototype (new instance), request, session. **Lazy injection**: @Lazy delays bean creation until first use. **Optional dependencies**: @Autowired(required=false) or Optional<>. **Collection injection**: inject List/Map of all beans of type. **@Value**: inject properties from application.properties.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Flexibility**: handle complex dependency scenarios
+- **Performance**: lazy loading, prototype scope
+- **Configuration**: externalize values with @Value
+- **Testing**: optional dependencies, qualifiers for test doubles
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model - Advanced DI**
+```java
+// ========== @QUALIFIER - Multiple Beans of Same Type ==========
+
+interface NotificationService {
+    void send(String message);
+}
+
+@Service("emailNotification")
+class EmailNotificationService implements NotificationService {
+    public void send(String message) {
+        System.out.println("Sending email: " + message);
+    }
+}
+
+@Service("smsNotification")
+class SMSNotificationService implements NotificationService {
+    public void send(String message) {
+        System.out.println("Sending SMS: " + message);
+    }
+}
+
+@Service
+class NotificationManager {
+    private final NotificationService emailService;
+    private final NotificationService smsService;
+    
+    // Use @Qualifier to specify which bean to inject
+    public NotificationManager(
+            @Qualifier("emailNotification") NotificationService emailService,
+            @Qualifier("smsNotification") NotificationService smsService) {
+        this.emailService = emailService;
+        this.smsService = smsService;
+    }
+    
+    public void sendAll(String message) {
+        emailService.send(message);
+        smsService.send(message);
+    }
+}
+
+
+// ========== @PRIMARY - Default Bean ==========
+
+interface PaymentGateway {
+    void processPayment(double amount);
+}
+
+@Service
+@Primary  // This will be injected by default
+class StripePaymentGateway implements PaymentGateway {
+    public void processPayment(double amount) {
+        System.out.println("Processing via Stripe: $" + amount);
+    }
+}
+
+@Service
+class PayPalPaymentGateway implements PaymentGateway {
+    public void processPayment(double amount) {
+        System.out.println("Processing via PayPal: $" + amount);
+    }
+}
+
+@Service
+class PaymentService {
+    private final PaymentGateway gateway;
+    
+    // Injects StripePaymentGateway (marked as @Primary)
+    public PaymentService(PaymentGateway gateway) {
+        this.gateway = gateway;
+    }
+    
+    // To use PayPal explicitly:
+    // public PaymentService(@Qualifier("payPalPaymentGateway") PaymentGateway gateway)
+}
+
+
+// ========== CIRCULAR DEPENDENCIES ==========
+
+// PROBLEM: Constructor injection fails with circular dependencies
+@Service
+class ServiceA {
+    private final ServiceB serviceB;
+    
+    public ServiceA(ServiceB serviceB) {  // ❌ Circular dependency!
+        this.serviceB = serviceB;
+    }
+}
+
+@Service
+class ServiceB {
+    private final ServiceA serviceA;
+    
+    public ServiceB(ServiceA serviceA) {  // ❌ Circular dependency!
+        this.serviceA = serviceA;
+    }
+}
+
+// SOLUTION 1: Setter Injection (not recommended)
+@Service
+class ServiceA {
+    private ServiceB serviceB;
+    
+    @Autowired
+    public void setServiceB(ServiceB serviceB) {
+        this.serviceB = serviceB;
+    }
+}
+
+// SOLUTION 2: @Lazy (better)
+@Service
+class ServiceA {
+    private final ServiceB serviceB;
+    
+    public ServiceA(@Lazy ServiceB serviceB) {  // Lazy proxy breaks cycle
+        this.serviceB = serviceB;
+    }
+}
+
+// SOLUTION 3: Refactor (best) - eliminate circular dependency
+
+
+// ========== OPTIONAL DEPENDENCIES ==========
+
+@Service
+class ReportService {
+    private final ReportRepository repository;
+    private final NotificationService notificationService;  // Optional
+    
+    public ReportService(
+            ReportRepository repository,
+            @Autowired(required = false) NotificationService notificationService) {
+        this.repository = repository;
+        this.notificationService = notificationService;  // Can be null
+    }
+    
+    public void generateReport() {
+        // Generate report...
+        
+        // Only notify if service available
+        if (notificationService != null) {
+            notificationService.send("Report ready");
+        }
+    }
+}
+
+// Alternative: Optional<>
+@Service
+class ReportServiceV2 {
+    private final ReportRepository repository;
+    private final Optional<NotificationService> notificationService;
+    
+    public ReportServiceV2(
+            ReportRepository repository,
+            Optional<NotificationService> notificationService) {
+        this.repository = repository;
+        this.notificationService = notificationService;
+    }
+    
+    public void generateReport() {
+        // Generate report...
+        
+        notificationService.ifPresent(service -> 
+            service.send("Report ready")
+        );
+    }
+}
+
+
+// ========== COLLECTION INJECTION ==========
+
+interface DataExporter {
+    void export(Data data);
+}
+
+@Service
+class CSVExporter implements DataExporter {
+    public void export(Data data) {
+        System.out.println("Exporting to CSV");
+    }
+}
+
+@Service
+class JSONExporter implements DataExporter {
+    public void export(Data data) {
+        System.out.println("Exporting to JSON");
+    }
+}
+
+@Service
+class XMLExporter implements DataExporter {
+    public void export(Data data) {
+        System.out.println("Exporting to XML");
+    }
+}
+
+@Service
+class ExportService {
+    private final List<DataExporter> exporters;
+    
+    // Spring injects ALL beans of type DataExporter
+    public ExportService(List<DataExporter> exporters) {
+        this.exporters = exporters;
+        System.out.println("Registered " + exporters.size() + " exporters");
+    }
+    
+    public void exportAll(Data data) {
+        exporters.forEach(exporter -> exporter.export(data));
+    }
+}
+
+// Map injection (bean name as key)
+@Service
+class ExportServiceV2 {
+    private final Map<String, DataExporter> exporterMap;
+    
+    public ExportServiceV2(Map<String, DataExporter> exporterMap) {
+        this.exporterMap = exporterMap;
+    }
+    
+    public void export(Data data, String format) {
+        DataExporter exporter = exporterMap.get(format + "Exporter");
+        if (exporter != null) {
+            exporter.export(data);
+        } else {
+            throw new IllegalArgumentException("Unknown format: " + format);
+        }
+    }
+}
+
+
+// ========== @VALUE - Property Injection ==========
+
+// application.properties:
+// app.name=MyApplication
+// app.version=1.0.0
+// app.maxUsers=100
+// app.features=feature1,feature2,feature3
+
+@Service
+class ApplicationConfig {
+    @Value("${app.name}")
+    private String appName;
+    
+    @Value("${app.version}")
+    private String version;
+    
+    @Value("${app.maxUsers:50}")  // Default value 50
+    private int maxUsers;
+    
+    @Value("${app.features}")
+    private List<String> features;  // Automatically splits by comma
+    
+    @Value("#{systemProperties['user.home']}")
+    private String userHome;  // SpEL expression
+    
+    public void printConfig() {
+        System.out.println("App: " + appName + " v" + version);
+        System.out.println("Max users: " + maxUsers);
+        System.out.println("Features: " + features);
+        System.out.println("User home: " + userHome);
+    }
+}
+
+
+// ========== METHOD INJECTION ==========
+
+@Service
+class UserService {
+    
+    // Inject via method parameter
+    @Autowired
+    public void init(UserRepository repository, @Value("${app.name}") String appName) {
+        System.out.println("Initializing " + appName);
+        // Use repository...
+    }
+}
+
+
+// ========== LAZY INJECTION ==========
+
+@Service
+@Lazy  // Bean created only when first accessed
+class ExpensiveService {
+    public ExpensiveService() {
+        System.out.println("ExpensiveService initialized");
+        // Expensive initialization...
+    }
+}
+
+@Service
+class ClientService {
+    private final ExpensiveService expensiveService;
+    
+    // ExpensiveService created only when clientService.use() called
+    public ClientService(@Lazy ExpensiveService expensiveService) {
+        this.expensiveService = expensiveService;
+        System.out.println("ClientService initialized");
+    }
+    
+    public void use() {
+        expensiveService.doSomething();  // NOW ExpensiveService is created
+    }
+}
+
+
+// ========== BEAN SCOPES ==========
+
+// Singleton (default) - one instance per container
+@Service
+@Scope("singleton")
+class SingletonService {
+    private int counter = 0;
+    
+    public int increment() {
+        return ++counter;  // Shared state across all calls
+    }
+}
+
+// Prototype - new instance every time
+@Service
+@Scope("prototype")
+class PrototypeService {
+    private int counter = 0;
+    
+    public int increment() {
+        return ++counter;  // Each instance has own counter
+    }
+}
+
+@Service
+class ScopeDemo {
+    private final ApplicationContext context;
+    
+    public ScopeDemo(ApplicationContext context) {
+        this.context = context;
+    }
+    
+    public void demo() {
+        // Singleton - same instance
+        SingletonService s1 = context.getBean(SingletonService.class);
+        SingletonService s2 = context.getBean(SingletonService.class);
+        System.out.println(s1 == s2);  // true
+        
+        // Prototype - different instances
+        PrototypeService p1 = context.getBean(PrototypeService.class);
+        PrototypeService p2 = context.getBean(PrototypeService.class);
+        System.out.println(p1 == p2);  // false
+    }
+}
+
+
+// ========== CONDITIONAL BEANS ==========
+
+@Service
+@ConditionalOnProperty(name = "feature.email.enabled", havingValue = "true")
+class EmailService {
+    // Only created if property is true
+}
+
+@Service
+@ConditionalOnMissingBean(EmailService.class)
+class MockEmailService {
+    // Created only if EmailService not present
+}
+
+@Service
+@Profile("production")
+class ProductionDataSource {
+    // Only active in production profile
+}
+
+@Service
+@Profile("dev")
+class DevDataSource {
+    // Only active in dev profile
+}
+
+
+// ========== DEPENDENCY LIFECYCLE ==========
+
+@Service
+class LifecycleService {
+    
+    @Autowired
+    private UserRepository repository;
+    
+    // 1. Constructor called
+    public LifecycleService() {
+        System.out.println("1. Constructor");
+    }
+    
+    // 2. Dependencies injected
+    
+    // 3. @PostConstruct called
+    @PostConstruct
+    public void init() {
+        System.out.println("3. PostConstruct - dependencies ready");
+        // Initialization logic here
+    }
+    
+    // 4. Bean ready to use
+    
+    // 5. @PreDestroy called before shutdown
+    @PreDestroy
+    public void cleanup() {
+        System.out.println("5. PreDestroy - cleaning up");
+        // Cleanup logic here
+    }
+}
+```
+*Notice: Spring provides powerful DI features for complex scenarios. Master @Qualifier, @Primary, and collection injection for real-world applications.*
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Not knowing how to resolve multiple beans of same type
+- Circular dependency with constructor injection
+- Not understanding bean scopes (singleton vs prototype)
+- Forgetting @Value with default values
+- Not knowing @PostConstruct/@PreDestroy lifecycle
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`@Qualifier` · `@Primary` · `@Value` · `@Lazy` · `@Scope` · `@PostConstruct` · `@PreDestroy` · `Circular Dependencies`
+
+</div>
+
 ### @RestController {#restcontroller}
 
 </div>

@@ -909,6 +909,676 @@ class UserServiceIntegrationTest {
 
 </div>
 
+### MVC (Model-View-Controller) {#mvc}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Architectural pattern** separating application into three interconnected components: **Model** (business data and logic, independent of UI), **View** (UI presentation, displays Model data), **Controller** (handles user input, updates Model, selects View). **Flow**: User interacts with View → Controller processes input → Controller updates Model → Model notifies View → View refreshes. **Variants**: **MVC Web** (Spring MVC: Controller returns View name, Model passed via ModelAndView), **REST API** (Controller returns JSON, no View). **Benefits**: separation of concerns, multiple Views for one Model, testable business logic. **Used in**: Spring MVC, Ruby on Rails, ASP.NET MVC, Django.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Separation of concerns**: UI, logic, and data are independent
+- **Testability**: Model and Controller can be tested without View
+- **Multiple views**: Same Model can be displayed in different ways
+- **Team collaboration**: Frontend and backend teams can work independently
+- **Industry standard**: Used in most web frameworks
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// MODEL - Business data and logic
+@Entity
+public class User {
+    @Id
+    @GeneratedValue
+    private Long id;
+    
+    private String name;
+    private String email;
+    private LocalDateTime createdAt;
+    
+    // Business logic
+    public void activate() {
+        if (this.email == null || !this.email.contains("@")) {
+            throw new IllegalStateException("Invalid email");
+        }
+        this.active = true;
+    }
+    
+    public boolean isEligibleForPremium() {
+        return this.createdAt.isBefore(LocalDateTime.now().minusMonths(6));
+    }
+    
+    // Getters, setters, constructors
+}
+
+// Additional Model - Service layer
+@Service
+public class UserService {
+    @Autowired
+    private UserRepository userRepository;
+    
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+    
+    public User createUser(String name, String email) {
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setCreatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+    
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException(id));
+    }
+}
+
+// CONTROLLER - Handles user requests, updates Model, returns View
+@Controller  // Note: @Controller, not @RestController
+@RequestMapping("/users")
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+    
+    // Display list of users
+    @GetMapping
+    public String listUsers(Model model) {
+        // Get data from Model (Service)
+        List<User> users = userService.getAllUsers();
+        
+        // Add data to View Model
+        model.addAttribute("users", users);
+        model.addAttribute("totalCount", users.size());
+        
+        // Return View name (users.html)
+        return "users";
+    }
+    
+    // Show create user form
+    @GetMapping("/new")
+    public String showCreateForm(Model model) {
+        model.addAttribute("user", new User());
+        return "user-form";
+    }
+    
+    // Handle form submission
+    @PostMapping
+    public String createUser(@ModelAttribute User user, 
+                           RedirectAttributes redirectAttributes) {
+        try {
+            User savedUser = userService.createUser(user.getName(), user.getEmail());
+            
+            // Add flash message
+            redirectAttributes.addFlashAttribute("message", 
+                "User created successfully!");
+            
+            // Redirect to list (PRG pattern: Post-Redirect-Get)
+            return "redirect:/users";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/users/new";
+        }
+    }
+    
+    // Show user details
+    @GetMapping("/{id}")
+    public String showUser(@PathVariable Long id, Model model) {
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "user-detail";
+    }
+    
+    // Show edit form
+    @GetMapping("/{id}/edit")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        User user = userService.getUserById(id);
+        model.addAttribute("user", user);
+        return "user-edit";
+    }
+    
+    // Handle edit submission
+    @PostMapping("/{id}")
+    public String updateUser(@PathVariable Long id, 
+                           @ModelAttribute User user,
+                           RedirectAttributes redirectAttributes) {
+        userService.updateUser(id, user);
+        redirectAttributes.addFlashAttribute("message", "User updated!");
+        return "redirect:/users/" + id;
+    }
+}
+
+// VIEW - Thymeleaf template (users.html)
+/*
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Users</title>
+</head>
+<body>
+    <h1>User List</h1>
+    
+    <!-- Display message from Controller -->
+    <div th:if="${message}" class="success" th:text="${message}"></div>
+    
+    <p>Total users: <span th:text="${totalCount}"></span></p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Loop through users from Model -->
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <a th:href="@{/users/{id}(id=${user.id})}">View</a>
+                    <a th:href="@{/users/{id}/edit(id=${user.id})}">Edit</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a href="/users/new">Create New User</a>
+</body>
+</html>
+*/
+
+// REST API variant (no View, returns JSON)
+@RestController  // @RestController = @Controller + @ResponseBody
+@RequestMapping("/api/users")
+public class UserRestController {
+    
+    @Autowired
+    private UserService userService;
+    
+    @GetMapping
+    public List<User> getUsers() {
+        return userService.getAllUsers();  // Returns JSON
+    }
+    
+    @PostMapping
+    public User createUser(@RequestBody CreateUserRequest request) {
+        return userService.createUser(request.getName(), request.getEmail());
+    }
+    
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+}
+
+// FLOW DIAGRAM:
+/*
+User Action (Click "View Users")
+        ↓
+    Browser sends GET /users
+        ↓
+    Controller receives request
+        ↓
+    Controller calls userService.getAllUsers()
+        ↓
+    Model (Service) fetches data from database
+        ↓
+    Model returns List<User>
+        ↓
+    Controller adds data to Model object
+        ↓
+    Controller returns "users" view name
+        ↓
+    Spring resolves view (users.html)
+        ↓
+    View (Thymeleaf) renders HTML with data
+        ↓
+    Browser displays rendered page
+*/
+```
+*Notice: MVC separates concerns cleanly - Model handles data/logic, View handles presentation, Controller coordinates between them.*
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "Model is just a database entity" → Model includes business logic and service layer
+- "Controller should contain business logic" → Controller only coordinates, logic belongs in Model/Service
+- "MVC is only for web applications" → Also used in desktop apps (Swing, JavaFX), mobile
+- "View can directly update Model" → Controller should mediate all interactions
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain the difference between @Controller and @RestController
+- Don't know Model includes Service layer, not just entities
+- Think Controller should contain business validation logic
+- Don't understand PRG pattern (Post-Redirect-Get) to prevent double submission
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-questions">
+
+<details>
+<summary>💼 <strong>Interview questions</strong></summary>
+
+<div>
+
+**Q: What's the difference between @Controller and @RestController in Spring?**
+A: @Controller returns view names (HTML pages), @RestController = @Controller + @ResponseBody (returns JSON/XML data directly).
+
+**Q: Where should business logic go in MVC?**
+A: In the Model layer (Service classes), not in Controller. Controller only handles HTTP concerns and delegates to Service.
+
+**Q: How does data flow in MVC?**
+A: User → Controller → Model (fetch/update data) → Controller adds to View Model → View renders → User sees result.
+
+**Q: What's the PRG pattern and why use it?**
+A: Post-Redirect-Get prevents form resubmission on browser refresh. After POST, redirect to GET endpoint to display result.
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`MVVM` · `MVP` · `Spring MVC` · `Layered Architecture` · `Separation of Concerns` · `Thymeleaf`
+
+</div>
+
+### MVVM (Model-View-ViewModel) {#mvvm}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Architectural pattern** evolved from MVC for modern UI frameworks with data binding. **Model** (business data/logic), **View** (UI declarative markup), **ViewModel** (View's abstraction, exposes data and commands via properties, handles View logic). **Key difference from MVC**: **Data binding** (View automatically updates when ViewModel changes, two-way binding possible). **Flow**: View binds to ViewModel → User interacts → ViewModel updates → View auto-refreshes. **Benefits**: no direct View manipulation, testable ViewModel, reusable across platforms. **Used in**: Angular, Vue.js, WPF, Xamarin, Knockout.js, React (with state management).
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Data binding**: Automatic UI updates without manual DOM manipulation
+- **Testability**: ViewModel is pure logic, no UI dependencies
+- **Declarative UI**: View describes "what" to show, not "how"
+- **Modern frontend**: Foundation for Angular, Vue, React patterns
+- **Cross-platform**: Share ViewModel logic across web, mobile, desktop
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```typescript
+// MODEL - Business entities and API layer
+interface User {
+    id: number;
+    name: string;
+    email: string;
+    isActive: boolean;
+}
+
+class UserService {
+    async getAllUsers(): Promise<User[]> {
+        const response = await fetch('/api/users');
+        return response.json();
+    }
+    
+    async createUser(name: string, email: string): Promise<User> {
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email })
+        });
+        return response.json();
+    }
+    
+    async deleteUser(id: number): Promise<void> {
+        await fetch(`/api/users/${id}`, { method: 'DELETE' });
+    }
+}
+
+// VIEWMODEL - Manages View state and logic (Angular example)
+@Component({
+    selector: 'user-list',
+    templateUrl: './user-list.component.html'
+})
+export class UserListViewModel {
+    // Observable properties for data binding
+    users: User[] = [];
+    loading: boolean = false;
+    errorMessage: string = '';
+    searchTerm: string = '';
+    
+    // Computed properties (derived from other properties)
+    get filteredUsers(): User[] {
+        return this.users.filter(user => 
+            user.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+        );
+    }
+    
+    get activeUserCount(): number {
+        return this.users.filter(u => u.isActive).length;
+    }
+    
+    constructor(private userService: UserService) {
+        this.loadUsers();
+    }
+    
+    // Commands (methods bound to View actions)
+    async loadUsers(): Promise<void> {
+        this.loading = true;
+        this.errorMessage = '';
+        
+        try {
+            this.users = await this.userService.getAllUsers();
+        } catch (error) {
+            this.errorMessage = 'Failed to load users';
+        } finally {
+            this.loading = false;
+        }
+    }
+    
+    async deleteUser(userId: number): Promise<void> {
+        if (!confirm('Delete this user?')) return;
+        
+        try {
+            await this.userService.deleteUser(userId);
+            this.users = this.users.filter(u => u.id !== userId);
+        } catch (error) {
+            this.errorMessage = 'Failed to delete user';
+        }
+    }
+    
+    onSearchTermChange(term: string): void {
+        this.searchTerm = term;
+        // filteredUsers automatically updates due to getter
+    }
+}
+
+// VIEW - Declarative template with data binding (Angular)
+/*
+<!-- user-list.component.html -->
+<div class="user-list-container">
+    <h1>User Management</h1>
+    
+    <!-- Bind to ViewModel property: searchTerm -->
+    <input 
+        type="text" 
+        placeholder="Search users..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchTermChange($event)"
+    />
+    
+    <!-- Bind to computed property: activeUserCount -->
+    <p>Active users: {{ activeUserCount }}</p>
+    
+    <!-- Conditional rendering: loading -->
+    <div *ngIf="loading" class="spinner">Loading...</div>
+    
+    <!-- Conditional rendering: errorMessage -->
+    <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+    
+    <!-- List rendering: filteredUsers -->
+    <table *ngIf="!loading">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Loop with data binding -->
+            <tr *ngFor="let user of filteredUsers">
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <span [class.active]="user.isActive">
+                        {{ user.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                </td>
+                <td>
+                    <!-- Event binding: call ViewModel command -->
+                    <button (click)="deleteUser(user.id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+*/
+
+// React equivalent (hooks create ViewModel-like pattern)
+import React, { useState, useEffect, useMemo } from 'react';
+
+function UserListView() {
+    // State (ViewModel properties)
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    
+    // Computed value (ViewModel getter)
+    const filteredUsers = useMemo(() => 
+        users.filter(user => 
+            user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        ), [users, searchTerm]
+    );
+    
+    const activeUserCount = useMemo(() => 
+        users.filter(u => u.isActive).length, 
+        [users]
+    );
+    
+    // Effects (ViewModel initialization)
+    useEffect(() => {
+        loadUsers();
+    }, []);
+    
+    // Commands (ViewModel methods)
+    const loadUsers = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const data = await userService.getAllUsers();
+            setUsers(data);
+        } catch (err) {
+            setError('Failed to load users');
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    const deleteUser = async (userId: number) => {
+        if (!window.confirm('Delete this user?')) return;
+        
+        try {
+            await userService.deleteUser(userId);
+            setUsers(users.filter(u => u.id !== userId));
+        } catch (err) {
+            setError('Failed to delete user');
+        }
+    };
+    
+    // View (JSX with binding)
+    return (
+        <div className="user-list-container">
+            <h1>User Management</h1>
+            
+            <input 
+                type="text"
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+            />
+            
+            <p>Active users: {activeUserCount}</p>
+            
+            {loading && <div className="spinner">Loading...</div>}
+            {error && <div className="error">{error}</div>}
+            
+            {!loading && (
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filteredUsers.map(user => (
+                            <tr key={user.id}>
+                                <td>{user.name}</td>
+                                <td>{user.email}</td>
+                                <td>
+                                    <span className={user.isActive ? 'active' : ''}>
+                                        {user.isActive ? 'Active' : 'Inactive'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button onClick={() => deleteUser(user.id)}>
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
+}
+
+// FLOW DIAGRAM:
+/*
+User types in search box
+        ↓
+    View captures input event
+        ↓
+    Two-way binding updates ViewModel.searchTerm
+        ↓
+    ViewModel.filteredUsers getter recomputes
+        ↓
+    Data binding automatically updates View
+        ↓
+    User sees filtered results (no manual DOM update!)
+
+User clicks "Delete" button
+        ↓
+    View triggers ViewModel.deleteUser(id)
+        ↓
+    ViewModel calls Model (UserService.deleteUser)
+        ↓
+    ViewModel updates users array
+        ↓
+    Data binding auto-updates View to remove row
+*/
+```
+*Notice: MVVM's data binding eliminates manual DOM manipulation - ViewModel changes automatically reflect in View.*
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "MVVM is just MVC with different names" → MVVM has automatic data binding, MVC doesn't
+- "ViewModel is same as Controller" → ViewModel is data-focused abstraction, Controller handles routing
+- "Need a framework for MVVM" → Pattern exists independent of framework, but frameworks make it easier
+- "Two-way binding is always better" → Can cause performance issues and unpredictable state changes
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain the difference between MVC and MVVM
+- Don't understand data binding mechanism (how View auto-updates)
+- Think ViewModel should manipulate DOM directly (it shouldn't!)
+- Don't know when to use computed properties vs methods
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-questions">
+
+<details>
+<summary>💼 <strong>Interview questions</strong></summary>
+
+<div>
+
+**Q: What's the main difference between MVC and MVVM?**
+A: MVVM has automatic data binding between View and ViewModel. In MVC, Controller manually updates View. MVVM's ViewModel is a View abstraction, MVC's Controller handles request routing.
+
+**Q: What is data binding in MVVM?**
+A: Automatic synchronization between View and ViewModel. One-way: ViewModel changes update View. Two-way: View changes (user input) update ViewModel, which updates View.
+
+**Q: Why is ViewModel more testable than Controller?**
+A: ViewModel has no UI dependencies - it's pure logic with properties and methods. Can test without rendering View. Controller often has HTTP/framework dependencies.
+
+**Q: When would you use MVVM over MVC?**
+A: MVVM for modern frontend with complex UI state (Angular, React, Vue). MVC for server-side rendering or simpler request-response patterns (Spring MVC).
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`MVC` · `Data Binding` · `Angular` · `React` · `Vue.js` · `Observable Pattern` · `Reactive Programming`
+
+</div>
+
 ### Event-Driven Architecture {#event-driven-architecture}
 
 <div class="concept-section definition">

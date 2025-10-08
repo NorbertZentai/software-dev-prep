@@ -2062,6 +2062,1116 @@ cart.setPaymentStrategy(new PayPalPayment("user@example.com"));
 cart.checkout(); // Pays with PayPal
 ```
 
+#### Decorator Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Structural pattern** adding responsibilities to objects dynamically without subclassing. **Structure**: Component interface (common operations), ConcreteComponent (base object), Decorator abstract class (wraps Component), ConcreteDecorators (add specific behaviors). **Benefits**: flexible alternative to subclassing, single responsibility (each decorator one feature), composable (chain multiple decorators). **Use cases**: I/O streams (BufferedReader wrapping FileReader), UI components (borders, scrollbars), middleware pipelines. **vs Inheritance**: decorators add behavior at runtime, inheritance at compile-time. **Java**: java.io package extensively uses Decorator.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Runtime flexibility**: add/remove functionality dynamically
+- **Open/Closed Principle**: extend behavior without modifying existing code
+- **Single Responsibility**: each decorator focuses on one concern
+- **Composability**: stack multiple decorators for combined effects
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// Component interface
+interface Coffee {
+    double getCost();
+    String getDescription();
+}
+
+// Concrete component
+class SimpleCoffee implements Coffee {
+    @Override
+    public double getCost() {
+        return 2.0;
+    }
+    
+    @Override
+    public String getDescription() {
+        return "Simple coffee";
+    }
+}
+
+// Decorator abstract class
+abstract class CoffeeDecorator implements Coffee {
+    protected Coffee decoratedCoffee;
+    
+    public CoffeeDecorator(Coffee coffee) {
+        this.decoratedCoffee = coffee;
+    }
+    
+    @Override
+    public double getCost() {
+        return decoratedCoffee.getCost();
+    }
+    
+    @Override
+    public String getDescription() {
+        return decoratedCoffee.getDescription();
+    }
+}
+
+// Concrete decorators
+class MilkDecorator extends CoffeeDecorator {
+    public MilkDecorator(Coffee coffee) {
+        super(coffee);
+    }
+    
+    @Override
+    public double getCost() {
+        return super.getCost() + 0.5;  // Add milk cost
+    }
+    
+    @Override
+    public String getDescription() {
+        return super.getDescription() + ", milk";
+    }
+}
+
+class SugarDecorator extends CoffeeDecorator {
+    public SugarDecorator(Coffee coffee) {
+        super(coffee);
+    }
+    
+    @Override
+    public double getCost() {
+        return super.getCost() + 0.2;  // Add sugar cost
+    }
+    
+    @Override
+    public String getDescription() {
+        return super.getDescription() + ", sugar";
+    }
+}
+
+class WhipCreamDecorator extends CoffeeDecorator {
+    public WhipCreamDecorator(Coffee coffee) {
+        super(coffee);
+    }
+    
+    @Override
+    public double getCost() {
+        return super.getCost() + 0.7;  // Add whip cream cost
+    }
+    
+    @Override
+    public String getDescription() {
+        return super.getDescription() + ", whip cream";
+    }
+}
+
+// Usage - stack decorators dynamically
+Coffee coffee = new SimpleCoffee();
+System.out.println(coffee.getDescription() + " $" + coffee.getCost());
+// Output: Simple coffee $2.0
+
+coffee = new MilkDecorator(coffee);
+System.out.println(coffee.getDescription() + " $" + coffee.getCost());
+// Output: Simple coffee, milk $2.5
+
+coffee = new SugarDecorator(coffee);
+System.out.println(coffee.getDescription() + " $" + coffee.getCost());
+// Output: Simple coffee, milk, sugar $2.7
+
+coffee = new WhipCreamDecorator(coffee);
+System.out.println(coffee.getDescription() + " $" + coffee.getCost());
+// Output: Simple coffee, milk, sugar, whip cream $3.4
+
+// Real-world example: Java I/O streams
+BufferedReader reader = new BufferedReader(  // Decorator
+    new InputStreamReader(                    // Decorator
+        new FileInputStream("file.txt")       // Base component
+    )
+);
+
+// Each decorator adds functionality:
+// FileInputStream: reads bytes from file
+// InputStreamReader: converts bytes to characters
+// BufferedReader: adds buffering and readLine() method
+```
+*Notice: Each decorator wraps the previous one, adding functionality layer by layer.*
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "Decorator is just inheritance" → Decorator uses composition, adds behavior at runtime
+- "Too many decorators make code complex" → Well-named decorators improve readability
+- "Decorator and Adapter are the same" → Adapter changes interface, Decorator enhances functionality
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain difference between Decorator and inheritance
+- Don't know real-world Java examples (I/O streams)
+- Can't implement Decorator from scratch
+- Confuse Decorator with Proxy or Adapter patterns
+
+</div>
+</details>
+
+</div>
+
+<div class="tags">
+<span class="tag">oop</span>
+<span class="tag">decorator</span>
+<span class="tag">design-patterns</span>
+<span class="tag">medior</span>
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Composition` · `Open/Closed Principle` · `Java I/O Streams` · `Wrapper Pattern` · `Chain of Responsibility`
+
+</div>
+
+#### Command Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Behavioral pattern** encapsulating requests as objects, enabling parameterization, queuing, logging, and undo operations. **Structure**: Command interface (execute method), ConcreteCommand (implements execute, holds receiver + parameters), Receiver (performs actual work), Invoker (triggers command), Client (creates commands). **Benefits**: decouples sender from receiver, supports undo/redo, command queuing/logging, macro commands (composite). **Use cases**: GUI buttons/menus, transaction systems, job queues, macro recording, thread pool tasks. **Memento pattern**: often combined for undo functionality.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Undo/Redo functionality**: easy to implement with command history
+- **Decoupling**: invoker doesn't know command implementation details
+- **Transaction management**: bundle commands as atomic operations
+- **Macro operations**: combine multiple commands into one
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// Command interface
+interface Command {
+    void execute();
+    void undo();
+}
+
+// Receiver - does actual work
+class Light {
+    private boolean isOn = false;
+    
+    public void turnOn() {
+        isOn = true;
+        System.out.println("Light is ON");
+    }
+    
+    public void turnOff() {
+        isOn = false;
+        System.out.println("Light is OFF");
+    }
+    
+    public boolean isOn() {
+        return isOn;
+    }
+}
+
+// Concrete commands
+class LightOnCommand implements Command {
+    private Light light;
+    
+    public LightOnCommand(Light light) {
+        this.light = light;
+    }
+    
+    @Override
+    public void execute() {
+        light.turnOn();
+    }
+    
+    @Override
+    public void undo() {
+        light.turnOff();
+    }
+}
+
+class LightOffCommand implements Command {
+    private Light light;
+    
+    public LightOffCommand(Light light) {
+        this.light = light;
+    }
+    
+    @Override
+    public void execute() {
+        light.turnOff();
+    }
+    
+    @Override
+    public void undo() {
+        light.turnOn();
+    }
+}
+
+// Invoker - triggers commands
+class RemoteControl {
+    private Command command;
+    private Stack<Command> history = new Stack<>();
+    
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+    
+    public void pressButton() {
+        command.execute();
+        history.push(command);
+    }
+    
+    public void pressUndo() {
+        if (!history.isEmpty()) {
+            Command lastCommand = history.pop();
+            lastCommand.undo();
+        }
+    }
+}
+
+// Usage
+Light livingRoomLight = new Light();
+Command lightOn = new LightOnCommand(livingRoomLight);
+Command lightOff = new LightOffCommand(livingRoomLight);
+
+RemoteControl remote = new RemoteControl();
+
+// Turn light on
+remote.setCommand(lightOn);
+remote.pressButton();  // Output: Light is ON
+
+// Turn light off
+remote.setCommand(lightOff);
+remote.pressButton();  // Output: Light is OFF
+
+// Undo last command
+remote.pressUndo();    // Output: Light is ON
+
+// ADVANCED: Macro Command (composite)
+class MacroCommand implements Command {
+    private List<Command> commands;
+    
+    public MacroCommand(List<Command> commands) {
+        this.commands = commands;
+    }
+    
+    @Override
+    public void execute() {
+        for (Command command : commands) {
+            command.execute();
+        }
+    }
+    
+    @Override
+    public void undo() {
+        // Undo in reverse order
+        for (int i = commands.size() - 1; i >= 0; i--) {
+            commands.get(i).undo();
+        }
+    }
+}
+
+// Real-world example: Text Editor
+interface TextCommand {
+    void execute();
+    void undo();
+}
+
+class InsertTextCommand implements TextCommand {
+    private StringBuilder document;
+    private String text;
+    private int position;
+    
+    public InsertTextCommand(StringBuilder document, String text, int position) {
+        this.document = document;
+        this.text = text;
+        this.position = position;
+    }
+    
+    @Override
+    public void execute() {
+        document.insert(position, text);
+    }
+    
+    @Override
+    public void undo() {
+        document.delete(position, position + text.length());
+    }
+}
+
+class DeleteTextCommand implements TextCommand {
+    private StringBuilder document;
+    private String deletedText;
+    private int position;
+    private int length;
+    
+    public DeleteTextCommand(StringBuilder document, int position, int length) {
+        this.document = document;
+        this.position = position;
+        this.length = length;
+    }
+    
+    @Override
+    public void execute() {
+        deletedText = document.substring(position, position + length);
+        document.delete(position, position + length);
+    }
+    
+    @Override
+    public void undo() {
+        document.insert(position, deletedText);
+    }
+}
+
+// Text Editor with undo/redo
+class TextEditor {
+    private StringBuilder document = new StringBuilder();
+    private Stack<TextCommand> undoStack = new Stack<>();
+    private Stack<TextCommand> redoStack = new Stack<>();
+    
+    public void executeCommand(TextCommand command) {
+        command.execute();
+        undoStack.push(command);
+        redoStack.clear(); // Clear redo stack after new command
+    }
+    
+    public void undo() {
+        if (!undoStack.isEmpty()) {
+            TextCommand command = undoStack.pop();
+            command.undo();
+            redoStack.push(command);
+        }
+    }
+    
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            TextCommand command = redoStack.pop();
+            command.execute();
+            undoStack.push(command);
+        }
+    }
+    
+    public String getDocument() {
+        return document.toString();
+    }
+}
+```
+*Notice: Command pattern encapsulates actions as objects, enabling undo/redo and command composition.*
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "Command pattern is only for undo/redo" → Also used for queuing, logging, transactions
+- "Command always needs undo" → undo() is optional, depends on use case
+- "Too complex for simple operations" → Justified for complex systems with history/queueing
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain the four roles (Command, Receiver, Invoker, Client)
+- Don't understand how undo/redo is implemented
+- Can't give real-world examples beyond GUI buttons
+- Confuse Command with Strategy pattern
+
+</div>
+</details>
+
+</div>
+
+<div class="tags">
+<span class="tag">oop</span>
+<span class="tag">command</span>
+<span class="tag">design-patterns</span>
+<span class="tag">medior</span>
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Encapsulation` · `Undo/Redo` · `Transaction Management` · `Job Queues` · `Macro Commands`
+
+</div>
+
+#### Builder Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Creational pattern** constructing complex objects step-by-step. **Structure**: Builder interface (construction steps), ConcreteBuilder (implements steps), Director (optional, orchestrates building), Product (complex object). **Benefits**: separates construction from representation, controls construction process, supports different representations, handles many optional parameters. **Use cases**: objects with many fields, immutable objects requiring validation, fluent interfaces. **Java**: StringBuilder, Stream.Builder, Lombok @Builder. **vs Constructor**: Builder handles optional parameters elegantly, avoids telescoping constructors.
+
+</div>
+
+```java
+// Product
+class Pizza {
+    private final String dough;      // required
+    private final String sauce;      // required
+    private final int size;          // required
+    
+    private final boolean cheese;    // optional
+    private final boolean pepperoni; // optional
+    private final boolean mushrooms; // optional
+    private final boolean onions;    // optional
+    
+    // Private constructor - only Builder can create
+    private Pizza(Builder builder) {
+        this.dough = builder.dough;
+        this.sauce = builder.sauce;
+        this.size = builder.size;
+        this.cheese = builder.cheese;
+        this.pepperoni = builder.pepperoni;
+        this.mushrooms = builder.mushrooms;
+        this.onions = builder.onions;
+    }
+    
+    // Builder class
+    public static class Builder {
+        // Required parameters
+        private final String dough;
+        private final String sauce;
+        private final int size;
+        
+        // Optional parameters - initialized to default values
+        private boolean cheese = false;
+        private boolean pepperoni = false;
+        private boolean mushrooms = false;
+        private boolean onions = false;
+        
+        public Builder(String dough, String sauce, int size) {
+            this.dough = dough;
+            this.sauce = sauce;
+            this.size = size;
+        }
+        
+        public Builder cheese(boolean value) {
+            cheese = value;
+            return this;  // Return this for fluent API
+        }
+        
+        public Builder pepperoni(boolean value) {
+            pepperoni = value;
+            return this;
+        }
+        
+        public Builder mushrooms(boolean value) {
+            mushrooms = value;
+            return this;
+        }
+        
+        public Builder onions(boolean value) {
+            onions = value;
+            return this;
+        }
+        
+        public Pizza build() {
+            // Validation before building
+            if (size < 8 || size > 16) {
+                throw new IllegalArgumentException("Invalid pizza size");
+            }
+            return new Pizza(this);
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Pizza[dough=%s, sauce=%s, size=%d, cheese=%b, " +
+                           "pepperoni=%b, mushrooms=%b, onions=%b]",
+                           dough, sauce, size, cheese, pepperoni, mushrooms, onions);
+    }
+}
+
+// Usage - fluent API
+Pizza pizza = new Pizza.Builder("thin", "tomato", 12)
+    .cheese(true)
+    .pepperoni(true)
+    .mushrooms(true)
+    .build();
+```
+
+#### Adapter Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Structural pattern** converting interface of class into another interface clients expect. **Structure**: Target interface (what client needs), Adaptee (existing incompatible class), Adapter (wraps Adaptee, implements Target). **Types**: **Class Adapter** (inheritance-based), **Object Adapter** (composition-based, preferred). **Benefits**: reuse existing classes, decouples client from implementation, Single Responsibility. **Use cases**: integrate legacy code, work with third-party libraries, unify similar interfaces. **Java**: InputStreamReader (adapts InputStream to Reader), Collections.list() (Enumeration to List).
+
+</div>
+
+```java
+// Target interface (what we want)
+interface MediaPlayer {
+    void play(String filename);
+}
+
+// Adaptee (existing incompatible class)
+class AdvancedMediaPlayer {
+    public void playVLC(String filename) {
+        System.out.println("Playing VLC file: " + filename);
+    }
+    
+    public void playMP4(String filename) {
+        System.out.println("Playing MP4 file: " + filename);
+    }
+}
+
+// Adapter (makes Adaptee compatible with Target)
+class MediaAdapter implements MediaPlayer {
+    private AdvancedMediaPlayer advancedPlayer;
+    
+    public MediaAdapter() {
+        this.advancedPlayer = new AdvancedMediaPlayer();
+    }
+    
+    @Override
+    public void play(String filename) {
+        if (filename.endsWith(".vlc")) {
+            advancedPlayer.playVLC(filename);
+        } else if (filename.endsWith(".mp4")) {
+            advancedPlayer.playMP4(filename);
+        } else {
+            System.out.println("Unsupported format");
+        }
+    }
+}
+
+// Client code
+class AudioPlayer implements MediaPlayer {
+    private MediaAdapter adapter;
+    
+    @Override
+    public void play(String filename) {
+        if (filename.endsWith(".mp3")) {
+            System.out.println("Playing MP3 file: " + filename);
+        } else if (filename.endsWith(".vlc") || filename.endsWith(".mp4")) {
+            adapter = new MediaAdapter();
+            adapter.play(filename);
+        } else {
+            System.out.println("Unsupported format");
+        }
+    }
+}
+```
+
+#### Facade Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Structural pattern** providing simplified interface to complex subsystem. **Structure**: Facade class (simple methods delegating to subsystem), Subsystem classes (complex logic). **Benefits**: reduces coupling, simplifies client code, hides complexity, easier to use. **Use cases**: library API wrappers, database access layers, service layers. **vs Adapter**: Facade simplifies, Adapter converts interface. **Java**: javax.faces, SLF4J logging facade. **Trade-off**: less flexibility for clients needing subsystem control.
+
+</div>
+
+```java
+// Complex subsystem classes
+class CPU {
+    public void freeze() { System.out.println("CPU: Freezing"); }
+    public void jump(long position) { System.out.println("CPU: Jump to " + position); }
+    public void execute() { System.out.println("CPU: Executing"); }
+}
+
+class Memory {
+    public void load(long position, byte[] data) {
+        System.out.println("Memory: Loading data at " + position);
+    }
+}
+
+class HardDrive {
+    public byte[] read(long lba, int size) {
+        System.out.println("HardDrive: Reading " + size + " bytes from " + lba);
+        return new byte[size];
+    }
+}
+
+// Facade - simple interface to complex subsystem
+class ComputerFacade {
+    private CPU cpu;
+    private Memory memory;
+    private HardDrive hardDrive;
+    
+    public ComputerFacade() {
+        this.cpu = new CPU();
+        this.memory = new Memory();
+        this.hardDrive = new HardDrive();
+    }
+    
+    public void start() {
+        // Simplified start process - hides complexity
+        System.out.println("Starting computer...");
+        cpu.freeze();
+        memory.load(0, hardDrive.read(0, 1024));
+        cpu.jump(0);
+        cpu.execute();
+        System.out.println("Computer started!");
+    }
+}
+
+// Client code - simple!
+ComputerFacade computer = new ComputerFacade();
+computer.start();  // One method call instead of many
+```
+
+#### Proxy Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Structural pattern** providing placeholder/surrogate controlling access to object. **Types**: **Virtual Proxy** (lazy initialization), **Protection Proxy** (access control), **Remote Proxy** (represents remote object), **Smart Reference** (additional actions on access). **Benefits**: controls object creation, adds functionality without changing target, protects sensitive operations. **Use cases**: lazy loading images, security checks, logging, caching, RMI. **Java**: java.lang.reflect.Proxy, Spring AOP proxies, Hibernate lazy loading. **vs Decorator**: Proxy controls access, Decorator adds behavior.
+
+</div>
+
+```java
+// Subject interface
+interface Image {
+    void display();
+}
+
+// Real subject
+class RealImage implements Image {
+    private String filename;
+    
+    public RealImage(String filename) {
+        this.filename = filename;
+        loadFromDisk();  // Expensive operation
+    }
+    
+    private void loadFromDisk() {
+        System.out.println("Loading image: " + filename);
+    }
+    
+    @Override
+    public void display() {
+        System.out.println("Displaying image: " + filename);
+    }
+}
+
+// Proxy - lazy loading
+class ProxyImage implements Image {
+    private RealImage realImage;
+    private String filename;
+    
+    public ProxyImage(String filename) {
+        this.filename = filename;
+    }
+    
+    @Override
+    public void display() {
+        if (realImage == null) {
+            realImage = new RealImage(filename);  // Load only when needed
+        }
+        realImage.display();
+    }
+}
+
+// Usage
+Image image1 = new ProxyImage("photo1.jpg");
+Image image2 = new ProxyImage("photo2.jpg");
+
+// Image not loaded yet
+System.out.println("Images created");
+
+// Now image1 is loaded and displayed
+image1.display();
+
+// Image1 already loaded, just display
+image1.display();
+
+// Output:
+// Images created
+// Loading image: photo1.jpg
+// Displaying image: photo1.jpg
+// Displaying image: photo1.jpg
+```
+
+#### Template Method Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Behavioral pattern** defining algorithm skeleton in superclass, letting subclasses override specific steps. **Structure**: Abstract class (template method + abstract steps), Concrete classes (implement steps). **Benefits**: code reuse, enforces algorithm structure, Open/Closed principle, hook methods for optional behavior. **Use cases**: frameworks (servlet lifecycle, JUnit setup/teardown), data processing pipelines, game AI. **Java**: HttpServlet.service(), AbstractList, InputStream.read(). **vs Strategy**: Template Method uses inheritance, Strategy uses composition.
+
+</div>
+
+```java
+// Abstract class with template method
+abstract class DataProcessor {
+    
+    // Template method - defines skeleton
+    public final void process() {
+        readData();
+        processData();
+        if (shouldSave()) {  // Hook method
+            saveData();
+        }
+        closeResources();
+    }
+    
+    // Abstract methods - subclasses implement
+    protected abstract void readData();
+    protected abstract void processData();
+    protected abstract void saveData();
+    protected abstract void closeResources();
+    
+    // Hook method - optional override
+    protected boolean shouldSave() {
+        return true;  // Default behavior
+    }
+}
+
+// Concrete implementation 1
+class CSVDataProcessor extends DataProcessor {
+    @Override
+    protected void readData() {
+        System.out.println("Reading CSV file");
+    }
+    
+    @Override
+    protected void processData() {
+        System.out.println("Processing CSV data");
+    }
+    
+    @Override
+    protected void saveData() {
+        System.out.println("Saving to database");
+    }
+    
+    @Override
+    protected void closeResources() {
+        System.out.println("Closing CSV file");
+    }
+}
+
+// Concrete implementation 2
+class XMLDataProcessor extends DataProcessor {
+    private boolean isDryRun;
+    
+    public XMLDataProcessor(boolean isDryRun) {
+        this.isDryRun = isDryRun;
+    }
+    
+    @Override
+    protected void readData() {
+        System.out.println("Reading XML file");
+    }
+    
+    @Override
+    protected void processData() {
+        System.out.println("Processing XML data");
+    }
+    
+    @Override
+    protected void saveData() {
+        System.out.println("Saving to file system");
+    }
+    
+    @Override
+    protected void closeResources() {
+        System.out.println("Closing XML file");
+    }
+    
+    @Override
+    protected boolean shouldSave() {
+        return !isDryRun;  // Override hook
+    }
+}
+
+// Usage
+DataProcessor csvProcessor = new CSVDataProcessor();
+csvProcessor.process();
+
+DataProcessor xmlProcessor = new XMLDataProcessor(true);  // Dry run
+xmlProcessor.process();  // Won't save
+```
+
+#### State Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Behavioral pattern** allowing object to alter behavior when internal state changes. **Structure**: Context (maintains current state), State interface (declares state-specific methods), Concrete States (implement behavior for specific state). **Benefits**: eliminates large conditionals, encapsulates state-specific behavior, makes state transitions explicit, Open/Closed principle. **Use cases**: TCP connections, order status, vending machines, game character states. **vs Strategy**: State changes internally, Strategy chosen by client. **Java**: Thread states, Parser state machines.
+
+</div>
+
+```java
+// State interface
+interface OrderState {
+    void cancel(Order order);
+    void ship(Order order);
+    void deliver(Order order);
+    String getStatusName();
+}
+
+// Context
+class Order {
+    private OrderState state;
+    private String orderId;
+    
+    public Order(String orderId) {
+        this.orderId = orderId;
+        this.state = new PendingState();  // Initial state
+    }
+    
+    public void setState(OrderState state) {
+        this.state = state;
+        System.out.println("Order " + orderId + " state: " + state.getStatusName());
+    }
+    
+    public void cancel() {
+        state.cancel(this);
+    }
+    
+    public void ship() {
+        state.ship(this);
+    }
+    
+    public void deliver() {
+        state.deliver(this);
+    }
+}
+
+// Concrete states
+class PendingState implements OrderState {
+    @Override
+    public void cancel(Order order) {
+        System.out.println("Cancelling pending order");
+        order.setState(new CancelledState());
+    }
+    
+    @Override
+    public void ship(Order order) {
+        System.out.println("Shipping order");
+        order.setState(new ShippedState());
+    }
+    
+    @Override
+    public void deliver(Order order) {
+        System.out.println("Cannot deliver - not shipped yet");
+    }
+    
+    @Override
+    public String getStatusName() {
+        return "PENDING";
+    }
+}
+
+class ShippedState implements OrderState {
+    @Override
+    public void cancel(Order order) {
+        System.out.println("Cannot cancel - already shipped");
+    }
+    
+    @Override
+    public void ship(Order order) {
+        System.out.println("Already shipped");
+    }
+    
+    @Override
+    public void deliver(Order order) {
+        System.out.println("Delivering order");
+        order.setState(new DeliveredState());
+    }
+    
+    @Override
+    public String getStatusName() {
+        return "SHIPPED";
+    }
+}
+
+class DeliveredState implements OrderState {
+    @Override
+    public void cancel(Order order) {
+        System.out.println("Cannot cancel - already delivered");
+    }
+    
+    @Override
+    public void ship(Order order) {
+        System.out.println("Already delivered");
+    }
+    
+    @Override
+    public void deliver(Order order) {
+        System.out.println("Already delivered");
+    }
+    
+    @Override
+    public String getStatusName() {
+        return "DELIVERED";
+    }
+}
+
+class CancelledState implements OrderState {
+    @Override
+    public void cancel(Order order) {
+        System.out.println("Already cancelled");
+    }
+    
+    @Override
+    public void ship(Order order) {
+        System.out.println("Cannot ship - order cancelled");
+    }
+    
+    @Override
+    public void deliver(Order order) {
+        System.out.println("Cannot deliver - order cancelled");
+    }
+    
+    @Override
+    public String getStatusName() {
+        return "CANCELLED";
+    }
+}
+
+// Usage
+Order order = new Order("ORD-123");
+order.ship();      // PENDING → SHIPPED
+order.deliver();   // SHIPPED → DELIVERED
+order.cancel();    // Cannot cancel - already delivered
+```
+
+#### Chain of Responsibility Pattern
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Behavioral pattern** passing request along chain of handlers until one handles it. **Structure**: Handler interface (handle method + next handler), Concrete Handlers (handle or pass to next), Client (initiates request). **Benefits**: decouples sender from receiver, adds/removes handlers dynamically, follows Single Responsibility. **Use cases**: logging frameworks, event handling, authentication/authorization chains, middleware. **Java**: Servlet filters, exception handling, java.util.logging. **Variants**: request handled by one handler vs all handlers in chain.
+
+</div>
+
+```java
+// Handler interface
+abstract class SupportHandler {
+    protected SupportHandler nextHandler;
+    
+    public void setNext(SupportHandler handler) {
+        this.nextHandler = handler;
+    }
+    
+    public abstract void handleRequest(SupportTicket ticket);
+}
+
+// Request
+class SupportTicket {
+    private String issue;
+    private Priority priority;
+    
+    public SupportTicket(String issue, Priority priority) {
+        this.issue = issue;
+        this.priority = priority;
+    }
+    
+    public String getIssue() { return issue; }
+    public Priority getPriority() { return priority; }
+}
+
+enum Priority { LOW, MEDIUM, HIGH, CRITICAL }
+
+// Concrete handlers
+class Level1Support extends SupportHandler {
+    @Override
+    public void handleRequest(SupportTicket ticket) {
+        if (ticket.getPriority() == Priority.LOW) {
+            System.out.println("Level 1: Handling low priority - " + ticket.getIssue());
+        } else {
+            System.out.println("Level 1: Escalating to Level 2");
+            if (nextHandler != null) {
+                nextHandler.handleRequest(ticket);
+            }
+        }
+    }
+}
+
+class Level2Support extends SupportHandler {
+    @Override
+    public void handleRequest(SupportTicket ticket) {
+        if (ticket.getPriority() == Priority.MEDIUM) {
+            System.out.println("Level 2: Handling medium priority - " + ticket.getIssue());
+        } else {
+            System.out.println("Level 2: Escalating to Level 3");
+            if (nextHandler != null) {
+                nextHandler.handleRequest(ticket);
+            }
+        }
+    }
+}
+
+class Level3Support extends SupportHandler {
+    @Override
+    public void handleRequest(SupportTicket ticket) {
+        if (ticket.getPriority() == Priority.HIGH || ticket.getPriority() == Priority.CRITICAL) {
+            System.out.println("Level 3: Handling high/critical - " + ticket.getIssue());
+        } else {
+            System.out.println("Level 3: Cannot handle");
+        }
+    }
+}
+
+// Setup chain
+Level1Support level1 = new Level1Support();
+Level2Support level2 = new Level2Support();
+Level3Support level3 = new Level3Support();
+
+level1.setNext(level2);
+level2.setNext(level3);
+
+// Usage
+SupportTicket ticket1 = new SupportTicket("Password reset", Priority.LOW);
+level1.handleRequest(ticket1);  // Handled by Level 1
+
+SupportTicket ticket2 = new SupportTicket("Server down", Priority.CRITICAL);
+level1.handleRequest(ticket2);  // Escalates to Level 3
+```
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Builder` · `Adapter` · `Facade` · `Proxy` · `Template Method` · `State` · `Chain of Responsibility` · `Design Patterns`
+
+</div>
+
 ### Thread-Safety in OOP {#thread-safety-oop}
 
 <div class="concept-section definition">

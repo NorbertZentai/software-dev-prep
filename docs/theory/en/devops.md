@@ -2651,6 +2651,207 @@ spring:
 - Identify performance bottlenecks
 - Distributed system debugging
 
+### Scrum Framework {#scrum-framework}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Agile framework** for iterative product development in fixed-length sprints (1-4 weeks). **Three Pillars**: Transparency (everyone sees process/progress), Inspection (frequent check progress), Adaptation (adjust based on inspection). **Five Values**: Commitment, Focus, Openness, Respect, Courage. **Empirical process**: make decisions based on observation and experience, not prediction.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Iterative delivery**: working software every sprint
+- **Transparency**: all stakeholders see progress
+- **Flexibility**: adapt to changing requirements
+- **Team empowerment**: self-organizing cross-functional teams
+
+</div>
+
+<div class="runnable-model">
+
+**Scrum Framework Components**
+
+### **Roles**
+
+**Product Owner**
+- Owns the Product Backlog
+- Prioritizes features based on business value
+- Single point of contact for stakeholders
+- Accepts or rejects work results
+- Responsible for ROI and product success
+
+**Scrum Master**
+- Facilitates Scrum process
+- Removes impediments for the team
+- Coaches team on Agile practices
+- Shields team from external distractions
+- Ensures Scrum events happen and are productive
+
+**Development Team**
+- Cross-functional (all skills needed to create increment)
+- Self-organizing (decide how to do work)
+- 3-9 members optimal size
+- Collectively accountable for Sprint success
+- No sub-teams or hierarchies
+
+### **Events (Ceremonies)**
+
+**Sprint** (1-4 weeks, fixed duration)
+- Time-boxed iteration
+- Creates potentially shippable product increment
+- No changes that endanger Sprint Goal
+- Consistent duration for predictability
+
+**Sprint Planning** (max 8h for 1-month sprint)
+- What can be delivered this Sprint?
+- How will the work be achieved?
+- Team pulls items from Product Backlog
+- Creates Sprint Backlog and Sprint Goal
+
+**Daily Scrum** (15 minutes, same time/place)
+- What did I do yesterday?
+- What will I do today?
+- What impediments block me?
+- NOT a status report - team synchronization
+- Scrum Master facilitates, team owns
+
+**Sprint Review** (max 4h for 1-month sprint)
+- Demonstrate completed work to stakeholders
+- Inspect increment and adapt Product Backlog
+- Informal presentation, not a milestone
+- Gather feedback for next Sprint
+- Update release timeline based on progress
+
+**Sprint Retrospective** (max 3h for 1-month sprint)
+- After Sprint Review, before next Planning
+- What went well? What didn't? What to improve?
+- Team inspects itself and creates improvement plan
+- Focus: people, relationships, process, tools
+- Most important for continuous improvement
+
+### **Artifacts**
+
+**Product Backlog**
+- Ordered list of everything needed in product
+- Single source of requirements
+- Dynamic - evolves as product and environment evolve
+- Items have description, order, estimate, value
+- Product Owner responsible for content, ordering
+
+**Sprint Backlog**
+- Product Backlog items selected for Sprint
+- Plus plan for delivering them
+- Forecast by Development Team
+- Only Development Team can change during Sprint
+- Visible real-time picture of Sprint work
+
+**Increment**
+- Sum of all Product Backlog items completed during Sprint
+- Plus increments from all previous Sprints
+- Must be in usable condition (Definition of Done)
+- Must be potentially releasable
+- Stakeholder can choose to release or not
+
+### **Additional Concepts**
+
+**Definition of Done (DoD)**
+- Shared understanding of "complete"
+- Includes: code complete, tested, documented, deployed
+- Must meet all DoD criteria to be in Increment
+- Increases transparency and quality
+
+**Velocity**
+- Amount of work team completes per Sprint
+- Measured in story points or ideal hours
+- Used for capacity planning
+- Improves over time as team matures
+
+**Burndown Chart**
+- Visual representation of work remaining vs time
+- Sprint Burndown: work in current Sprint
+- Release Burndown: work toward release goal
+- Helps identify if team is on track
+
+**Sprint Goal**
+- Objective set for Sprint
+- Provides guidance on why building Increment
+- Creates coherence and focus
+- Can be renegotiated with Product Owner if needed
+
+</div>
+
+<div class="concept-section best-practices">
+
+<details>
+<summary>✅ <strong>Scrum best practices</strong></summary>
+
+<div>
+
+- **Fixed Sprint length**: consistency enables predictability
+- **Definition of Done**: clear, agreed-upon completion criteria
+- **Protect the team**: Scrum Master shields from external interruptions
+- **Respect time-boxes**: events should not exceed maximum duration
+- **Empirical process**: make decisions based on data, not assumptions
+- **Self-organization**: team decides how to accomplish work
+- **Continuous improvement**: Retrospective leads to actionable changes
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "Scrum Master is a project manager" → Scrum Master is a facilitator, not a manager
+- "Daily Scrum is a status update" → It's team synchronization, not reporting to manager
+- "Sprint can be extended if work isn't done" → Sprint length is fixed, incomplete work goes to next Sprint
+- "Product Owner can change Sprint Backlog mid-Sprint" → Only Development Team modifies Sprint Backlog
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain the three roles and their responsibilities
+- Don't understand difference between Sprint Review and Retrospective
+- Confuse Scrum Master with Project Manager
+- Can't describe what happens in each Scrum event
+- Don't know what Definition of Done means
+
+</div>
+</details>
+
+</div>
+
+<div class="tags">
+<span class="tag">agile</span>
+<span class="tag">scrum</span>
+<span class="tag">project-management</span>
+<span class="tag">junior</span>
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Agile Methodologies` · `Sprint Planning` · `Product Backlog` · `Iterative Development` · `Team Collaboration`
+
+</div>
+
 ## Best Practices
 
 1. **Automate everything**: Build, test, deploy, monitoring

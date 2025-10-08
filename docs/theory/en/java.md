@@ -856,7 +856,7 @@ NEW -> RUNNABLE -> BLOCKED/WAITING/TIMED_WAITING -> TERMINATED
 <div class="concept-section definition">
 
 📋 **Concept Definition**  
-**Functional-style operations on sequences** of elements. **Sources**: collections (list.stream()), arrays (Arrays.stream()), I/O (Files.lines()). **Intermediate operations** (lazy, return Stream): filter, map, flatMap, distinct, sorted, limit, skip. **Terminal operations** (trigger execution): forEach, collect, reduce, count, anyMatch, findFirst. **Lazy evaluation**: operations only execute when terminal operation called. **Parallel streams**: .parallelStream() or .parallel(), uses ForkJoinPool. **Collectors**: toList(), toSet(), toMap(), groupingBy(), partitioningBy(), joining(). **vs loops**: more declarative, easier parallelization, but not always faster. **Best practices**: prefer streams for bulk operations, avoid side effects in lambdas.
+**Functional-style operations on sequences** of elements. **Sources**: collections (list.stream()), arrays (Arrays.stream()), I/O (Files.lines()), Stream.of(), Stream.generate(), Stream.iterate(). **Intermediate operations** (lazy, return Stream): **filter** (predicate filtering), **map** (transform elements), **flatMap** (flatten nested streams), **distinct** (remove duplicates), **sorted** (natural/custom order), **limit** (take first n), **skip** (skip first n), **peek** (debug/side-effect), **takeWhile**/**dropWhile** (Java 9+). **Terminal operations** (eager, trigger execution): **forEach**/**forEachOrdered**, **collect** (to collection), **reduce** (accumulate), **count**, **anyMatch**/**allMatch**/**noneMatch**, **findFirst**/**findAny**, **min**/**max**, **toArray**. **Lazy evaluation**: pipeline built, executes only when terminal operation called. **Parallel streams**: .parallelStream() or .parallel(), uses ForkJoinPool. **Collectors**: toList(), toSet(), toMap(), toConcurrentMap(), groupingBy(), partitioningBy(), joining(), summarizingInt(), collectingAndThen(). **Primitive streams**: IntStream, LongStream, DoubleStream (avoid boxing). **Best practices**: prefer streams for bulk operations, avoid side effects in lambdas, use method references, consider parallel for CPU-bound ops on large datasets.
 
 </div>
 
@@ -866,25 +866,360 @@ NEW -> RUNNABLE -> BLOCKED/WAITING/TIMED_WAITING -> TERMINATED
 - **Functional programming**: declarative style instead of imperative
 - **Lazy evaluation**: operations only execute on terminal operation
 - **Parallel processing**: easy parallelization with `.parallel()` call
+- **Composability**: chain operations for complex data transformations
+- **Performance**: internal iteration optimizations, short-circuit operations
 
 </div>
 
 <div class="runnable-model">
 
-**Runnable mental model**
+**Runnable mental model - Comprehensive Stream API Examples**
 ```java
-List<String> names = Arrays.asList("Anna", "Bob", "Cecil");
+import java.util.*;
+import java.util.stream.*;
 
-// Functional pipeline
-List<String> result = names.stream()
-    .filter(name -> name.startsWith("A"))  // Filtering
-    .map(String::toUpperCase)               // Transformation
-    .sorted()                               // Sorting
-    .collect(Collectors.toList());          // Collection
-
-// Result: [ANNA]
+public class StreamAPIExamples {
+    
+    public static void main(String[] args) {
+        
+        // ========== CREATION METHODS ==========
+        
+        // 1. From collection
+        List<String> list = Arrays.asList("a", "b", "c");
+        Stream<String> stream1 = list.stream();
+        
+        // 2. From array
+        String[] array = {"x", "y", "z"};
+        Stream<String> stream2 = Arrays.stream(array);
+        
+        // 3. Stream.of()
+        Stream<Integer> stream3 = Stream.of(1, 2, 3, 4, 5);
+        
+        // 4. Stream.generate() - infinite stream
+        Stream<Double> randoms = Stream.generate(Math::random).limit(5);
+        
+        // 5. Stream.iterate() - infinite stream with seed
+        Stream<Integer> evens = Stream.iterate(0, n -> n + 2).limit(10);
+        // Output: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18
+        
+        // 6. IntStream range
+        IntStream range = IntStream.range(1, 6); // 1,2,3,4,5
+        IntStream rangeClosed = IntStream.rangeClosed(1, 5); // 1,2,3,4,5
+        
+        
+        // ========== INTERMEDIATE OPERATIONS ==========
+        
+        List<String> words = Arrays.asList("apple", "banana", "cherry", "date", "elderberry");
+        
+        // FILTER - keep elements matching predicate
+        List<String> filtered = words.stream()
+            .filter(w -> w.length() > 5)
+            .collect(Collectors.toList());
+        // Output: [banana, cherry, elderberry]
+        
+        // MAP - transform each element
+        List<Integer> lengths = words.stream()
+            .map(String::length)
+            .collect(Collectors.toList());
+        // Output: [5, 6, 6, 4, 10]
+        
+        List<String> upperCase = words.stream()
+            .map(String::toUpperCase)
+            .collect(Collectors.toList());
+        // Output: [APPLE, BANANA, CHERRY, DATE, ELDERBERRY]
+        
+        // FLATMAP - flatten nested structures
+        List<List<String>> nestedLists = Arrays.asList(
+            Arrays.asList("a", "b"),
+            Arrays.asList("c", "d"),
+            Arrays.asList("e", "f")
+        );
+        
+        List<String> flattened = nestedLists.stream()
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
+        // Output: [a, b, c, d, e, f]
+        
+        // FLATMAP - split and flatten
+        List<String> sentences = Arrays.asList("Hello World", "Java Stream");
+        List<String> allWords = sentences.stream()
+            .flatMap(sentence -> Arrays.stream(sentence.split(" ")))
+            .collect(Collectors.toList());
+        // Output: [Hello, World, Java, Stream]
+        
+        // DISTINCT - remove duplicates
+        List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 3, 3, 4, 5);
+        List<Integer> unique = numbers.stream()
+            .distinct()
+            .collect(Collectors.toList());
+        // Output: [1, 2, 3, 4, 5]
+        
+        // SORTED - natural order
+        List<String> sorted = words.stream()
+            .sorted()
+            .collect(Collectors.toList());
+        // Output: [apple, banana, cherry, date, elderberry]
+        
+        // SORTED - custom comparator
+        List<String> sortedByLength = words.stream()
+            .sorted(Comparator.comparingInt(String::length).reversed())
+            .collect(Collectors.toList());
+        // Output: [elderberry, banana, cherry, apple, date]
+        
+        // LIMIT - take first n elements
+        List<String> limited = words.stream()
+            .limit(3)
+            .collect(Collectors.toList());
+        // Output: [apple, banana, cherry]
+        
+        // SKIP - skip first n elements
+        List<String> skipped = words.stream()
+            .skip(2)
+            .collect(Collectors.toList());
+        // Output: [cherry, date, elderberry]
+        
+        // PEEK - debug/side-effect (doesn't transform)
+        List<String> peeked = words.stream()
+            .peek(w -> System.out.println("Processing: " + w))
+            .map(String::toUpperCase)
+            .peek(w -> System.out.println("Processed: " + w))
+            .collect(Collectors.toList());
+        
+        // TAKEWHILE / DROPWHILE (Java 9+)
+        List<Integer> nums = Arrays.asList(1, 2, 3, 4, 5, 3, 2, 1);
+        List<Integer> takeWhile = nums.stream()
+            .takeWhile(n -> n < 4)
+            .collect(Collectors.toList());
+        // Output: [1, 2, 3] (stops at first false)
+        
+        List<Integer> dropWhile = nums.stream()
+            .dropWhile(n -> n < 4)
+            .collect(Collectors.toList());
+        // Output: [4, 5, 3, 2, 1] (drops while true)
+        
+        
+        // ========== TERMINAL OPERATIONS ==========
+        
+        // FOREACH - iterate with side-effects
+        words.stream()
+            .forEach(System.out::println);
+        
+        // FOREACHORDERED - maintains order (parallel streams)
+        words.parallelStream()
+            .forEachOrdered(System.out::println);
+        
+        // COLLECT - to List
+        List<String> list1 = words.stream().collect(Collectors.toList());
+        
+        // COLLECT - to Set
+        Set<String> set1 = words.stream().collect(Collectors.toSet());
+        
+        // COLLECT - to Map
+        Map<String, Integer> map1 = words.stream()
+            .collect(Collectors.toMap(
+                w -> w,                    // key
+                String::length             // value
+            ));
+        // Output: {apple=5, banana=6, cherry=6, date=4, elderberry=10}
+        
+        // COLLECT - to Map with duplicate key handling
+        Map<Integer, String> map2 = words.stream()
+            .collect(Collectors.toMap(
+                String::length,           // key
+                w -> w,                   // value
+                (existing, replacement) -> existing + "," + replacement  // merge function
+            ));
+        // Output: {4=date, 5=apple, 6=banana,cherry, 10=elderberry}
+        
+        // COLLECT - groupingBy
+        Map<Integer, List<String>> grouped = words.stream()
+            .collect(Collectors.groupingBy(String::length));
+        // Output: {4=[date], 5=[apple], 6=[banana, cherry], 10=[elderberry]}
+        
+        // COLLECT - groupingBy with counting
+        Map<Integer, Long> counts = words.stream()
+            .collect(Collectors.groupingBy(String::length, Collectors.counting()));
+        // Output: {4=1, 5=1, 6=2, 10=1}
+        
+        // COLLECT - partitioningBy (boolean key)
+        Map<Boolean, List<String>> partitioned = words.stream()
+            .collect(Collectors.partitioningBy(w -> w.length() > 5));
+        // Output: {false=[apple, date], true=[banana, cherry, elderberry]}
+        
+        // COLLECT - joining
+        String joined = words.stream()
+            .collect(Collectors.joining(", "));
+        // Output: "apple, banana, cherry, date, elderberry"
+        
+        String joinedWithPrefix = words.stream()
+            .collect(Collectors.joining(", ", "[", "]"));
+        // Output: "[apple, banana, cherry, date, elderberry]"
+        
+        // COLLECT - summarizingInt
+        IntSummaryStatistics stats = words.stream()
+            .collect(Collectors.summarizingInt(String::length));
+        System.out.println("Count: " + stats.getCount());        // 5
+        System.out.println("Sum: " + stats.getSum());            // 31
+        System.out.println("Min: " + stats.getMin());            // 4
+        System.out.println("Max: " + stats.getMax());            // 10
+        System.out.println("Average: " + stats.getAverage());    // 6.2
+        
+        // REDUCE - accumulate to single value
+        Optional<String> reduced = words.stream()
+            .reduce((a, b) -> a + "," + b);
+        // Output: Optional[apple,banana,cherry,date,elderberry]
+        
+        int sum = IntStream.of(1, 2, 3, 4, 5)
+            .reduce(0, (a, b) -> a + b);  // identity, accumulator
+        // Output: 15
+        
+        int product = IntStream.of(1, 2, 3, 4, 5)
+            .reduce(1, (a, b) -> a * b);
+        // Output: 120
+        
+        // COUNT
+        long count = words.stream()
+            .filter(w -> w.startsWith("c"))
+            .count();
+        // Output: 1
+        
+        // ANYMATCH / ALLMATCH / NONEMATCH
+        boolean anyStartsWithC = words.stream().anyMatch(w -> w.startsWith("c"));
+        // Output: true
+        
+        boolean allLongerThan3 = words.stream().allMatch(w -> w.length() > 3);
+        // Output: true
+        
+        boolean noneEmpty = words.stream().noneMatch(String::isEmpty);
+        // Output: true
+        
+        // FINDFIRST / FINDANY
+        Optional<String> first = words.stream()
+            .filter(w -> w.startsWith("b"))
+            .findFirst();
+        // Output: Optional[banana]
+        
+        Optional<String> any = words.parallelStream()
+            .filter(w -> w.startsWith("c"))
+            .findAny();  // non-deterministic in parallel
+        // Output: Optional[cherry] (or Optional[cherry] again)
+        
+        // MIN / MAX
+        Optional<String> min = words.stream()
+            .min(Comparator.naturalOrder());
+        // Output: Optional[apple]
+        
+        Optional<String> max = words.stream()
+            .max(Comparator.comparingInt(String::length));
+        // Output: Optional[elderberry]
+        
+        // TOARRAY
+        String[] arr = words.stream().toArray(String[]::new);
+        
+        
+        // ========== PRIMITIVE STREAMS ==========
+        
+        // IntStream, LongStream, DoubleStream - avoid boxing
+        IntStream intStream = IntStream.range(1, 6);  // 1,2,3,4,5
+        
+        int sumInt = IntStream.of(1, 2, 3, 4, 5).sum();
+        // Output: 15
+        
+        OptionalDouble average = IntStream.of(1, 2, 3, 4, 5).average();
+        // Output: OptionalDouble[3.0]
+        
+        IntStream.rangeClosed(1, 10)
+            .filter(n -> n % 2 == 0)
+            .forEach(System.out::println);
+        // Output: 2, 4, 6, 8, 10
+        
+        // Map to primitive
+        int[] lengths2 = words.stream()
+            .mapToInt(String::length)
+            .toArray();
+        
+        
+        // ========== PARALLEL STREAMS ==========
+        
+        // Sequential
+        long startSeq = System.currentTimeMillis();
+        long countSeq = IntStream.range(1, 1000000)
+            .filter(n -> n % 2 == 0)
+            .count();
+        long endSeq = System.currentTimeMillis();
+        System.out.println("Sequential: " + (endSeq - startSeq) + "ms");
+        
+        // Parallel
+        long startPar = System.currentTimeMillis();
+        long countPar = IntStream.range(1, 1000000)
+            .parallel()
+            .filter(n -> n % 2 == 0)
+            .count();
+        long endPar = System.currentTimeMillis();
+        System.out.println("Parallel: " + (endPar - startPar) + "ms");
+        
+        
+        // ========== ADVANCED EXAMPLES ==========
+        
+        // Complex grouping
+        List<Person> people = Arrays.asList(
+            new Person("Alice", 25, "NYC"),
+            new Person("Bob", 30, "LA"),
+            new Person("Charlie", 25, "NYC"),
+            new Person("Diana", 30, "LA")
+        );
+        
+        // Group by age, then by city
+        Map<Integer, Map<String, List<Person>>> grouped2 = people.stream()
+            .collect(Collectors.groupingBy(
+                Person::getAge,
+                Collectors.groupingBy(Person::getCity)
+            ));
+        
+        // Average age by city
+        Map<String, Double> avgAgeByCity = people.stream()
+            .collect(Collectors.groupingBy(
+                Person::getCity,
+                Collectors.averagingInt(Person::getAge)
+            ));
+        
+        // Find oldest person
+        Optional<Person> oldest = people.stream()
+            .max(Comparator.comparingInt(Person::getAge));
+        
+        // Get names of people in NYC
+        List<String> nycNames = people.stream()
+            .filter(p -> p.getCity().equals("NYC"))
+            .map(Person::getName)
+            .collect(Collectors.toList());
+        
+        // Chained operations
+        String result = people.stream()
+            .filter(p -> p.getAge() > 25)
+            .sorted(Comparator.comparing(Person::getName))
+            .map(Person::getName)
+            .collect(Collectors.joining(", ", "People: ", "."));
+        // Output: "People: Bob, Diana."
+    }
+    
+    static class Person {
+        private String name;
+        private int age;
+        private String city;
+        
+        public Person(String name, int age, String city) {
+            this.name = name;
+            this.age = age;
+            this.city = city;
+        }
+        
+        public String getName() { return name; }
+        public int getAge() { return age; }
+        public String getCity() { return city; }
+    }
+}
 ```
-*Note: operations are lazy, only `.collect()` triggers execution.*
+*Notice: Stream API provides rich set of operations for declarative data processing. Master these operations for efficient collection manipulation.*
 
 </div>
 
@@ -940,6 +1275,338 @@ Operations only execute when terminal operation is called, until then only pipel
 
 🗺️ **Connection map**  
 `Lambda` · `Functional Interface` · `Optional` · `Collector` · `Parallel Processing` · `Method References`
+
+</div>
+
+### Class vs Record {#class-vs-record}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Record (Java 14+)** is a concise syntax for immutable data carriers. **vs Class**: Records automatically generate constructor, getters, equals(), hashCode(), toString(). **Immutability**: all fields are final, no setters. **Compact constructor**: validation without explicit assignment. **Components**: record components become final fields. **Restrictions**: cannot extend classes (but can implement interfaces), all fields final, no additional instance fields. **Use cases**: DTOs, value objects, API responses, configuration holders. **Customization**: can override methods, add static methods. **Pattern matching**: enhanced with record patterns (Java 19+). **Performance**: similar to regular classes, compiler optimizations.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Boilerplate reduction**: automatic equals/hashCode/toString generation
+- **Immutability**: enforced final fields, thread-safe by design
+- **Clear intent**: explicitly models data carriers
+- **Pattern matching**: works seamlessly with modern Java features
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// Traditional class - verbose
+public final class PersonClass {
+    private final String name;
+    private final int age;
+    
+    public PersonClass(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    
+    public String getName() { return name; }
+    public int getAge() { return age; }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PersonClass)) return false;
+        PersonClass that = (PersonClass) o;
+        return age == that.age && Objects.equals(name, that.name);
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age);
+    }
+    
+    @Override
+    public String toString() {
+        return "PersonClass[name=" + name + ", age=" + age + "]";
+    }
+}
+
+// Record - concise (Java 14+)
+public record Person(String name, int age) {
+    // Compact constructor for validation
+    public Person {
+        if (age < 0) {
+            throw new IllegalArgumentException("Age cannot be negative");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be blank");
+        }
+    }
+    
+    // Custom methods
+    public boolean isAdult() {
+        return age >= 18;
+    }
+    
+    // Static factory method
+    public static Person of(String name, int age) {
+        return new Person(name, age);
+    }
+}
+
+// Usage
+Person p1 = new Person("Alice", 30);
+Person p2 = new Person("Alice", 30);
+
+System.out.println(p1.name());           // Alice (accessor method)
+System.out.println(p1.equals(p2));       // true (automatic equals)
+System.out.println(p1);                  // Person[name=Alice, age=30]
+System.out.println(p1.isAdult());        // true
+```
+*Notice: Record provides all standard methods automatically, ensuring consistency and reducing errors.*
+
+</div>
+
+<div class="version-badges">
+<span class="version-badge">Java 14</span>
+<span class="version-badge">Java 16 (stable)</span>
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "Records can't have methods" → Records can have custom methods, just not additional fields
+- "Records are always immutable" → Fields are final, but content can be mutable (e.g., List field)
+- "Records are just for DTOs" → Great for any immutable data carrier use case
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain when to use record vs class
+- Don't understand compact constructor validation
+- Confusion about record component accessors (name() not getName())
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Immutability` · `Value Objects` · `DTOs` · `Pattern Matching` · `Equals and HashCode`
+
+</div>
+
+### Concurrency Challenges {#concurrency-challenges}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Common multi-threading problems**: **Deadlock** (two+ threads wait for each other's locks, circular dependency), **Livelock** (threads actively respond to each other but make no progress), **Starvation** (thread never gets CPU time, low priority or resource monopolization). **Race condition**: outcome depends on thread execution order. **Detection**: thread dumps, profilers, jstack. **Prevention**: **Deadlock** (lock ordering, timeout, tryLock), **Livelock** (randomized retry delays), **Starvation** (fair locks, priority management). **Java tools**: ThreadMXBean for deadlock detection, ReentrantLock for fairness, ExecutorService for resource management.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **System reliability**: prevents application freezes and hangs
+- **Performance**: identifies bottlenecks in concurrent systems
+- **Resource utilization**: ensures fair thread scheduling
+- **Production debugging**: understanding these helps diagnose issues
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+// DEADLOCK EXAMPLE
+class BankAccount {
+    private final String accountId;
+    private double balance;
+    
+    public BankAccount(String accountId, double balance) {
+        this.accountId = accountId;
+        this.balance = balance;
+    }
+    
+    public void transfer(BankAccount to, double amount) {
+        synchronized (this) {                    // Lock account 1
+            synchronized (to) {                  // Then lock account 2
+                if (this.balance >= amount) {
+                    this.balance -= amount;
+                    to.balance += amount;
+                    System.out.println("Transfer completed: " + amount);
+                }
+            }
+        }
+    }
+}
+
+// Deadlock scenario:
+// Thread 1: account1.transfer(account2, 100) - locks account1, waits for account2
+// Thread 2: account2.transfer(account1, 50)  - locks account2, waits for account1
+// → DEADLOCK! Both threads wait forever.
+
+// SOLUTION: Lock ordering
+class BankAccountFixed {
+    private final String accountId;
+    private double balance;
+    
+    public void transfer(BankAccountFixed to, double amount) {
+        BankAccountFixed first = this.accountId.compareTo(to.accountId) < 0 ? this : to;
+        BankAccountFixed second = this.accountId.compareTo(to.accountId) < 0 ? to : this;
+        
+        synchronized (first) {     // Always lock in same order
+            synchronized (second) {
+                if (this.balance >= amount) {
+                    this.balance -= amount;
+                    to.balance += amount;
+                }
+            }
+        }
+    }
+}
+
+// LIVELOCK EXAMPLE
+class Polite {
+    private boolean handshaking;
+    
+    public void passHallway(Polite other) {
+        while (other.handshaking) {
+            // Wait for other to stop handshaking
+            System.out.println(Thread.currentThread().getName() + " waiting...");
+            
+            // Both threads keep checking, but neither progresses
+            this.handshaking = false;
+            Thread.yield();
+        }
+        
+        this.handshaking = true;
+        System.out.println(Thread.currentThread().getName() + " passing");
+        this.handshaking = false;
+    }
+}
+// → LIVELOCK! Threads actively respond to each other but make no progress.
+
+// SOLUTION: Random backoff
+public void passHallwayFixed(Polite other) throws InterruptedException {
+    while (other.handshaking) {
+        Thread.sleep((long) (Math.random() * 100)); // Random delay
+    }
+    this.handshaking = true;
+    System.out.println(Thread.currentThread().getName() + " passing");
+    this.handshaking = false;
+}
+
+// STARVATION EXAMPLE
+class ResourceScheduler {
+    public synchronized void highPriorityTask() {
+        while (true) {
+            // High-priority tasks keep executing
+            System.out.println("High priority task running");
+        }
+    }
+    
+    public synchronized void lowPriorityTask() {
+        // This might never execute - STARVATION
+        System.out.println("Low priority task running");
+    }
+}
+
+// SOLUTION: Fair scheduling
+import java.util.concurrent.locks.ReentrantLock;
+
+class FairResourceScheduler {
+    private final ReentrantLock lock = new ReentrantLock(true); // Fair lock
+    
+    public void task() {
+        lock.lock();
+        try {
+            System.out.println(Thread.currentThread().getName() + " executing");
+            // Do work
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+
+// DEADLOCK DETECTION
+import java.lang.management.*;
+
+public class DeadlockDetector {
+    public static void detectDeadlocks() {
+        ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
+        long[] deadlockedThreads = threadBean.findDeadlockedThreads();
+        
+        if (deadlockedThreads != null) {
+            ThreadInfo[] threadInfos = threadBean.getThreadInfo(deadlockedThreads);
+            System.out.println("Deadlock detected!");
+            for (ThreadInfo info : threadInfos) {
+                System.out.println("Thread: " + info.getThreadName());
+                System.out.println("Locked on: " + info.getLockName());
+                System.out.println("Owned by: " + info.getLockOwnerName());
+            }
+        }
+    }
+}
+```
+*Notice: Proper lock ordering, timeouts, and fair scheduling prevent most concurrency issues.*
+
+</div>
+
+<div class="concept-section myths">
+
+<details>
+<summary>🧯 <strong>Common myths / misconceptions</strong></summary>
+
+<div>
+
+- "synchronized always prevents deadlock" → Can cause deadlock with improper lock ordering
+- "Livelock is rare in practice" → Can occur with retry mechanisms and reactive systems
+- "JVM automatically detects deadlocks" → You must explicitly check with ThreadMXBean
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section interview-pitfalls">
+
+<details>
+<summary>⚠️ <strong>Interview pitfalls</strong></summary>
+
+<div>
+
+- Can't explain difference between deadlock and livelock
+- Don't know prevention strategies for each
+- Can't identify starvation scenarios
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Thread Safety` · `Synchronization` · `Lock Ordering` · `Fair Locks` · `Concurrent Collections`
 
 </div>
 
@@ -1459,3 +2126,13 @@ User user = new User.Builder()
 - **Equals and hashCode contract**: if you override one, override both
 - **String concatenation in loops**: use StringBuilder for multiple concatenations
 - **Premature optimization**: write clear code first, optimize when needed
+
+## 👉 See Also
+
+- [Decorator pattern](oop.md#decorator)
+- [Command pattern](oop.md#command-pattern)
+- [Stream API](#stream-api)
+- [Concurrency Challenges](#concurrency-challenges)
+- [File read & parse algorithm](algorithms.md#file-read-parse)
+- [Interface vs Abstract Class](oop.md#interface-vs-abstract-class)
+- [Inheritance](oop.md#inheritance)
