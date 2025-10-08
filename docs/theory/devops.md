@@ -31,12 +31,8 @@ A DevOps kulturális és technológiai megközelítés a fejlesztési és üzeme
 
 <div class="concept-section mental-model" data-filter="pipeline junior">
 
-<details>
-<summary>🔄 <strong>Fogalom meghatározása</strong></summary>
-
-<div>
-
-A **Continuous Integration (CI)** egy szoftverfejlesztési gyakorlat, amelyben a fejlesztők gyakran (akár naponta többször is) integrálják kódváltoztatásaikat egy közös verziókezelő repositoryba. Minden integráció után automatikus build és tesztelési folyamat fut le, amely azonnal visszajelzést ad a kód minőségéről. 
+� **Fogalom meghatározása**  
+*A **Continuous Integration (CI)** egy szoftverfejlesztési gyakorlat, amelyben a fejlesztők gyakran (akár naponta többször is) integrálják kódváltoztatásaikat egy közös verziókezelő repositoryba. Minden integráció után automatikus build és tesztelési folyamat fut le, amely azonnal visszajelzést ad a kód minőségéről.*
 
 **Fő elemei:**
 - **Gyakori commit-ok** a verziókezelő rendszerbe (Git)
@@ -49,17 +45,9 @@ A CI célja a korai hibafeltárás és a folyamatos kódintegráció fenntartás
 
 </div>
 
-</details>
-
-</div>
-
 <div class="concept-section why-important" data-filter="pipeline junior">
 
-<details>
-<summary>💡 <strong>Miért számít?</strong></summary>
-
-<div>
-
+💡 **Miért számít?**
 - **Korai hibafeltárás**: Problémák azonosítása percekkel a commit után, nem napokkal később
 - **Merge konfliktuseliminálás**: Gyakori integráció csökkenti a code conflict-okat
 - **Kód minőség biztosítása**: Automatikus code quality checks minden változásnál
@@ -67,16 +55,9 @@ A CI célja a korai hibafeltárás és a folyamatos kódintegráció fenntartás
 
 </div>
 
-</details>
-
-</div>
-
 <div class="runnable-model" data-filter="pipeline">
 
-<details>
-<summary><strong>Runnable mental model</strong></summary>
-
-<div>
+**Runnable mental model**
 
 **GitHub Actions CI workflow:**
 ```yaml

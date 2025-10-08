@@ -4585,157 +4585,421 @@ Ha k << n és többször kell query-zni, vagy ha stream-ben érkeznek az adatok.
   <span class="tag">medior</span>
 </div>
 
-### Mergesort vs Quicksort {#mergesort-vs-quicksort}
-<!-- tags: sorting, mergesort, quicksort, divide-conquer, comparison, junior -->
+### Sorting Algorithms (QuickSort, MergeSort, HeapSort) {#sorting-algorithms}
 
-<div class="concept-section mental-model">
+<div class="concept-section mental-model" data-filter="sorting medior">
 
-🧩 **Probléma megfogalmazása**  
-*A Mergesort és Quicksort a két legfontosabb összehasonlítás-alapú rendezési algoritmus. Mindkettő "oszd meg és uralkodj" stratégiát használ, de különböző megközelítéssel: Mergesort először feloszt, majd egyesít; Quicksort először particionál (rendez), majd feloszt. Mindkettőnek megvannak a maga előnyei és hátrányai.*
-
-</div>
-
-<div class="concept-section performance">
-
-📊 **Idő- és memória-komplexitás**
-
-**Mergesort:**
-- **Best case**: O(n log n) idő, O(n) tér
-- **Average case**: O(n log n) idő, O(n) tér
-- **Worst case**: O(n log n) idő, O(n) tér
-- **Stability**: Stabil rendezés
-
-**Quicksort:**
-- **Best case**: O(n log n) idő, O(log n) tér
-- **Average case**: O(n log n) idő, O(log n) tér
-- **Worst case**: O(n²) idő, O(n) tér
-- **Stability**: Nem stabil (de stabil változat készíthető)
+📋 **Fogalom meghatározása**  
+*Sorting algorithms = comparison-based rendezési algoritmusok, amelyek elemeket összehasonlítva rendeznek. **QuickSort**: Divide-and-conquer, partition around pivot, in-place, átlag O(n log n), worst O(n²), **nem stabil**. **MergeSort**: Divide-and-conquer, split then merge, O(n) extra space, guaranteed O(n log n), **stabil**. **HeapSort**: Selection sort variant, heap data structure használat, in-place, O(n log n) guaranteed, **nem stabil**. **Stability**: Egyenlő elemek eredeti sorrendje megmarad-e. **In-place**: O(1) vagy O(log n) extra space. **Comparison count**: Alsó korlát összehasonlítás-alapú rendezésnek O(n log n).*
 
 </div>
 
-<div class="concept-section algorithm-steps">
+<div class="concept-section why-important" data-filter="sorting medior">
 
-⚙️ **Algoritmus lépései (pszeudokód)**
+💡 **Miért számít?**
+- **Algorithm design**: Divide-and-conquer paradigma gyakorlati példája
+- **Interview frequency**: Top 10 leggyakoribb interjú téma
+- **Performance**: Adatstruktúra választás (in-place vs stable) befolyásolja scalability-t
+- **Real-world usage**: Adatbázis indexing, file systems, priority queues alapja
 
-```
-// Mergesort - "Feloszt majd egyesít"
-function mergeSort(array, left, right):
-    if left >= right:
-        return
-    
-    mid = left + (right - left) / 2
-    mergeSort(array, left, mid)      // Bal fél rendezése
-    mergeSort(array, mid + 1, right) // Jobb fél rendezése
-    merge(array, left, mid, right)   // Egyesítés
+</div>
 
-function merge(array, left, mid, right):
-    leftArray = array[left...mid]
-    rightArray = array[mid+1...right]
-    
-    i = 0, j = 0, k = left
-    
-    while i < leftArray.length AND j < rightArray.length:
-        if leftArray[i] <= rightArray[j]:
-            array[k] = leftArray[i]
-            i++
-        else:
-            array[k] = rightArray[j]
-            j++
-        k++
-    
-    // Maradék elemek másolása
-    copy remaining elements from leftArray and rightArray
+<div class="runnable-model" data-filter="sorting">
 
-// Quicksort - "Particionál majd feloszt"
-function quickSort(array, left, right):
-    if left < right:
-        pivotIndex = partition(array, left, right)
-        quickSort(array, left, pivotIndex - 1)  // Pivot előtti rész
-        quickSort(array, pivotIndex + 1, right) // Pivot utáni rész
+**Runnable mental model**
 
-function partition(array, left, right):
-    pivot = array[right]
-    i = left - 1
+**QuickSort - Partition-based sorting:**
+```javascript
+// QuickSort: O(n log n) average, O(n²) worst (sorted/reverse sorted)
+// In-place, not stable
+function quickSort(arr, left = 0, right = arr.length - 1) {
+    if (left < right) {
+        // Randomized pivot to avoid O(n²) on sorted arrays
+        const pivotIndex = randomizedPartition(arr, left, right);
+        quickSort(arr, left, pivotIndex - 1);
+        quickSort(arr, pivotIndex + 1, right);
+    }
+    return arr;
+}
+
+function randomizedPartition(arr, left, right) {
+    // Random pivot selection prevents worst-case on sorted data
+    const randomIndex = left + Math.floor(Math.random() * (right - left + 1));
+    [arr[randomIndex], arr[right]] = [arr[right], arr[randomIndex]];
     
-    for j = left to right - 1:
-        if array[j] <= pivot:
-            i++
-            swap(array, i, j)
+    return partition(arr, left, right);
+}
+
+function partition(arr, left, right) {
+    const pivot = arr[right];
+    let i = left - 1;  // Smaller elements boundary
     
-    swap(array, i + 1, right)
-    return i + 1
+    for (let j = left; j < right; j++) {
+        if (arr[j] <= pivot) {
+            i++;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+    
+    [arr[i + 1], arr[right]] = [arr[right], arr[i + 1]];
+    return i + 1;
+}
+
+// Example:
+const arr1 = [64, 34, 25, 12, 22, 11, 90];
+quickSort(arr1);
+console.log(arr1);  // [11, 12, 22, 25, 34, 64, 90]
 ```
 
+**MergeSort - Divide and merge:**
+```javascript
+// MergeSort: O(n log n) guaranteed, O(n) space
+// Not in-place, stable
+function mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+    
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+    
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    const result = [];
+    let i = 0, j = 0;
+    
+    while (i < left.length && j < right.length) {
+        if (left[i] <= right[j]) {  // <= ensures stability
+            result.push(left[i++]);
+        } else {
+            result.push(right[j++]);
+        }
+    }
+    
+    return result.concat(left.slice(i)).concat(right.slice(j));
+}
+
+// Example:
+const arr2 = [64, 34, 25, 12, 22, 11, 90];
+console.log(mergeSort(arr2));  // [11, 12, 22, 25, 34, 64, 90]
+```
+
+**HeapSort - Selection sort with heap:**
+```javascript
+// HeapSort: O(n log n) guaranteed, O(1) extra space
+// In-place, not stable
+function heapSort(arr) {
+    const n = arr.length;
+    
+    // Build max heap
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+    
+    // Extract elements from heap
+    for (let i = n - 1; i > 0; i--) {
+        [arr[0], arr[i]] = [arr[i], arr[0]];
+        heapify(arr, i, 0);
+    }
+    
+    return arr;
+}
+
+function heapify(arr, n, i) {
+    let largest = i;
+    const left = 2 * i + 1;
+    const right = 2 * i + 2;
+    
+    if (left < n && arr[left] > arr[largest]) largest = left;
+    if (right < n && arr[right] > arr[largest]) largest = right;
+    
+    if (largest !== i) {
+        [arr[i], arr[largest]] = [arr[largest], arr[i]];
+        heapify(arr, n, largest);
+    }
+}
+
+// Example:
+const arr3 = [64, 34, 25, 12, 22, 11, 90];
+heapSort(arr3);
+console.log(arr3);  // [11, 12, 22, 25, 34, 64, 90]
+```
+*Figyeld meg: QuickSort fastest average, MergeSort stable + guaranteed, HeapSort in-place + guaranteed.*
+
 </div>
 
-<div class="concept-section implementation">
-
-💻 **Megvalósítás különböző nyelveken**
+<div class="concept-section myths" data-filter="sorting">
 
 <details>
-<summary><strong>Java implementáció</strong></summary>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
 
+<div>
+
+- **"QuickSort mindig O(n log n)"** → **Valójában**: O(n²) worst case sorted input-nál, randomized pivot kell
+- **"MergeSort in-place"** → **Valójában**: O(n) extra space kell a merge-hez
+- **"HeapSort stable"** → **Valójában**: Nem stabil, heap operations megváltoztatják equal elements sorrendjét
+- **"Stability nem számít"** → **Valójában**: Multi-field sorting-nál (sort by name, then age) stability kritikus
+- **"QuickSort O(log n) space"** → **Valójában**: O(log n) average, O(n) worst (recursion stack)
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="sorting performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Pivot Selection Impact:**
+```javascript
+// ❌ ROSSZ: Fixed pivot (last element) = O(n²) on sorted
+function badQuickSort(arr, left, right) {
+    const pivot = arr[right];  // Sorted input: O(n²)!
+}
+
+// ✅ JÓ: Randomized pivot = Expected O(n log n)
+function goodQuickSort(arr, left, right) {
+    const randomIndex = left + Math.floor(Math.random() * (right - left + 1));
+    [arr[randomIndex], arr[right]] = [arr[right], arr[randomIndex]];
+    const pivot = arr[right];  // O(n log n) expected
+}
+
+// Sorted array benchmark:
+// Bad: 5000ms (O(n²))
+// Good: 50ms (O(n log n))
+```
+
+**Small Array Optimization:**
+```javascript
+// Hybrid: QuickSort + Insertion Sort
+const THRESHOLD = 10;
+
+function hybridQuickSort(arr, left, right) {
+    if (right - left < THRESHOLD) {
+        insertionSort(arr, left, right);  // Fast for small arrays
+        return;
+    }
+    // ... QuickSort logic
+}
+// 10-20% faster than pure QuickSort
+```
+
+**Cache Performance:**
+```javascript
+// QuickSort: ✅ Good cache locality (sequential partition)
+// MergeSort: ❌ Poor (scattered merge access)
+// HeapSort: ❌ Poor (heap jumps)
+
+// Benchmark (1M elements):
+// QuickSort: ~50ms
+// MergeSort: ~80ms
+// HeapSort: ~120ms
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="sorting">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**JavaScript Array.prototype.sort():**
+```javascript
+// Numeric sorting:
+[10, 5, 40, 25].sort((a, b) => a - b);  // [5, 10, 25, 40]
+
+// Stable since ES2019 (TimSort)
+const data = [{ name: 'Alice', age: 30 }, { name: 'Bob', age: 30 }];
+data.sort((a, b) => a.age - b.age);  // Alice/Bob order preserved
+```
+
+**Java Arrays.sort():**
 ```java
-import java.util.*;
+// Primitive arrays: Dual-Pivot QuickSort (not stable)
+int[] arr = {5, 2, 8, 1};
+Arrays.sort(arr);
 
-public class SortingComparison {
-    
-    // Mergesort Implementation
-    public static void mergeSort(int[] arr) {
-        if (arr.length <= 1) return;
-        mergeSort(arr, 0, arr.length - 1);
+// Object arrays: TimSort (stable)
+Integer[] arr2 = {5, 2, 8, 1};
+Arrays.sort(arr2);  // Stable
+```
+
+**Python sorted():**
+```python
+# TimSort (stable)
+arr = [5, 2, 8, 1]
+sorted(arr)  # [1, 2, 5, 8]
+
+# Custom key:
+data = [('Alice', 30), ('Bob', 25)]
+sorted(data, key=lambda x: x[1])  // Sort by age
+```
+
+**Visualization:**
+- VisuAlgo: https://visualgo.net/en/sorting
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="sorting">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mikor használj QuickSort helyett MergeSort-ot?**
+<details>
+<summary>Válasz</summary>
+
+**Use MergeSort when**:
+- ✅ Stability required (multi-field sorting)
+- ✅ Guaranteed O(n log n) needed
+- ✅ External sorting (disk-based)
+
+**Use QuickSort when**:
+- ✅ Average case performance (2-3x faster)
+- ✅ In-place needed (O(log n) vs O(n))
+
+</details>
+
+**2) Miért O(n²) worst case a QuickSort?**
+<details>
+<summary>Válasz</summary>
+
+**Worst case**: Sorted/reverse sorted + last pivot.
+
+```javascript
+[1, 2, 3, 4, 5]  // Sorted
+pivot = 5  // Partition: [1,2,3,4] | [5]
+// Unbalanced: O(n) depth × O(n) partition = O(n²)
+```
+
+**Solution**: Randomized pivot → Expected O(n log n).
+
+</details>
+
+**3) Mi az algoritmus stability?**
+<details>
+<summary>Válasz</summary>
+
+**Stability**: Equal elements eredeti sorrendje megmarad.
+
+```javascript
+[{name:'Alice', age:30}, {name:'Bob', age:30}]
+// Stable sort by age: Alice before Bob (original order) ✅
+```
+
+**Stable**: MergeSort, TimSort.  
+**Unstable**: QuickSort, HeapSort.
+
+</details>
+
+**4) Hogyan működik a HeapSort?**
+<details>
+<summary>Válasz</summary>
+
+1. **Build max heap**: O(n) heapify
+2. **Extract max repeatedly**: O(n log n)
+   - Swap root with last
+   - Reduce heap size
+   - Heapify root
+
+**Use when**: Guaranteed O(n log n) + O(1) space.
+
+</details>
+
+**5) Mi a különbség in-place és out-of-place?**
+<details>
+<summary>Válasz</summary>
+
+**In-place**: O(1) extra space.
+- QuickSort O(log n) stack, HeapSort O(1)
+
+**Out-of-place**: O(n) space.
+- MergeSort O(n) temporary arrays
+
+</details>
+
+**6) Mitől függ a QuickSort partition quality?**
+<details>
+<summary>Válasz</summary>
+
+**Good partition**: Even split (~n/2 each) → O(log n) depth.  
+**Bad partition**: Skewed (n-1 vs 0) → O(n) depth.
+
+**Pivot strategies**:
+- Fixed: O(n²) on sorted ❌
+- Random: O(n log n) expected ✅
+- Median-of-three: Better partitions ✅✅
+
+</details>
+
+**7) Hogyan optimalizálod a MergeSort memory usage-t?**
+<details>
+<summary>Válasz</summary>
+
+**Optimization**: Reuse temporary array (allocate once).
+
+```javascript
+let tempArray = new Array(n);  // Reuse
+
+function optimizedMerge(arr, left, mid, right) {
+    // Copy to temp
+    for (let i = left; i <= right; i++) {
+        tempArray[i] = arr[i];
     }
-    
-    private static void mergeSort(int[] arr, int left, int right) {
-        if (left >= right) return;
-        
-        int mid = left + (right - left) / 2;
-        mergeSort(arr, left, mid);
-        mergeSort(arr, mid + 1, right);
-        merge(arr, left, mid, right);
-    }
-    
-    private static void merge(int[] arr, int left, int mid, int right) {
-        int[] leftArr = Arrays.copyOfRange(arr, left, mid + 1);
-        int[] rightArr = Arrays.copyOfRange(arr, mid + 1, right + 1);
-        
-        int i = 0, j = 0, k = left;
-        
-        while (i < leftArr.length && j < rightArr.length) {
-            if (leftArr[i] <= rightArr[j]) {
-                arr[k] = leftArr[i];
-                i++;
-            } else {
-                arr[k] = rightArr[j];
-                j++;
-            }
-            k++;
-        }
-        
-        // Copy remaining elements
-        while (i < leftArr.length) {
-            arr[k] = leftArr[i];
-            i++;
-            k++;
-        }
-        
-        while (j < rightArr.length) {
-            arr[k] = rightArr[j];
-            j++;
-            k++;
-        }
-    }
-    
-    // Quicksort Implementation
-    public static void quickSort(int[] arr) {
-        if (arr.length <= 1) return;
-        quickSort(arr, 0, arr.length - 1);
-    }
-    
-    private static void quickSort(int[] arr, int left, int right) {
-        if (left < right) {
-            int pivotIndex = randomizedPartition(arr, left, right);
-            quickSort(arr, left, pivotIndex - 1);
+    // Merge from temp to arr (no allocations)
+}
+```
+
+</details>
+
+**8) Mikor használj Insertion Sort?**
+<details>
+<summary>Válasz</summary>
+
+**Insertion Sort**:
+- O(n²) time
+- **Fast for small arrays** (< 10-50 elements)
+- **Fast for nearly sorted** (O(n) best case)
+
+**Hybrid approach**:
+```javascript
+if (right - left < 10) {
+    insertionSort(arr, left, right);
+} else {
+    quickSort(arr, left, right);
+}
+```
+
+10-20% faster than pure QuickSort.
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
+
+### Top-K Elements with Heap {#top-k-heap}
             quickSort(arr, pivotIndex + 1, right);
         }
     }

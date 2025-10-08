@@ -2554,6 +2554,98 @@ console.log('TypeScript utility types loaded');
 
 </div>
 
+<div class="concept-section performance" data-filter="typescript performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Compile-time performance:**
+```typescript
+// ❌ ROSSZ: Túl komplex nested utility types → lassú compilation
+type ComplexType<T> = Partial<Pick<Omit<Record<keyof T, T[keyof T]>, 'id'>, 'name' | 'email'>>;
+
+// ✅ JÓ: Egyszerűbb, olvashatóbb, gyorsabb compile
+type UserUpdate = Partial<Pick<User, 'name' | 'email'>>;
+```
+
+**TypeScript compiler speed:**
+- **Simple utility types**: ~1ms compile time per type
+- **Complex nested utilities**: 5-10ms compile time
+- **Record with large unions**: Exponential growth (500+ keys = lassú)
+
+**Best practices:**
+- Kerüld a 3+ nested utility type-okat
+- Union type-okat limitáld 50 literal-ra
+- `Record<string, T>` helyett használj `Map<string, T>`-t runtime-ra
+
+**Bundle size impact:**
+- Utility types: **0 KB** bundle size (compile-time erasure)
+- Type checking overhead: Nincs runtime cost
+- Csak a generated JavaScript code mérete számít
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="typescript">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Built-in TypeScript utilities (teljes lista):**
+```typescript
+// Alapvető transzformációk
+Partial<T>           // Minden property optional
+Required<T>          // Minden property required
+Readonly<T>          // Minden property readonly
+Pick<T, K>           // Kiválasztott property-k
+Omit<T, K>           // Kihagyott property-k
+Record<K, T>         // Key-value mapping
+
+// Haladó típus manipuláció
+Exclude<T, U>        // Union-ból kizárás
+Extract<T, U>        // Union-ból kiválasztás
+NonNullable<T>       // null/undefined eltávolítás
+ReturnType<T>        // Függvény return type
+Parameters<T>        // Függvény paraméterek tuple
+InstanceType<T>      // Constructor instance type
+ThisParameterType<T> // Function this type
+```
+
+**VS Code extensions:**
+- **TypeScript Hero** - Auto-import, organize imports
+- **Pretty TypeScript Errors** - Olvasható error messages
+- **Total TypeScript** - Inline type hints
+
+**CLI tools:**
+```bash
+# Type checking
+tsc --noEmit
+
+# Generate declaration files
+tsc --declaration --emitDeclarationOnly
+
+# Type coverage analysis
+npx type-coverage --detail
+```
+
+**Utility type libraries:**
+- **ts-essentials** - Extra utility types
+- **utility-types** - További helpers
+- **type-fest** - 100+ utility types
+
+</div>
+
+</details>
+
+</div>
+
 <div class="concept-section micro-learning" data-filter="typescript">
 
 <details>
@@ -3088,6 +3180,122 @@ console.log('TypeScript Generics examples loaded');
 
 </div>
 
+<div class="concept-section performance" data-filter="typescript performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Compile-time complexity:**
+```typescript
+// ❌ ROSSZ: Túl komplex nested generics → lassú compilation
+type NestedGeneric<T, U, V, W> = Record<keyof T, Record<keyof U, Record<keyof V, W>>>;
+
+// ✅ JÓ: Egyszerűbb generics, gyorsabb compile
+type SimpleMap<K extends string, V> = Record<K, V>;
+```
+
+**Type inference vs explicit types:**
+```typescript
+// Type inference (gyorsabb fejlesztés)
+const result = identity(42); // Type: number (inferred)
+
+// Explicit type (jobb dokumentáció)
+const result2 = identity<number>(42); // Type: number (explicit)
+```
+
+**Generic constraint overhead:**
+- **No constraint**: ~1ms compile time
+- **Simple constraint** (`extends object`): ~2ms compile time
+- **Complex constraint** (`extends { a: X, b: Y, c: Z }`): ~5-10ms compile time
+
+**Best practices:**
+- Használj type inference-t ahol lehetséges
+- Kerüld a 4+ generic paramétert (T, U, V, W már túl sok)
+- Constraints-et tartsd egyszerűen
+- Generic alias-okkal csökkentsd a duplikációt
+
+**Runtime impact:**
+- **Generics**: 0 KB bundle size, 0ms runtime cost
+- Csak TypeScript compile-time feature
+- JavaScript output ugyanaz mint generic nélkül
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="typescript">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**TypeScript built-in generic utilities:**
+```typescript
+// Array generics
+Array<T>
+ReadonlyArray<T>
+Promise<T>
+Map<K, V>
+Set<T>
+WeakMap<K, V>
+WeakSet<T>
+
+// Function generics
+ReturnType<T>
+Parameters<T>
+ConstructorParameters<T>
+```
+
+**React generic patterns:**
+```typescript
+// Component props with generics
+React.FC<Props>
+React.Component<Props, State>
+React.PropsWithChildren<Props>
+React.ComponentType<Props>
+
+// Hooks with generics
+useState<T>
+useRef<T>
+useReducer<Reducer<State, Action>>
+useContext<T>
+```
+
+**VS Code features:**
+- **Generic parameter hints**: Hover over `<T>` to see constraints
+- **Type inference display**: Shows inferred types automatically
+- **Quick fix**: "Add explicit type arguments"
+
+**Testing libraries:**
+```typescript
+// Jest with generics
+expect<T>(value: T)
+jest.fn<T>()
+
+// React Testing Library
+render<Props>(component: React.ComponentType<Props>)
+```
+
+**Debugging tools:**
+```bash
+# Show inferred types in terminal
+tsc --noEmit --extendedDiagnostics
+
+# Type checking with generics
+tsc --traceResolution
+```
+
+</div>
+
+</details>
+
+</div>
+
 <div class="concept-section micro-learning" data-filter="typescript">
 
 <details>
@@ -3587,6 +3795,149 @@ console.log('Type narrowing and type guards examples loaded');
 - „Type guards csak compile-time-ban működnek." → Ellenkezőleg, runtime checking + compile-time type info
 - „typeof elegendő minden type guard-hoz." → Complex object-ekhez custom type guard kell
 - „Type narrowing automatikus." → Explicit checking és guard functions szükségesek
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="typescript performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Runtime type checking cost:**
+```typescript
+// ❌ LASSÚ: Túl sok type guard minden render-nél
+function Component({ data }: { data: unknown }) {
+    if (isComplexObject(data)) { // Mély object traversal
+        if (hasAllProperties(data)) { // Ismételt checking
+            // ...
+        }
+    }
+}
+
+// ✅ GYORS: Type guard csak egyszer, cache eredmény
+function Component({ data }: { data: unknown }) {
+    const validData = useMemo(() => {
+        return isComplexObject(data) ? data : null;
+    }, [data]);
+    
+    if (validData) {
+        // Use cached valid data
+    }
+}
+```
+
+**Type guard performance:**
+- **typeof check**: ~0.001ms (fastest)
+- **instanceof check**: ~0.01ms (fast)
+- **in operator**: ~0.02ms (medium)
+- **Custom type guard (shallow)**: ~0.1ms
+- **Custom type guard (deep)**: ~1-5ms (slow)
+
+**Discriminated union performance:**
+```typescript
+// ✅ GYORS: O(1) switch on literal
+switch (state.status) {
+    case 'loading': return <Spinner />;
+    case 'success': return <Data data={state.data} />;
+    case 'error': return <Error error={state.error} />;
+}
+
+// ❌ LASSABB: Multiple type guard calls
+if (isLoading(state)) return <Spinner />;
+if (isSuccess(state)) return <Data data={state.data} />;
+if (isError(state)) return <Error error={state.error} />;
+```
+
+**Best practices:**
+- Használj discriminated unions ahol lehetséges (gyorsabb)
+- Cache-eld a type guard eredményeket (useMemo)
+- Kerüld a deep type guard-okat hot path-ban
+- typeof/instanceof előnyben részesítése custom guard-okkal szemben
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="typescript">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Built-in type guards:**
+```typescript
+typeof       // Primitív típusok
+instanceof   // Class instances
+Array.isArray() // Array check
+in           // Property existence
+
+// Optional chaining + nullish coalescing
+value?.property
+value ?? defaultValue
+```
+
+**Runtime validation libraries:**
+```bash
+# Zod - Schema validation with type inference
+npm install zod
+
+# io-ts - Functional programming approach
+npm install io-ts
+
+# Yup - Schema validation
+npm install yup
+
+# AJV - JSON Schema validator
+npm install ajv
+```
+
+**Zod example:**
+```typescript
+import { z } from 'zod';
+
+const UserSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    email: z.string().email(),
+    age: z.number().min(0)
+});
+
+type User = z.infer<typeof UserSchema>;
+
+function parseUser(data: unknown): User {
+    return UserSchema.parse(data); // Throws if invalid
+}
+
+// Type guard with Zod
+function isUser(data: unknown): data is User {
+    return UserSchema.safeParse(data).success;
+}
+```
+
+**VS Code extensions:**
+- **Error Lens** - Inline type errors
+- **Pretty TypeScript Errors** - Readable error messages
+- **TypeScript Error Translator** - Plain English errors
+
+**Debugging:**
+```typescript
+// Type assertions for debugging
+const value: unknown = getData();
+console.log((value as any).property); // Temporary bypass
+
+// Type logging
+type Test = typeof value;
+//   ^? Hover to see type
+```
 
 </div>
 
@@ -4285,6 +4636,1532 @@ A: React azonosítja mely elemek változtak/adódtak hozzá/törlődtek, optimal
 </details>
 
 </div>
+
+---
+
+### useState {#usestate}
+
+<div class="concept-section mental-model" data-filter="hooks junior react">
+
+📋 **Fogalom meghatározása**  
+*A **useState** egy React Hook, amely lehetővé teszi lokális állapot (state) hozzáadását funkcionális komponensekhez. Az állapot változása újrarenderelést vált ki. A hook egy párt ad vissza: `[state, setState]`, ahol a `state` az aktuális értéket tartalmazza, a `setState` pedig egy függvény az értékk frissítéséhez. Az állapot frissítés aszinkron, és batch-elve történik a teljesítmény érdekében.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="hooks junior">
+
+💡 **Miért számít?**
+- **Functional components state-tel**: Class component-ek nélkül is lehet állapotot kezelni
+- **Egyszerűbb kód**: Kevesebb boilerplate mint class component-ek esetében
+- **Multiple states**: Több független state változó egyszerűen kezelhető
+- **Hooks composition**: Kombinálható más Hook-okkal (useEffect, useMemo)
+- **TypeScript support**: Erős típusosítás generic type-okkal
+
+</div>
+
+<div class="runnable-model" data-filter="hooks react">
+
+**Runnable mental model**
+```tsx
+import React, { useState } from 'react';
+
+// 1. ALAPVETŐ HASZNÁLAT - Primitív típusok
+const Counter: React.FC = () => {
+    // TypeScript automatikusan kikövetkezteti a number típust
+    const [count, setCount] = useState(0);
+    const [isActive, setIsActive] = useState(false);
+    const [name, setName] = useState('');
+
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={() => setCount(count + 1)}>Increment</button>
+            <button onClick={() => setCount(prev => prev + 1)}>Increment (functional)</button>
+        </div>
+    );
+};
+
+// 2. KOMPLEX TÍPUSOK - Objects és Arrays
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    preferences: {
+        theme: 'light' | 'dark';
+        notifications: boolean;
+    };
+}
+
+const UserProfile: React.FC = () => {
+    // Explicit TypeScript type
+    const [user, setUser] = useState<User | null>(null);
+    const [tags, setTags] = useState<string[]>([]);
+
+    // ✅ JÓ: Immutable update pattern
+    const updateUserTheme = (theme: 'light' | 'dark') => {
+        setUser(prevUser => {
+            if (!prevUser) return null;
+            return {
+                ...prevUser,
+                preferences: {
+                    ...prevUser.preferences,
+                    theme
+                }
+            };
+        });
+    };
+
+    // ✅ JÓ: Array immutable update
+    const addTag = (tag: string) => {
+        setTags(prevTags => [...prevTags, tag]);
+    };
+
+    const removeTag = (index: number) => {
+        setTags(prevTags => prevTags.filter((_, i) => i !== index));
+    };
+
+    return <div>User profile...</div>;
+};
+
+// 3. LAZY INITIALIZATION - Drága számítás esetén
+const ExpensiveComponent: React.FC = () => {
+    // ❌ ROSSZ: Minden render-nél lefut
+    const [data, setData] = useState(expensiveCalculation());
+
+    // ✅ JÓ: Csak egyszer fut le, első render-kor
+    const [data2, setData2] = useState(() => expensiveCalculation());
+
+    return <div>...</div>;
+};
+
+function expensiveCalculation(): number[] {
+    console.log('Calculating...');
+    return Array.from({ length: 10000 }, (_, i) => i * i);
+}
+
+// 4. FUNCTIONAL UPDATE - Előző state alapján
+const BatchUpdateExample: React.FC = () => {
+    const [count, setCount] = useState(0);
+
+    // ❌ ROSSZ: Closure problem, nem accumulate-ál helyesen
+    const handleClickBad = () => {
+        setCount(count + 1);
+        setCount(count + 1);
+        setCount(count + 1);
+        // Csak 1-gyel növeli, mert count ugyanaz mindháromszor
+    };
+
+    // ✅ JÓ: Functional update, helyes accumulation
+    const handleClickGood = () => {
+        setCount(prev => prev + 1);
+        setCount(prev => prev + 1);
+        setCount(prev => prev + 1);
+        // 3-mal növeli helyesen
+    };
+
+    return (
+        <div>
+            <p>Count: {count}</p>
+            <button onClick={handleClickBad}>Bad increment</button>
+            <button onClick={handleClickGood}>Good increment</button>
+        </div>
+    );
+};
+```
+*Figyeld meg: **Functional update** (`prev => prev + 1`) mindig biztonságosabb mint a direct update, különösen batch update-eknél.*
+
+</div>
+
+<div class="concept-section myths" data-filter="hooks">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- **"setState szinkron frissítés"** → **Valójában**: Aszinkron és batch-elve történik. React 18+ automatic batching minden esetben.
+- **"setState után azonnal olvasható a frissített érték"** → **Valójában**: A frissítés a következő render-ben érvényesül, `console.log` után nem látszik azonnal.
+- **"Object state-et közvetlenül módosíthatom"** → **Valójában**: Mindig immutable update kell (spread operator vagy új objektum).
+- **"useState dependency useEffect-ben"** → **Valójában**: A setter függvény (`setState`) stabil referencia, nem kell dependency-be tenni.
+- **"Minden state változás külön render"** → **Valójában**: React batch-eli az azonos event handler-ben történő frissítéseket (React 18+).
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="hooks performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**State structure optimization:**
+```tsx
+// ❌ ROSSZ: Egyetlen nagy object, minden változás full re-render
+const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    address: '',
+    phone: '',
+    preferences: {}
+});
+
+// ✅ JÓ: Több független state, csak szükséges részek re-render-elnek
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [address, setAddress] = useState('');
+```
+
+**Lazy initialization benchmark:**
+```tsx
+// 🔬 Expensive calculation performance
+console.time('Without lazy init');
+const [data1] = useState(expensiveCalc()); // Minden render!
+console.timeEnd('Without lazy init'); // ~50ms minden render-nél
+
+console.time('With lazy init');
+const [data2] = useState(() => expensiveCalc()); // Csak egyszer!
+console.timeEnd('With lazy init'); // ~50ms első render, 0ms után
+```
+
+**Functional update benefits:**
+- **Closure problem elkerülése**: Mindig a legfrissebb state-et használja
+- **Concurrent Mode compatibility**: React 18+ future-proof
+- **Predictable behavior**: Nem függ a render időzítéstől
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="hooks react">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**React DevTools:**
+- Components tab → State inspection
+- Profiler → Re-render tracking state változások miatt
+- Hooks section → Minden useState hook látható
+
+**Debugging tools:**
+```tsx
+// Custom useState with logging
+function useStateWithLog<T>(initialValue: T, name: string) {
+    const [state, setState] = useState(initialValue);
+    
+    useEffect(() => {
+        console.log(`[${name}] State changed:`, state);
+    }, [state, name]);
+    
+    return [state, setState] as const;
+}
+
+// Használat
+const [count, setCount] = useStateWithLog(0, 'counter');
+```
+
+**TypeScript utilities:**
+- `useState<T>` - Explicit type
+- `React.Dispatch<React.SetStateAction<T>>` - Setter type
+- `React.SetStateAction<T>` - Update action type
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="hooks">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség `setCount(count + 1)` és `setCount(prev => prev + 1)` között?**
+<details>
+<summary>Válasz</summary>
+
+Az első closure problem-ba futhat batch update-eknél, a második (functional update) mindig a legfrissebb state-et kapja és biztonságosabb.
+
+</details>
+
+**2) Miért nem frissül a state azonnal a setState hívás után?**
+<details>
+<summary>Válasz</summary>
+
+A setState aszinkron és batch-elve történik performance okokból. A frissített érték csak a következő render során látható.
+
+</details>
+
+**3) Mikor használjak lazy initialization-t?**
+<details>
+<summary>Válasz</summary>
+
+Amikor az initial value számítása drága (pl. localStorage olvasás, komplex számítás), mert különben minden render-nél lefut.
+
+</details>
+
+**4) Lehet-e useState-et conditional-ban vagy loop-ban hívni?**
+<details>
+<summary>Válasz</summary>
+
+NEM! Hook-okat mindig a component top level-jén kell hívni, ugyanabban a sorrendben minden render-nél (Rules of Hooks).
+
+</details>
+
+**5) Mi történik, ha object state-et közvetlenül módosítok (`user.name = 'New'`)?**
+<details>
+<summary>Válasz</summary>
+
+React nem fogja észrevenni a változást, mert a reference nem változott. Mindig immutable update kell: `setUser({...user, name: 'New'})`.
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
+
+### useEffect {#useeffect}
+
+<div class="concept-section mental-model" data-filter="hooks medior react">
+
+📋 **Fogalom meghatározása**  
+*A **useEffect** egy React Hook, amely lehetővé teszi side effect-ek (mellékhatások) kezelését funkcionális komponensekben. Side effect: bármi ami interakciót jelent a komponensen kívüli világgal (API hívás, DOM manipuláció, subscription, timer). A hook két paramétert fogad: egy effect függvényt és egy **dependency array**-t, amely meghatározza mikor fusson újra az effect. Cleanup függvényt visszaadhat, amely unmount-kor vagy újrafutás előtt hívódik meg.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="hooks medior">
+
+💡 **Miért számít?**
+- **Lifecycle replacement**: Helyettesíti a componentDidMount, componentDidUpdate, componentWillUnmount-ot
+- **Data fetching**: API hívások kezelésének standard módja
+- **Subscription management**: WebSocket, event listener, interval kezelés
+- **External system sync**: React state és külső rendszerek szinkronizálása
+- **Memory leak prevention**: Cleanup függvénnyel erőforrások felszabadítása
+
+</div>
+
+<div class="runnable-model" data-filter="hooks react">
+
+**Runnable mental model**
+```tsx
+import React, { useState, useEffect } from 'react';
+
+// 1. DEPENDENCY ARRAY VISELKEDÉS
+const DependencyExample: React.FC = () => {
+    const [count, setCount] = useState(0);
+    const [name, setName] = useState('');
+
+    // ❌ Nincs dependency array: MINDEN render után fut
+    useEffect(() => {
+        console.log('Runs after EVERY render');
+    });
+
+    // ✅ Üres dependency array: CSAK egyszer fut (mount-kor)
+    useEffect(() => {
+        console.log('Runs ONCE on mount');
+        // Ideal for: initial data fetch, setup subscriptions
+    }, []);
+
+    // ✅ Specific dependencies: fut amikor count változik
+    useEffect(() => {
+        console.log('Runs when count changes:', count);
+        document.title = `Count: ${count}`;
+    }, [count]);
+
+    // ✅ Multiple dependencies
+    useEffect(() => {
+        console.log('Runs when count OR name changes');
+    }, [count, name]);
+
+    return <div>...</div>;
+};
+
+// 2. DATA FETCHING - Correct pattern with AbortController
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+const UserProfile: React.FC<{ userId: number }> = ({ userId }) => {
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        // ✅ JÓ: AbortController for cleanup
+        const abortController = new AbortController();
+        
+        const fetchUser = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                
+                const response = await fetch(
+                    `https://api.example.com/users/${userId}`,
+                    { signal: abortController.signal }
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // ✅ Only update if not aborted
+                if (!abortController.signal.aborted) {
+                    setUser(data);
+                }
+            } catch (err) {
+                // ✅ Ignore abort errors
+                if (err.name !== 'AbortError') {
+                    setError(err.message);
+                }
+            } finally {
+                if (!abortController.signal.aborted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchUser();
+
+        // ✅ CLEANUP: Cancel request if component unmounts or userId changes
+        return () => {
+            abortController.abort();
+        };
+    }, [userId]); // ✅ Re-fetch when userId changes
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
+    if (!user) return <div>No user found</div>;
+
+    return <div>{user.name}</div>;
+};
+
+// 3. EVENT LISTENERS - Proper cleanup
+const WindowSizeTracker: React.FC = () => {
+    const [windowSize, setWindowSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight
+            });
+        };
+
+        // ✅ Add event listener
+        window.addEventListener('resize', handleResize);
+
+        // ✅ CLEANUP: Remove event listener
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []); // Empty array: setup once, cleanup on unmount
+
+    return <div>{windowSize.width} x {windowSize.height}</div>;
+};
+
+// 4. TIMER / INTERVAL - Proper cleanup
+const Countdown: React.FC<{ initialSeconds: number }> = ({ initialSeconds }) => {
+    const [seconds, setSeconds] = useState(initialSeconds);
+
+    useEffect(() => {
+        // ✅ Don't run if already at 0
+        if (seconds <= 0) return;
+
+        const intervalId = setInterval(() => {
+            setSeconds(prev => prev - 1);
+        }, 1000);
+
+        // ✅ CLEANUP: Clear interval
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [seconds]); // Re-setup when seconds changes
+
+    return <div>Countdown: {seconds}</div>;
+};
+
+// 5. COMPLEX DEPENDENCY - Object/Array
+const SearchResults: React.FC = () => {
+    const [results, setResults] = useState([]);
+    const [filters, setFilters] = useState({ category: 'all', minPrice: 0 });
+
+    // ❌ ROSSZ: filters object minden render-nél új referencia
+    useEffect(() => {
+        fetchResults(filters);
+    }, [filters]); // Infinite loop veszélye!
+
+    // ✅ JÓ: Destructure dependencies
+    useEffect(() => {
+        const { category, minPrice } = filters;
+        fetchResults({ category, minPrice });
+    }, [filters.category, filters.minPrice]); // Primitív values
+
+    return <div>...</div>;
+};
+
+// 6. RACE CONDITION - Correct handling
+const SearchWithRaceCondition: React.FC = () => {
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState([]);
+
+    useEffect(() => {
+        let isActive = true; // ✅ Flag to prevent stale updates
+
+        const searchAPI = async () => {
+            const data = await fetch(`/api/search?q=${query}`).then(r => r.json());
+            
+            // ✅ Only update if this effect is still active
+            if (isActive) {
+                setResults(data);
+            }
+        };
+
+        if (query) {
+            searchAPI();
+        }
+
+        return () => {
+            isActive = false; // ✅ Mark as inactive on cleanup
+        };
+    }, [query]);
+
+    return <div>...</div>;
+};
+```
+*Figyeld meg: **Cleanup függvény** kritikus a memory leak és race condition elkerüléséhez.*
+
+</div>
+
+<div class="concept-section myths" data-filter="hooks">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- **"useEffect mindig async function kell legyen"** → **Valójában**: Nem lehet async, de belül használhatsz async function-t (IIFE vagy named function).
+- **"Dependency array-ba nem kell minden változót tenni"** → **Valójában**: ESLint `exhaustive-deps` rule figyelmeztet, minden használt external value kell.
+- **"Cleanup csak unmount-kor fut"** → **Valójában**: Fut minden újrafutás ELŐTT is (dependency változik).
+- **"Object/array dependency mindig újrafuttatja"** → **Valójában**: Igen, mert új referencia minden render-nél. Megoldás: destructure vagy useMemo.
+- **"useEffect helyettesíti az összes lifecycle method-ot"** → **Valójában**: Nem, pl. `componentDidCatch` nincs Hook megfelelő (kell Error Boundary).
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="hooks performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Unnecessary re-runs elkerülése:**
+```tsx
+// ❌ ROSSZ: Minden render-nél új object
+const [filters, setFilters] = useState({ category: 'all' });
+
+useEffect(() => {
+    fetch('/api/data', { body: JSON.stringify(filters) });
+}, [filters]); // Új referencia = újrafut minden render-nél
+
+// ✅ JÓ 1: Primitív values
+useEffect(() => {
+    fetch('/api/data', { body: JSON.stringify({ category: filters.category }) });
+}, [filters.category]);
+
+// ✅ JÓ 2: useMemo a dependency-hez
+const filtersMemo = useMemo(() => ({ category: filters.category }), [filters.category]);
+useEffect(() => {
+    fetch('/api/data', { body: JSON.stringify(filtersMemo) });
+}, [filtersMemo]);
+```
+
+**Heavy computation elkerülése:**
+```tsx
+// ❌ ROSSZ: Minden render-nél számol, akkor is ha nem kell
+useEffect(() => {
+    const result = expensiveCalculation(data);
+    console.log(result);
+}); // Nincs dependency array
+
+// ✅ JÓ: Csak amikor data változik
+useEffect(() => {
+    const result = expensiveCalculation(data);
+    console.log(result);
+}, [data]);
+```
+
+**AbortController benchmarks:**
+- **Without abort**: Component unmount-kor is fut a fetch, memory leak + stale state update
+- **With abort**: Fetch cancel, ~50% kevesebb network traffic gyors navigációnál
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="hooks react">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**React DevTools:**
+- Components tab → Effects section, látható minden useEffect
+- Profiler → useEffect futási idő tracking
+- Re-render highlighting → dependency changes
+
+**ESLint plugin:**
+```json
+// .eslintrc.json
+{
+  "plugins": ["react-hooks"],
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  }
+}
+```
+
+**Custom useEffect wrappers:**
+```tsx
+// Debug useEffect - log minden futáskor
+function useEffectDebug(effect: () => void | (() => void), deps: any[], name: string) {
+    useEffect(() => {
+        console.log(`[${name}] Effect running`, deps);
+        const cleanup = effect();
+        return () => {
+            console.log(`[${name}] Cleanup running`);
+            cleanup?.();
+        };
+    }, deps);
+}
+
+// useEffectOnce - garantálja hogy csak egyszer fut
+function useEffectOnce(effect: () => void | (() => void)) {
+    useEffect(effect, []); // eslint-disable-line react-hooks/exhaustive-deps
+}
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="hooks">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség useEffect(() => {...}) és useEffect(() => {...}, []) között?**
+<details>
+<summary>Válasz</summary>
+
+Az első minden render után fut, a második (üres array) csak egyszer mount-kor. Az üres array azt jelenti "nincs dependency, soha ne fuss újra".
+
+</details>
+
+**2) Mikor fusson a cleanup függvény?**
+<details>
+<summary>Válasz</summary>
+
+1) Component unmount-kor, 2) Minden useEffect újrafutás ELŐTT (amikor dependency változik). Célja: előző effect hatásainak eltávolítása.
+
+</details>
+
+**3) Miért nem lehet useEffect async?**
+<details>
+<summary>Válasz</summary>
+
+Mert a cleanup függvény azonnal kell visszaadni, nem Promise-t. Megoldás: async function BELÜL hívni (IIFE vagy named async function).
+
+</details>
+
+**4) Mi a race condition useEffect-ben és hogyan kerülhető el?**
+<details>
+<summary>Válasz</summary>
+
+Amikor gyors dependency változásoknál a korábbi async operation később fejeződik be és felülírja az újabb eredményt. Megoldás: `isActive` flag vagy `AbortController`.
+
+</details>
+
+**5) Miért kell minden external value-t a dependency array-be tenni?**
+<details>
+<summary>Válasz</summary>
+
+Mert különben stale closure-t kapsz - az effect a régi értékeket látja. ESLint `exhaustive-deps` rule segít ezt elkerülni.
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
+
+### useMemo & useCallback {#usememo-usecallback}
+
+<div class="concept-section mental-model" data-filter="hooks medior react performance">
+
+📋 **Fogalom meghatározása**  
+*A **useMemo** és **useCallback** React Hook-ok memoization-ra (értékek cache-elésére) a render optimalizáció érdekében. A **useMemo** egy **számított érték** eredményét cache-eli, csak akkor számolva újra, ha a dependency-k változnak. A **useCallback** egy **függvény referenciát** cache-el, ugyanúgy dependency array alapján. Fő különbség: `useMemo(() => fn)` cache-eli a függvény VISSZATÉRÉSI ÉRTÉKÉT, míg `useCallback(fn)` magát a FÜGGVÉNYT cache-eli.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="hooks medior performance">
+
+💡 **Miért számít?**
+- **Expensive computation optimization**: Drága számítások elkerülése felesleges re-render-eknél
+- **Referential equality**: Prop/dependency comparison-öknél stabil referencia (React.memo, useEffect)
+- **Child component re-render prevention**: React.memo + useCallback kombináció
+- **Performance bottleneck fixing**: Profiler által azonosított lassú komponensek optimalizálása
+- **Memory vs CPU trade-off**: Cache tárolás (memória) vs újraszámítás (CPU)
+
+</div>
+
+<div class="runnable-model" data-filter="hooks react performance">
+
+**Runnable mental model**
+```tsx
+import React, { useState, useMemo, useCallback, memo } from 'react';
+
+// 1. useMemo - EXPENSIVE CALCULATION CACHING
+const DataAnalysisDashboard: React.FC<{ data: number[] }> = ({ data }) => {
+    const [filterThreshold, setFilterThreshold] = useState(50);
+
+    // ❌ ROSSZ: Minden render-nél újraszámol (akár másik state változik is)
+    const statistics = {
+        mean: data.reduce((a, b) => a + b, 0) / data.length,
+        max: Math.max(...data),
+        min: Math.min(...data),
+        sorted: [...data].sort((a, b) => a - b)
+    };
+
+    // ✅ JÓ: Csak akkor számol újra, ha 'data' változik
+    const statisticsMemo = useMemo(() => {
+        console.log('Calculating statistics...');
+        return {
+            mean: data.reduce((a, b) => a + b, 0) / data.length,
+            max: Math.max(...data),
+            min: Math.min(...data),
+            sorted: [...data].sort((a, b) => a - b)
+        };
+    }, [data]); // Only recalculate when data changes
+
+    // ✅ Filtered data is also memoized
+    const filteredData = useMemo(() => {
+        console.log('Filtering data...');
+        return data.filter(value => value > filterThreshold);
+    }, [data, filterThreshold]); // Recalculate when data OR threshold changes
+
+    return (
+        <div>
+            <p>Mean: {statisticsMemo.mean}</p>
+            <p>Filtered count: {filteredData.length}</p>
+            <input 
+                type="number" 
+                value={filterThreshold} 
+                onChange={e => setFilterThreshold(Number(e.target.value))}
+            />
+        </div>
+    );
+};
+
+// 2. useCallback - FUNCTION REFERENCE STABILITY
+interface TodoItemProps {
+    id: number;
+    text: string;
+    onDelete: (id: number) => void;
+    onToggle: (id: number) => void;
+}
+
+// ✅ memo() prevents re-render if props don't change
+const TodoItem = memo<TodoItemProps>(({ id, text, onDelete, onToggle }) => {
+    console.log(`Rendering TodoItem ${id}`);
+    
+    return (
+        <div>
+            <span>{text}</span>
+            <button onClick={() => onDelete(id)}>Delete</button>
+            <button onClick={() => onToggle(id)}>Toggle</button>
+        </div>
+    );
+});
+
+const TodoList: React.FC = () => {
+    const [todos, setTodos] = useState([
+        { id: 1, text: 'Learn React', completed: false },
+        { id: 2, text: 'Master Hooks', completed: false }
+    ]);
+    const [filter, setFilter] = useState('all');
+
+    // ❌ ROSSZ: Minden render-nél új függvény referencia
+    // -> TodoItem memo() hiába van, minden gyerek re-render-el
+    const handleDeleteBad = (id: number) => {
+        setTodos(todos.filter(todo => todo.id !== id));
+    };
+
+    // ✅ JÓ: Stabil referencia, csak todos változásakor új
+    // -> TodoItem memo() működik, csak változott item-ek render-elnek
+    const handleDelete = useCallback((id: number) => {
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    }, []); // Empty array: stable reference forever (using functional update)
+
+    const handleToggle = useCallback((id: number) => {
+        setTodos(prevTodos =>
+            prevTodos.map(todo =>
+                todo.id === id ? { ...todo, completed: !todo.completed } : todo
+            )
+        );
+    }, []);
+
+    // ✅ Memoized filtered list
+    const filteredTodos = useMemo(() => {
+        console.log('Filtering todos...');
+        switch (filter) {
+            case 'active':
+                return todos.filter(todo => !todo.completed);
+            case 'completed':
+                return todos.filter(todo => todo.completed);
+            default:
+                return todos;
+        }
+    }, [todos, filter]);
+
+    return (
+        <div>
+            <select value={filter} onChange={e => setFilter(e.target.value)}>
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+            </select>
+            
+            {filteredTodos.map(todo => (
+                <TodoItem
+                    key={todo.id}
+                    id={todo.id}
+                    text={todo.text}
+                    onDelete={handleDelete}
+                    onToggle={handleToggle}
+                />
+            ))}
+        </div>
+    );
+};
+
+// 3. useMemo vs useCallback - KEY DIFFERENCE
+const ComparisonExample: React.FC = () => {
+    const [count, setCount] = useState(0);
+
+    // useMemo: Returns the RESULT of the function
+    const expensiveValue = useMemo(() => {
+        return count * 2; // Returns the NUMBER
+    }, [count]);
+    // Type: number
+
+    // useCallback: Returns the FUNCTION itself
+    const expensiveFunction = useCallback(() => {
+        return count * 2; // Returns the FUNCTION
+    }, [count]);
+    // Type: () => number
+
+    // Equivalent to:
+    const expensiveFunctionEquivalent = useMemo(() => {
+        return () => count * 2; // Returns a function
+    }, [count]);
+
+    return (
+        <div>
+            <p>Value: {expensiveValue}</p>
+            <p>Function result: {expensiveFunction()}</p>
+        </div>
+    );
+};
+
+// 4. WHEN NOT TO USE - Premature optimization
+const SimpleCounter: React.FC = () => {
+    const [count, setCount] = useState(0);
+
+    // ❌ OVER-OPTIMIZATION: Egyszerű számítás, nincs értelme memoize-olni
+    const doubled = useMemo(() => count * 2, [count]);
+    
+    // ✅ JÓ: Direct calculation
+    const doubledSimple = count * 2;
+
+    // ❌ OVER-OPTIMIZATION: Függvény nem kerül child-nak
+    const handleClick = useCallback(() => {
+        setCount(c => c + 1);
+    }, []);
+
+    // ✅ JÓ: Inline function (React batch-eli az event handler-eket)
+    const handleClickSimple = () => setCount(c => c + 1);
+
+    return (
+        <div>
+            <p>{count} * 2 = {doubledSimple}</p>
+            <button onClick={handleClickSimple}>Increment</button>
+        </div>
+    );
+};
+```
+*Figyeld meg: **useCallback csak akkor érdemes**, ha a függvényt memo() komponensnek adod át prop-ként, vagy useEffect dependency-ben van.*
+
+</div>
+
+<div class="concept-section myths" data-filter="hooks performance">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- **"useMemo mindig gyorsít"** → **Valójában**: Csak drága számításoknál éri meg, egyszerű esetekben overhead (memória + comparison).
+- **"useCallback minden függvénynél kell"** → **Valójában**: Csak ha memo() child-nak átadod vagy useEffect dependency. Inline function gyors.
+- **"useMemo és useCallback ugyanaz"** → **Valójában**: useMemo cache-eli az eredményt, useCallback a függvényt magát.
+- **"Dependency array elhagyható"** → **Valójában**: Kötelező, különben stale closure vagy infinite memoization.
+- **"useMemo garantálja a cache-t"** → **Valójában**: React LEHET hogy eldobja a cache-t memória nyomás alatt (dokumentáció szerint).
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="hooks performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Benchmark - Amikor ÉRDEMES useMemo:**
+```tsx
+// 🔬 Expensive calculation (10,000 items)
+const data = Array.from({ length: 10000 }, (_, i) => i);
+
+// ❌ WITHOUT useMemo: ~15ms EVERY render
+const sorted = [...data].sort((a, b) => b - a);
+
+// ✅ WITH useMemo: ~15ms FIRST render, ~0.1ms subsequent
+const sortedMemo = useMemo(() => [...data].sort((a, b) => b - a), [data]);
+```
+
+**Benchmark - Amikor NEM ÉRDEMES useMemo:**
+```tsx
+// 🔬 Simple calculation
+const count = 5;
+
+// ❌ WITH useMemo: ~0.05ms (overhead a comparison és cache kezelés miatt)
+const doubled = useMemo(() => count * 2, [count]);
+
+// ✅ WITHOUT useMemo: ~0.01ms (5x gyorsabb!)
+const doubledSimple = count * 2;
+```
+
+**React.memo + useCallback effectiveness:**
+```tsx
+// ✅ EFFECTIVE combo
+const MemoizedChild = memo(({ onClick }) => <button onClick={onClick}>Click</button>);
+const Parent = () => {
+    const handleClick = useCallback(() => console.log('clicked'), []);
+    return <MemoizedChild onClick={handleClick} />; // No unnecessary re-render
+};
+
+// ❌ USELESS - without memo(), useCallback doesn't help
+const NonMemoChild = ({ onClick }) => <button onClick={onClick}>Click</button>;
+const Parent2 = () => {
+    const handleClick = useCallback(() => console.log('clicked'), []);
+    return <NonMemoChild onClick={handleClick} />; // Still re-renders
+};
+```
+
+**Rules of thumb:**
+- **useMemo használd**: >5ms computation, array/object creation dependency-hez, large list filtering/sorting
+- **useCallback használd**: memo() child prop, useEffect dependency, context value
+- **NE használd**: primitív values, simple calculations, inline JSX, nincs performance issue
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="hooks react performance">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**React DevTools Profiler:**
+- Flame chart → komponens render idők
+- Ranked chart → leglassabb komponensek
+- Commit sávok → useMemo/useCallback hatása látható
+
+**Performance measurement:**
+```tsx
+// Custom hook - useMemo effectiveness tracking
+function useMemoWithStats<T>(factory: () => T, deps: any[], name: string): T {
+    const recalcCount = useRef(0);
+    
+    const value = useMemo(() => {
+        recalcCount.current++;
+        console.log(`[${name}] Recalculation #${recalcCount.current}`);
+        const start = performance.now();
+        const result = factory();
+        const end = performance.now();
+        console.log(`[${name}] Calculation took ${(end - start).toFixed(2)}ms`);
+        return result;
+    }, deps);
+    
+    return value;
+}
+
+// Használat
+const sortedData = useMemoWithStats(
+    () => [...data].sort(),
+    [data],
+    'sortedData'
+);
+```
+
+**ESLint rule:**
+```json
+{
+  "rules": {
+    "react-hooks/exhaustive-deps": "warn" // Warns about missing dependencies
+  }
+}
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="hooks performance">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség useMemo(() => fn) és useCallback(fn) között?**
+<details>
+<summary>Válasz</summary>
+
+`useMemo(() => value)` a value-t cache-eli, `useCallback(fn)` a függvényt magát. Ekvivalens: `useMemo(() => fn)` === `useCallback(fn)`.
+
+</details>
+
+**2) Mikor NE használjunk useMemo-t?**
+<details>
+<summary>Válasz</summary>
+
+Ha a számítás egyszerű (primitív műveletek, <1ms), mert a memoization overhead (comparison + cache) drágább mint az újraszámítás.
+
+</details>
+
+**3) Működik-e a useCallback memo() nélkül a child komponensen?**
+<details>
+<summary>Válasz</summary>
+
+Működik, de felesleges. Ha a child nem memo(), akkor minden parent render-nél újra render-el, függetlenül a prop referenciától.
+
+</details>
+
+**4) Mi történik ha elhagyom a dependency array-t useMemo/useCallback-nél?**
+<details>
+<summary>Válasz</summary>
+
+Compile error, kötelező paraméter. Ha üres array-t adsz `[]`, a value/function soha nem frissül (csak első render-kor).
+
+</details>
+
+**5) Garantálja-e a React hogy a useMemo cache soha nem törlődik?**
+<details>
+<summary>Válasz</summary>
+
+NEM! A dokumentáció szerint React eldobhatja a cache-t memória nyomás alatt. Ne függj tőle semantic correctness-hez, csak performance-hoz.
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
+
+### React.memo {#react-memo}
+
+<div class="concept-section mental-model" data-filter="react performance medior">
+
+📋 **Fogalom meghatározása**  
+*A **React.memo** egy Higher-Order Component (HOC), amely memoize-olja a komponenst - elkerüli az újrarenderelést, ha a props nem változtak. Shallow comparison-t végez a props-okon, és csak akkor renderel újra, ha valamely prop referenciája vagy értéke megváltozik. Opcionálisan custom comparison function adható meg második paraméterként.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="react performance medior">
+
+💡 **Miért számít?**
+- **Unnecessary re-renders prevention**: Parent re-render nem okoz child re-render-t ha props unchanged
+- **Performance optimization**: Drága komponensek renderelésének elkerülése
+- **Component isolation**: Komponensek függetlenek a parent render ciklusától
+- **Large lists optimization**: Virtualizált listák és táblázatok performance-a
+
+</div>
+
+<div class="runnable-model" data-filter="react performance">
+
+**Runnable mental model**
+```tsx
+import React, { useState, useCallback, memo } from 'react';
+
+// 1. BASIC React.memo USAGE
+interface UserCardProps {
+    name: string;
+    email: string;
+    avatar: string;
+}
+
+// ❌ WITHOUT memo: Re-renders every time parent renders
+const UserCardNormal: React.FC<UserCardProps> = ({ name, email, avatar }) => {
+    console.log(`Rendering UserCardNormal: ${name}`);
+    return (
+        <div className="user-card">
+            <img src={avatar} alt={name} />
+            <h3>{name}</h3>
+            <p>{email}</p>
+        </div>
+    );
+};
+
+// ✅ WITH memo: Only re-renders when props change
+const UserCardMemo = memo<UserCardProps>(({ name, email, avatar }) => {
+    console.log(`Rendering UserCardMemo: ${name}`);
+    return (
+        <div className="user-card">
+            <img src={avatar} alt={name} />
+            <h3>{name}</h3>
+            <p>{email}</p>
+        </div>
+    );
+});
+
+// Parent component example
+const UserList: React.FC = () => {
+    const [counter, setCounter] = useState(0);
+    const [users] = useState([
+        { id: '1', name: 'Alice', email: 'alice@example.com', avatar: '/alice.jpg' },
+        { id: '2', name: 'Bob', email: 'bob@example.com', avatar: '/bob.jpg' }
+    ]);
+
+    return (
+        <div>
+            <button onClick={() => setCounter(c => c + 1)}>
+                Increment: {counter}
+            </button>
+            
+            {/* ❌ Both re-render on every parent render */}
+            {users.map(user => (
+                <UserCardNormal key={user.id} {...user} />
+            ))}
+            
+            {/* ✅ Only first render, no re-renders on counter change */}
+            {users.map(user => (
+                <UserCardMemo key={user.id} {...user} />
+            ))}
+        </div>
+    );
+};
+
+// 2. React.memo WITH CALLBACK PROPS - Requires useCallback
+interface TodoItemProps {
+    id: string;
+    text: string;
+    completed: boolean;
+    onToggle: (id: string) => void;
+    onDelete: (id: string) => void;
+}
+
+const TodoItem = memo<TodoItemProps>(({ id, text, completed, onToggle, onDelete }) => {
+    console.log(`Rendering TodoItem: ${text}`);
+    
+    return (
+        <div className="todo-item">
+            <input
+                type="checkbox"
+                checked={completed}
+                onChange={() => onToggle(id)}
+            />
+            <span>{text}</span>
+            <button onClick={() => onDelete(id)}>Delete</button>
+        </div>
+    );
+});
+
+const TodoList: React.FC = () => {
+    const [todos, setTodos] = useState([
+        { id: '1', text: 'Learn React', completed: false },
+        { id: '2', text: 'Master memo', completed: false }
+    ]);
+
+    // ❌ WRONG: New function every render, memo is useless
+    const handleToggleBad = (id: string) => {
+        setTodos(todos.map(todo =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        ));
+    };
+
+    // ✅ CORRECT: Stable reference with useCallback
+    const handleToggleGood = useCallback((id: string) => {
+        setTodos(prevTodos => prevTodos.map(todo =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        ));
+    }, []); // Empty deps because using functional update
+
+    const handleDelete = useCallback((id: string) => {
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    }, []);
+
+    return (
+        <div>
+            {todos.map(todo => (
+                <TodoItem
+                    key={todo.id}
+                    {...todo}
+                    onToggle={handleToggleGood}
+                    onDelete={handleDelete}
+                />
+            ))}
+        </div>
+    );
+};
+
+// 3. CUSTOM COMPARISON FUNCTION
+interface ProductCardProps {
+    product: {
+        id: string;
+        name: string;
+        price: number;
+        description: string;
+        lastModified: Date;
+    };
+    onAddToCart: (id: string) => void;
+}
+
+// Custom comparison - ignore lastModified changes
+const ProductCard = memo<ProductCardProps>(
+    ({ product, onAddToCart }) => {
+        console.log(`Rendering ProductCard: ${product.name}`);
+        return (
+            <div className="product-card">
+                <h3>{product.name}</h3>
+                <p>${product.price}</p>
+                <p>{product.description}</p>
+                <button onClick={() => onAddToCart(product.id)}>
+                    Add to Cart
+                </button>
+            </div>
+        );
+    },
+    (prevProps, nextProps) => {
+        // Return true if props are equal (skip re-render)
+        // Return false if props are different (do re-render)
+        return (
+            prevProps.product.id === nextProps.product.id &&
+            prevProps.product.name === nextProps.product.name &&
+            prevProps.product.price === nextProps.product.price &&
+            prevProps.product.description === nextProps.product.description &&
+            prevProps.onAddToCart === nextProps.onAddToCart
+            // Intentionally ignoring lastModified
+        );
+    }
+);
+
+// 4. WHEN NOT TO USE React.memo
+// ❌ OVER-OPTIMIZATION: Simple component with cheap render
+const SimpleBadge = memo<{ count: number }>(({ count }) => {
+    return <span className="badge">{count}</span>;
+    // Too simple to benefit from memo overhead
+});
+
+// ✅ BETTER: No memo for trivial components
+const SimpleGoodBadge: React.FC<{ count: number }> = ({ count }) => {
+    return <span className="badge">{count}</span>;
+};
+
+// 5. React.memo WITH GENERICS
+interface ListProps<T> {
+    items: T[];
+    renderItem: (item: T) => React.ReactNode;
+    keyExtractor: (item: T) => string;
+}
+
+const GenericList = memo(<T,>({ items, renderItem, keyExtractor }: ListProps<T>) => {
+    console.log('Rendering GenericList');
+    return (
+        <div>
+            {items.map(item => (
+                <div key={keyExtractor(item)}>
+                    {renderItem(item)}
+                </div>
+            ))}
+        </div>
+    );
+}) as <T>(props: ListProps<T>) => JSX.Element;
+
+// Usage
+interface User {
+    id: string;
+    name: string;
+}
+
+const App: React.FC = () => {
+    const users: User[] = [
+        { id: '1', name: 'Alice' },
+        { id: '2', name: 'Bob' }
+    ];
+
+    return (
+        <GenericList
+            items={users}
+            renderItem={(user) => <span>{user.name}</span>}
+            keyExtractor={(user) => user.id}
+        />
+    );
+};
+```
+*Figyeld meg: **React.memo + useCallback** kombinációja szükséges, ha a memo-ized komponens callback prop-okat kap.*
+
+</div>
+
+<div class="concept-section myths" data-filter="react performance">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- **"React.memo minden komponensre kell"** → **Valójában**: Csak drága komponensekre és ha props gyakran nem változnak. Overhead van!
+- **"React.memo megoldja a performance problémát"** → **Valójában**: useCallback is kell a callback prop-okhoz, különben felesleges.
+- **"Memo deep comparison-t végez"** → **Valójában**: Shallow comparison default, deep comparison custom function-nal.
+- **"React.memo garantálja hogy nem renderel újra"** → **Valójában**: State/context változás továbbra is újrarenderel.
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="react performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Benchmark - React.memo effectiveness:**
+```typescript
+// 🔬 Component with 100 children
+// ❌ WITHOUT memo: 150ms render on parent update
+<Parent>
+  {children.map(child => <Child key={child.id} {...child} />)}
+</Parent>
+
+// ✅ WITH memo: 5ms render on parent update (30x faster!)
+<Parent>
+  {children.map(child => <MemoizedChild key={child.id} {...child} />)}
+</Parent>
+```
+
+**Overhead cost:**
+- **React.memo comparison**: ~0.01ms per component per render
+- **Worthwhile if**: Component render cost > 1ms
+- **Not worthwhile if**: Component render cost < 0.1ms
+
+**Custom comparison performance:**
+```typescript
+// ❌ SLOW: Deep comparison overhead
+const areEqual = (prev, next) => {
+    return JSON.stringify(prev) === JSON.stringify(next); // 10-50ms!
+};
+
+// ✅ FAST: Selective property comparison
+const areEqual = (prev, next) => {
+    return prev.id === next.id && prev.name === next.name; // 0.01ms
+};
+```
+
+**When React.memo is effective:**
+- ✅ List items (ProductCard, UserCard, TodoItem)
+- ✅ Heavy visualization components (Chart, Graph)
+- ✅ Frequently mounted/unmounted components
+- ✅ Components with expensive calculations
+
+**When React.memo is NOT effective:**
+- ❌ Props change every render anyway
+- ❌ Component has internal state/context that changes
+- ❌ Very simple components (<10 lines JSX)
+- ❌ Parent passes new object/array reference every render
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="react performance">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**React DevTools Profiler:**
+```bash
+# Flamegraph shows:
+- Which components rendered
+- How long each render took
+- Why each component rendered
+
+# Ranked chart shows:
+- Most expensive components
+- Total render time per component
+```
+
+**Why Did You Render:**
+```bash
+npm install --save-dev @welldone-software/why-did-you-render
+
+# wdyr.js
+import whyDidYouRender from '@welldone-software/why-did-you-render';
+whyDidYouRender(React, {
+  trackAllPureComponents: true,
+});
+
+// Mark component for tracking
+MyComponent.whyDidYouRender = true;
+```
+
+**React.memo utilities:**
+```typescript
+// Check if component is memoized
+import { memo } from 'react';
+
+const isMemoized = Component.$$typeof === Symbol.for('react.memo');
+
+// Force comparison function logging
+const MemoWithLog = memo(Component, (prev, next) => {
+    const isEqual = /* comparison logic */;
+    console.log('Memo comparison:', { prev, next, isEqual });
+    return isEqual;
+});
+```
+
+**ESLint rules:**
+```json
+{
+  "rules": {
+    "react/display-name": "warn", // Memo components should have display names
+    "react-hooks/exhaustive-deps": "warn" // useCallback deps check
+  }
+}
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="react performance">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség React.memo és useMemo között?**
+<details>
+<summary>Válasz</summary>
+
+`React.memo` egy egész komponenst memoize-ol (HOC), `useMemo` egy értéket/számítást cache-el a komponensen belül. Különböző célokra valók.
+
+</details>
+
+**2) Miért nem működik a React.memo ha callback prop-ot adok át?**
+<details>
+<summary>Válasz</summary>
+
+Mert a callback minden render-nél új referencia, a memo shallow comparison alapján újrarenderel. Megoldás: `useCallback` a callback körül.
+
+</details>
+
+**3) Mikor NE használjunk React.memo-t?**
+<details>
+<summary>Válasz</summary>
+
+Ha a props úgyis minden render-nél változnak, vagy a komponens nagyon egyszerű (<0.1ms render), akkor a memo overhead felesleges.
+
+</details>
+
+**4) Mi történik ha React.memo komponensben van useState vagy useContext?**
+<details>
+<summary>Válasz</summary>
+
+A state/context változás továbbra is újrarenderel, a memo csak a props változást ellenőrzi. A memo nem véd belső state változások ellen.
+
+</details>
+
+**5) Hogyan debugolom hogy a memo miért nem működik?**
+<details>
+<summary>Válasz</summary>
+
+React DevTools Profiler → "Record why each component rendered" + custom comparison function logging. Általában új prop referencia a probléma.
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
 
 ### React Lifecycle (régi + modern hooks) {#react-lifecycle}
 

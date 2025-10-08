@@ -412,6 +412,418 @@ const debouncedSearch = debounce((query) => {
 
 </div>
 
+---
+
+### HTTP Request/Response anatómia {#http-request-response}
+
+<div class="concept-section mental-model" data-filter="http junior">
+
+📋 **Fogalom meghatározása**  
+*Egy HTTP üzenet két fő részből áll: **Request** (kliens → szerver) és **Response** (szerver → kliens). Mindkettő tartalmaz egy **Start line**-t (method + URL vagy status code), **Headers**-t (metadata key-value párok), üres sort, és opcionális **Body**-t (payload data). Headers típusok: General (Cache-Control), Request (User-Agent), Response (Server), Entity (Content-Type). A kommunikáció stateless (állapotmentes), minden request független.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="http junior">
+
+💡 **Miért számít?**
+- **API fejlesztés**: Request/Response struktúra ismerete elengedhetetlen
+- **Debugging**: Network tab-ban látható minden üzenet része
+- **Performance**: Headers befolyásolják a caching, compression, CORS működést
+- **Security**: Biztonságos header-ek (CORS, CSP, HTTPS) védenek támadások ellen
+
+</div>
+
+<div class="runnable-model" data-filter="http">
+
+**Runnable mental model**
+
+**HTTP Request anatómia:**
+```http
+POST /api/users HTTP/1.1                         # Request Line
+Host: api.example.com                             # Required header
+User-Agent: Mozilla/5.0 (Windows NT 10.0)        # Client info
+Accept: application/json, text/plain, */*        # Accepted response types
+Accept-Language: en-US,en;q=0.9                  # Language preference
+Accept-Encoding: gzip, deflate, br               # Compression support
+Content-Type: application/json                    # Body format
+Content-Length: 85                                # Body size in bytes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...    # Auth token
+Origin: https://example.com                       # CORS origin
+Cookie: session=abc123; user_id=456              # Session cookies
+                                                  # Empty line
+{                                                 # Request Body (JSON)
+  "name": "John Doe",
+  "email": "john@example.com",
+  "age": 30
+}
+```
+
+**HTTP Response anatómia:**
+```http
+HTTP/1.1 201 Created                             # Status Line
+Date: Tue, 08 Oct 2025 10:15:30 GMT              # Response timestamp
+Server: nginx/1.21.0                              # Server software
+Content-Type: application/json; charset=utf-8    # Response body type
+Content-Length: 156                               # Body size
+Content-Encoding: gzip                            # Compression used
+Cache-Control: no-cache, no-store, must-revalidate  # Caching policy
+ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"  # Resource version
+Access-Control-Allow-Origin: https://example.com  # CORS header
+Set-Cookie: session=xyz789; HttpOnly; Secure; SameSite=Strict  # New cookie
+X-RateLimit-Limit: 100                            # Custom header
+X-RateLimit-Remaining: 95
+X-Response-Time: 45ms
+                                                  # Empty line
+{                                                 # Response Body (JSON)
+  "id": "usr_123abc",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "age": 30,
+  "createdAt": "2025-10-08T10:15:30.123Z",
+  "links": {
+    "self": "/api/users/usr_123abc",
+    "profile": "/api/users/usr_123abc/profile"
+  }
+}
+```
+
+**JavaScript példa - Headers kezelése:**
+```javascript
+// Request küldése custom headers-szel
+const createUser = async (userData) => {
+    const response = await fetch('https://api.example.com/users', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${getAccessToken()}`,
+            'X-Request-ID': generateRequestId(),
+            'X-Client-Version': '1.2.3'
+        },
+        body: JSON.stringify(userData),
+        credentials: 'include' // Send cookies
+    });
+
+    // Response headers olvasása
+    console.log('Status:', response.status, response.statusText);
+    console.log('Content-Type:', response.headers.get('Content-Type'));
+    console.log('ETag:', response.headers.get('ETag'));
+    console.log('Rate Limit:', {
+        limit: response.headers.get('X-RateLimit-Limit'),
+        remaining: response.headers.get('X-RateLimit-Remaining')
+    });
+
+    // Response body feldolgozása
+    const contentType = response.headers.get('Content-Type');
+    if (contentType?.includes('application/json')) {
+        return await response.json();
+    } else if (contentType?.includes('text/')) {
+        return await response.text();
+    } else {
+        return await response.blob();
+    }
+};
+
+// Response headers iterálása
+response.headers.forEach((value, key) => {
+    console.log(`${key}: ${value}`);
+});
+```
+
+**Fontos header típusok:**
+```javascript
+// General Headers (request és response-ban is)
+const generalHeaders = {
+    'Cache-Control': 'no-cache',           // Caching irányelvek
+    'Connection': 'keep-alive',            // Kapcsolat típus
+    'Date': 'Tue, 08 Oct 2025 10:15:30 GMT',
+    'Pragma': 'no-cache',                  // Legacy cache control
+    'Transfer-Encoding': 'chunked',        // Chunked transfer
+    'Upgrade': 'websocket',                // Protocol upgrade
+    'Via': '1.1 proxy.example.com'         // Proxy info
+};
+
+// Request Headers
+const requestHeaders = {
+    'Accept': 'application/json',          // Elfogadott formátum
+    'Accept-Charset': 'utf-8',             // Karakter kódolás
+    'Accept-Encoding': 'gzip, deflate',    // Kompresszió típus
+    'Accept-Language': 'en-US,en;q=0.9',   // Nyelv preferencia
+    'Authorization': 'Bearer token',        // Autentikáció
+    'Cookie': 'session=abc123',            // Sütik
+    'Host': 'api.example.com',             // Kötelező HTTP/1.1
+    'Origin': 'https://example.com',       // CORS origin
+    'Referer': 'https://example.com/page', // Előző oldal
+    'User-Agent': 'Mozilla/5.0...'         // Kliens info
+};
+
+// Response Headers
+const responseHeaders = {
+    'Age': '3600',                         // Cache age másodpercben
+    'Allow': 'GET, POST, PUT',             // Engedélyezett metódusok
+    'Content-Encoding': 'gzip',            // Body compression
+    'Content-Language': 'en-US',           // Content nyelve
+    'Content-Length': '348',               // Body méret
+    'Content-Location': '/documents/foo',  // Resource location
+    'Content-Type': 'application/json',    // Body típus
+    'ETag': '"33a64df551425fcc"',          // Version identifier
+    'Expires': 'Thu, 01 Dec 2025 16:00:00 GMT',  // Lejárat
+    'Last-Modified': 'Mon, 07 Oct 2025 12:00:00 GMT',
+    'Location': '/users/123',              // Redirect/Created
+    'Retry-After': '120',                  // 429/503 retry idő
+    'Server': 'nginx/1.21.0',              // Server software
+    'Set-Cookie': 'session=xyz; HttpOnly', // Cookie beállítás
+    'Vary': 'Accept-Encoding',             // Cache variation
+    'WWW-Authenticate': 'Bearer realm="api"'  // 401 auth info
+};
+
+// Security Headers
+const securityHeaders = {
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',  // HSTS
+    'Content-Security-Policy': "default-src 'self'",  // CSP
+    'X-Content-Type-Options': 'nosniff',   // MIME type sniffing védelem
+    'X-Frame-Options': 'DENY',             // Clickjacking védelem
+    'X-XSS-Protection': '1; mode=block',   // XSS védelem
+    'Referrer-Policy': 'no-referrer',      // Referer control
+    'Permissions-Policy': 'geolocation=()'  // Feature policy
+};
+```
+*Figyeld meg: Request line + headers + empty line + body struktúra mindkét irányban.*
+
+</div>
+
+<div class="concept-section myths" data-filter="http">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- **"HTTP request kötelezően tartalmaz body-t"** → **Valójában**: GET, DELETE, HEAD általában nincs body (bár technikailag lehetséges)
+- **"Headers case-sensitive"** → **Valójában**: Case-insensitive (Content-Type = content-type = CONTENT-TYPE)
+- **"Cookie és Authorization ugyanaz"** → **Valójában**: Cookie automatic, Authorization manual header küldés
+- **"Content-Length mindig kell"** → **Valójában**: Transfer-Encoding: chunked esetén nem kell, GET-nél optional
+- **"HTTP stateful"** → **Valójában**: Stateless, állapot cookie/token-nel szimulálható
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="http performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Header size optimization:**
+```javascript
+// ❌ ROSSZ: Túl sok header, lassú request
+const heavyHeaders = {
+    'X-Custom-Header-1': 'value1',
+    'X-Custom-Header-2': 'value2',
+    // ... 50+ custom headers
+    // Total: 5KB+ header overhead
+};
+
+// ✅ JÓ: Minimális headers, csak szükséges
+const leanHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer token'
+    // Total: <500 bytes
+};
+```
+
+**Header compression:**
+- **HTTP/1.1**: Nincs header compression → 500-2000 bytes/request
+- **HTTP/2**: HPACK compression → 50-200 bytes/request (10x kisebb!)
+- **HTTP/3**: QPACK compression → hasonló HTTP/2-höz
+
+**Cookie performance impact:**
+```javascript
+// ❌ ROSSZ: Nagy cookie minden requestben
+document.cookie = `data=${JSON.stringify(largeObject)}`; // 4KB cookie
+// Every request sends 4KB extra → 100 requests = 400KB overhead!
+
+// ✅ JÓ: Kis session ID, adat szerveroldal
+document.cookie = `session=abc123`; // 20 bytes
+// 100 requests = 2KB overhead (200x jobb!)
+```
+
+**Keep-Alive performance:**
+```javascript
+// Connection: keep-alive enabled (default in HTTP/1.1+)
+// TCP handshake: 1x (initial)  vs  N×3 (each request without keep-alive)
+// Time saved: ~100ms per request (high latency networks)
+```
+
+**Response time by size:**
+- **Headers only** (HEAD): ~10-50ms
+- **Small JSON** (1KB): ~50-100ms
+- **Medium JSON** (100KB): ~200-500ms
+- **Large JSON** (1MB): ~1-3s
+- **Binary file** (10MB): ~5-30s (bandwidth dependent)
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="http">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Browser DevTools:**
+```javascript
+// Chrome DevTools Network tab:
+// - Headers tab: Request/Response headers
+// - Preview tab: Formatted response body
+// - Timing tab: Request lifecycle breakdown
+// - Cookies tab: Cookie details
+```
+
+**cURL - Command line HTTP client:**
+```bash
+# GET request with headers
+curl -X GET "https://api.example.com/users" \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer token" \
+  -v  # Verbose mode (show headers)
+
+# POST request with body
+curl -X POST "https://api.example.com/users" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John","email":"john@example.com"}'
+
+# Show only response headers
+curl -I "https://api.example.com/users"
+
+# Follow redirects
+curl -L "https://example.com"
+
+# Save response to file
+curl -o output.json "https://api.example.com/data"
+```
+
+**HTTPie - User-friendly HTTP client:**
+```bash
+# GET request
+http GET api.example.com/users Accept:application/json
+
+# POST request with JSON
+http POST api.example.com/users name="John" email="john@example.com"
+
+# Custom headers
+http GET api.example.com/users Authorization:"Bearer token"
+
+# Form data
+http --form POST api.example.com/upload file@document.pdf
+```
+
+**Postman / Insomnia:**
+- GUI HTTP client
+- Request collections
+- Environment variables
+- Automated testing
+- Response validation
+
+**Wireshark:**
+```
+HTTP packet capture and analysis
+- Raw TCP/IP level inspection
+- SSL/TLS decryption (with key)
+- Request/response timeline
+```
+
+**JavaScript Headers API:**
+```javascript
+// Headers object creation
+const headers = new Headers();
+headers.append('Content-Type', 'application/json');
+headers.append('Authorization', 'Bearer token');
+
+// Check header existence
+headers.has('Content-Type'); // true
+
+// Get header value
+headers.get('Content-Type'); // 'application/json'
+
+// Delete header
+headers.delete('Authorization');
+
+// Iterate headers
+for (const [key, value] of headers.entries()) {
+    console.log(`${key}: ${value}`);
+}
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="http">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség Request header és Response header között?**
+<details>
+<summary>Válasz</summary>
+
+Request header-t a kliens küldi (Accept, User-Agent, Authorization), Response header-t a szerver (Server, Set-Cookie, ETag). General headers mindkettőben lehetnek.
+
+</details>
+
+**2) Miért kötelező a Host header HTTP/1.1-ben?**
+<details>
+<summary>Válasz</summary>
+
+Mert egy IP címen több domain is lehet (virtual hosting). A Host header mondja meg a szervernek melyik domain-t kéred.
+
+</details>
+
+**3) Mi történik ha Content-Length header hiányzik?**
+<details>
+<summary>Válasz</summary>
+
+Transfer-Encoding: chunked használata (HTTP/1.1), vagy a kapcsolat lezárása jelzi a body végét. GET request-nél gyakran nincs Content-Length.
+
+</details>
+
+**4) Hogyan működik a header compression HTTP/2-ben?**
+<details>
+<summary>Válasz</summary>
+
+HPACK algoritmus: gyakori header-eket indexeli és csak az index-et küldi (~90% size reduction). Static table (gyakori headers) + dynamic table (session-specific).
+
+</details>
+
+**5) Mi az ETag header szerepe?**
+<details>
+<summary>Válasz</summary>
+
+Resource version identifier. Kliens If-None-Match header-ben visszaküldi, szerver 304 Not Modified-dal válaszol ha unchanged (cache validation).
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
+
 ### HTTP metódusok {#http-modusok}
 
 <div class="concept-section mental-model" data-filter="http medior">
@@ -550,6 +962,288 @@ const patchUser = { email: "john@updated.com" };
 
 </div>
 
+<div class="concept-section performance" data-filter="http performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Idempotencia és retry logic:**
+```javascript
+// ✅ JÓ: Idempotent műveletek biztonságosan retry-olhatók
+const fetchUserWithRetry = async (userId, maxRetries = 3) => {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'GET' // Safe + Idempotent
+            });
+            if (response.ok) return await response.json();
+            if (response.status === 404) break; // Ne retry-oljunk 404-et
+        } catch (error) {
+            if (i === maxRetries - 1) throw error;
+            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); // Exponential backoff
+        }
+    }
+};
+
+// ⚠️ VIGYÁZZ: POST nem idempotent - retry duplicate resource-t hozhat létre
+const createUserWithRetry = async (userData) => {
+    // Idempotency key használata ajánlott
+    const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': generateUUID() // Server-side deduplication
+        },
+        body: JSON.stringify(userData)
+    });
+    return await response.json();
+};
+```
+
+**HTTP/2 multiplexing performance:**
+```javascript
+// HTTP/1.1: 6-8 parallel connections, request queueing
+// 10 GET requests = ~3 seconds (head-of-line blocking)
+
+// HTTP/2: 1 connection, unlimited parallel streams
+// 10 GET requests = ~500ms (all parallel)
+// Performance gain: 6x faster
+
+// Measurement example:
+const measureRequestTime = async (urls) => {
+    const start = performance.now();
+    await Promise.all(urls.map(url => fetch(url)));
+    const duration = performance.now() - start;
+    console.log(`${urls.length} requests in ${duration.toFixed(0)}ms`);
+};
+
+// HTTP/1.1: ~3000ms for 10 requests
+// HTTP/2: ~500ms for 10 requests (same latency, parallel)
+```
+
+**Method overhead comparison:**
+```javascript
+// Request size by method (typical):
+// GET /users/123           ~200 bytes (no body)
+// POST /users              ~500 bytes (body + headers)
+// PUT /users/123           ~500 bytes (full object replacement)
+// PATCH /users/123         ~300 bytes (partial update - smaller!)
+// DELETE /users/123        ~200 bytes (no body)
+
+// Performance: GET = DELETE < PATCH < POST = PUT
+```
+
+**Cache impact by method:**
+```javascript
+// ✅ GET requests cache-elhetők (ETag, Cache-Control headers)
+fetch('/api/users/123', { method: 'GET' }); // Browser cache HIT possible
+
+// ❌ POST/PUT/PATCH/DELETE never cached
+fetch('/api/users', { method: 'POST', body: data }); // Always network call
+
+// Cache effectiveness metrics:
+// - GET cache hit: ~10ms (local cache)
+// - GET cache miss: ~100-500ms (network)
+// - POST request: ~100-500ms (always network)
+// Cache hit rate 80% → 5x faster average response time!
+```
+
+**Bulk operations optimization:**
+```javascript
+// ❌ ROSSZ: N individual POST requests (N round-trips)
+const createUsers = async (users) => {
+    for (const user of users) {
+        await fetch('/api/users', {
+            method: 'POST',
+            body: JSON.stringify(user)
+        });
+    }
+    // 100 users = 100 requests × 100ms = 10 seconds
+};
+
+// ✅ JÓ: 1 bulk POST request (1 round-trip)
+const createUsersBulk = async (users) => {
+    await fetch('/api/users/bulk', {
+        method: 'POST',
+        body: JSON.stringify({ users })
+    });
+    // 100 users = 1 request × 150ms = 150ms (66x gyorsabb!)
+};
+```
+
+**Connection reuse (Keep-Alive):**
+```javascript
+// HTTP/1.1 Keep-Alive enabled by default
+// 10 sequential requests:
+// - Without Keep-Alive: 10 × (TCP handshake + request) = 10 × 150ms = 1500ms
+// - With Keep-Alive: 1 × TCP handshake + 10 × request = 50ms + 10 × 100ms = 1050ms
+// Savings: 450ms (30% faster)
+
+// Browser automatically manages connection pooling
+// No manual configuration needed
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="http">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Browser Fetch API (modern):**
+```javascript
+// Full-featured HTTP client
+const response = await fetch('/api/users', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer token'
+    },
+    body: JSON.stringify(data),
+    signal: AbortSignal.timeout(5000) // 5s timeout
+});
+
+// Automatic JSON parsing
+const user = await response.json();
+```
+
+**XMLHttpRequest (legacy):**
+```javascript
+// Old-school HTTP client (pre-fetch era)
+const xhr = new XMLHttpRequest();
+xhr.open('GET', '/api/users');
+xhr.onload = () => console.log(JSON.parse(xhr.responseText));
+xhr.send();
+```
+
+**Axios (third-party library):**
+```javascript
+// Popular HTTP client with interceptors
+import axios from 'axios';
+
+const axiosInstance = axios.create({
+    baseURL: 'https://api.example.com',
+    timeout: 5000,
+    headers: { 'Authorization': 'Bearer token' }
+});
+
+// Interceptor for automatic retry
+axiosInstance.interceptors.response.use(
+    response => response,
+    async error => {
+        if (error.config && error.response?.status === 429) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return axiosInstance.request(error.config); // Retry
+        }
+        throw error;
+    }
+);
+
+const { data } = await axiosInstance.get('/users');
+```
+
+**cURL (command-line):**
+```bash
+# GET request
+curl -X GET https://api.example.com/users
+
+# POST request with JSON body
+curl -X POST https://api.example.com/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John","email":"john@example.com"}'
+
+# PUT request
+curl -X PUT https://api.example.com/users/123 \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Jane Updated"}'
+
+# DELETE request
+curl -X DELETE https://api.example.com/users/123
+
+# PATCH request (partial update)
+curl -X PATCH https://api.example.com/users/123 \
+  -H "Content-Type: application/json" \
+  -d '{"email":"new@example.com"}'
+
+# Show response headers
+curl -i https://api.example.com/users
+```
+
+**Postman / Insomnia:**
+- GUI HTTP client
+- Request collections by method
+- Environment variables for base URLs
+- Pre-request scripts
+- Automated testing (assertions)
+- Mock servers
+
+**Browser DevTools Network tab:**
+```javascript
+// Chrome/Firefox DevTools:
+// 1. Open DevTools (F12)
+// 2. Network tab
+// 3. Filter by method: GET, POST, PUT, DELETE
+// 4. Inspect request/response headers
+// 5. View request payload
+// 6. Copy as cURL command
+// 7. Replay requests
+```
+
+**HTTP method testing tools:**
+```javascript
+// httpbin.org - HTTP request/response testing
+// Test any HTTP method:
+fetch('https://httpbin.org/get');     // GET
+fetch('https://httpbin.org/post', { method: 'POST' });   // POST
+fetch('https://httpbin.org/put', { method: 'PUT' });     // PUT
+fetch('https://httpbin.org/delete', { method: 'DELETE' }); // DELETE
+
+// Returns request details (method, headers, body)
+```
+
+**REST client VS Code extension:**
+```http
+### GET request
+GET https://api.example.com/users HTTP/1.1
+
+### POST request
+POST https://api.example.com/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "John",
+  "email": "john@example.com"
+}
+
+### PUT request
+PUT https://api.example.com/users/123 HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Jane Updated",
+  "email": "jane@example.com"
+}
+
+### DELETE request
+DELETE https://api.example.com/users/123 HTTP/1.1
+```
+
+</div>
+
+</details>
+
+</div>
+
+---
+
 ### HTTP státuszkódok {#http-statuszkodok}
 
 <div class="concept-section mental-model" data-filter="http medior">
@@ -684,6 +1378,363 @@ DELETE /users/123 → 204 No Content (deleted)
 </details>
 
 </div>
+
+<div class="concept-section performance" data-filter="http performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Status code caching impact:**
+```javascript
+// ✅ Cacheable status codes (GET requests)
+// 200 OK - Cache with Cache-Control/ETag headers
+fetch('/api/users/123', { method: 'GET' });
+// Cache-Control: max-age=3600 → 1 hour cache
+// Next request: Cache HIT (~10ms instead of ~100ms)
+
+// 304 Not Modified - Conditional request cache validation
+fetch('/api/users/123', {
+    headers: { 'If-None-Match': '"etag-value"' }
+});
+// Server checks ETag → 304 response (no body sent!)
+// Bandwidth saved: ~1KB body not transmitted
+
+// 301 Moved Permanently - Permanent redirect cached
+// Browser remembers redirect, skips origin server next time
+
+// ❌ Never cached
+// 4xx client errors - Always fresh validation
+// 5xx server errors - Never cached
+```
+
+**Error retry strategies:**
+```javascript
+// Exponential backoff for server errors (5xx)
+const fetchWithRetry = async (url, options = {}, maxRetries = 3) => {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            const response = await fetch(url, options);
+            
+            // 2xx Success - return immediately
+            if (response.ok) return response;
+            
+            // 4xx Client errors - no retry (client's fault)
+            if (response.status >= 400 && response.status < 500) {
+                throw new Error(`Client error ${response.status}`);
+            }
+            
+            // 5xx Server errors - retry with backoff
+            if (response.status >= 500) {
+                if (attempt < maxRetries - 1) {
+                    const delay = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
+                    console.log(`5xx error, retrying in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    continue;
+                }
+                throw new Error(`Server error ${response.status} after ${maxRetries} retries`);
+            }
+        } catch (error) {
+            if (attempt === maxRetries - 1) throw error;
+        }
+    }
+};
+
+// Performance: 
+// - No retry on 4xx: ~100ms (1 request)
+// - Retry on 5xx: ~100ms + 1s + 100ms + 2s + 100ms = ~3.3s (3 requests)
+```
+
+**429 Rate Limit handling:**
+```javascript
+// Respect Retry-After header (performance optimization)
+const fetchWithRateLimit = async (url) => {
+    const response = await fetch(url);
+    
+    if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After');
+        const delaySeconds = parseInt(retryAfter, 10) || 60;
+        
+        console.log(`Rate limited, waiting ${delaySeconds}s...`);
+        await new Promise(resolve => setTimeout(resolve, delaySeconds * 1000));
+        
+        return fetchWithRateLimit(url); // Retry after delay
+    }
+    
+    return response;
+};
+
+// Performance impact:
+// - Without rate limit handling: 100+ failed requests/minute (wasted bandwidth)
+// - With Retry-After handling: Pause → Resume (efficient, respectful)
+```
+
+**Circuit breaker pattern for 5xx errors:**
+```javascript
+// Prevent cascading failures
+class CircuitBreaker {
+    constructor(threshold = 5, timeout = 60000) {
+        this.failureCount = 0;
+        this.threshold = threshold;
+        this.timeout = timeout;
+        this.state = 'CLOSED'; // CLOSED → OPEN → HALF_OPEN
+        this.nextAttempt = Date.now();
+    }
+    
+    async execute(fn) {
+        if (this.state === 'OPEN') {
+            if (Date.now() < this.nextAttempt) {
+                throw new Error('Circuit breaker OPEN (too many failures)');
+            }
+            this.state = 'HALF_OPEN'; // Try one request
+        }
+        
+        try {
+            const response = await fn();
+            
+            if (response.status >= 500) {
+                this.onFailure();
+                throw new Error(`Server error ${response.status}`);
+            }
+            
+            this.onSuccess();
+            return response;
+        } catch (error) {
+            this.onFailure();
+            throw error;
+        }
+    }
+    
+    onSuccess() {
+        this.failureCount = 0;
+        this.state = 'CLOSED';
+    }
+    
+    onFailure() {
+        this.failureCount++;
+        if (this.failureCount >= this.threshold) {
+            this.state = 'OPEN';
+            this.nextAttempt = Date.now() + this.timeout;
+            console.log(`Circuit breaker OPEN for ${this.timeout}ms`);
+        }
+    }
+}
+
+// Usage:
+const breaker = new CircuitBreaker(5, 60000); // 5 failures → 1 min cooldown
+await breaker.execute(() => fetch('/api/users'));
+
+// Performance benefit:
+// - Without circuit breaker: 100 failed requests × 5s timeout = 500s wasted
+// - With circuit breaker: 5 failed requests → OPEN → Save 95 requests (475s saved)
+```
+
+**Status code response time averages:**
+```javascript
+// Typical response times by status code:
+// 200 OK (with data):        100-500ms (database query + serialization)
+// 201 Created:               150-600ms (database write + return object)
+// 204 No Content:            50-100ms (no response body)
+// 304 Not Modified:          20-50ms (cache validation only, no body)
+// 400 Bad Request:           50-100ms (quick validation failure)
+// 401 Unauthorized:          50-150ms (auth check failure)
+// 404 Not Found:             50-200ms (database lookup miss)
+// 429 Too Many Requests:     10-50ms (rate limiter check)
+// 500 Internal Server Error: 100-5000ms (timeout or crash)
+// 503 Service Unavailable:   10-100ms (load balancer health check)
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="http">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Browser DevTools Network tab:**
+```javascript
+// Chrome/Firefox DevTools workflow:
+// 1. Open DevTools (F12)
+// 2. Network tab
+// 3. Filter by status code:
+//    - Status:200-299 (success)
+//    - Status:400-499 (client errors)
+//    - Status:500-599 (server errors)
+// 4. Inspect response headers
+// 5. View response payload
+// 6. Check timing breakdown
+// 7. Copy as cURL
+```
+
+**HTTP Status Dogs / Cats:**
+```
+https://httpstatusdogs.com/
+https://http.cat/
+
+// Fun visual references:
+// https://http.cat/404 → Cat image for 404
+// https://http.cat/500 → Cat image for 500
+// Useful for presentations and documentation
+```
+
+**httpbin.org - Status code testing:**
+```bash
+# Test specific status codes
+curl https://httpbin.org/status/200  # Returns 200 OK
+curl https://httpbin.org/status/404  # Returns 404 Not Found
+curl https://httpbin.org/status/500  # Returns 500 Internal Server Error
+
+# Random status code
+curl https://httpbin.org/status/200,201,204
+
+# Delayed response (timeout testing)
+curl https://httpbin.org/delay/5  # 5 second delay
+```
+
+**JavaScript Response API:**
+```javascript
+// Full response object inspection
+const response = await fetch('/api/users');
+
+// Status code properties
+console.log(response.status);       // 200
+console.log(response.statusText);   // "OK"
+console.log(response.ok);           // true (200-299)
+console.log(response.redirected);   // true if 3xx redirect occurred
+console.log(response.type);         // "cors", "basic", "opaque"
+
+// Status code category checks
+const isSuccess = response.status >= 200 && response.status < 300;
+const isClientError = response.status >= 400 && response.status < 500;
+const isServerError = response.status >= 500;
+
+// Redirect handling
+const finalURL = response.url; // Final URL after redirects
+```
+
+**Custom error classes by status code:**
+```javascript
+// Structured error handling
+class HttpError extends Error {
+    constructor(response, message) {
+        super(message);
+        this.name = 'HttpError';
+        this.status = response.status;
+        this.statusText = response.statusText;
+    }
+}
+
+class ClientError extends HttpError {
+    constructor(response, message) {
+        super(response, message);
+        this.name = 'ClientError';
+    }
+}
+
+class ServerError extends HttpError {
+    constructor(response, message) {
+        super(response, message);
+        this.name = 'ServerError';
+    }
+}
+
+// Factory function
+const createError = (response) => {
+    const message = `${response.status} ${response.statusText}`;
+    
+    if (response.status >= 400 && response.status < 500) {
+        return new ClientError(response, message);
+    }
+    if (response.status >= 500) {
+        return new ServerError(response, message);
+    }
+    return new HttpError(response, message);
+};
+
+// Usage with instanceof checks
+try {
+    const response = await fetch('/api/users');
+    if (!response.ok) throw createError(response);
+} catch (error) {
+    if (error instanceof ClientError) {
+        console.error('Client error:', error.status);
+    } else if (error instanceof ServerError) {
+        console.error('Server error:', error.status);
+    }
+}
+```
+
+**Express.js (Node.js) status code helpers:**
+```javascript
+// Server-side status code setting
+const express = require('express');
+const app = express();
+
+app.get('/users', (req, res) => {
+    res.status(200).json({ users: [] }); // 200 OK
+});
+
+app.post('/users', (req, res) => {
+    res.status(201).json({ id: 123 }); // 201 Created
+});
+
+app.delete('/users/:id', (req, res) => {
+    res.status(204).send(); // 204 No Content
+});
+
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not found' }); // 404
+});
+
+app.use((err, req, res, next) => {
+    res.status(500).json({ error: 'Internal server error' }); // 500
+});
+```
+
+**Monitoring tools:**
+```javascript
+// Sentry - Error tracking with status codes
+Sentry.captureException(error, {
+    tags: { status_code: response.status }
+});
+
+// Datadog - Status code metrics
+// Automatic HTTP status code distribution graphs
+// 2xx, 4xx, 5xx breakdowns
+
+// New Relic - APM status code monitoring
+// Transaction traces filtered by status code
+```
+
+**cURL status code inspection:**
+```bash
+# Show only status code
+curl -o /dev/null -s -w "%{http_code}\n" https://api.example.com/users
+
+# Show status code and headers
+curl -I https://api.example.com/users
+
+# Fail on error status codes (exit code non-zero)
+curl -f https://api.example.com/users || echo "Request failed"
+
+# Follow redirects and show final status
+curl -L -o /dev/null -s -w "%{http_code}\n" https://example.com
+```
+
+</div>
+
+</details>
+
+</div>
+
+---
 
 ### DOM (Document Object Model) {#dom}
 
@@ -5070,38 +6121,42 @@ A: DOMParser getElementsByTagNameNS(), xpath queries, vagy specialized XML libra
 
 </div>
 
-### WebSockets (real-time communication) {#websockets}
+### WebSocket & Server-Sent Events (Real-time Communication) {#websockets-sse}
 
 <div class="concept-section mental-model" data-filter="javascript medior">
 
 📋 **Fogalom meghatározása**  
-*WebSocket = full-duplex communication protocol TCP connection-ön keresztül, persistent connection szerver és kliens között. HTTP handshake-kel indul (Upgrade: websocket header), utána low-latency bidirectional message exchange. Event-driven API: onopen, onmessage, onclose, onerror. Use case-ek: real-time chat, live notifications, gaming, collaborative editing, streaming data. WebSocket states: CONNECTING (0), OPEN (1), CLOSING (2), CLOSED (3). ws:// (insecure) vs wss:// (secure over TLS).*
+*WebSocket = full-duplex bidirectional communication protocol TCP-n keresztül, persistent connection. **HTTP handshake**: GET request + `Upgrade: websocket` header → protocol switch 101 Switching Protocols. **States**: CONNECTING (0), OPEN (1), CLOSING (2), CLOSED (3). **Frames**: Text frames (UTF-8), Binary frames (ArrayBuffer/Blob), Control frames (ping/pong/close). **API**: `new WebSocket(url)`, onopen, onmessage, onerror, onclose events, send() method. ws:// (insecure) vs wss:// (secure TLS). **Server-Sent Events (SSE)**: Unidirectional server→client push HTTP-n keresztül. `EventSource` API, `text/event-stream` MIME type, automatic reconnection (3s default), Last-Event-ID header resume support, named events (`event:` field). **Decision**: WebSocket = bidirectional + low latency; SSE = server push only + simpler + firewall-friendly + auto-reconnect.*
 
 </div>
 
 <div class="concept-section why-important" data-filter="javascript medior">
 
 💡 **Miért számít?**
-- **Real-time communication**: azonnali kétirányú adatátvitel szerver és kliens között
-- **Low latency**: nincs HTTP header overhead minden üzenetnél
-- **Live applications**: chat, gaming, live updates, collaborative editing
-- **Efficient networking**: egy kapcsolat több üzenet küldésére/fogadására
+- **Real-time communication**: Push-based data delivery eliminates polling overhead (100x efficiency)
+- **Performance**: WebSocket ~50-100ms latency, SSE HTTP-based (firewall/proxy friendly)
+- **Use case matching**: Chat/Gaming (WebSocket), Notifications/News feeds (SSE), Live dashboards (SSE)
+- **Scalability**: 1 persistent connection vs 1000+ HTTP polling requests → server load optimization
 
 </div>
 
 <div class="runnable-model" data-filter="javascript">
 
 **Runnable mental model**
+
+**WebSocket Production-Ready Implementation:**
 ```javascript
-// WebSocket Client Implementation
-class WebSocketManager {
+// Comprehensive WebSocket Manager with reconnection, heartbeat, message queuing
+class WebSocketClient {
     constructor(url, options = {}) {
         this.url = url;
-        this.options = {
-            autoReconnect: true,
+        this.config = {
+            reconnect: true,
             maxReconnectAttempts: 5,
-            reconnectInterval: 1000,
-            heartbeatInterval: 30000,
+            reconnectInterval: 1000,  // Start with 1s
+            maxReconnectInterval: 30000,  // Max 30s
+            heartbeatInterval: 30000,  // Ping every 30s
+            timeout: 5000,  // Connection timeout
             ...options
         };
         
@@ -5109,65 +6164,604 @@ class WebSocketManager {
         this.reconnectAttempts = 0;
         this.isConnected = false;
         this.messageQueue = [];
-        this.eventListeners = new Map();
+        this.listeners = new Map();
         this.heartbeatTimer = null;
-        
-        this.init();
-    }
-    
-    init() {
-        this.connect();
-        this.setupHeartbeat();
+        this.reconnectTimer = null;
     }
     
     connect() {
-        try {
-            console.log(`Connecting to WebSocket: ${this.url}`);
-            this.ws = new WebSocket(this.url);
-            
-            this.ws.onopen = this.handleOpen.bind(this);
-            this.ws.onmessage = this.handleMessage.bind(this);
-            this.ws.onclose = this.handleClose.bind(this);
-            this.ws.onerror = this.handleError.bind(this);
-            
-        } catch (error) {
-            console.error('WebSocket connection failed:', error);
-            this.handleReconnect();
-        }
-    }
-    
-    handleOpen(event) {
-        console.log('WebSocket connected');
-        this.isConnected = true;
-        this.reconnectAttempts = 0;
-        
-        // Send queued messages
-        this.flushMessageQueue();
-        
-        // Emit custom event
-        this.emit('connected', { event });
+        return new Promise((resolve, reject) => {
+            try {
+                console.log(`[WebSocket] Connecting to ${this.url}`);
+                this.ws = new WebSocket(this.url);
+                
+                const timeout = setTimeout(() => {
+                    this.ws.close();
+                    reject(new Error('Connection timeout'));
+                }, this.config.timeout);
+                
+                this.ws.onopen = () => {
+                    clearTimeout(timeout);
+                    this.isConnected = true;
+                    this.reconnectAttempts = 0;
+                    console.log('[WebSocket] Connected');
+                    
+                    this.startHeartbeat();
+                    this.flushQueue();
+                    this.emit('open');
+                    resolve();
+                };
+                
+                this.ws.onmessage = (event) => {
+                    this.handleMessage(event);
+                };
+                
+                this.ws.onerror = (error) => {
+                    console.error('[WebSocket] Error:', error);
+                    this.emit('error', error);
+                };
+                
+                this.ws.onclose = (event) => {
+                    this.isConnected = false;
+                    this.stopHeartbeat();
+                    console.log(`[WebSocket] Closed: ${event.code} ${event.reason}`);
+                    
+                    this.emit('close', { code: event.code, reason: event.reason });
+                    
+                    if (this.config.reconnect && this.reconnectAttempts < this.config.maxReconnectAttempts) {
+                        this.scheduleReconnect();
+                    }
+                };
+                
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
     
     handleMessage(event) {
         try {
             const data = JSON.parse(event.data);
-            console.log('WebSocket message received:', data);
             
-            // Handle different message types
-            switch (data.type) {
-                case 'ping':
-                    this.sendPong();
-                    break;
-                case 'pong':
-                    console.log('Heartbeat acknowledged');
-                    break;
-                case 'notification':
-                    this.handleNotification(data.payload);
-                    break;
-                case 'chat_message':
-                    this.handleChatMessage(data.payload);
-                    break;
-                case 'user_status':
+            // Handle heartbeat pong
+            if (data.type === 'pong') {
+                console.log('[WebSocket] Heartbeat acknowledged');
+                return;
+            }
+            
+            // Emit typed messages
+            this.emit(data.type || 'message', data);
+            this.emit('message', data);  // Also emit generic
+            
+        } catch (error) {
+            // Handle non-JSON messages
+            this.emit('message', event.data);
+        }
+    }
+    
+    send(data) {
+        if (this.isConnected && this.ws.readyState === WebSocket.OPEN) {
+            const message = typeof data === 'string' ? data : JSON.stringify(data);
+            this.ws.send(message);
+        } else {
+            // Queue message for later
+            this.messageQueue.push(data);
+            console.warn('[WebSocket] Message queued (not connected)');
+        }
+    }
+    
+    flushQueue() {
+        while (this.messageQueue.length > 0) {
+            const message = this.messageQueue.shift();
+            this.send(message);
+        }
+    }
+    
+    startHeartbeat() {
+        this.stopHeartbeat();
+        this.heartbeatTimer = setInterval(() => {
+            if (this.isConnected) {
+                this.send({ type: 'ping', timestamp: Date.now() });
+            }
+        }, this.config.heartbeatInterval);
+    }
+    
+    stopHeartbeat() {
+        if (this.heartbeatTimer) {
+            clearInterval(this.heartbeatTimer);
+            this.heartbeatTimer = null;
+        }
+    }
+    
+    scheduleReconnect() {
+        if (this.reconnectTimer) return;
+        
+        this.reconnectAttempts++;
+        // Exponential backoff
+        const delay = Math.min(
+            this.config.reconnectInterval * Math.pow(2, this.reconnectAttempts - 1),
+            this.config.maxReconnectInterval
+        );
+        
+        console.log(`[WebSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.config.maxReconnectAttempts})`);
+        
+        this.reconnectTimer = setTimeout(async () => {
+            this.reconnectTimer = null;
+            try {
+                await this.connect();
+            } catch (error) {
+                console.error('[WebSocket] Reconnect failed:', error);
+            }
+        }, delay);
+    }
+    
+    on(event, callback) {
+        if (!this.listeners.has(event)) {
+            this.listeners.set(event, []);
+        }
+        this.listeners.get(event).push(callback);
+    }
+    
+    off(event, callback) {
+        const callbacks = this.listeners.get(event);
+        if (callbacks) {
+            const index = callbacks.indexOf(callback);
+            if (index > -1) callbacks.splice(index, 1);
+        }
+    }
+    
+    emit(event, data) {
+        const callbacks = this.listeners.get(event);
+        if (callbacks) {
+            callbacks.forEach(callback => callback(data));
+        }
+    }
+    
+    close(code = 1000, reason = 'Normal closure') {
+        this.config.reconnect = false;  // Prevent reconnect
+        this.stopHeartbeat();
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+        if (this.ws) {
+            this.ws.close(code, reason);
+        }
+    }
+    
+    get state() {
+        return this.ws ? this.ws.readyState : WebSocket.CLOSED;
+    }
+}
+
+// Usage: Chat Application
+const chat = new WebSocketClient('wss://chat.example.com/socket');
+
+await chat.connect();
+
+chat.on('open', () => {
+    console.log('Chat connected');
+    chat.send({ type: 'join', room: 'general' });
+});
+
+chat.on('chat_message', (data) => {
+    console.log(`${data.user}: ${data.message}`);
+    displayMessage(data);
+});
+
+chat.on('user_joined', (data) => {
+    console.log(`${data.username} joined`);
+});
+
+chat.on('close', ({ code, reason }) => {
+    console.log(`Disconnected: ${reason}`);
+});
+
+// Send message
+document.querySelector('#send').addEventListener('click', () => {
+    const message = document.querySelector('#input').value;
+    chat.send({ type: 'chat_message', message, room: 'general' });
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    chat.close();
+});
+```
+
+**Server-Sent Events (SSE) Implementation:**
+```javascript
+// SSE Client Manager with automatic reconnection
+class SSEClient {
+    constructor(url, options = {}) {
+        this.url = url;
+        this.config = {
+            withCredentials: false,
+            ...options
+        };
+        
+        this.eventSource = null;
+        this.listeners = new Map();
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
+    }
+    
+    connect() {
+        try {
+            console.log(`[SSE] Connecting to ${this.url}`);
+            
+            this.eventSource = new EventSource(this.url, {
+                withCredentials: this.config.withCredentials
+            });
+            
+            this.eventSource.onopen = () => {
+                console.log('[SSE] Connected');
+                this.reconnectAttempts = 0;
+                this.emit('open');
+            };
+            
+            this.eventSource.onmessage = (event) => {
+                // Default message handler (unnamed events)
+                try {
+                    const data = JSON.parse(event.data);
+                    this.emit('message', data);
+                } catch (error) {
+                    this.emit('message', event.data);
+                }
+            };
+            
+            this.eventSource.onerror = (error) => {
+                console.error('[SSE] Error:', error);
+                
+                // EventSource auto-reconnects, but we track attempts
+                if (this.eventSource.readyState === EventSource.CLOSED) {
+                    this.reconnectAttempts++;
+                    
+                    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+                        console.error('[SSE] Max reconnect attempts reached');
+                        this.close();
+                    }
+                }
+                
+                this.emit('error', error);
+            };
+            
+        } catch (error) {
+            console.error('[SSE] Connection failed:', error);
+            throw error;
+        }
+    }
+    
+    // Listen for named events
+    addEventListener(eventName, callback) {
+        if (this.eventSource) {
+            this.eventSource.addEventListener(eventName, (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    callback(data, event);
+                } catch (error) {
+                    callback(event.data, event);
+                }
+            });
+        }
+    }
+    
+    on(event, callback) {
+        if (!this.listeners.has(event)) {
+            this.listeners.set(event, []);
+        }
+        this.listeners.get(event).push(callback);
+    }
+    
+    emit(event, data) {
+        const callbacks = this.listeners.get(event);
+        if (callbacks) {
+            callbacks.forEach(callback => callback(data));
+        }
+    }
+    
+    close() {
+        if (this.eventSource) {
+            this.eventSource.close();
+            console.log('[SSE] Closed');
+            this.emit('close');
+        }
+    }
+    
+    get readyState() {
+        return this.eventSource ? this.eventSource.readyState : EventSource.CLOSED;
+    }
+}
+
+// Usage: Live News Feed
+const newsFeed = new SSEClient('/api/news/stream');
+
+newsFeed.connect();
+
+newsFeed.on('open', () => {
+    console.log('News feed connected');
+});
+
+newsFeed.on('message', (article) => {
+    console.log('New article:', article.title);
+    addArticleToFeed(article);
+});
+
+// Listen for named events
+newsFeed.addEventListener('breaking_news', (news) => {
+    console.log('🚨 BREAKING:', news.headline);
+    showNotification(news);
+});
+
+newsFeed.addEventListener('stock_update', (stock) => {
+    console.log(`${stock.symbol}: $${stock.price}`);
+    updateStockTicker(stock);
+});
+
+// Server-side (Node.js/Express):
+app.get('/api/news/stream', (req, res) => {
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    
+    // Send initial message
+    res.write('data: {"type": "connected"}\n\n');
+    
+    // Send periodic updates
+    const interval = setInterval(() => {
+        const article = getLatestArticle();
+        res.write(`data: ${JSON.stringify(article)}\n\n`);
+    }, 5000);
+    
+    // Send named event
+    const breakingNewsInterval = setInterval(() => {
+        const news = getBreakingNews();
+        res.write(`event: breaking_news\n`);
+        res.write(`data: ${JSON.stringify(news)}\n\n`);
+    }, 30000);
+    
+    // Cleanup on connection close
+    req.on('close', () => {
+        clearInterval(interval);
+        clearInterval(breakingNewsInterval);
+        console.log('Client disconnected');
+    });
+});
+```
+
+**Decision Matrix: WebSocket vs SSE vs HTTP Polling:**
+```javascript
+// Decision helper function
+function selectRealtimeStrategy(requirements) {
+    const {
+        bidirectional,      // Client needs to send to server?
+        lowLatency,         // <100ms latency required?
+        firewallFriendly,   // Must work through corporate proxies?
+        simplicity,         // Development complexity tolerance?
+        browserSupport      // Need IE support?
+    } = requirements;
+    
+    // WebSocket: Bidirectional + Low Latency
+    if (bidirectional && lowLatency) {
+        return {
+            strategy: 'WebSocket',
+            reason: 'Bidirectional communication with minimal latency',
+            useCases: ['Chat', 'Gaming', 'Collaborative editing', 'Trading platforms']
+        };
+    }
+    
+    // SSE: Server→Client push + Simplicity
+    if (!bidirectional && (firewallFriendly || simplicity)) {
+        return {
+            strategy: 'Server-Sent Events',
+            reason: 'Simple server push over HTTP',
+            useCases: ['News feeds', 'Notifications', 'Stock tickers', 'Live dashboards']
+        };
+    }
+    
+    // HTTP Polling: Maximum compatibility
+    if (browserSupport || !lowLatency) {
+        return {
+            strategy: 'HTTP Polling (Long Polling)',
+            reason: 'Maximum browser compatibility',
+            useCases: ['Legacy browser support', 'Infrequent updates']
+        };
+    }
+    
+    return {
+        strategy: 'HTTP Polling',
+        reason: 'Default fallback'
+    };
+}
+
+// Examples:
+console.log(selectRealtimeStrategy({
+    bidirectional: true,
+    lowLatency: true,
+    firewallFriendly: false,
+    simplicity: false,
+    browserSupport: false
+}));
+// → WebSocket for chat app
+
+console.log(selectRealtimeStrategy({
+    bidirectional: false,
+    lowLatency: false,
+    firewallFriendly: true,
+    simplicity: true,
+    browserSupport: false
+}));
+// → SSE for notifications
+
+// Comparison table:
+const comparison = {
+    'WebSocket': {
+        direction: 'Bidirectional',
+        protocol: 'ws:// / wss://',
+        latency: '~50-100ms',
+        overhead: 'Low (2 bytes per frame)',
+        autoReconnect: 'Manual implementation',
+        firewall: 'May be blocked',
+        complexity: 'High'
+    },
+    'SSE': {
+        direction: 'Server→Client only',
+        protocol: 'http:// / https://',
+        latency: '~100-200ms',
+        overhead: 'Medium (HTTP headers)',
+        autoReconnect: 'Automatic (3s default)',
+        firewall: 'Firewall-friendly',
+        complexity: 'Low'
+    },
+    'Long Polling': {
+        direction: 'Request→Response',
+        protocol: 'http:// / https://',
+        latency: '~200-500ms',
+        overhead: 'High (full HTTP overhead)',
+        autoReconnect: 'Manual polling loop',
+        firewall: 'Firewall-friendly',
+        complexity: 'Medium'
+    }
+};
+```
+
+**Fallback Strategy (Progressive Enhancement):**
+```javascript
+// Graceful degradation: WebSocket → SSE → Long Polling
+class RealtimeClient {
+    constructor(url) {
+        this.url = url;
+        this.strategy = null;
+        this.client = null;
+    }
+    
+    async connect() {
+        // Try WebSocket first
+        if ('WebSocket' in window) {
+            try {
+                console.log('Attempting WebSocket connection...');
+                this.client = new WebSocketClient(this.url.replace('http', 'ws'));
+                await this.client.connect();
+                this.strategy = 'WebSocket';
+                console.log('✅ Using WebSocket');
+                return;
+            } catch (error) {
+                console.warn('WebSocket failed, trying SSE...', error);
+            }
+        }
+        
+        // Fallback to SSE
+        if ('EventSource' in window) {
+            try {
+                console.log('Attempting SSE connection...');
+                this.client = new SSEClient(this.url + '/stream');
+                this.client.connect();
+                this.strategy = 'SSE';
+                console.log('✅ Using SSE');
+                return;
+            } catch (error) {
+                console.warn('SSE failed, falling back to polling...', error);
+            }
+        }
+        
+        // Final fallback: Long Polling
+        console.log('Using Long Polling fallback');
+        this.client = new LongPollingClient(this.url);
+        this.client.connect();
+        this.strategy = 'Long Polling';
+        console.log('✅ Using Long Polling');
+    }
+    
+    send(data) {
+        if (this.strategy === 'WebSocket') {
+            this.client.send(data);
+        } else {
+            // SSE/Polling: Use HTTP POST
+            fetch(this.url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+    }
+    
+    on(event, callback) {
+        this.client.on(event, callback);
+    }
+    
+    close() {
+        this.client.close();
+    }
+}
+
+// Long Polling implementation (fallback)
+class LongPollingClient {
+    constructor(url) {
+        this.url = url;
+        this.isPolling = false;
+        this.listeners = new Map();
+        this.lastEventId = null;
+    }
+    
+    connect() {
+        this.isPolling = true;
+        this.poll();
+    }
+    
+    async poll() {
+        while (this.isPolling) {
+            try {
+                const response = await fetch(this.url + '/poll', {
+                    method: 'GET',
+                    headers: {
+                        'Last-Event-ID': this.lastEventId || ''
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.events) {
+                    data.events.forEach(event => {
+                        this.emit('message', event);
+                        this.lastEventId = event.id;
+                    });
+                }
+                
+            } catch (error) {
+                console.error('[Polling] Error:', error);
+                await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+        }
+    }
+    
+    on(event, callback) {
+        if (!this.listeners.has(event)) {
+            this.listeners.set(event, []);
+        }
+        this.listeners.get(event).push(callback);
+    }
+    
+    emit(event, data) {
+        const callbacks = this.listeners.get(event);
+        if (callbacks) {
+            callbacks.forEach(callback => callback(data));
+        }
+    }
+    
+    close() {
+        this.isPolling = false;
+    }
+}
+
+// Usage with automatic fallback:
+const realtime = new RealtimeClient('https://api.example.com');
+await realtime.connect();  // Tries WebSocket → SSE → Polling
+
+realtime.on('message', (data) => {
+    console.log('Received:', data);
+});
+
+realtime.send({ type: 'subscribe', channel: 'updates' });
                     this.handleUserStatus(data.payload);
                     break;
                 default:
@@ -5687,7 +7281,205 @@ const simpleExample = () => {
 
 // simpleExample();
 ```
-*Figyeld meg: Bidirectional communication, event-driven architecture, automatic reconnection.*
+
+**Server-Sent Events (SSE) Implementation:**
+```javascript
+// EventSource Client Implementation
+class SSEClient {
+    constructor(url, options = {}) {
+        this.url = url;
+        this.config = {
+            withCredentials: false,  // Send cookies
+            ...options
+        };
+        
+        this.eventSource = null;
+        this.listeners = new Map();
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
+    }
+    
+    connect() {
+        return new Promise((resolve, reject) => {
+            try {
+                console.log(`[SSE] Connecting to ${this.url}`);
+                
+                // EventSource automatically handles reconnection
+                this.eventSource = new EventSource(this.url, {
+                    withCredentials: this.config.withCredentials
+                });
+                
+                this.eventSource.onopen = () => {
+                    console.log('[SSE] Connected');
+                    this.reconnectAttempts = 0;
+                    this.emit('open');
+                    resolve();
+                };
+                
+                // Default message handler (unnamed events)
+                this.eventSource.onmessage = (event) => {
+                    console.log('[SSE] Message:', event.data);
+                    const data = this.parseData(event.data);
+                    this.emit('message', data);
+                };
+                
+                this.eventSource.onerror = (error) => {
+                    console.error('[SSE] Error:', error);
+                    
+                    if (this.eventSource.readyState === EventSource.CLOSED) {
+                        console.log('[SSE] Connection closed');
+                        this.emit('close');
+                        
+                        if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                            this.reconnectAttempts++;
+                            console.log(`[SSE] Reconnecting... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+                            // EventSource handles reconnection automatically
+                        }
+                    }
+                    
+                    this.emit('error', error);
+                };
+                
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+    
+    // Listen to named events
+    addEventListener(eventName, callback) {
+        if (!this.listeners.has(eventName)) {
+            this.listeners.set(eventName, []);
+            
+            // Register EventSource listener for named event
+            this.eventSource.addEventListener(eventName, (event) => {
+                const data = this.parseData(event.data);
+                this.emit(eventName, { ...data, id: event.lastEventId });
+            });
+        }
+        
+        this.listeners.get(eventName).push(callback);
+    }
+    
+    parseData(data) {
+        try {
+            return JSON.parse(data);
+        } catch (error) {
+            return data;  // Return as string if not JSON
+        }
+    }
+    
+    emit(event, data) {
+        const callbacks = this.listeners.get(event) || [];
+        callbacks.forEach(callback => callback(data));
+    }
+    
+    close() {
+        if (this.eventSource) {
+            this.eventSource.close();
+            console.log('[SSE] Connection closed manually');
+        }
+    }
+    
+    getReadyState() {
+        if (!this.eventSource) return EventSource.CLOSED;
+        return this.eventSource.readyState;
+        // EventSource.CONNECTING (0)
+        // EventSource.OPEN (1)
+        // EventSource.CLOSED (2)
+    }
+}
+
+// Usage example - Real-time notifications
+const notifications = new SSEClient('/api/notifications');
+
+notifications.connect().then(() => {
+    console.log('SSE connected');
+});
+
+// Listen to default messages
+notifications.addEventListener('message', (data) => {
+    console.log('New notification:', data);
+    showNotification(data);
+});
+
+// Listen to named events
+notifications.addEventListener('user-joined', (data) => {
+    console.log('User joined:', data);
+    updateUserList(data);
+});
+
+notifications.addEventListener('message-sent', (data) => {
+    console.log('New message:', data);
+    appendMessage(data);
+});
+```
+
+**Decision Matrix: WebSocket vs SSE:**
+```javascript
+const communicationPatterns = {
+    webSocket: {
+        direction: 'Bidirectional (client ↔ server)',
+        protocol: 'Custom (TCP-based)',
+        reconnection: 'Manual implementation',
+        latency: '50-100ms (very low)',
+        useCases: [
+            'Chat applications',
+            'Real-time gaming',
+            'Collaborative editing',
+            'Live trading platforms'
+        ]
+    },
+    
+    sse: {
+        direction: 'Unidirectional (server → client)',
+        protocol: 'HTTP-based',
+        reconnection: 'Automatic (3s default)',
+        latency: '100-200ms (low)',
+        useCases: [
+            'Live news feeds',
+            'Stock price updates',
+            'Notifications',
+            'Live dashboards'
+        ]
+    }
+};
+```
+
+**Fallback Strategy:**
+```javascript
+// Progressive enhancement: WebSocket → SSE → Long Polling
+class RealTimeClient {
+    async connect() {
+        // Try WebSocket first
+        if ('WebSocket' in window) {
+            try {
+                await this.connectWebSocket();
+                console.log('✅ Using WebSocket');
+                return;
+            } catch (error) {
+                console.warn('WebSocket failed, trying SSE...');
+            }
+        }
+        
+        // Fallback to SSE
+        if ('EventSource' in window) {
+            try {
+                await this.connectSSE();
+                console.log('✅ Using SSE');
+                return;
+            } catch (error) {
+                console.warn('SSE failed, using Long Polling...');
+            }
+        }
+        
+        // Final fallback
+        await this.connectLongPolling();
+        console.log('✅ Using Long Polling');
+    }
+}
+```
+*Figyeld meg: WebSocket bidirectional low-latency, SSE unidirectional auto-reconnect, Fallback strategy for compatibility.*
 
 </div>
 
@@ -5698,9 +7490,160 @@ const simpleExample = () => {
 
 <div>
 
-- „WebSocket helyettesíti a HTTP-t." → Kiegészíti, nem helyettesíti; HTTP-vel indul a connection upgrade
-- „WebSocket mindig jobb mint HTTP." → Csak real-time alkalmazásokhoz; simple request-response-hoz HTTP egyszerűbb
-- „WebSocket automatikusan kezeli a reconnection-t." → Manual implementation szükséges a robust reconnection-höz
+- **"WebSocket helyettesíti a HTTP-t"** → **Valójában**: Kiegészíti, HTTP-vel kezdődik (Upgrade header), együtt használandók
+- **"WebSocket mindig jobb mint HTTP"** → **Valójában**: Csak bidirectional real-time-hoz, simple request-response → REST API jobb
+- **"WebSocket automatikusan újracsatlakozik"** → **Valójában**: Manual reconnection logic kell (exponential backoff, message queue)
+- **"SSE nem tud binary data-t küldeni"** → **Valójában**: Csak text/event-stream, de base64-el workaround (inefficient)
+- **"EventSource.readyState CONNECTING = csatlakozás alatt"** → **Valójában**: CONNECTING (0), OPEN (1), CLOSED (2) - nincs CLOSING állapot
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="javascript performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**WebSocket vs HTTP Polling Overhead:**
+```javascript
+// HTTP Polling: 100 req/s × 500 bytes headers = 50KB/s overhead
+// WebSocket: 100 msg/s × 4 bytes frame = 0.4KB/s overhead
+// Savings: 99.2% less bandwidth
+
+setInterval(async () => {
+    await fetch('/api/updates');  // Full HTTP headers every time
+}, 1000);
+
+// vs
+
+const ws = new WebSocket('wss://api.example.com');
+ws.onmessage = (event) => {
+    updateUI(event.data);  // Minimal frame overhead
+};
+```
+
+**Heartbeat Optimization:**
+```javascript
+// ❌ ROSSZ: Every 5s = 720 pings/hour
+setInterval(() => ws.send('ping'), 5000);
+
+// ✅ JÓ: Every 30s = 120 pings/hour (6x better)
+setInterval(() => ws.send('ping'), 30000);
+```
+
+**SSE Connection Limit:**
+```javascript
+// Browser limit: 6 concurrent SSE per domain
+// ❌ ROSSZ: Multiple connections
+const notifications = new EventSource('/api/notifications');  // 1
+const messages = new EventSource('/api/messages');            // 2
+// ... 7th connection will block!
+
+// ✅ JÓ: Single multiplexed connection
+const stream = new EventSource('/api/stream');
+stream.addEventListener('notification', handleNotification);
+stream.addEventListener('message', handleMessage);
+```
+
+**Message Queue Memory:**
+```javascript
+// ❌ ROSSZ: Unbounded queue (memory leak)
+this.messageQueue.push(message);  // Can grow infinitely
+
+// ✅ JÓ: Bounded with LRU eviction
+if (this.messageQueue.length >= MAX_QUEUE_SIZE) {
+    this.messageQueue.shift();  // Drop oldest
+}
+this.messageQueue.push(message);
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="javascript">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Chrome DevTools - Network Tab:**
+```
+Network → WS filter → Frames tab
+- See all sent/received messages
+- Timing: Connection duration
+- Headers: Handshake details
+```
+
+**Socket.IO (WebSocket library):**
+```bash
+npm install socket.io socket.io-client
+```
+
+```javascript
+// Server
+const io = require('socket.io')(3000);
+io.on('connection', (socket) => {
+    socket.on('message', (msg) => {
+        io.emit('message', msg);  // Broadcast
+    });
+});
+
+// Client
+import io from 'socket.io-client';
+const socket = io('http://localhost:3000');
+socket.on('message', (msg) => console.log(msg));
+```
+
+**ws (Node.js WebSocket):**
+```bash
+npm install ws
+```
+
+```javascript
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', (ws) => {
+    ws.on('message', (data) => {
+        wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(data);
+            }
+        });
+    });
+});
+```
+
+**nginx WebSocket proxy:**
+```nginx
+location /ws {
+    proxy_pass http://backend:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 86400;
+}
+```
+
+**SSE nginx config:**
+```nginx
+location /sse {
+    proxy_pass http://backend:3000;
+    proxy_http_version 1.1;
+    chunked_transfer_encoding off;
+    proxy_buffering off;
+    proxy_cache off;
+}
+```
 
 </div>
 
@@ -5711,54 +7654,189 @@ const simpleExample = () => {
 <div class="concept-section micro-learning" data-filter="javascript">
 
 <details>
-<summary>📚 <strong>5 perces mikro-tanulás</strong></summary>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
 
 <div>
 
-**WebSocket states:**
-```javascript
-WebSocket.CONNECTING (0) // Kapcsolódás alatt
-WebSocket.OPEN (1)       // Kapcsolat aktív
-WebSocket.CLOSING (2)    // Kapcsolat zárása alatt  
-WebSocket.CLOSED (3)     // Kapcsolat lezárva
+**1) Mi a különbség WebSocket és Server-Sent Events között?**
+<details>
+<summary>Válasz</summary>
 
-// Check connection state
-if (ws.readyState === WebSocket.OPEN) {
-    ws.send('message');
+**WebSocket**: Bidirectional (client ↔ server), custom protocol (ws://), manual reconnection, supports binary.
+
+**SSE**: Unidirectional (server → client), HTTP-based, automatic reconnection (3s), text only.
+
+**Use cases**:
+- WebSocket: Chat, gaming (bidirectional needed)
+- SSE: Live feeds, notifications (server push only)
+
+</details>
+
+**2) Hogyan működik a WebSocket handshake?**
+<details>
+<summary>Válasz</summary>
+
+**HTTP Upgrade request**:
+```http
+GET /chat HTTP/1.1
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+```
+
+**Server response (101 Switching Protocols)**:
+```http
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+```
+
+TCP connection switches to WebSocket protocol.
+
+</details>
+
+**3) Miért fontos a WebSocket heartbeat/ping-pong mechanizmus?**
+<details>
+<summary>Válasz</summary>
+
+**Okok**:
+1. **Idle connection detection**: Proxy/firewall closes idle connections (30-120s)
+2. **Dead connection cleanup**: Network failure detection
+3. **Keep-alive**: Prevents timeout-based disconnection
+
+**Implementation**:
+```javascript
+setInterval(() => {
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'ping' }));
+    }
+}, 30000);  // Every 30s
+```
+
+</details>
+
+**4) Hogyan implementálsz exponential backoff reconnection-t?**
+<details>
+<summary>Válasz</summary>
+
+**Exponential backoff**: Reconnect delay doubles after each failed attempt.
+
+```javascript
+let reconnectAttempts = 0;
+const BASE_DELAY = 1000;  // 1s
+const MAX_DELAY = 30000;  // 30s
+
+function reconnect() {
+    const delay = Math.min(
+        BASE_DELAY * Math.pow(2, reconnectAttempts),
+        MAX_DELAY
+    );
+    
+    setTimeout(() => {
+        reconnectAttempts++;
+        connect();
+    }, delay);
+}
+// Delays: 1s, 2s, 4s, 8s, 16s, 30s (capped)
+```
+
+</details>
+
+**5) Mi az SSE Last-Event-ID és mire használható?**
+<details>
+<summary>Válasz</summary>
+
+**Last-Event-ID**: Server sends `id:` field, client automatically resends on reconnection.
+
+**Server**:
+```javascript
+res.write('id: 12345\\n');
+res.write('data: {"message":"Event data"}\\n\\n');
+```
+
+**Client reconnection**:
+```http
+GET /stream HTTP/1.1
+Last-Event-ID: 12345
+```
+
+Server continues from ID 12346 → **No missed events!**
+
+</details>
+
+**6) Mikor használj WebSocket helyett SSE-t?**
+<details>
+<summary>Válasz</summary>
+
+**Use SSE when**:
+- ✅ Server→client push only
+- ✅ Simplicity important (auto reconnection)
+- ✅ Firewall/proxy friendly (HTTP)
+- ✅ Text data only (JSON, XML)
+- ✅ Event ID resume support needed
+
+**Example**: Live news feed, stock prices, server metrics dashboard.
+
+</details>
+
+**7) Hogyan kezeled a WebSocket message queue-t connection loss alatt?**
+<details>
+<summary>Válasz</summary>
+
+**Strategy**: Queue messages during disconnection, flush on reconnect.
+
+```javascript
+send(message) {
+    if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(message);
+    } else {
+        if (this.messageQueue.length < MAX_QUEUE_SIZE) {
+            this.messageQueue.push({ message, timestamp: Date.now() });
+        } else {
+            console.warn('Queue full, dropping message');
+        }
+    }
+}
+
+flushQueue() {
+    while (this.messageQueue.length > 0) {
+        const item = this.messageQueue.shift();
+        this.ws.send(item.message);
+    }
 }
 ```
 
-**Basic WebSocket pattern:**
-```javascript
-const ws = new WebSocket('wss://example.com/socket');
+**Important**: Bound queue size, TTL for stale messages.
 
-ws.onopen = () => console.log('Connected');
-ws.onmessage = (event) => console.log('Message:', event.data);
-ws.onclose = () => console.log('Disconnected');
-ws.onerror = (error) => console.error('Error:', error);
+</details>
+
+**8) Mi a WebSocket close code jelentése és hogyan használd?**
+<details>
+<summary>Válasz</summary>
+
+**Common close codes**:
+- **1000**: Normal closure (clean disconnect)
+- **1001**: Going away (tab closed)
+- **1006**: Abnormal closure (network error)
+- **1008**: Policy violation (auth failed)
+- **4000-4999**: Application-specific
+
+**Usage**:
+```javascript
+ws.onclose = (event) => {
+    if (event.code === 1000) {
+        console.log('Clean disconnect');
+    } else if (event.code === 1006) {
+        console.log('Network error, reconnecting...');
+        reconnect();
+    }
+};
+
+ws.close(1000, 'User logged out');
 ```
 
-</div>
-
 </details>
-
-</div>
-
-<div class="concept-section interview-pitfalls" data-filter="javascript medior">
-
-<details>
-<summary>💼 <strong>Interjú kérdések</strong></summary>
-
-<div>
-
-**Q: Mikor használnál WebSocket-et HTTP helyett?**
-A: Real-time alkalmazásokhoz (chat, gaming, live updates), alacsony latency, frequent bidirectional communication.
-
-**Q: Hogyan kezelnéd a WebSocket connection loss-t?**
-A: Automatic reconnection logic, exponential backoff, message queuing, heartbeat/ping-pong mechanizmus.
-
-**Q: Mi a különbség WebSocket és Server-Sent Events között?**
-A: WebSocket bidirectional, SSE csak server→client, SSE egyszerűbb HTTP-based, WebSocket más protokoll.
 
 </div>
 
@@ -5766,25 +7844,7 @@ A: WebSocket bidirectional, SSE csak server→client, SSE egyszerűbb HTTP-based
 
 </div>
 
-<div class="concept-section connection-map" data-filter="javascript">
-
-<details>
-<summary>🔗 <strong>Kapcsolati térkép</strong></summary>
-
-<div>
-
-**Kapcsolódó fogalmak:**
-- **HTTP** → Connection upgrade és handshake
-- **Event Handling** → Message events és custom event system
-- **Performance** → Real-time communication optimization
-- **Security** → WSS encryption és authentication
-- **API Design** → Message protocols és data structures
-
-</div>
-
-</details>
-
-</div>
+---
 
 ### Service Workers és PWA alapok {#service-workers-pwa}
 
@@ -12500,39 +14560,601 @@ console.log('Frontend Security System initialized');
 
 </div>
 
-<div class="concept-section micro-learning" data-filter="security">
+<div class="concept-section performance" data-filter="security performance">
 
 <details>
-<summary>📚 <strong>5 perces mikro-tanulás</strong></summary>
+<summary>🚀 <strong>Performance corner</strong></summary>
 
 <div>
 
-**Security essentials:**
+**XSS Types Performance Impact:**
 ```javascript
-// XSS prevention
-element.textContent = userInput; // Safe
-element.innerHTML = sanitizeHTML(userInput); // Safe
+// XSS attack types by execution time:
+// 1. Reflected XSS: ~0-100ms (URL parameter → immediate execution)
+// 2. Stored XSS: ~100-500ms (database → page load → execution)
+// 3. DOM-based XSS: ~0-50ms (client-side only, no server round-trip)
 
-// CSRF protection
-fetch('/api', {
-    headers: { 'X-CSRF-Token': getToken() }
-});
+// Sanitization performance comparison:
+const testHTML = '<script>alert("XSS")</script><p>Hello</p>'.repeat(100);
 
-// CSP nonce
-<script nonce="random-value">
-// Safe inline script
-</script>
+// ❌ SLOW: DOMParser (creates full DOM tree)
+console.time('DOMParser');
+const parser = new DOMParser();
+const doc = parser.parseFromString(testHTML, 'text/html');
+doc.querySelectorAll('script').forEach(s => s.remove());
+const sanitized1 = doc.body.innerHTML;
+console.timeEnd('DOMParser'); // ~15-25ms
 
-// Secure storage
-// BAD: localStorage.setItem('token', authToken);
-// GOOD: Secure HTTP-only cookie or encrypted storage
+// ✅ FAST: String replacement (regex-based)
+console.time('Regex');
+const sanitized2 = testHTML.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+console.timeEnd('Regex'); // ~2-5ms (5x faster!)
+
+// ⚡ FASTEST: DOMPurify library (optimized C++ bindings in Chromium)
+import DOMPurify from 'dompurify';
+console.time('DOMPurify');
+const sanitized3 = DOMPurify.sanitize(testHTML);
+console.timeEnd('DOMPurify'); // ~1-3ms (10x faster!)
+
+// Performance: DOMPurify > Regex > DOMParser
 ```
 
-**Security headers checklist:**
-- Content-Security-Policy
-- X-Frame-Options: DENY
-- X-Content-Type-Options: nosniff
-- Strict-Transport-Security
+**CSRF Token Performance:**
+```javascript
+// Token generation methods comparison:
+// 1. Crypto.randomUUID() - Built-in browser API
+console.time('randomUUID');
+for (let i = 0; i < 10000; i++) {
+    crypto.randomUUID(); // e.g., "a7f8b2c3-1d4e-5f6g-7h8i-9j0k1l2m3n4o"
+}
+console.timeEnd('randomUUID'); // ~10-20ms (native, fastest)
+
+// 2. Crypto.getRandomValues() - Cryptographically secure
+console.time('getRandomValues');
+for (let i = 0; i < 10000; i++) {
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+console.timeEnd('getRandomValues'); // ~15-30ms
+
+// 3. Math.random() - NOT secure (predictable)
+console.time('Math.random');
+for (let i = 0; i < 10000; i++) {
+    Math.random().toString(36).substring(2); // NEVER use for CSRF tokens!
+}
+console.timeEnd('Math.random'); // ~5-10ms (fast but insecure!)
+
+// Performance winner: crypto.randomUUID() (speed + security)
+```
+
+**CSP Performance Impact:**
+```javascript
+// CSP header processing overhead:
+// - No CSP: 0ms overhead
+// - CSP with 5 directives: ~0.5-1ms parsing overhead
+// - CSP with 20 directives: ~2-5ms parsing overhead
+
+// CSP nonce vs hash performance:
+// Nonce generation (server-side):
+// - crypto.randomBytes(16): ~0.1ms per request
+// - Requires dynamic HTML generation (template engine overhead)
+
+// Hash generation (build-time):
+// - SHA-256 hash of static script: ~1ms (one-time at build)
+// - Zero runtime overhead (hash in CSP header, script unchanged)
+
+// Recommendation: Use hash for static scripts, nonce for dynamic content
+
+// CSP violation reporting overhead:
+document.addEventListener('securitypolicyviolation', async (e) => {
+    // ⚠️ VIGYÁZZ: Excessive violations can flood network
+    // Throttle reporting to avoid performance degradation
+    throttleViolationReport(e); // Max 10 reports/minute
+});
+
+// Network overhead:
+// - Each violation report: ~500 bytes POST request
+// - 100 violations/min = 50KB bandwidth waste
+```
+
+**HTTPS/TLS Handshake Performance:**
+```javascript
+// TLS handshake latency:
+// HTTP: 0ms (no handshake)
+// HTTPS (TLS 1.2): ~100-200ms (full handshake: 2 round-trips)
+// HTTPS (TLS 1.3): ~50-100ms (1 round-trip, 50% faster!)
+// HTTPS (TLS 1.3 with 0-RTT): ~0ms (session resumption)
+
+// Performance optimization:
+// 1. HTTP/2 + HTTPS (multiplexing over single TLS connection)
+// 2. TLS session resumption (reuse handshake for repeat visitors)
+// 3. OCSP stapling (avoid CRL lookup latency)
+
+// Measurement example:
+const measureTLSHandshake = async (url) => {
+    const start = performance.now();
+    
+    const response = await fetch(url);
+    const entries = performance.getEntriesByType('navigation')[0];
+    
+    if (entries) {
+        const tlsHandshake = entries.secureConnectionStart 
+            ? entries.connectEnd - entries.secureConnectionStart
+            : 0;
+        
+        console.log(`TLS Handshake: ${tlsHandshake.toFixed(2)}ms`);
+        // TLS 1.2: ~150ms
+        // TLS 1.3: ~75ms (2x gyorsabb!)
+    }
+};
+
+// Real-world impact:
+// Page load with 20 HTTPS resources:
+// - TLS 1.2: 20 × 150ms = 3000ms total TLS overhead
+// - TLS 1.3 + H2: 1 connection × 75ms = 75ms (40x gyorsabb!)
+```
+
+**Input Sanitization Bottlenecks:**
+```javascript
+// ❌ ROSSZ: Sanitize on every keystroke (performance killer)
+input.addEventListener('keyup', (e) => {
+    const sanitized = sanitizeInput(e.target.value); // ~5-10ms per keystroke!
+    display.textContent = sanitized;
+});
+// Typing 60 WPM = 300 keystrokes/min = 5 keystrokes/sec
+// Overhead: 5 × 10ms = 50ms/sec (lag noticeable!)
+
+// ✅ JÓ: Debounce sanitization (batch processing)
+input.addEventListener('keyup', debounce((e) => {
+    const sanitized = sanitizeInput(e.target.value);
+    display.textContent = sanitized;
+}, 300)); // Sanitize only after 300ms pause
+
+// Performance: 5 keystrokes/sec × 10ms = 50ms → 1 sanitization/3sec × 10ms = 0.003ms avg
+// ~16,000x kevesebb CPU usage!
+```
+
+**Security Headers Performance:**
+```javascript
+// Security headers size overhead:
+const securityHeaders = {
+    'Content-Security-Policy': 450 bytes,  // Average CSP header
+    'Strict-Transport-Security': 50 bytes,
+    'X-Content-Type-Options': 20 bytes,
+    'X-Frame-Options': 15 bytes,
+    'X-XSS-Protection': 20 bytes,
+    'Referrer-Policy': 25 bytes,
+    'Permissions-Policy': 150 bytes
+};
+// Total: ~730 bytes per response
+
+// Impact:
+// - 100 requests/session × 730 bytes = 73KB overhead
+// - Modern compression (Brotli): ~10KB actual bandwidth
+// - Negligible compared to security benefit
+
+// Performance tip: Cache security headers with Service Worker
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request).then(response => {
+            if (response) {
+                // Cached response already has security headers
+                return response;
+            }
+            return fetch(event.request);
+        })
+    );
+});
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="security">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**DOMPurify - XSS Sanitization:**
+```javascript
+// Install: npm install dompurify
+import DOMPurify from 'dompurify';
+
+// Basic sanitization
+const clean = DOMPurify.sanitize(dirtyHTML);
+
+// Custom configuration
+const config = {
+    ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a'],
+    ALLOWED_ATTR: ['href', 'title'],
+    ALLOW_DATA_ATTR: false
+};
+const cleanCustom = DOMPurify.sanitize(dirtyHTML, config);
+
+// Hooks for custom logic
+DOMPurify.addHook('afterSanitizeElements', (node) => {
+    // Custom validation after sanitization
+    if (node.tagName === 'A') {
+        const href = node.getAttribute('href');
+        if (href && !href.startsWith('https://trusted-domain.com')) {
+            node.removeAttribute('href');
+        }
+    }
+});
+```
+
+**Helmet.js (Express) - Security Headers:**
+```javascript
+// Install: npm install helmet
+const helmet = require('helmet');
+const express = require('express');
+const app = express();
+
+// Default security headers
+app.use(helmet());
+
+// Custom CSP configuration
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'nonce-abc123'", "https://trusted-cdn.com"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://api.trusted-service.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: []
+    }
+}));
+
+// HSTS (Strict-Transport-Security)
+app.use(helmet.hsts({
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+}));
+
+// X-Frame-Options
+app.use(helmet.frameguard({ action: 'deny' }));
+```
+
+**OWASP ZAP - Security Scanner:**
+```bash
+# Install OWASP ZAP (Zed Attack Proxy)
+# GUI: https://www.zaproxy.org/download/
+
+# Command-line scan:
+docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py \
+    -t https://your-website.com -r report.html
+
+# Scan types:
+# - Baseline scan: Passive scanning only (~2 minutes)
+# - Full scan: Active + passive scanning (~30 minutes)
+# - API scan: OpenAPI/Swagger spec scanning
+
+# Common vulnerabilities detected:
+# - XSS (Reflected, Stored, DOM-based)
+# - CSRF (Missing tokens)
+# - Security headers (Missing CSP, HSTS)
+# - Cookie security (Missing Secure, HttpOnly, SameSite)
+# - SQL injection
+# - Insecure dependencies
+```
+
+**Burp Suite - Penetration Testing:**
+```
+Burp Suite Community Edition (free):
+- Proxy: Intercept HTTP/HTTPS requests
+- Scanner: Automated vulnerability scanning (Pro only)
+- Intruder: Brute force attacks
+- Repeater: Manual request modification
+- Decoder: Encoding/decoding utilities
+
+Common workflows:
+1. Configure browser to use Burp proxy (127.0.1:8080)
+2. Browse target website (capture traffic)
+3. Right-click request → Send to Repeater
+4. Modify request (inject XSS/CSRF payloads)
+5. Analyze response
+```
+
+**Content Security Policy Evaluator:**
+```
+https://csp-evaluator.withgoogle.com/
+
+// Paste your CSP header and get analysis:
+// - Syntax errors
+// - Missing directives
+// - Weak configurations (e.g., 'unsafe-inline')
+// - Bypass techniques
+
+Example report:
+✅ script-src 'self' - Good
+⚠️ script-src 'unsafe-inline' - Allows inline scripts (XSS risk)
+❌ default-src * - Allows everything (no protection)
+```
+
+**SecurityHeaders.com - Header Scanner:**
+```
+https://securityheaders.com/
+
+// Enter URL and get grade (A+ to F)
+// Checks:
+// - Content-Security-Policy
+// - Strict-Transport-Security
+// - X-Content-Type-Options
+// - X-Frame-Options
+// - X-XSS-Protection
+// - Referrer-Policy
+// - Permissions-Policy
+
+Example result:
+A+ rating requires:
+✅ CSP with strict policy
+✅ HSTS with max-age >= 10886400
+✅ X-Content-Type-Options: nosniff
+✅ X-Frame-Options: DENY
+✅ Referrer-Policy: no-referrer
+```
+
+**Web Crypto API - Secure Random:**
+```javascript
+// Generate secure CSRF token
+const generateCSRFToken = () => {
+    // Modern approach (Chrome 92+, Firefox 95+)
+    return crypto.randomUUID(); // e.g., "a7f8b2c3-1d4e-5f6g-7h8i-9j0k1l2m3n4o"
+};
+
+// Generate random bytes (older browsers)
+const generateRandomBytes = (length = 32) => {
+    const buffer = new Uint8Array(length);
+    crypto.getRandomValues(buffer);
+    return Array.from(buffer, byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
+// Hash password (client-side hashing - supplementary to server-side)
+const hashPassword = async (password) => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
+// Example: Client-side + server-side double hashing
+const clientHash = await hashPassword('userPassword123');
+// Send clientHash to server (not plain password over HTTPS)
+// Server hashes again with salt + bcrypt/argon2
+```
+
+**Subresource Integrity (SRI) - CDN Security:**
+```html
+<!-- Verify CDN script integrity -->
+<script 
+    src="https://cdn.example.com/library.js"
+    integrity="sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/ux..."
+    crossorigin="anonymous"
+></script>
+
+<!-- Generate SRI hash: -->
+<script>
+// Command line:
+// openssl dgst -sha384 -binary library.js | openssl base64 -A
+
+// Or use online tool:
+// https://www.srihash.org/
+</script>
+
+<!-- If CDN file is tampered, browser refuses to execute -->
+<!-- Protection against CDN compromise attacks -->
+```
+
+**npm audit - Dependency Vulnerabilities:**
+```bash
+# Check for known vulnerabilities
+npm audit
+
+# Example output:
+# found 5 vulnerabilities (2 moderate, 3 high)
+# run `npm audit fix` to fix them
+
+# Automatic fix (patches to safe versions)
+npm audit fix
+
+# Force fix (may introduce breaking changes)
+npm audit fix --force
+
+# Audit report JSON
+npm audit --json > audit-report.json
+
+# CI/CD integration (fail build on high/critical vulnerabilities)
+npm audit --audit-level=high
+```
+
+**Browser DevTools Security Panel:**
+```javascript
+// Chrome DevTools:
+// 1. Open DevTools (F12)
+// 2. Security tab
+// 3. Check:
+//    - Connection: Valid certificate, TLS version
+//    - Certificate: Issuer, expiry, Subject Alternative Names
+//    - Resources: Mixed content warnings
+//    - Origin: Secure context status
+
+// Lighthouse Security Audit:
+// 1. Lighthouse tab
+// 2. Run audit
+// 3. Security section:
+//    - HTTPS usage
+//    - HTTP → HTTPS redirects
+//    - Vulnerable JavaScript libraries
+//    - Mixed content
+//    - CSP effectiveness
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="security">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség Reflected, Stored és DOM-based XSS között?**
+<details>
+<summary>Válasz</summary>
+
+**Reflected XSS**: URL parameter-ből jön vissza (pl. `search?q=<script>alert(1)</script>`), server response-ban, nincs persistence.
+
+**Stored XSS**: Database-ben tárolódik (pl. comment, profile), minden látogatónak végrehajtódik, highest impact.
+
+**DOM-based XSS**: Client-side only (document.location, innerHTML manipulation), never reaches server.
+
+</details>
+
+**2) Hogyan működik a CSRF token double submit cookie pattern?**
+<details>
+<summary>Válasz</summary>
+
+1. Server random token-t küld cookie-ban (`CSRF-Token: abc123`) + HTML form hidden field-ben
+2. Client POST request-ben elküldi mindkettőt: cookie (auto) + form field (manual)
+3. Server összehasonlítja: ha megegyeznek → valid request
+
+Attacker nem tudja olvasni cookie-t (SOP), így nem tudja a form field-et kitölteni.
+
+</details>
+
+**3) Mit jelent a CSP nonce és hogyan használod?**
+<details>
+<summary>Válasz</summary>
+
+**Nonce** = "number used once", random egyedi string minden request-hez.
+
+```html
+<!-- Server generates nonce: "r4nd0m" -->
+Content-Security-Policy: script-src 'nonce-r4nd0m'
+
+<!-- Inline script with nonce (allowed) -->
+<script nonce="r4nd0m">console.log('Safe');</script>
+
+<!-- Inline script without nonce (blocked) -->
+<script>console.log('XSS');</script>  <!-- ❌ Blocked! -->
+```
+
+Előny: Inline scripts engedélyezése XSS védelem megtartásával.
+
+</details>
+
+**4) Mi a különbség HttpOnly és Secure cookie flag között?**
+<details>
+<summary>Válasz</summary>
+
+**HttpOnly**: JavaScript nem éri el (`document.cookie`), védelem XSS ellen (session theft prevention).
+
+**Secure**: Csak HTTPS-en küldődik, védelem network sniffing ellen (MITM attack).
+
+```javascript
+// Set-Cookie header:
+Set-Cookie: session=abc123; HttpOnly; Secure; SameSite=Strict
+
+// HttpOnly: document.cookie → nem látható
+// Secure: HTTP request → nem küldi el
+// SameSite: Cross-site request → nem küldi el
+```
+
+</details>
+
+**5) Hogyan működik a HSTS (Strict-Transport-Security)?**
+<details>
+<summary>Válasz</summary>
+
+HSTS header mondja a böngészőnek: "Mindig HTTPS-t használj ennél a domain-nél".
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+```
+
+- **max-age**: Meddig érvényes (másodpercben)
+- **includeSubDomains**: Subdomains is HTTPS
+- **preload**: Hardcode browser-be (Chrome preload list)
+
+Első HTTPS visit után → minden HTTP request automatic HTTPS-re írásírva (browser-side).
+
+</details>
+
+**6) Mikor használnál CSP hash-t inline script helyett nonce-t?**
+<details>
+<summary>Válasz</summary>
+
+**Hash**: Static inline scripts (build-time hash)
+```html
+<!-- script content: console.log('Hello'); -->
+CSP: script-src 'sha256-base64hash...'
+```
+
+**Nonce**: Dynamic inline scripts (runtime generated)
+```html
+<!-- New nonce every request -->
+CSP: script-src 'nonce-r4nd0m123'
+```
+
+Hash előny: Nincs server-side nonce generation overhead. Nonce előny: Dynamic content support.
+
+</details>
+
+**7) Hogyan előzöd meg a clickjacking-et?**
+<details>
+<summary>Válasz</summary>
+
+**X-Frame-Options** header:
+```
+X-Frame-Options: DENY          # Semelyik frame-ben nem enged
+X-Frame-Options: SAMEORIGIN    # Csak same-origin frame-ek
+```
+
+**CSP frame-ancestors** (modern):
+```
+Content-Security-Policy: frame-ancestors 'self'
+```
+
+Védelem: Attacker nem tud invisible iframe-be tenni (password form overlay attack).
+
+</details>
+
+**8) Mi a SameSite cookie attribute és mikor használod?**
+<details>
+<summary>Válasz</summary>
+
+**SameSite** controls mikor küldődik cookie cross-site requests-ben:
+
+- **Strict**: Soha nem küldi cross-site (strongest CSRF protection)
+- **Lax**: Only GET navigation (default Chrome 80+)
+- **None**: Minden request (requires Secure flag)
+
+```javascript
+// Strict: Login session
+Set-Cookie: session=abc; SameSite=Strict; Secure
+
+// Lax: Analytics tracking
+Set-Cookie: tracking=xyz; SameSite=Lax
+
+// None: Third-party embed (YouTube video)
+Set-Cookie: embed=123; SameSite=None; Secure
+```
+
+</details>
 
 </div>
 
@@ -12582,171 +15204,876 @@ A: Nonce dynamic content-hez (minden request új), hash static content-hez (ugya
 
 </div>
 
-### CORS {#cors}
-Cross-Origin Resource Sharing - böngésző biztonsági mechanizmus a különböző domain-ek közötti kérések szabályozására.
+### CORS (Cross-Origin Resource Sharing) {#cors}
 
-**Példa:**
+<div class="concept-section mental-model" data-filter="security medior">
+
+📋 **Fogalom meghatározása**  
+*CORS (Cross-Origin Resource Sharing) browser security policy megakadályozza, hogy web page-ek unauthorized cross-origin requests-et hajtsanak végre. **Same-Origin Policy (SOP)**: origin = protocol + domain + port (https://example.com:443). **Preflight request**: OPTIONS method check server-side CORS policy BEFORE actual request (triggered by custom headers vagy non-simple methods). **Simple requests**: GET/POST/HEAD + simple headers (Content-Type: text/plain, application/x-www-form-urlencoded, multipart/form-data) → no preflight. **CORS headers**: Access-Control-Allow-Origin (domains), Access-Control-Allow-Methods (HTTP methods), Access-Control-Allow-Headers (custom headers), Access-Control-Allow-Credentials (cookies/auth). **Credentials mode**: omit (no cookies), same-origin (csak same-origin), include (cross-origin cookies).*
+
+</div>
+
+<div class="concept-section why-important" data-filter="security medior">
+
+💡 **Miért számít?**
+- **Security**: Malicious sites nem férhetnek hozzá user data-hoz más domain-eken
+- **API Integration**: Külső API-k használata megköveteli CORS configuration-t
+- **Development**: localhost ↔ production server communication CORS hiba gyakori
+- **Authentication**: Cookie-based auth cross-origin esetén credentials mode kell
+
+</div>
+
+<div class="runnable-model" data-filter="security">
+
+**Runnable mental model**
+
+**Same-Origin Policy Check:**
 ```javascript
-// CORS handling on client side
-const corsAwareRequest = async (url, options = {}) => {
-    // Check if request is cross-origin
-    const requestUrl = new URL(url);
-    const currentOrigin = window.location.origin;
-    const isCrossOrigin = requestUrl.origin !== currentOrigin;
+// Origin comparison examples
+const checkSameOrigin = (url1, url2) => {
+    const origin1 = new URL(url1);
+    const origin2 = new URL(url2);
     
-    if (isCrossOrigin) {
-        console.log(`Cross-origin request to: ${requestUrl.origin}`);
+    // Same-origin: protocol + domain + port must match
+    const isSameOrigin = 
+        origin1.protocol === origin2.protocol &&
+        origin1.hostname === origin2.hostname &&
+        origin1.port === origin2.port;
+    
+    return isSameOrigin;
+};
+
+// Examples:
+checkSameOrigin('https://example.com/api', 'https://example.com/page'); 
+// ✅ Same-origin (same protocol, domain, port)
+
+checkSameOrigin('http://example.com', 'https://example.com');
+// ❌ Different origin (different protocol)
+
+checkSameOrigin('https://example.com', 'https://api.example.com');
+// ❌ Different origin (different subdomain)
+
+checkSameOrigin('https://example.com', 'https://example.com:8080');
+// ❌ Different origin (different port)
+
+// Current page origin
+console.log('Current origin:', window.location.origin);
+// e.g., "https://myapp.com"
+```
+
+**Simple vs Preflight Requests:**
+```javascript
+// SIMPLE REQUEST (No preflight)
+// Conditions: GET/POST/HEAD + simple headers + simple Content-Type
+fetch('https://api.example.com/users', {
+    method: 'GET',
+    headers: {
+        'Accept': 'application/json'
+        // Simple headers only
     }
-    
-    // Configure request with CORS headers
-    const config = {
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            // Add custom headers that might trigger preflight
-            'X-Requested-With': 'XMLHttpRequest',
-            ...options.headers
-        },
-        // Include credentials if needed
-        credentials: 'include', // or 'same-origin' or 'omit'
-        // Control cache
-        mode: 'cors' // 'same-origin', 'no-cors', or 'cors'
-    };
-    
+});
+// Browser sends: GET request directly
+// No OPTIONS preflight
+
+// PREFLIGHT REQUEST (OPTIONS sent first)
+fetch('https://api.example.com/users', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',  // Non-simple Content-Type
+        'Authorization': 'Bearer token',     // Custom header
+        'X-Custom-Header': 'value'           // Custom header
+    },
+    body: JSON.stringify({ name: 'John' })
+});
+
+// Browser sends:
+// 1. OPTIONS /users (Preflight)
+//    - Access-Control-Request-Method: POST
+//    - Access-Control-Request-Headers: authorization, x-custom-header
+// 2. If server responds with allowed headers/methods → POST /users (Actual request)
+```
+
+**Preflight Request Flow:**
+```javascript
+// Server receives OPTIONS request (preflight)
+// Server must respond:
+/*
+HTTP/1.1 204 No Content
+Access-Control-Allow-Origin: https://myapp.com
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization, X-Custom-Header
+Access-Control-Max-Age: 86400  // Cache preflight for 24 hours
+Access-Control-Allow-Credentials: true
+*/
+
+// Then browser sends actual request:
+fetch('https://api.example.com/users', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer abc123',
+        'X-Custom-Header': 'value'
+    },
+    credentials: 'include',  // Send cookies
+    body: JSON.stringify({ name: 'John' })
+});
+
+// Server responds with CORS headers:
+/*
+HTTP/1.1 201 Created
+Access-Control-Allow-Origin: https://myapp.com
+Access-Control-Allow-Credentials: true
+Content-Type: application/json
+
+{"id": 123, "name": "John"}
+*/
+```
+
+**Credentials Mode Examples:**
+```javascript
+// Mode: 'omit' - No cookies/auth sent (default for cross-origin)
+fetch('https://api.example.com/public', {
+    credentials: 'omit'
+});
+// Cookies: ❌ Not sent
+// Authorization: Manual header needed
+
+// Mode: 'same-origin' - Cookies only for same-origin
+fetch('https://api.example.com/data', {
+    credentials: 'same-origin'
+});
+// Same-origin: ✅ Cookies sent
+// Cross-origin: ❌ Cookies blocked
+
+// Mode: 'include' - Cookies for cross-origin (requires server CORS)
+fetch('https://api.example.com/user', {
+    credentials: 'include'
+});
+// ✅ Cookies sent (if server allows)
+// Server MUST respond:
+// Access-Control-Allow-Origin: https://myapp.com (NOT *)
+// Access-Control-Allow-Credentials: true
+```
+
+**CORS Error Debugging:**
+```javascript
+// Common CORS error patterns
+const debugCORS = async (url, options = {}) => {
     try {
-        const response = await fetch(url, config);
+        console.log('🔍 CORS Debug:', {
+            url,
+            method: options.method || 'GET',
+            headers: options.headers,
+            credentials: options.credentials,
+            currentOrigin: window.location.origin
+        });
         
-        // Check CORS headers in response
-        const accessControlHeaders = {
-            allowOrigin: response.headers.get('Access-Control-Allow-Origin'),
-            allowMethods: response.headers.get('Access-Control-Allow-Methods'),
-            allowHeaders: response.headers.get('Access-Control-Allow-Headers'),
-            allowCredentials: response.headers.get('Access-Control-Allow-Credentials')
+        const response = await fetch(url, options);
+        
+        // Check CORS headers
+        const corsHeaders = {
+            'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+            'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials'),
+            'Access-Control-Expose-Headers': response.headers.get('Access-Control-Expose-Headers')
         };
         
-        console.log('CORS headers:', accessControlHeaders);
+        console.log('✅ CORS Success:', corsHeaders);
+        return response;
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        return await response.json();
     } catch (error) {
-        if (error.name === 'TypeError' && error.message.includes('CORS')) {
-            console.error('CORS error detected:', error.message);
-            throw new Error('Cross-origin request blocked by CORS policy');
+        console.error('❌ CORS Error:', error);
+        
+        // Diagnose error
+        if (error.message.includes('CORS')) {
+            console.error('Possible causes:');
+            console.error('1. Server missing Access-Control-Allow-Origin header');
+            console.error('2. credentials: "include" but server allows "*"');
+            console.error('3. Custom headers not in Access-Control-Allow-Headers');
+            console.error('4. Method not in Access-Control-Allow-Methods');
         }
+        
         throw error;
     }
 };
 
-// JSONP fallback for old browsers (not recommended for modern apps)
-const jsonpRequest = (url, callbackName = 'callback') => {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        const callbackId = `jsonp_${Date.now()}_${Math.random().toString(36).substr(2)}`;
+// Usage:
+debugCORS('https://api.example.com/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ name: 'John' })
+});
+```
+
+**Server-Side CORS Configuration (Express):**
+```javascript
+// Manual CORS middleware (Node.js/Express)
+const corsMiddleware = (req, res, next) => {
+    const allowedOrigins = [
+        'http://localhost:3000',
+        'https://myapp.com',
+        'https://www.myapp.com'
+    ];
+    
+    const origin = req.headers.origin;
+    
+    if (allowedOrigins.includes(origin)) {
+        // Allow specific origin
+        res.setHeader('Access-Control-Allow-Origin', origin);
         
-        // Create global callback
+        // Allow credentials
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        
+        // Allow methods
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        
+        // Allow headers
+        res.setHeader('Access-Control-Allow-Headers', 
+            'Content-Type, Authorization, X-Requested-With, X-Custom-Header'
+        );
+        
+        // Expose custom headers to client
+        res.setHeader('Access-Control-Expose-Headers', 
+            'X-Total-Count, X-Page-Number'
+        );
+        
+        // Cache preflight for 24 hours
+        res.setHeader('Access-Control-Max-Age', '86400');
+    }
+    
+    // Handle preflight
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204); // No Content
+    }
+    
+    next();
+};
+
+app.use(corsMiddleware);
+
+// Using cors package (recommended)
+const cors = require('cors');
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'http://localhost:3000',
+            'https://myapp.com'
+        ];
+        
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['X-Total-Count'],
+    maxAge: 86400
+};
+
+app.use(cors(corsOptions));
+```
+
+**CORS Proxy Pattern (Development):**
+```javascript
+// Vite proxy configuration (vite.config.js)
+export default {
+    server: {
+        proxy: {
+            '/api': {
+                target: 'https://api.external.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+                configure: (proxy, options) => {
+                    proxy.on('proxyReq', (proxyReq, req, res) => {
+                        console.log('Proxying:', req.method, req.url);
+                    });
+                }
+            }
+        }
+    }
+};
+
+// Client code (no CORS issues in development)
+fetch('/api/users')  // Proxied to https://api.external.com/users
+    .then(res => res.json())
+    .then(users => console.log(users));
+
+// Webpack proxy (webpack.config.js)
+module.exports = {
+    devServer: {
+        proxy: {
+            '/api': {
+                target: 'https://api.external.com',
+                pathRewrite: { '^/api': '' },
+                changeOrigin: true,
+                secure: false  // Accept self-signed certificates
+            }
+        }
+    }
+};
+```
+
+**JSONP Fallback (Legacy, not recommended):**
+```javascript
+// JSONP bypasses CORS by using <script> tags
+// Only supports GET requests, security risks
+
+const jsonp = (url, callbackName = 'callback') => {
+    return new Promise((resolve, reject) => {
+        const callbackId = `jsonp_${Date.now()}`;
+        
         window[callbackId] = (data) => {
             document.head.removeChild(script);
             delete window[callbackId];
             resolve(data);
         };
         
-        // Error handling
+        const script = document.createElement('script');
+        script.src = `${url}?${callbackName}=${callbackId}`;
         script.onerror = () => {
             document.head.removeChild(script);
             delete window[callbackId];
-            reject(new Error('JSONP request failed'));
+            reject(new Error('JSONP failed'));
         };
         
-        // Make request
-        script.src = `${url}?${callbackName}=${callbackId}`;
         document.head.appendChild(script);
-        
-        // Timeout
-        setTimeout(() => {
-            if (window[callbackId]) {
-                document.head.removeChild(script);
-                delete window[callbackId];
-                reject(new Error('JSONP request timeout'));
-            }
-        }, 10000);
     });
 };
 
-// Proxy pattern for development
-const developmentProxy = {
-    async makeRequest(endpoint, options = {}) {
-        // In development, requests might go through a proxy
-        const isDevelopment = process.env.NODE_ENV === 'development';
-        const baseUrl = isDevelopment ? '/api/proxy' : 'https://api.example.com';
-        
-        const url = `${baseUrl}${endpoint}`;
-        
-        return await corsAwareRequest(url, {
-            ...options,
-            headers: {
-                // Add development-specific headers
-                'X-Development-Mode': isDevelopment.toString(),
-                ...options.headers
-            }
-        });
-    }
-};
+// Server must respond with: callbackId({"data": "value"});
+// ⚠️ Security risk: Executes arbitrary JavaScript from external source
+```
+*Figyeld meg: Preflight csak complex requests-nél, credentials mode strict CORS config kell.*
 
-// Server-side CORS configuration example (Node.js/Express)
-const corsConfigExample = `
-// Express CORS middleware configuration
-const corsOptions = {
-    origin: [
-        'http://localhost:3000',
-        'https://myapp.com',
-        'https://www.myapp.com'
-    ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With'
-    ],
-    credentials: true,
-    maxAge: 86400 // 24 hours
-};
+</div>
 
-app.use(cors(corsOptions));
+<div class="concept-section myths" data-filter="security">
 
-// Manual CORS headers
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://myapp.com');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', true);
-    
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-});
-`;
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
 
-// Usage examples
-const apiService = {
-    async getUsers() {
-        return await corsAwareRequest('https://api.external.com/users');
+<div>
+
+- **"CORS server-side problem, client nem tud semmit"** → **Valójában**: CORS browser policy, server config + client credentials mode együtt kell
+- **"Access-Control-Allow-Origin: * elég minden esetben"** → **Valójában**: credentials: 'include' esetén konkrét origin kell, * nem működik
+- **"CORS csak production-ben probléma"** → **Valójában**: Development is (localhost:3000 → localhost:5000 = cross-origin), proxy megoldás
+- **"Preflight OPTIONS request-et manually kell küldeni"** → **Valójában**: Browser automatically küldi complex requests előtt
+- **"CORS error = server down"** → **Valójában**: Server működik, de CORS headers hiányoznak/hibásak
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="security performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Preflight Request Overhead:**
+```javascript
+// OPTIONS preflight adds latency (extra round-trip)
+// Latency: 100ms OPTIONS + 100ms POST = 200ms total
+
+// ❌ ROSSZ: Every request triggers preflight
+fetch('https://api.example.com/data', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-Custom-Header': 'value'  // Triggers preflight
     },
-    
-    async createUser(userData) {
-        return await corsAwareRequest('https://api.external.com/users', {
-            method: 'POST',
-            body: JSON.stringify(userData)
-        });
-    }
-};
+    body: JSON.stringify(data)
+});
+// Total: 10 requests × 200ms = 2000ms
+
+// ✅ JÓ: Server caches preflight with Access-Control-Max-Age
+// Server response:
+// Access-Control-Max-Age: 86400  // 24 hours
+
+// First request: 200ms (preflight + actual)
+// Next requests (within 24h): 100ms (actual only)
+// Total: 1 × 200ms + 9 × 100ms = 1100ms (45% faster!)
 ```
 
-Magyarázat: CORS biztonsági mechanizmus, amely megakadályozza, hogy rosszindulatú weboldalak illetéktelenül hozzáférjenek más domain-ek erőforrásaihoz.
+**Simple Requests Performance:**
+```javascript
+// Simple requests skip preflight (faster)
+// Use when possible for performance
+
+// ✅ FAST: Simple request (no preflight)
+fetch('https://api.example.com/data', {
+    method: 'GET',
+    headers: {
+        'Accept': 'application/json'  // Simple header
+    }
+});
+// Latency: 100ms (no preflight)
+
+// ❌ SLOW: Complex request (preflight required)
+fetch('https://api.example.com/data', {
+    method: 'GET',
+    headers: {
+        'Authorization': 'Bearer token',  // Custom header → preflight
+        'Accept': 'application/json'
+    }
+});
+// Latency: 200ms (preflight + request)
+
+// Performance tip: Use query parameters for auth when possible
+fetch('https://api.example.com/data?token=abc123');
+// Latency: 100ms (simple request, no preflight)
+```
+
+**Credentials Mode Impact:**
+```javascript
+// credentials: 'include' adds cookie overhead
+// Each request: +500-2000 bytes (cookies)
+
+// ❌ SLOW: Large cookies sent every request
+document.cookie = 'session=abc...xyz'; // 4KB cookie
+document.cookie = 'preferences=...';    // 2KB cookie
+// Total: 6KB overhead per request
+// 100 requests = 600KB bandwidth waste
+
+// ✅ FAST: Small session ID, data server-side
+document.cookie = 'sid=abc123'; // 20 bytes
+// 100 requests = 2KB overhead (300x better!)
+
+// Performance: credentials: 'omit' = no cookie overhead
+fetch(url, { credentials: 'omit' }); // 0 bytes cookie overhead
+```
+
+**CORS Proxy Performance:**
+```javascript
+// Development proxy adds latency
+// Client → Proxy → API Server → Proxy → Client
+
+// Direct request (production):
+// Client → API Server: 100ms round-trip
+
+// Proxy request (development):
+// Client → Proxy: 10ms
+// Proxy → API Server: 100ms
+// Total: 110ms (10% slower, acceptable for dev)
+
+// ⚠️ VIGYÁZZ: Public CORS proxy = huge latency
+// Client → CORS Anywhere → API: 500-1000ms
+// Only for development/testing, NEVER production
+```
+
+**Access-Control-Max-Age Optimization:**
+```javascript
+// Preflight cache duration impact
+// Max-Age: 0 = preflight every request
+// Max-Age: 86400 (24h) = preflight once per day
+
+// Benchmark (100 POST requests):
+// Max-Age: 0 → 100 preflights × 100ms = 10000ms overhead
+// Max-Age: 3600 (1h) → 1 preflight × 100ms = 100ms overhead
+// Savings: 99% less preflight requests!
+
+// Recommended values:
+// Development: Access-Control-Max-Age: 600 (10 min)
+// Production: Access-Control-Max-Age: 86400 (24 hours)
+
+// Measure preflight cache hit rate:
+let preflightCount = 0;
+const observer = new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+        if (entry.name.includes('OPTIONS')) {
+            preflightCount++;
+            console.log(`Preflight #${preflightCount}: ${entry.name}`);
+        }
+    });
+});
+observer.observe({ entryTypes: ['resource'] });
+
+// Expected: 1 preflight per unique endpoint per Max-Age duration
+```
+
+**CORS Error Recovery Time:**
+```javascript
+// CORS errors fail fast (no retry overhead)
+// Typical CORS error: 5-50ms (quick browser rejection)
+
+fetch('https://api.blocked.com/data')
+    .catch(err => {
+        console.log('CORS blocked in ~10ms');
+        // No server round-trip if browser blocks immediately
+    });
+
+// Compare to server error:
+// - CORS error: ~10ms (browser-side block)
+// - 403 Forbidden: ~100-200ms (server round-trip)
+// CORS fail = 10-20x faster than server reject
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="security">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Chrome DevTools Network Tab:**
+```javascript
+// 1. Open DevTools (F12) → Network tab
+// 2. Filter by "Fetch/XHR"
+// 3. Look for:
+//    - OPTIONS request (preflight)
+//    - Response headers: Access-Control-*
+//    - Status: 200 (success) or CORS error
+
+// Common CORS errors in console:
+// "Access to fetch at '...' has been blocked by CORS policy:
+//  No 'Access-Control-Allow-Origin' header is present"
+
+// Inspect CORS headers:
+// Request Headers:
+//   - Origin: https://myapp.com
+//   - Access-Control-Request-Method: POST (preflight)
+//   - Access-Control-Request-Headers: authorization (preflight)
+
+// Response Headers:
+//   - Access-Control-Allow-Origin: https://myapp.com
+//   - Access-Control-Allow-Credentials: true
+//   - Access-Control-Max-Age: 86400
+```
+
+**cors npm package (Node.js):**
+```bash
+npm install cors
+
+# Usage:
+```
+
+```javascript
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+// Simple usage (allow all origins - development only)
+app.use(cors());
+
+// Configured usage (production)
+app.use(cors({
+    origin: ['https://myapp.com', 'https://www.myapp.com'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['X-Total-Count'],
+    maxAge: 86400
+}));
+
+// Dynamic origin validation
+app.use(cors({
+    origin: (origin, callback) => {
+        const allowlist = ['https://myapp.com'];
+        if (!origin || allowlist.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
+```
+
+**Postman / Insomnia (CORS Testing):**
+```
+Postman/Insomnia bypass CORS (not browser-based)
+- Useful for testing API without CORS restrictions
+- ⚠️ VIGYÁZZ: If works in Postman but fails in browser → CORS issue
+
+Testing workflow:
+1. Test in Postman → Works?
+2. Test in browser → CORS error?
+3. Check server CORS headers
+4. Add missing Access-Control-* headers
+```
+
+**Browser CORS extensions (Development ONLY):**
+```
+Chrome: CORS Unblock extension
+Firefox: CORS Everywhere addon
+
+⚠️ WARNING: 
+- Only for development/testing
+- NEVER use in production
+- Disables browser security
+- Can expose user data
+```
+
+**curl (Command-line CORS testing):**
+```bash
+# Test preflight request
+curl -X OPTIONS https://api.example.com/users \
+  -H "Origin: https://myapp.com" \
+  -H "Access-Control-Request-Method: POST" \
+  -H "Access-Control-Request-Headers: Content-Type, Authorization" \
+  -v
+
+# Expected response headers:
+# Access-Control-Allow-Origin: https://myapp.com
+# Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+# Access-Control-Allow-Headers: Content-Type, Authorization
+# Access-Control-Max-Age: 86400
+
+# Test actual request with Origin header
+curl -X POST https://api.example.com/users \
+  -H "Origin: https://myapp.com" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer token" \
+  -d '{"name":"John"}' \
+  -v
+
+# Check response for:
+# Access-Control-Allow-Origin: https://myapp.com
+# Access-Control-Allow-Credentials: true
+```
+
+**CORS Tester (Online Tool):**
+```
+https://www.test-cors.org/
+
+// Test any endpoint for CORS support
+// Input: API URL, HTTP method, headers
+// Output: CORS headers, preflight status, error diagnosis
+```
+
+**Webpack/Vite Dev Proxy:**
+```javascript
+// vite.config.js
+export default {
+    server: {
+        proxy: {
+            '/api': {
+                target: 'https://api.external.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, '')
+            }
+        }
+    }
+};
+
+// webpack.config.js
+module.exports = {
+    devServer: {
+        proxy: {
+            '/api': {
+                target: 'https://api.external.com',
+                pathRewrite: { '^/api': '' },
+                changeOrigin: true
+            }
+        }
+    }
+};
+
+// Usage: fetch('/api/users') → proxied to https://api.external.com/users
+```
+
+**nginx CORS configuration:**
+```nginx
+# nginx.conf
+location /api {
+    # Handle preflight
+    if ($request_method = 'OPTIONS') {
+        add_header 'Access-Control-Allow-Origin' '$http_origin' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization' always;
+        add_header 'Access-Control-Max-Age' 86400 always;
+        return 204;
+    }
+    
+    # Add CORS headers to all responses
+    add_header 'Access-Control-Allow-Origin' '$http_origin' always;
+    add_header 'Access-Control-Allow-Credentials' 'true' always;
+    
+    proxy_pass http://backend:3000;
+}
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="security">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi az a Same-Origin Policy és hogyan definiálódik az origin?**
+<details>
+<summary>Válasz</summary>
+
+**Same-Origin Policy**: Browser security mechanism, amely megakadályozza, hogy egyik origin hozzáférjen másik origin resource-aihoz.
+
+**Origin**: `protocol://domain:port`
+
+Példák:
+- `https://example.com` ≠ `http://example.com` (különböző protocol)
+- `https://example.com` ≠ `https://api.example.com` (különböző subdomain)
+- `https://example.com` ≠ `https://example.com:8080` (különböző port)
+
+</details>
+
+**2) Mikor küldi a browser a preflight OPTIONS request-et?**
+<details>
+<summary>Válasz</summary>
+
+**Preflight triggers**:
+1. Custom HTTP methods (PUT, DELETE, PATCH)
+2. Custom headers (Authorization, X-Custom-Header)
+3. Content-Type NOT in: text/plain, application/x-www-form-urlencoded, multipart/form-data
+
+**Simple requests (NO preflight)**:
+- GET, POST, HEAD methods
+- Simple headers only (Accept, Accept-Language, Content-Language)
+- Content-Type: text/plain, application/x-www-form-urlencoded, multipart/form-data
+
+</details>
+
+**3) Miért nem működik credentials: 'include' ha Access-Control-Allow-Origin: *?**
+<details>
+<summary>Válasz</summary>
+
+**Security reason**: Wildcard (*) + credentials = vulnerable to CSRF attacks.
+
+Browser blocks:
+```javascript
+fetch(url, { credentials: 'include' });
+// Server: Access-Control-Allow-Origin: *
+// ❌ Error: "Wildcard not allowed with credentials"
+```
+
+**Fix**: Specify exact origin:
+```javascript
+// Server response:
+Access-Control-Allow-Origin: https://myapp.com
+Access-Control-Allow-Credentials: true
+// ✅ Works with credentials: 'include'
+```
+
+</details>
+
+**4) Hogyan cache-eli a browser a preflight request-et?**
+<details>
+<summary>Válasz</summary>
+
+**Access-Control-Max-Age** header:
+```
+Access-Control-Max-Age: 86400  // 24 hours
+```
+
+Browser cache-eli preflight eredményét Max-Age időtartamra. Következő requests (same endpoint, same headers) → skip preflight.
+
+Performance: 100 requests × 200ms → 1 preflight (200ms) + 99 direct (100ms each) = 10100ms (vs 20000ms without cache).
+
+</details>
+
+**5) Mi a különbség credentials: 'omit', 'same-origin', 'include' között?**
+<details>
+<summary>Válasz</summary>
+
+**omit**: Soha nem küld cookies/auth (cross-origin default).
+
+**same-origin**: Cookies csak same-origin requests-hez (default).
+
+**include**: Cookies cross-origin requests-hez is (requires server CORS config).
+
+```javascript
+// Same-origin: https://myapp.com/page → https://myapp.com/api
+fetch('/api', { credentials: 'same-origin' }); // ✅ Cookies sent
+
+// Cross-origin: https://myapp.com → https://api.example.com
+fetch('https://api.example.com', { credentials: 'include' });
+// ✅ Cookies sent IF server allows
+```
+
+</details>
+
+**6) Hogyan debuggolod a CORS hibákat?**
+<details>
+<summary>Válasz</summary>
+
+**Chrome DevTools checklist**:
+1. Network tab → Failed request → Response headers
+2. Check: `Access-Control-Allow-Origin` present?
+3. Check: Origin matches request origin?
+4. Check: `Access-Control-Allow-Credentials: true` (if credentials: 'include')
+5. Look for OPTIONS preflight (complex requests)
+6. Console error message describes issue
+
+**Common errors**:
+- "No Access-Control-Allow-Origin header" → Server config missing
+- "Origin not in allowed list" → Server whitelist doesn't include your origin
+- "Wildcard not allowed with credentials" → Use specific origin, not *
+
+</details>
+
+**7) Mikor használj CORS proxy-t és mikor ne?**
+<details>
+<summary>Válasz</summary>
+
+**✅ Use proxy**:
+- Development only (Vite/Webpack dev server)
+- Testing third-party APIs locally
+- Quick prototyping
+
+**❌ Never in production**:
+- Public CORS proxies (security risk, slow, unreliable)
+- Exposing API keys through proxy
+- Production API calls
+
+**Best practice**: Development proxy → Production proper CORS headers on API server.
+
+</details>
+
+**8) Hogyan optimalizálod a preflight performance-ot?**
+<details>
+<summary>Válasz</summary>
+
+**1. Maximize Access-Control-Max-Age**:
+```
+Access-Control-Max-Age: 86400  // 24 hours (cache preflight)
+```
+
+**2. Use simple requests when possible**:
+- Avoid custom headers if not needed
+- Use GET instead of POST when appropriate
+- Use query parameters instead of Authorization header
+
+**3. Batch requests**:
+- 1 request with multiple IDs instead of N requests
+- GraphQL (1 endpoint, no multiple preflights)
+
+**Performance**: 100 individual POST requests = 100 preflights (~10s). 1 batch POST = 1 preflight (~100ms).
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
 
 ### Fetch API / AJAX {#fetch-api-ajax}
 Modern aszinkron HTTP kérések JavaScript-ben a fetch API és a régebbi XMLHttpRequest használatával.
@@ -13923,6 +17250,931 @@ const obj2 = { c: 3, d: 4 };
 const merged = { ...obj1, ...obj2 };
 ```
 
+### JavaScript Event Loop & Browser Rendering Pipeline {#event-loop-rendering}
+
+<div class="concept-section mental-model" data-filter="javascript medior">
+
+📋 **Fogalom meghatározása**  
+*JavaScript Event Loop single-threaded asynchronous execution model: **Call Stack** (function execution frames, LIFO), **Task Queue/Macro Task Queue** (setTimeout, setInterval, I/O callbacks), **Microtask Queue** (Promise.then, queueMicrotask, MutationObserver - higher priority than tasks), **Web APIs** (browser-provided: fetch, DOM events, timers). Execution: 1) Run synchronous code (stack), 2) Stack empty → Process ALL microtasks, 3) Render if needed, 4) Process ONE macro task, 5) Repeat. Browser Rendering Pipeline: JavaScript execution → Style calculation → Layout → Paint → Composite. **RequestAnimationFrame** (rAF) runs before paint, **RequestIdleCallback** (rIC) runs when idle.*
+
+</div>
+
+<div class="concept-section why-important" data-filter="javascript medior">
+
+💡 **Miért számít?**
+- **Non-blocking I/O**: Async operations nem blokkolják a UI-t
+- **Performance**: Event loop megértése → smooth 60 FPS animations
+- **Bug Prevention**: Race conditions, timing issues elkerülése
+- **Browser Optimization**: rAF használata jitter-free animations-hoz
+
+</div>
+
+<div class="runnable-model" data-filter="javascript">
+
+**Runnable mental model**
+
+**Event Loop Visualization:**
+```javascript
+// Event Loop Components:
+// 1. Call Stack (LIFO - Last In First Out)
+// 2. Web APIs (Browser threads: timers, fetch, DOM)
+// 3. Macro Task Queue (setTimeout, setInterval, I/O)
+// 4. Microtask Queue (Promise.then, queueMicrotask)
+
+// Execution order example:
+console.log('1. Sync start');
+
+setTimeout(() => {
+    console.log('5. Macro task (setTimeout)');
+}, 0);
+
+Promise.resolve().then(() => {
+    console.log('3. Microtask (Promise)');
+});
+
+queueMicrotask(() => {
+    console.log('4. Microtask (queueMicrotask)');
+});
+
+console.log('2. Sync end');
+
+// Output:
+// 1. Sync start
+// 2. Sync end
+// 3. Microtask (Promise)
+// 4. Microtask (queueMicrotask)
+// 5. Macro task (setTimeout)
+
+// Explanation:
+// Step 1: Synchronous code runs first (Call Stack)
+// Step 2: Call Stack empty → Process ALL microtasks
+// Step 3: Render if needed (browser decides)
+// Step 4: Process ONE macro task from queue
+// Step 5: Repeat from Step 2
+```
+
+**Microtask vs Macro Task Priority:**
+```javascript
+// Demonstrate microtask priority
+console.log('Start');
+
+setTimeout(() => console.log('Timeout 1'), 0);
+
+Promise.resolve()
+    .then(() => console.log('Promise 1'))
+    .then(() => {
+        console.log('Promise 2');
+        setTimeout(() => console.log('Timeout 2'), 0);
+    })
+    .then(() => console.log('Promise 3'));
+
+setTimeout(() => console.log('Timeout 3'), 0);
+
+console.log('End');
+
+// Output:
+// Start
+// End
+// Promise 1        ← All microtasks first
+// Promise 2        ← All microtasks first
+// Promise 3        ← All microtasks first
+// Timeout 1        ← Then macro tasks (one per loop iteration)
+// Timeout 3        ← (Timeout 2 queued during Promise 2, so processed later)
+// Timeout 2
+```
+
+**Call Stack Deep Dive:**
+```javascript
+// Stack trace visualization
+function first() {
+    console.log('First function');
+    second();
+    console.log('First function end');
+}
+
+function second() {
+    console.log('Second function');
+    third();
+    console.log('Second function end');
+}
+
+function third() {
+    console.log('Third function');
+    console.trace('Stack trace:'); // Shows call stack
+}
+
+first();
+
+// Call Stack during third():
+// [Bottom] → Global Execution Context
+//         → first()
+//         → second()
+// [Top]   → third()
+
+// Output:
+// First function
+// Second function
+// Third function
+// Stack trace:
+//   at third (...)
+//   at second (...)
+//   at first (...)
+//   at <anonymous>
+// Second function end
+// First function end
+```
+
+**Stack Overflow Example:**
+```javascript
+// ❌ ROSSZ: Infinite recursion (stack overflow)
+function recursiveFunction() {
+    recursiveFunction(); // No base case!
+}
+
+try {
+    recursiveFunction();
+} catch (error) {
+    console.error(error.name); // RangeError
+    console.error(error.message); // Maximum call stack size exceeded
+}
+
+// ✅ JÓ: Tail call optimization simulation with setTimeout
+function recursiveWithEventLoop(n) {
+    if (n === 0) return;
+    
+    console.log(n);
+    
+    // Use setTimeout to clear call stack
+    setTimeout(() => recursiveWithEventLoop(n - 1), 0);
+}
+
+recursiveWithEventLoop(100000); // Works! (no stack overflow)
+```
+
+**Browser Rendering Pipeline Integration:**
+```javascript
+// Rendering happens between event loop iterations
+// Order: Script → Style → Layout → Paint → Composite
+
+// Blocking rendering with long task
+console.log('Start');
+
+// ❌ ROSSZ: Long synchronous task blocks rendering
+const start = Date.now();
+while (Date.now() - start < 3000) {
+    // 3 second blocking task
+    // User sees frozen UI (no scroll, no click)
+}
+
+console.log('End'); // Only logs after 3 seconds
+
+// ✅ JÓ: Break work into chunks with setTimeout
+function longTaskOptimized(iterations, callback) {
+    const chunkSize = 1000;
+    let processed = 0;
+
+    function processChunk() {
+        const end = Math.min(processed + chunkSize, iterations);
+        
+        for (let i = processed; i < end; i++) {
+            // Do work
+        }
+        
+        processed = end;
+        
+        if (processed < iterations) {
+            setTimeout(processChunk, 0); // Let rendering happen
+        } else {
+            callback();
+        }
+    }
+
+    processChunk();
+}
+
+longTaskOptimized(1000000, () => console.log('Done!'));
+// UI remains responsive (scroll, click work)
+```
+
+**RequestAnimationFrame (rAF) - Smooth Animations:**
+```javascript
+// rAF runs before next paint (perfect for animations)
+// Automatically throttled to display refresh rate (60 FPS)
+
+let position = 0;
+
+function animate() {
+    position += 2; // Move 2px per frame
+    
+    const element = document.getElementById('box');
+    element.style.transform = `translateX(${position}px)`;
+    
+    if (position < 500) {
+        requestAnimationFrame(animate); // Next frame
+    }
+}
+
+// Start animation
+requestAnimationFrame(animate);
+
+// ❌ ROSSZ: setTimeout for animation (inconsistent timing)
+function animateWithTimeout() {
+    position += 2;
+    element.style.transform = `translateX(${position}px)`;
+    
+    if (position < 500) {
+        setTimeout(animateWithTimeout, 16); // ~60 FPS target
+        // Problem: Not synced with display refresh!
+        // Result: Jitter, frame drops
+    }
+}
+
+// Performance comparison:
+// rAF: Smooth 60 FPS, synced with display
+// setTimeout: 30-45 FPS, jittery (not synced)
+```
+
+**RequestIdleCallback (rIC) - Low Priority Work:**
+```javascript
+// rIC runs when browser is idle (after rendering, no pending tasks)
+// Perfect for non-critical background work
+
+function logAnalytics(data) {
+    // Non-critical analytics logging
+    console.log('Logging:', data);
+}
+
+// ❌ ROSSZ: Immediate execution (blocks critical work)
+document.addEventListener('click', (e) => {
+    // Critical: Handle click
+    handleClick(e);
+    
+    // Non-critical: Analytics (blocks UI!)
+    logAnalytics({ type: 'click', target: e.target });
+});
+
+// ✅ JÓ: Defer with requestIdleCallback
+document.addEventListener('click', (e) => {
+    handleClick(e);
+    
+    // Defer analytics until browser is idle
+    requestIdleCallback(() => {
+        logAnalytics({ type: 'click', target: e.target });
+    }, { timeout: 2000 }); // Max 2s wait
+});
+
+// Advanced: Process work in idle chunks
+function processIdleWork(tasks) {
+    function processTasks(deadline) {
+        while (deadline.timeRemaining() > 0 && tasks.length > 0) {
+            const task = tasks.shift();
+            task(); // Execute task
+        }
+        
+        if (tasks.length > 0) {
+            requestIdleCallback(processTasks); // Continue when idle
+        }
+    }
+    
+    requestIdleCallback(processTasks);
+}
+
+const heavyTasks = Array.from({ length: 1000 }, (_, i) => 
+    () => console.log(`Task ${i}`)
+);
+
+processIdleWork(heavyTasks); // Runs without blocking UI
+```
+
+**MutationObserver (Microtask):**
+```javascript
+// MutationObserver callbacks are microtasks
+// Higher priority than setTimeout, lower than Promise.then
+
+const observer = new MutationObserver((mutations) => {
+    console.log('3. MutationObserver (microtask)');
+});
+
+observer.observe(document.body, { childList: true });
+
+console.log('1. Sync');
+
+Promise.resolve().then(() => console.log('2. Promise (microtask)'));
+
+document.body.appendChild(document.createElement('div')); // Trigger observer
+
+setTimeout(() => console.log('4. setTimeout (macro task)'), 0);
+
+console.log('5. Sync end');
+
+// Output:
+// 1. Sync
+// 5. Sync end
+// 2. Promise (microtask)
+// 3. MutationObserver (microtask)
+// 4. setTimeout (macro task)
+```
+
+**Visual Event Loop Debugger:**
+```javascript
+// Visualize event loop execution order
+class EventLoopVisualizer {
+    constructor() {
+        this.log = [];
+    }
+    
+    trackSync(label) {
+        this.log.push({ type: 'sync', label, time: performance.now() });
+    }
+    
+    trackMicrotask(label) {
+        queueMicrotask(() => {
+            this.log.push({ type: 'microtask', label, time: performance.now() });
+        });
+    }
+    
+    trackMacrotask(label, delay = 0) {
+        setTimeout(() => {
+            this.log.push({ type: 'macrotask', label, time: performance.now() });
+        }, delay);
+    }
+    
+    trackPromise(label) {
+        Promise.resolve().then(() => {
+            this.log.push({ type: 'promise', label, time: performance.now() });
+        });
+    }
+    
+    print() {
+        setTimeout(() => {
+            console.table(this.log);
+        }, 100); // Wait for all tasks to complete
+    }
+}
+
+// Usage:
+const viz = new EventLoopVisualizer();
+
+viz.trackSync('Start');
+viz.trackMacrotask('Timeout 1', 0);
+viz.trackPromise('Promise 1');
+viz.trackMicrotask('Microtask 1');
+viz.trackSync('End');
+viz.print();
+
+// Output table:
+// ┌─────────┬─────────────┬───────────────┬──────────────┐
+// │ (index) │    type     │     label     │     time     │
+// ├─────────┼─────────────┼───────────────┼──────────────┤
+// │    0    │   'sync'    │    'Start'    │  12345.67    │
+// │    1    │   'sync'    │     'End'     │  12345.89    │
+// │    2    │  'promise'  │  'Promise 1'  │  12346.12    │
+// │    3    │'microtask'  │'Microtask 1'  │  12346.34    │
+// │    4    │'macrotask'  │ 'Timeout 1'   │  12346.78    │
+// └─────────┴─────────────┴───────────────┴──────────────┘
+```
+*Figyeld meg: Microtasks ALWAYS execute before next macro task. rAF syncs with display refresh.*
+
+</div>
+
+<div class="concept-section myths" data-filter="javascript">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- **"setTimeout(fn, 0) futtat azonnal"** → **Valójában**: Macro task queue-ba teszi, AFTER all microtasks és current stack cleared
+- **"JavaScript multi-threaded Promise-okkal"** → **Valójában**: Single-threaded, Web APIs (fetch, timers) run on separate browser threads, de callback-ek main thread-en futnak
+- **"requestAnimationFrame ugyanaz mint setTimeout(fn, 16)"** → **Valójában**: rAF synced with display refresh (60 FPS), setTimeout nem, jitter prone
+- **"Microtask és macro task ugyanaz"** → **Valójában**: Microtasks higher priority, ALL microtasks run before next macro task
+- **"Event loop csak Node.js-ben van"** → **Valójában**: Browser is event loop-ot használ (de eltérő implementation details)
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="javascript performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**Long Task Performance Impact:**
+```javascript
+// Long task definition: >50ms blocking main thread
+// Impact: Drops frames, freezes UI, poor user experience
+
+// ❌ ROSSZ: 500ms blocking task
+function heavyComputation() {
+    const start = performance.now();
+    let result = 0;
+    
+    for (let i = 0; i < 1e9; i++) {
+        result += Math.sqrt(i);
+    }
+    
+    const duration = performance.now() - start;
+    console.log(`Blocked for ${duration}ms`); // ~500ms
+    // Result: 30 dropped frames at 60 FPS (500ms / 16.67ms per frame)
+}
+
+// ✅ JÓ: Break into chunks (maintain 60 FPS)
+async function heavyComputationOptimized() {
+    let result = 0;
+    const chunkSize = 1e6; // Process 1M per chunk
+    
+    for (let start = 0; start < 1e9; start += chunkSize) {
+        const end = Math.min(start + chunkSize, 1e9);
+        
+        for (let i = start; i < end; i++) {
+            result += Math.sqrt(i);
+        }
+        
+        // Yield to browser (allow rendering)
+        await new Promise(resolve => setTimeout(resolve, 0));
+    }
+    
+    console.log('Done, UI stayed responsive!');
+}
+
+// Performance: 0 dropped frames, smooth scrolling maintained
+```
+
+**Microtask Queue Starvation:**
+```javascript
+// ⚠️ VIGYÁZZ: Infinite microtasks block rendering!
+function infiniteMicrotasks() {
+    Promise.resolve().then(() => {
+        console.log('Microtask');
+        infiniteMicrotasks(); // Recurse immediately
+    });
+}
+
+infiniteMicrotasks();
+// Result: Browser FROZEN (rendering never happens)
+// Reason: Microtasks run until queue empty → never empties!
+
+// ✅ JÓ: Use macro task (setTimeout) to allow rendering
+function controlledRecursion(n) {
+    if (n === 0) return;
+    
+    console.log(n);
+    setTimeout(() => controlledRecursion(n - 1), 0); // Macro task
+}
+
+controlledRecursion(10000); // UI responsive
+```
+
+**RequestAnimationFrame Performance:**
+```javascript
+// rAF automatically throttles to display refresh rate
+// 60 Hz display = 60 FPS = 16.67ms per frame
+
+let frameCount = 0;
+let startTime = performance.now();
+
+function measureRAF() {
+    frameCount++;
+    
+    if (frameCount === 60) {
+        const elapsed = performance.now() - startTime;
+        const fps = (frameCount / elapsed) * 1000;
+        console.log(`FPS: ${fps.toFixed(2)}`); // ~60 FPS
+        
+        // Reset
+        frameCount = 0;
+        startTime = performance.now();
+    }
+    
+    requestAnimationFrame(measureRAF);
+}
+
+requestAnimationFrame(measureRAF);
+
+// Performance comparison:
+// rAF: Consistent 60 FPS (16.67ms per frame)
+// setTimeout(fn, 16): Variable 45-55 FPS (jitter)
+// setInterval(fn, 16): Drift over time (not synced)
+```
+
+**Call Stack Size Limits:**
+```javascript
+// Browser call stack limits (varies by browser):
+// Chrome: ~10,000-15,000 frames
+// Firefox: ~50,000 frames
+// Safari: ~20,000 frames
+
+function measureStackDepth() {
+    let depth = 0;
+    
+    function recurse() {
+        depth++;
+        try {
+            recurse();
+        } catch (e) {
+            console.log(`Max stack depth: ${depth}`);
+            // Chrome: ~10,000
+            // Firefox: ~50,000
+        }
+    }
+    
+    recurse();
+}
+
+measureStackDepth();
+
+// Performance: Stack overflow = ~100-500ms crash time
+// Solution: Use iterative algorithms or setTimeout for deep recursion
+```
+
+**Idle Callback Performance:**
+```javascript
+// requestIdleCallback deadline budget
+// Typical: 50ms idle time between frames (at 60 FPS)
+
+requestIdleCallback((deadline) => {
+    console.log('Time remaining:', deadline.timeRemaining());
+    // Typical: 15-45ms (varies by browser load)
+    
+    console.log('Did timeout:', deadline.didTimeout);
+    // false = called during idle time
+    // true = timeout reached (forced execution)
+});
+
+// Performance strategy:
+// - Critical work: Use rAF (next frame)
+// - Important work: Use setTimeout(fn, 0) (next task)
+// - Background work: Use rIC (when idle)
+```
+
+**Event Loop Iteration Time:**
+```javascript
+// Measure single event loop iteration
+let lastTime = performance.now();
+
+function measureLoop() {
+    const now = performance.now();
+    const delta = now - lastTime;
+    
+    console.log(`Loop iteration: ${delta.toFixed(2)}ms`);
+    // Idle: ~16.67ms (60 FPS)
+    // Busy: ~50-100ms (dropped frames)
+    
+    lastTime = now;
+    setTimeout(measureLoop, 0); // Next iteration
+}
+
+measureLoop();
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="javascript">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Chrome DevTools Performance Profiler:**
+```javascript
+// 1. Open DevTools (F12) → Performance tab
+// 2. Click Record (Ctrl+E)
+// 3. Interact with page
+// 4. Stop recording
+// 5. Analyze:
+//    - Main thread: Call stack, tasks, rendering
+//    - Frames: 60 FPS green line (above = dropped frames)
+//    - Bottom-Up: Time spent per function
+//    - Call Tree: Execution hierarchy
+//    - Event Log: Task/microtask order
+
+// Long Task API (programmatic detection)
+const observer = new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+        if (entry.duration > 50) {
+            console.warn('Long task detected:', {
+                duration: entry.duration,
+                startTime: entry.startTime,
+                name: entry.name
+            });
+        }
+    });
+});
+
+observer.observe({ entryTypes: ['longtask'] });
+```
+
+**Performance.measure() for Event Loop:**
+```javascript
+// Track event loop timing
+performance.mark('task-start');
+
+setTimeout(() => {
+    performance.mark('task-end');
+    performance.measure('macro-task-time', 'task-start', 'task-end');
+    
+    const measure = performance.getEntriesByName('macro-task-time')[0];
+    console.log(`Macro task took ${measure.duration}ms`);
+}, 0);
+
+Promise.resolve().then(() => {
+    performance.mark('microtask-end');
+    performance.measure('microtask-time', 'task-start', 'microtask-end');
+    
+    const measure = performance.getEntriesByName('microtask-time')[0];
+    console.log(`Microtask took ${measure.duration}ms`);
+});
+```
+
+**Scheduler API (Experimental):**
+```javascript
+// New API for prioritized task scheduling
+// (Chrome 94+, experimental)
+
+// High priority (user-blocking)
+scheduler.postTask(() => {
+    console.log('Critical UI update');
+}, { priority: 'user-blocking' });
+
+// Low priority (background)
+scheduler.postTask(() => {
+    console.log('Background analytics');
+}, { priority: 'background' });
+
+// Priorities: user-blocking > user-visible > background
+```
+
+**Jake Archibald's Event Loop Visualizer:**
+```
+https://github.com/latentflip/loupe
+
+// Interactive visualization:
+// - Call Stack
+// - Web APIs
+// - Callback Queue (Macro tasks)
+// - Event Loop
+// - Console output
+
+// Try code snippets and see execution order visually
+```
+
+**React Profiler (Event Loop Impact):**
+```javascript
+import { Profiler } from 'react';
+
+function onRenderCallback(id, phase, actualDuration) {
+    if (actualDuration > 16.67) {
+        console.warn(`Component ${id} blocked frame (${actualDuration}ms)`);
+        // Optimization needed: breaks 60 FPS budget
+    }
+}
+
+<Profiler id="App" onRender={onRenderCallback}>
+    <App />
+</Profiler>
+```
+
+**Web Workers (Offload to Separate Thread):**
+```javascript
+// Main thread (UI):
+const worker = new Worker('heavy-work.js');
+
+worker.postMessage({ type: 'compute', data: largeArray });
+
+worker.onmessage = (e) => {
+    console.log('Result from worker:', e.data);
+    // Main thread stays responsive!
+};
+
+// heavy-work.js (Worker thread):
+self.onmessage = (e) => {
+    if (e.data.type === 'compute') {
+        const result = expensiveComputation(e.data.data);
+        self.postMessage(result);
+    }
+};
+
+// Performance: Main thread 0% blocked, 60 FPS maintained
+```
+
+**Console.time() for Async Timing:**
+```javascript
+console.time('Total');
+
+console.time('Sync');
+for (let i = 0; i < 1e6; i++) {}
+console.timeEnd('Sync'); // ~5ms
+
+console.time('Microtask');
+Promise.resolve().then(() => {
+    console.timeEnd('Microtask'); // ~0.1ms
+});
+
+console.time('Macrotask');
+setTimeout(() => {
+    console.timeEnd('Macrotask'); // ~5-10ms
+    console.timeEnd('Total'); // ~10-15ms
+}, 0);
+
+// Output:
+// Sync: 5.2ms
+// Microtask: 0.1ms
+// Macrotask: 7.3ms
+// Total: 12.6ms
+```
+
+**Lighthouse Performance Audit:**
+```bash
+# CLI:
+npm install -g lighthouse
+lighthouse https://example.com --view
+
+# Metrics related to event loop:
+# - Total Blocking Time (TBT): Sum of blocking time >50ms
+# - Time to Interactive (TTI): When main thread is idle
+# - First Input Delay (FID): Event loop responsiveness
+
+# Good TBT: < 200ms
+# Poor TBT: > 600ms (too many long tasks)
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="javascript">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség microtask és macro task között?**
+<details>
+<summary>Válasz</summary>
+
+**Microtask**: Promise.then, queueMicrotask, MutationObserver. Higher priority, ALL microtasks run before next macro task.
+
+**Macro task**: setTimeout, setInterval, I/O, user events. Lower priority, ONE macro task per event loop iteration.
+
+Execution order: Sync → ALL microtasks → Render → ONE macro task → Repeat.
+
+</details>
+
+**2) Miért nem hajtódik végre azonnal a setTimeout(fn, 0)?**
+<details>
+<summary>Válasz</summary>
+
+`setTimeout(fn, 0)` macro task queue-ba teszi a callback-et. Előbb futnak le:
+1. Current stack (sync code)
+2. ALL microtasks (Promise.then, queueMicrotask)
+3. Browser rendering (if needed)
+4. THEN macro task (setTimeout callback)
+
+Minimum delay: ~1-4ms (browser-dependent).
+
+</details>
+
+**3) Mikor használd a requestAnimationFrame-et setTimeout helyett?**
+<details>
+<summary>Válasz</summary>
+
+**rAF**: Animations, visual updates. Synced with display refresh (60 FPS), runs BEFORE paint.
+
+**setTimeout**: Non-visual async work. NOT synced with display → jitter, frame drops.
+
+```javascript
+// ✅ JÓ: Smooth animation
+requestAnimationFrame(() => {
+    element.style.left = `${pos}px`;
+});
+
+// ❌ ROSSZ: Jittery animation
+setTimeout(() => {
+    element.style.left = `${pos}px`;
+}, 16);
+```
+
+</details>
+
+**4) Hogyan okozhat Promise infinite loop UI freeze-t?**
+<details>
+<summary>Válasz</summary>
+
+Infinite Promise chain → infinite microtasks → rendering NEVER happens (microtasks have priority).
+
+```javascript
+// ❌ FREEZE:
+function loop() {
+    Promise.resolve().then(loop); // Microtask
+}
+loop(); // Browser frozen!
+
+// ✅ FIX:
+function loop() {
+    setTimeout(loop, 0); // Macro task (allows render)
+}
+loop(); // UI responsive
+```
+
+</details>
+
+**5) Mi a requestIdleCallback és mikor használd?**
+<details>
+<summary>Válasz</summary>
+
+**rIC**: Runs when browser is idle (after rendering, no pending work). Perfect for non-critical background tasks.
+
+```javascript
+requestIdleCallback((deadline) => {
+    while (deadline.timeRemaining() > 0 && tasks.length > 0) {
+        tasks.shift()(); // Process task
+    }
+}, { timeout: 2000 }); // Max 2s wait
+```
+
+Use cases: Analytics, prefetching, logging, caching.
+
+</details>
+
+**6) Hogyan mérheted a main thread blocking time-ot?**
+<details>
+<summary>Válasz</summary>
+
+**Long Task API**:
+```javascript
+const observer = new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+        if (entry.duration > 50) {
+            console.warn(`Long task: ${entry.duration}ms`);
+        }
+    });
+});
+observer.observe({ entryTypes: ['longtask'] });
+```
+
+**Lighthouse TBT** (Total Blocking Time): Sum of blocking time >50ms.
+
+</details>
+
+**7) Mi történik amikor a call stack overflow-t dob?**
+<details>
+<summary>Válasz</summary>
+
+**Stack overflow**: Recursive function túl sok frame-et tesz a stack-re (limit: ~10k-50k browser-dependent).
+
+```javascript
+function recurse() {
+    recurse(); // No base case
+}
+recurse(); // RangeError: Maximum call stack size exceeded
+```
+
+**Fix**: Iterative algorithm, vagy setTimeout (clear stack between calls).
+
+</details>
+
+**8) Hogyan működik a Web Worker event loop-ja?**
+<details>
+<summary>Válasz</summary>
+
+Worker separate thread-en fut (nem main thread). OWN event loop, no DOM access.
+
+```javascript
+// Main thread:
+const worker = new Worker('worker.js');
+worker.postMessage('data'); // Non-blocking
+
+// worker.js:
+self.onmessage = (e) => {
+    // Heavy computation here (doesn't block main thread)
+    self.postMessage(result);
+};
+```
+
+Use case: CPU-intensive tasks (image processing, parsing, crypto).
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
+
 ### Async JavaScript
 
 ```javascript
@@ -14190,6 +18442,652 @@ function List<T>({ items, renderItem }: ListProps<T>) {
 ```
 
 ## 6. Performance és Best Practices
+
+### Critical Rendering Path {#critical-rendering-path}
+
+<div class="concept-section mental-model" data-filter="performance medior">
+
+📋 **Fogalom meghatározása**  
+*Critical Rendering Path (CRP) a böngésző lépései HTML/CSS → pixels megjelenítéséig: 1) **DOM Construction** (HTML parsing → DOM tree), 2) **CSSOM Construction** (CSS parsing → CSSOM tree), 3) **Render Tree** (DOM + CSSOM combine, csak visible nodes), 4) **Layout/Reflow** (geometria számítás: size, position), 5) **Paint** (pixel fill: color, text, shadow), 6) **Composite** (layers merge GPU-n). **Reflow** = layout újraszámítás (geometry change), **Repaint** = pixel újrafestés (visual change). Web Vitals: LCP (Largest Contentful Paint <2.5s), FID (First Input Delay <100ms), CLS (Cumulative Layout Shift <0.1).*
+
+</div>
+
+<div class="concept-section why-important" data-filter="performance medior">
+
+💡 **Miért számít?**
+- **User Experience**: CRP optimalizálása gyorsabb page load (~2-3x)
+- **SEO**: Google ranking faktor (Core Web Vitals since 2021)
+- **Mobile Performance**: Slow 3G esetén kritikus (DOM/CSSOM parsing lassú)
+- **Conversion Rate**: 100ms delay = 1% conversion drop (Amazon)
+
+</div>
+
+<div class="runnable-model" data-filter="performance">
+
+**Runnable mental model**
+
+**CRP lépések visualizálása:**
+```javascript
+// DOM Construction Timeline
+// HTML → Token → Node → DOM Tree
+// Incrementális parsing: chunk-by-chunk processing
+
+// 1. DOM Construction Performance Measurement
+const measureDOMConstruction = () => {
+    const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach(entry => {
+            if (entry.entryType === 'measure') {
+                console.log(`${entry.name}: ${entry.duration.toFixed(2)}ms`);
+            }
+        });
+    });
+    observer.observe({ entryTypes: ['measure'] });
+
+    performance.mark('dom-start');
+    // Simulate DOM construction
+    const container = document.createElement('div');
+    for (let i = 0; i < 1000; i++) {
+        const element = document.createElement('p');
+        element.textContent = `Paragraph ${i}`;
+        container.appendChild(element);
+    }
+    performance.mark('dom-end');
+    performance.measure('DOM Construction', 'dom-start', 'dom-end');
+};
+
+// 2. CSSOM Construction
+// CSS blocking: <link> blocks rendering until loaded
+// Render tree needs both DOM + CSSOM ready
+
+// 3. Render Tree Construction
+// Combines DOM + CSSOM, filters out invisible nodes
+const isVisible = (element) => {
+    // Not in Render Tree if:
+    // - display: none
+    // - visibility: hidden (but takes space, in Layout)
+    // - <head>, <script>, <meta>
+    const style = getComputedStyle(element);
+    return style.display !== 'none';
+};
+
+// 4. Layout/Reflow Measurement
+const measureReflow = () => {
+    const start = performance.now();
+    
+    // REFLOW TRIGGERS (expensive operations)
+    const element = document.getElementById('test');
+    
+    // Reading layout properties forces synchronous reflow
+    const height = element.offsetHeight;
+    const width = element.offsetWidth;
+    const rect = element.getBoundingClientRect();
+    const scroll = element.scrollTop;
+    
+    const duration = performance.now() - start;
+    console.log(`Reflow: ${duration.toFixed(2)}ms`);
+};
+
+// 5. Paint Measurement
+const measurePaint = () => {
+    const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach(entry => {
+            if (entry.entryType === 'paint') {
+                console.log(`${entry.name}: ${entry.startTime.toFixed(2)}ms`);
+            }
+        });
+    });
+    observer.observe({ entryTypes: ['paint'] });
+    
+    // first-paint: First pixel rendered
+    // first-contentful-paint: First text/image rendered
+};
+
+measurePaint(); // Logs: first-paint: 123ms, first-contentful-paint: 234ms
+```
+
+**Reflow vs Repaint Examples:**
+```javascript
+const element = document.getElementById('box');
+
+// ❌ REFLOW (geometry change - expensive)
+element.style.width = '200px';         // Width change → reflow
+element.style.height = '100px';        // Height change → reflow
+element.style.margin = '20px';         // Margin change → reflow
+element.style.padding = '10px';        // Padding change → reflow
+element.style.position = 'absolute';   // Positioning → reflow
+element.style.display = 'block';       // Display change → reflow
+element.style.fontSize = '16px';       // Font size → reflow
+
+// ⚠️ REPAINT (visual change - cheaper than reflow)
+element.style.color = 'red';           // Color change → repaint
+element.style.backgroundColor = 'blue'; // Background → repaint
+element.style.visibility = 'hidden';   // Visibility → repaint
+element.style.border = '1px solid';    // Border → repaint
+
+// ✅ COMPOSITE ONLY (cheapest - GPU accelerated)
+element.style.transform = 'translateX(10px)'; // Transform → composite
+element.style.opacity = '0.5';         // Opacity → composite
+
+// Performance comparison:
+// Composite: ~0.5ms (GPU layer manipulation)
+// Repaint: ~5-10ms (pixel redraw)
+// Reflow: ~50-100ms (layout recalc + repaint)
+```
+
+**Reflow optimization - Batch DOM changes:**
+```javascript
+const container = document.getElementById('container');
+
+// ❌ ROSSZ: Multiple reflows (100 reflows!)
+for (let i = 0; i < 100; i++) {
+    const element = document.createElement('div');
+    element.textContent = `Item ${i}`;
+    container.appendChild(element); // Reflow on each append!
+}
+
+// ✅ JÓ: Single reflow (DocumentFragment batching)
+const fragment = document.createDocumentFragment();
+for (let i = 0; i < 100; i++) {
+    const element = document.createElement('div');
+    element.textContent = `Item ${i}`;
+    fragment.appendChild(element); // No reflow (fragment not in DOM)
+}
+container.appendChild(fragment); // 1 reflow only!
+
+// Performance: 100 reflows (~5000ms) vs 1 reflow (~50ms) = 100x faster!
+```
+
+**CSS Selector Performance:**
+```css
+/* ❌ SLOW: Descendant selector (right-to-left evaluation) */
+div div div p { color: red; }
+/* Browser checks EVERY <p>, then checks parent chain */
+
+/* ❌ SLOW: Universal selector */
+* { margin: 0; }
+/* Applies to ALL elements (thousands of nodes) */
+
+/* ✅ FAST: Class selector */
+.text-red { color: red; }
+/* Direct hash table lookup */
+
+/* ✅ FAST: ID selector */
+#header { background: blue; }
+/* Single element lookup */
+
+/* Selector performance ranking (fastest to slowest):
+   1. ID (#header)          ~0.1ms
+   2. Class (.header)       ~0.2ms
+   3. Tag (div)             ~0.5ms
+   4. Attribute ([type])    ~1ms
+   5. Pseudo (:hover)       ~2ms
+   6. Descendant (div p)    ~5ms
+*/
+```
+
+**Web Vitals Measurement:**
+```javascript
+// Largest Contentful Paint (LCP) - Loading performance
+const observeLCP = () => {
+    const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        console.log(`LCP: ${lastEntry.startTime.toFixed(2)}ms`);
+        console.log('LCP element:', lastEntry.element);
+        
+        // Good: < 2.5s, Needs Improvement: 2.5-4s, Poor: > 4s
+        if (lastEntry.startTime < 2500) {
+            console.log('✅ LCP: Good');
+        } else if (lastEntry.startTime < 4000) {
+            console.log('⚠️ LCP: Needs Improvement');
+        } else {
+            console.log('❌ LCP: Poor');
+        }
+    });
+    observer.observe({ entryTypes: ['largest-contentful-paint'] });
+};
+
+// First Input Delay (FID) - Interactivity
+const observeFID = () => {
+    const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach(entry => {
+            const fid = entry.processingStart - entry.startTime;
+            console.log(`FID: ${fid.toFixed(2)}ms`);
+            
+            // Good: < 100ms, Needs Improvement: 100-300ms, Poor: > 300ms
+            if (fid < 100) {
+                console.log('✅ FID: Good');
+            } else if (fid < 300) {
+                console.log('⚠️ FID: Needs Improvement');
+            } else {
+                console.log('❌ FID: Poor');
+            }
+        });
+    });
+    observer.observe({ entryTypes: ['first-input'] });
+};
+
+// Cumulative Layout Shift (CLS) - Visual stability
+const observeCLS = () => {
+    let clsScore = 0;
+    const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        entries.forEach(entry => {
+            if (!entry.hadRecentInput) {
+                clsScore += entry.value;
+                console.log(`CLS: ${clsScore.toFixed(4)}`);
+                
+                // Good: < 0.1, Needs Improvement: 0.1-0.25, Poor: > 0.25
+                if (clsScore < 0.1) {
+                    console.log('✅ CLS: Good');
+                } else if (clsScore < 0.25) {
+                    console.log('⚠️ CLS: Needs Improvement');
+                } else {
+                    console.log('❌ CLS: Poor');
+                }
+            }
+        });
+    });
+    observer.observe({ entryTypes: ['layout-shift'] });
+};
+
+// Initialize all Core Web Vitals observers
+observeLCP();
+observeFID();
+observeCLS();
+```
+
+**CLS Prevention:**
+```html
+<!-- ❌ ROSSZ: No image dimensions → layout shift when loaded -->
+<img src="hero.jpg" alt="Hero">
+
+<!-- ✅ JÓ: Explicit dimensions → space reserved -->
+<img src="hero.jpg" alt="Hero" width="800" height="600">
+
+<!-- ✅ JÓ: aspect-ratio CSS (modern approach) -->
+<style>
+.hero-image {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Reserve space before load */
+}
+</style>
+<img src="hero.jpg" alt="Hero" class="hero-image">
+
+<!-- ❌ ROSSZ: Font swap causes layout shift -->
+<style>
+@font-face {
+    font-family: 'CustomFont';
+    src: url('font.woff2');
+    /* Default: font-display: auto (invisible text until loaded) */
+}
+</style>
+
+<!-- ✅ JÓ: font-display: swap → fallback font shown immediately -->
+<style>
+@font-face {
+    font-family: 'CustomFont';
+    src: url('font.woff2');
+    font-display: swap; /* Show fallback, then swap to custom */
+}
+</style>
+```
+*Figyeld meg: DOM/CSSOM parallel parsing, de Render Tree needs both. Reflow costlier than Repaint.*
+
+</div>
+
+<div class="concept-section myths" data-filter="performance">
+
+<details>
+<summary>🧯 <strong>Gyakori tévhitek / félreértések</strong></summary>
+
+<div>
+
+- **"Repaint mindig reflow-t is jelent"** → **Valójában**: Reflow mindig repaint-et okoz, de repaint nem okoz reflow-t (color change → repaint only)
+- **"CSS selectors performance nem számít"** → **Valójában**: Complex selectors (descendant, universal) 10-100x lassabbak class selector-nál
+- **"display: none és visibility: hidden ugyanaz"** → **Valójában**: display: none removes from Render Tree (no layout), visibility: hidden marad layout-ban (space reserved)
+- **"Transform és top/left pozicionálás performance-e ugyanaz"** → **Valójában**: transform GPU-accelerated (composite), top/left causes reflow (~100x lassabb)
+- **"Web Vitals csak desktop-on számít"** → **Valójában**: Mobile-on kritikusabb (slower CPU, network)
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section performance" data-filter="performance">
+
+<details>
+<summary>🚀 <strong>Performance corner</strong></summary>
+
+<div>
+
+**CRP Optimization Strategies:**
+```html
+<!-- 1. Critical CSS Inlining -->
+<style>
+/* Inline above-the-fold CSS (first viewport content) */
+.header { background: #000; color: #fff; }
+.hero { font-size: 2rem; }
+</style>
+
+<!-- 2. Defer Non-Critical CSS -->
+<link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="styles.css"></noscript>
+
+<!-- 3. Async JavaScript (non-blocking) -->
+<script async src="analytics.js"></script>
+
+<!-- 4. Defer JavaScript (execute after DOM ready) -->
+<script defer src="app.js"></script>
+
+<!-- 5. Preconnect to critical origins -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://api.example.com">
+```
+
+**Reflow Batching with requestAnimationFrame:**
+```javascript
+// ❌ ROSSZ: Forced synchronous layout (Layout Thrashing)
+for (let i = 0; i < 100; i++) {
+    const element = document.querySelectorAll('.box')[i];
+    element.style.top = `${element.offsetTop + 10}px`; // Read → Write → Reflow!
+}
+// 100 forced reflows! (~5000ms)
+
+// ✅ JÓ: Separate Read and Write phases
+const elements = document.querySelectorAll('.box');
+const positions = [];
+
+// Read phase (batch all reads)
+for (let i = 0; i < elements.length; i++) {
+    positions[i] = elements[i].offsetTop; // No reflow yet
+}
+
+// Write phase (batch all writes)
+requestAnimationFrame(() => {
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].style.top = `${positions[i] + 10}px`; // 1 reflow only!
+    }
+});
+// Performance: 5000ms → 50ms (100x gyorsabb!)
+```
+
+**CSS Containment API:**
+```css
+/* Limit reflow scope to container only */
+.article {
+    contain: layout; /* Layout changes don't affect siblings */
+}
+
+.sidebar {
+    contain: size layout; /* Fixed size + isolated layout */
+}
+
+.widget {
+    contain: layout style paint; /* Full containment */
+}
+
+/* Performance: Without containment: entire page reflow (~100ms)
+               With containment: container only (~10ms) */
+```
+
+**Content-Visibility (CSS Containment v2):**
+```css
+/* Lazy render off-screen content */
+.article {
+    content-visibility: auto; /* Browser skips rendering if off-screen */
+    contain-intrinsic-size: 0 500px; /* Estimated height (prevent CLS) */
+}
+
+/* Performance benefit:
+   - Initial page load: 3000 articles × 50ms render = 150s
+   - With content-visibility: 10 visible × 50ms = 500ms (300x gyorsabb!) */
+```
+
+**will-change optimization:**
+```css
+/* Tell browser to optimize for upcoming change */
+.animated-element {
+    will-change: transform, opacity; /* Pre-create GPU layer */
+}
+
+/* ⚠️ VIGYÁZZ: Don't overuse (memory overhead) */
+/* ❌ ROSSZ */
+* { will-change: transform; } /* Every element on GPU layer! */
+
+/* ✅ JÓ: Add dynamically before animation */
+```
+
+```javascript
+const element = document.querySelector('.box');
+
+// Before animation
+element.style.willChange = 'transform';
+
+// Animate
+element.style.transform = 'translateX(100px)';
+
+// After animation (remove to free memory)
+setTimeout(() => {
+    element.style.willChange = 'auto';
+}, 1000);
+```
+
+**Web Vitals Optimization Benchmarks:**
+```
+LCP Optimization:
+- Before: 4.5s (Poor) - Large unoptimized image
+- After: 1.8s (Good) - WebP format, lazy load, CDN
+- Improvement: 2.5x faster
+
+FID Optimization:
+- Before: 350ms (Poor) - Heavy JavaScript blocking main thread
+- After: 45ms (Good) - Code splitting, Web Workers
+- Improvement: 7.8x faster
+
+CLS Optimization:
+- Before: 0.35 (Poor) - No image dimensions, late-loading ads
+- After: 0.05 (Good) - aspect-ratio, placeholder skeletons
+- Improvement: 7x better
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section tools" data-filter="performance">
+
+<details>
+<summary>🧰 <strong>Kapcsolódó API-k / eszközök</strong></summary>
+
+<div>
+
+**Chrome DevTools Performance Tab:**
+```javascript
+// 1. Open DevTools (F12) → Performance tab
+// 2. Click Record (Ctrl+E)
+// 3. Interact with page
+// 4. Stop recording
+// 5. Analyze:
+//    - Main thread activity (yellow = scripting, purple = rendering)
+//    - Layout (reflow) events (purple bars)
+//    - Paint events (green bars)
+//    - Long tasks (red corner flag)
+```
+
+**Chrome Lighthouse:**
+```bash
+# Command-line Lighthouse
+npm install -g lighthouse
+lighthouse https://example.com --view
+
+# Metrics reported:
+# - Performance score (0-100)
+# - First Contentful Paint (FCP)
+# - Largest Contentful Paint (LCP)
+# - Total Blocking Time (TBT)
+# - Cumulative Layout Shift (CLS)
+# - Speed Index
+```
+
+**Web Vitals library:**
+```javascript
+// Install: npm install web-vitals
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+
+// Log all Core Web Vitals
+getCLS(console.log); // Cumulative Layout Shift
+getFID(console.log); // First Input Delay
+getLCP(console.log); // Largest Contentful Paint
+getFCP(console.log); // First Contentful Paint
+getTTFB(console.log); // Time to First Byte
+
+// Send to analytics
+function sendToAnalytics(metric) {
+    fetch('/analytics', {
+        method: 'POST',
+        body: JSON.stringify(metric)
+    });
+}
+
+getLCP(sendToAnalytics);
+getFID(sendToAnalytics);
+getCLS(sendToAnalytics);
+```
+
+**Layout Instability API:**
+```javascript
+// Detect layout shifts in real-time
+const observer = new PerformanceObserver((list) => {
+    list.getEntries().forEach(entry => {
+        console.log('Layout Shift:', {
+            value: entry.value,
+            hadRecentInput: entry.hadRecentInput,
+            sources: entry.sources.map(s => s.node)
+        });
+    });
+});
+observer.observe({ entryTypes: ['layout-shift'] });
+```
+
+**React DevTools Profiler:**
+```javascript
+// Measure component render performance
+import { Profiler } from 'react';
+
+function onRenderCallback(
+    id, phase, actualDuration, baseDuration, startTime, commitTime
+) {
+    console.log(`${id} (${phase}) rendered in ${actualDuration}ms`);
+}
+
+<Profiler id="App" onRender={onRenderCallback}>
+    <App />
+</Profiler>
+```
+
+**Performance Budget CLI Tools:**
+```bash
+# Bundlesize - Enforce bundle size limits
+npm install --save-dev bundlesize
+# package.json:
+{
+    "bundlesize": [
+        { "path": "./dist/app.js", "maxSize": "200 kB" }
+    ]
+}
+
+# Webpack Bundle Analyzer
+npm install --save-dev webpack-bundle-analyzer
+# Visualize bundle content and identify large modules
+```
+
+**Critical CSS extraction:**
+```bash
+# Critical (npm package) - Extract above-the-fold CSS
+npm install -g critical
+
+critical https://example.com --base dist --inline --minify
+# Generates inlined critical CSS for faster first paint
+```
+
+**CSS Stats:**
+```
+https://cssstats.com/
+# Analyze CSS file:
+# - Total rules
+# - Specificity graph
+# - Color palette
+# - Font sizes
+# - Selector complexity
+```
+
+</div>
+
+</details>
+
+</div>
+
+<div class="concept-section micro-learning" data-filter="performance">
+
+<details>
+<summary>🎧 <strong>Mikrotanulási promptok</strong></summary>
+
+<div>
+
+**1) Mi a különbség Reflow és Repaint között?**
+<details>
+<summary>Válasz</summary>
+
+Reflow = layout/geometry újraszámítás (width, height, position change), Repaint = pixel újrafestés (color, background change). Reflow mindig repaint-et is okoz, de repaint nem okoz reflow-t. Reflow ~10-100x drágább.
+
+</details>
+
+**2) Miért gyorsabb a transform mint a top/left pozicionálás?**
+<details>
+<summary>Válasz</summary>
+
+`transform` GPU-accelerated composite operation (nem okoz reflow/repaint), `top/left` main thread layout reflow. Transform ~0.5ms, top/left ~50-100ms.
+
+</details>
+
+**3) Hogyan működik a CSS selector right-to-left evaluation?**
+<details>
+<summary>Válasz</summary>
+
+Browser rightmost selector-től balra halad: `div p span` → Megkeresi AZ ÖSSZES `<span>`-t, majd szűri parent `<p>`, majd grandparent `<div>`. Class selector gyorsabb (direct hash lookup).
+
+</details>
+
+**4) Mit jelent az LCP (Largest Contentful Paint)?**
+<details>
+<summary>Válasz</summary>
+
+Largest visible element render time (image, video, block-level text). Core Web Vital: Good <2.5s, Poor >4s. Optimalizálás: image compression, lazy load, CDN.
+
+</details>
+
+**5) Hogyan előzöd meg a CLS (Cumulative Layout Shift)-et?**
+<details>
+<summary>Válasz</summary>
+
+Explicit image dimensions (width/height attributes vagy aspect-ratio CSS), placeholder skeletons, font-display: swap, reserve space for ads. CLS = layout stability metric, Good <0.1.
+
+</details>
+
+</div>
+
+</details>
+
+</div>
+
+---
 
 ### Performance Optimization
 
