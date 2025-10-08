@@ -19141,32 +19141,6 @@ npm test
 npm run test:coverage
 ```
 
-Ez a Modern Web Development Theory tartalom átfogó képet ad a modern web fejlesztés minden fontosabb területéről, a HTML5 alapoktól a TypeScript-ig és React-ig.
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-};
-
-const searchHandler = debounce((query) => {
-    console.log('Searching for:', query);
-}, 300);
-
-// Lazy loading
-const lazyLoad = (entries, observer) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const img = entry.target;
-            img.src = img.dataset.src;
-            observer.unobserve(img);
-        }
-    });
-};
-
-const imageObserver = new IntersectionObserver(lazyLoad);
-document.querySelectorAll('img[data-src]').forEach(img => {
-    imageObserver.observe(img);
-});
-```
-
 ## Következő lépések
 
 1. Gyakorold a DOM manipulációt

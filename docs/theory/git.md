@@ -2493,29 +2493,6 @@ git rebase --abort   # Rebase visszavonása
 </div>
 
 </div>
-# d, drop = remove commit
-
-# Squash commits example:
-# pick a1b2c3d add user profile component
-# squash e4f5g6h add profile validation
-# squash i7j8k9l add profile tests
-# Results in single commit with all changes
-
-# Rebase conflict resolution
-git rebase main
-# CONFLICT (content): Merge conflict in src/profile.js
-# error: could not apply e4f5g6h... add profile validation
-# 
-# Resolve all conflicts manually, mark them as resolved with
-# "git add/rm <conflicted_files>", then run "git rebase --continue"
-
-# After resolving conflicts:
-git add src/profile.js
-git rebase --continue
-
-# Abort rebase if needed
-git rebase --abort
-```
 
 Magyarázat: Merge megőrzi a branch history-t, rebase lineáris történetet hoz létre a commit-ok újrajátszásával.
 
