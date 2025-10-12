@@ -3990,3 +3990,2984 @@ class ShoppingCart {
 - "Effective Java" by Joshua Bloch
 - "Object-Oriented Analysis and Design with Applications" by Grady Booch
 - "Refactoring: Improving the Design of Existing Code" by Martin Fowler
+
+---
+
+## Advanced OOP Concepts
+
+### Design Patterns {#design-patterns}
+<!-- tags: patterns, creational, structural, behavioral, medior -->
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+*Design patterns are reusable solutions to commonly occurring problems in software design. They represent best practices evolved over time and provide a common vocabulary for developers. **Creational patterns** deal with object creation (Singleton, Factory, Builder), **Structural patterns** deal with object composition (Adapter, Decorator, Facade), and **Behavioral patterns** deal with communication between objects (Observer, Strategy, Command).*
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Reusable solutions**: proven approaches to common problems
+- **Communication**: shared vocabulary among developers
+- **Code quality**: promotes loose coupling and high cohesion
+- **Maintainability**: easier to understand and modify code
+
+</div>
+
+<div class="runnable-model" data-filter="patterns creational">
+
+**Runnable mental model**
+```java
+// 1. SINGLETON PATTERN - Single instance of a class
+
+// ❌ Bad: Not thread-safe
+public class DatabaseConnection {
+    private static DatabaseConnection instance;
+    
+    private DatabaseConnection() {}
+    
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            instance = new DatabaseConnection(); // Race condition!
+        }
+        return instance;
+    }
+}
+
+// ✅ Good: Thread-safe with double-checked locking
+public class DatabaseConnection {
+    private static volatile DatabaseConnection instance;
+    private final String connectionString;
+    
+    private DatabaseConnection() {
+        this.connectionString = "jdbc:postgresql://localhost/mydb";
+        System.out.println("Creating database connection...");
+    }
+    
+    public static DatabaseConnection getInstance() {
+        if (instance == null) {
+            synchronized (DatabaseConnection.class) {
+                if (instance == null) {
+                    instance = new DatabaseConnection();
+                }
+            }
+        }
+        return instance;
+    }
+    
+    public void executeQuery(String sql) {
+        System.out.println("Executing: " + sql);
+    }
+}
+
+// Modern approach: Enum Singleton (best practice)
+public enum DatabaseConnection {
+    INSTANCE;
+    
+    private final String connectionString;
+    
+    DatabaseConnection() {
+        this.connectionString = "jdbc:postgresql://localhost/mydb";
+    }
+    
+    public void executeQuery(String sql) {
+        System.out.println("Executing: " + sql);
+    }
+}
+
+// Usage
+DatabaseConnection.INSTANCE.executeQuery("SELECT * FROM users");
+
+// 2. FACTORY PATTERN - Object creation without specifying exact class
+
+// Product hierarchy
+interface PaymentProcessor {
+    void processPayment(double amount);
+    String getProviderName();
+}
+
+class CreditCardProcessor implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        System.out.println("Processing $" + amount + " via Credit Card");
+    }
+    
+    @Override
+    public String getProviderName() {
+        return "Credit Card";
+    }
+}
+
+class PayPalProcessor implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        System.out.println("Processing $" + amount + " via PayPal");
+    }
+    
+    @Override
+    public String getProviderName() {
+        return "PayPal";
+    }
+}
+
+class BitcoinProcessor implements PaymentProcessor {
+    @Override
+    public void processPayment(double amount) {
+        System.out.println("Processing $" + amount + " via Bitcoin");
+    }
+    
+    @Override
+    public String getProviderName() {
+        return "Bitcoin";
+    }
+}
+
+// Factory
+public class PaymentProcessorFactory {
+    public static PaymentProcessor createProcessor(String type) {
+        switch (type.toLowerCase()) {
+            case "credit": return new CreditCardProcessor();
+            case "paypal": return new PayPalProcessor();
+            case "bitcoin": return new BitcoinProcessor();
+            default: throw new IllegalArgumentException("Unknown payment type: " + type);
+        }
+    }
+    
+    // Factory with configuration
+    public static PaymentProcessor createProcessorWithFees(String type, double feeRate) {
+        PaymentProcessor baseProcessor = createProcessor(type);
+        return new PaymentProcessorWithFees(baseProcessor, feeRate);
+    }
+}
+
+// Decorator pattern combined with factory
+class PaymentProcessorWithFees implements PaymentProcessor {
+    private final PaymentProcessor baseProcessor;
+    private final double feeRate;
+    
+    public PaymentProcessorWithFees(PaymentProcessor baseProcessor, double feeRate) {
+        this.baseProcessor = baseProcessor;
+        this.feeRate = feeRate;
+    }
+    
+    @Override
+    public void processPayment(double amount) {
+        double totalAmount = amount + (amount * feeRate);
+        System.out.println("Adding fee: $" + (amount * feeRate));
+        baseProcessor.processPayment(totalAmount);
+    }
+    
+    @Override
+    public String getProviderName() {
+        return baseProcessor.getProviderName() + " (with fees)";
+    }
+}
+
+// Usage
+PaymentProcessor processor = PaymentProcessorFactory.createProcessor("paypal");
+processor.processPayment(100.0);
+
+PaymentProcessor processorWithFees = PaymentProcessorFactory.createProcessorWithFees("credit", 0.03);
+processorWithFees.processPayment(100.0);
+
+// 3. BUILDER PATTERN - Construct complex objects step by step
+
+// Without Builder: Constructor hell
+public class HttpRequest {
+    private final String url;
+    private final String method;
+    private final Map<String, String> headers;
+    private final String body;
+    private final int timeout;
+    private final boolean followRedirects;
+    
+    // Telescoping constructors (anti-pattern)
+    public HttpRequest(String url) {
+        this(url, "GET", new HashMap<>(), null, 30000, true);
+    }
+    
+    public HttpRequest(String url, String method) {
+        this(url, method, new HashMap<>(), null, 30000, true);
+    }
+    
+    // ... many more constructors
+    
+    public HttpRequest(String url, String method, Map<String, String> headers, 
+                      String body, int timeout, boolean followRedirects) {
+        this.url = url;
+        this.method = method;
+        this.headers = headers;
+        this.body = body;
+        this.timeout = timeout;
+        this.followRedirects = followRedirects;
+    }
+}
+
+// With Builder: Clean and readable
+public class HttpRequest {
+    private final String url;
+    private final String method;
+    private final Map<String, String> headers;
+    private final String body;
+    private final int timeout;
+    private final boolean followRedirects;
+    
+    private HttpRequest(Builder builder) {
+        this.url = builder.url;
+        this.method = builder.method;
+        this.headers = new HashMap<>(builder.headers);
+        this.body = builder.body;
+        this.timeout = builder.timeout;
+        this.followRedirects = builder.followRedirects;
+    }
+    
+    public static class Builder {
+        // Required parameters
+        private final String url;
+        
+        // Optional parameters with defaults
+        private String method = "GET";
+        private Map<String, String> headers = new HashMap<>();
+        private String body;
+        private int timeout = 30000;
+        private boolean followRedirects = true;
+        
+        public Builder(String url) {
+            this.url = url;
+        }
+        
+        public Builder method(String method) {
+            this.method = method;
+            return this;
+        }
+        
+        public Builder header(String name, String value) {
+            this.headers.put(name, value);
+            return this;
+        }
+        
+        public Builder headers(Map<String, String> headers) {
+            this.headers.putAll(headers);
+            return this;
+        }
+        
+        public Builder body(String body) {
+            this.body = body;
+            return this;
+        }
+        
+        public Builder timeout(int timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+        
+        public Builder followRedirects(boolean followRedirects) {
+            this.followRedirects = followRedirects;
+            return this;
+        }
+        
+        public HttpRequest build() {
+            // Validation
+            if (url == null || url.isEmpty()) {
+                throw new IllegalStateException("URL is required");
+            }
+            if (method.equals("POST") || method.equals("PUT")) {
+                if (body == null) {
+                    throw new IllegalStateException("Body required for " + method + " requests");
+                }
+            }
+            return new HttpRequest(this);
+        }
+    }
+    
+    // Getters
+    public String getUrl() { return url; }
+    public String getMethod() { return method; }
+    public Map<String, String> getHeaders() { return new HashMap<>(headers); }
+    public String getBody() { return body; }
+    public int getTimeout() { return timeout; }
+    public boolean isFollowRedirects() { return followRedirects; }
+    
+    @Override
+    public String toString() {
+        return String.format("HttpRequest{method='%s', url='%s', timeout=%d}", 
+                           method, url, timeout);
+    }
+}
+
+// Usage: Fluent and readable
+HttpRequest request = new HttpRequest.Builder("https://api.example.com/users")
+    .method("POST")
+    .header("Content-Type", "application/json")
+    .header("Authorization", "Bearer token123")
+    .body("{\"name\": \"John Doe\", \"email\": \"john@example.com\"}")
+    .timeout(5000)
+    .followRedirects(false)
+    .build();
+
+System.out.println(request);
+
+// 4. STRATEGY PATTERN - Different algorithms for same task
+
+interface SortingStrategy {
+    void sort(int[] array);
+    String getAlgorithmName();
+}
+
+class BubbleSort implements SortingStrategy {
+    @Override
+    public void sort(int[] array) {
+        int n = array.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (array[j] > array[j + 1]) {
+                    // Swap
+                    int temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+                }
+            }
+        }
+    }
+    
+    @Override
+    public String getAlgorithmName() {
+        return "Bubble Sort";
+    }
+}
+
+class QuickSort implements SortingStrategy {
+    @Override
+    public void sort(int[] array) {
+        quickSort(array, 0, array.length - 1);
+    }
+    
+    private void quickSort(int[] array, int low, int high) {
+        if (low < high) {
+            int pi = partition(array, low, high);
+            quickSort(array, low, pi - 1);
+            quickSort(array, pi + 1, high);
+        }
+    }
+    
+    private int partition(int[] array, int low, int high) {
+        int pivot = array[high];
+        int i = (low - 1);
+        
+        for (int j = low; j < high; j++) {
+            if (array[j] < pivot) {
+                i++;
+                int temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+        
+        int temp = array[i + 1];
+        array[i + 1] = array[high];
+        array[high] = temp;
+        
+        return i + 1;
+    }
+    
+    @Override
+    public String getAlgorithmName() {
+        return "Quick Sort";
+    }
+}
+
+class SortingContext {
+    private SortingStrategy strategy;
+    
+    public SortingContext(SortingStrategy strategy) {
+        this.strategy = strategy;
+    }
+    
+    public void setStrategy(SortingStrategy strategy) {
+        this.strategy = strategy;
+    }
+    
+    public void performSort(int[] array) {
+        long startTime = System.nanoTime();
+        System.out.println("Sorting using: " + strategy.getAlgorithmName());
+        strategy.sort(array);
+        long endTime = System.nanoTime();
+        System.out.println("Time taken: " + (endTime - startTime) / 1_000_000 + " ms");
+    }
+}
+
+// Usage
+int[] data1 = {64, 34, 25, 12, 22, 11, 90};
+int[] data2 = Arrays.copyOf(data1, data1.length);
+
+SortingContext context = new SortingContext(new BubbleSort());
+context.performSort(data1);
+System.out.println("Result: " + Arrays.toString(data1));
+
+context.setStrategy(new QuickSort());
+context.performSort(data2);
+System.out.println("Result: " + Arrays.toString(data2));
+
+// 5. OBSERVER PATTERN - Notify multiple objects about state changes
+
+interface Observer {
+    void update(String news);
+}
+
+interface Subject {
+    void subscribe(Observer observer);
+    void unsubscribe(Observer observer);
+    void notifyObservers();
+}
+
+class NewsAgency implements Subject {
+    private String news;
+    private List<Observer> observers = new ArrayList<>();
+    
+    public void setNews(String news) {
+        this.news = news;
+        notifyObservers();
+    }
+    
+    @Override
+    public void subscribe(Observer observer) {
+        observers.add(observer);
+        System.out.println("Observer subscribed. Total: " + observers.size());
+    }
+    
+    @Override
+    public void unsubscribe(Observer observer) {
+        observers.remove(observer);
+        System.out.println("Observer unsubscribed. Total: " + observers.size());
+    }
+    
+    @Override
+    public void notifyObservers() {
+        System.out.println("Notifying " + observers.size() + " observers about: " + news);
+        for (Observer observer : observers) {
+            observer.update(news);
+        }
+    }
+}
+
+class NewsChannel implements Observer {
+    private String name;
+    
+    public NewsChannel(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public void update(String news) {
+        System.out.println(name + " received news: " + news);
+    }
+}
+
+class MobileApp implements Observer {
+    private String appName;
+    
+    public MobileApp(String appName) {
+        this.appName = appName;
+    }
+    
+    @Override
+    public void update(String news) {
+        System.out.println(appName + " push notification: " + news);
+    }
+}
+
+// Usage
+NewsAgency agency = new NewsAgency();
+
+NewsChannel cnn = new NewsChannel("CNN");
+NewsChannel bbc = new NewsChannel("BBC");
+MobileApp newsApp = new MobileApp("NewsApp");
+
+agency.subscribe(cnn);
+agency.subscribe(bbc);
+agency.subscribe(newsApp);
+
+agency.setNews("Breaking: New Java version released!");
+agency.setNews("Stock market reaches new high");
+
+agency.unsubscribe(bbc);
+agency.setNews("Technology sector sees growth");
+```
+*Notice: Design patterns provide proven solutions but should not be overused. Apply them when they solve real problems.*
+
+</div>
+
+### SOLID Principles {#solid-principles}
+<!-- tags: solid, principles, design, architecture, medior -->
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+*SOLID is an acronym for five design principles that make software designs more understandable, flexible, and maintainable. **S**ingle Responsibility, **O**pen/Closed, **L**iskov Substitution, **I**nterface Segregation, **D**ependency Inversion. These principles guide object-oriented design toward loose coupling, high cohesion, and extensible architecture.*
+
+</div>
+
+<div class="runnable-model" data-filter="solid principles design">
+
+**Runnable mental model**
+```java
+// 1. SINGLE RESPONSIBILITY PRINCIPLE (SRP)
+// A class should have only one reason to change
+
+// ❌ Bad: Multiple responsibilities
+class User {
+    private String name;
+    private String email;
+    
+    // Responsibility 1: User data management
+    public void setName(String name) { this.name = name; }
+    public void setEmail(String email) { this.email = email; }
+    
+    // Responsibility 2: Database operations
+    public void saveToDatabase() {
+        // Database logic here
+        System.out.println("Saving user to database");
+    }
+    
+    // Responsibility 3: Email operations
+    public void sendWelcomeEmail() {
+        // Email logic here
+        System.out.println("Sending welcome email to " + email);
+    }
+    
+    // Responsibility 4: Validation
+    public boolean isValidEmail() {
+        return email != null && email.contains("@");
+    }
+}
+// Problem: If email validation rules change, database logic changes, 
+// or email service changes, this class needs to be modified
+
+// ✅ Good: Single responsibility per class
+class User {
+    private String name;
+    private String email;
+    
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+    
+    // Only responsibility: User data management
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    public void setName(String name) { this.name = name; }
+    public void setEmail(String email) { this.email = email; }
+}
+
+class UserRepository {
+    // Single responsibility: Database operations for users
+    public void save(User user) {
+        System.out.println("Saving user to database: " + user.getName());
+        // Database logic here
+    }
+    
+    public User findByEmail(String email) {
+        System.out.println("Finding user by email: " + email);
+        // Database query logic here
+        return null;
+    }
+}
+
+class EmailService {
+    // Single responsibility: Email operations
+    public void sendWelcomeEmail(User user) {
+        System.out.println("Sending welcome email to: " + user.getEmail());
+        // Email service logic here
+    }
+    
+    public void sendPasswordReset(User user) {
+        System.out.println("Sending password reset to: " + user.getEmail());
+    }
+}
+
+class UserValidator {
+    // Single responsibility: User validation
+    public boolean isValidEmail(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
+    }
+    
+    public boolean isValidName(String name) {
+        return name != null && name.trim().length() > 0;
+    }
+}
+
+// 2. OPEN/CLOSED PRINCIPLE (OCP)
+// Classes should be open for extension, closed for modification
+
+// ❌ Bad: Modification required for new shapes
+class AreaCalculator {
+    public double calculateArea(Object shape) {
+        if (shape instanceof Rectangle) {
+            Rectangle rect = (Rectangle) shape;
+            return rect.getWidth() * rect.getHeight();
+        } else if (shape instanceof Circle) {
+            Circle circle = (Circle) shape;
+            return Math.PI * circle.getRadius() * circle.getRadius();
+        } else if (shape instanceof Triangle) { // New shape requires modification!
+            Triangle triangle = (Triangle) shape;
+            return 0.5 * triangle.getBase() * triangle.getHeight();
+        }
+        throw new IllegalArgumentException("Unknown shape");
+    }
+}
+// Problem: Adding new shapes requires modifying AreaCalculator
+
+// ✅ Good: Extension without modification
+interface Shape {
+    double calculateArea();
+}
+
+class Rectangle implements Shape {
+    private double width;
+    private double height;
+    
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return width * height;
+    }
+    
+    public double getWidth() { return width; }
+    public double getHeight() { return height; }
+}
+
+class Circle implements Shape {
+    private double radius;
+    
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return Math.PI * radius * radius;
+    }
+    
+    public double getRadius() { return radius; }
+}
+
+class Triangle implements Shape {
+    private double base;
+    private double height;
+    
+    public Triangle(double base, double height) {
+        this.base = base;
+        this.height = height;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return 0.5 * base * height;
+    }
+    
+    public double getBase() { return base; }
+    public double getHeight() { return height; }
+}
+
+// New shapes can be added without modifying existing code
+class Pentagon implements Shape {
+    private double side;
+    
+    public Pentagon(double side) {
+        this.side = side;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return 0.25 * Math.sqrt(25 + 10 * Math.sqrt(5)) * side * side;
+    }
+}
+
+class AreaCalculator {
+    public double calculateTotalArea(List<Shape> shapes) {
+        return shapes.stream()
+                    .mapToDouble(Shape::calculateArea)
+                    .sum();
+    }
+}
+
+// 3. LISKOV SUBSTITUTION PRINCIPLE (LSP)
+// Objects of superclass should be replaceable with objects of subclass
+
+// ❌ Bad: LSP violation
+class Bird {
+    public void fly() {
+        System.out.println("Flying...");
+    }
+}
+
+class Penguin extends Bird {
+    @Override
+    public void fly() {
+        throw new UnsupportedOperationException("Penguins can't fly!");
+    }
+}
+
+// Problem: Penguin cannot be substituted for Bird
+void makeBirdFly(Bird bird) {
+    bird.fly(); // Will throw exception for Penguin!
+}
+
+// ✅ Good: Proper inheritance hierarchy
+abstract class Bird {
+    public abstract void move();
+    public void eat() {
+        System.out.println("Eating...");
+    }
+}
+
+abstract class FlyingBird extends Bird {
+    public void fly() {
+        System.out.println("Flying...");
+    }
+    
+    @Override
+    public void move() {
+        fly();
+    }
+}
+
+abstract class SwimmingBird extends Bird {
+    public void swim() {
+        System.out.println("Swimming...");
+    }
+    
+    @Override
+    public void move() {
+        swim();
+    }
+}
+
+class Eagle extends FlyingBird {
+    @Override
+    public void fly() {
+        System.out.println("Eagle soaring high...");
+    }
+}
+
+class Penguin extends SwimmingBird {
+    @Override
+    public void swim() {
+        System.out.println("Penguin swimming gracefully...");
+    }
+}
+
+// Now substitution works correctly
+void makeBirdMove(Bird bird) {
+    bird.move(); // Works for both Eagle and Penguin
+}
+
+// 4. INTERFACE SEGREGATION PRINCIPLE (ISP)
+// No client should depend on methods it doesn't use
+
+// ❌ Bad: Fat interface
+interface Worker {
+    void work();
+    void eat();
+    void sleep(); // Not all workers need sleep (robots?)
+}
+
+class Human implements Worker {
+    @Override
+    public void work() { System.out.println("Human working..."); }
+    @Override
+    public void eat() { System.out.println("Human eating..."); }
+    @Override
+    public void sleep() { System.out.println("Human sleeping..."); }
+}
+
+class Robot implements Worker {
+    @Override
+    public void work() { System.out.println("Robot working..."); }
+    @Override
+    public void eat() { 
+        // Robot doesn't eat! But forced to implement
+        throw new UnsupportedOperationException("Robots don't eat");
+    }
+    @Override
+    public void sleep() { 
+        // Robot doesn't sleep! But forced to implement
+        throw new UnsupportedOperationException("Robots don't sleep");
+    }
+}
+
+// ✅ Good: Segregated interfaces
+interface Workable {
+    void work();
+}
+
+interface Eatable {
+    void eat();
+}
+
+interface Sleepable {
+    void sleep();
+}
+
+class Human implements Workable, Eatable, Sleepable {
+    @Override
+    public void work() { System.out.println("Human working..."); }
+    @Override
+    public void eat() { System.out.println("Human eating..."); }
+    @Override
+    public void sleep() { System.out.println("Human sleeping..."); }
+}
+
+class Robot implements Workable {
+    @Override
+    public void work() { System.out.println("Robot working 24/7..."); }
+    // Robot only implements what it needs
+}
+
+class WorkManager {
+    public void manageWork(Workable worker) {
+        worker.work(); // Works for both Human and Robot
+    }
+    
+    public void manageMealTime(Eatable eater) {
+        eater.eat(); // Only for entities that can eat
+    }
+}
+
+// 5. DEPENDENCY INVERSION PRINCIPLE (DIP)
+// High-level modules should not depend on low-level modules. Both should depend on abstractions.
+
+// ❌ Bad: Direct dependency on concrete class
+class EmailService {
+    public void sendEmail(String message) {
+        System.out.println("Sending email: " + message);
+    }
+}
+
+class NotificationManager {
+    private EmailService emailService; // Direct dependency!
+    
+    public NotificationManager() {
+        this.emailService = new EmailService(); // Tight coupling!
+    }
+    
+    public void sendNotification(String message) {
+        emailService.sendEmail(message);
+    }
+}
+// Problem: Hard to test, hard to change email service, violates DIP
+
+// ✅ Good: Dependency on abstraction
+interface NotificationService {
+    void sendNotification(String message);
+    String getServiceName();
+}
+
+class EmailService implements NotificationService {
+    @Override
+    public void sendNotification(String message) {
+        System.out.println("Sending email: " + message);
+    }
+    
+    @Override
+    public String getServiceName() {
+        return "Email";
+    }
+}
+
+class SmsService implements NotificationService {
+    @Override
+    public void sendNotification(String message) {
+        System.out.println("Sending SMS: " + message);
+    }
+    
+    @Override
+    public String getServiceName() {
+        return "SMS";
+    }
+}
+
+class PushNotificationService implements NotificationService {
+    @Override
+    public void sendNotification(String message) {
+        System.out.println("Sending push notification: " + message);
+    }
+    
+    @Override
+    public String getServiceName() {
+        return "Push";
+    }
+}
+
+class NotificationManager {
+    private List<NotificationService> services;
+    
+    // Dependency injection through constructor
+    public NotificationManager(List<NotificationService> services) {
+        this.services = services;
+    }
+    
+    public void sendNotification(String message) {
+        for (NotificationService service : services) {
+            System.out.println("Using " + service.getServiceName() + " service:");
+            service.sendNotification(message);
+        }
+    }
+    
+    public void addService(NotificationService service) {
+        services.add(service);
+    }
+}
+
+// SOLID Principles in Action - Complete Example
+public class SolidPrinciplesDemo {
+    public static void main(String[] args) {
+        // SRP: Each class has one responsibility
+        User user = new User("John Doe", "john@example.com");
+        UserValidator validator = new UserValidator();
+        UserRepository repository = new UserRepository();
+        EmailService emailService = new EmailService();
+        
+        // Validate user
+        if (validator.isValidEmail(user.getEmail()) && validator.isValidName(user.getName())) {
+            // Save user
+            repository.save(user);
+            // Send welcome email
+            emailService.sendWelcomeEmail(user);
+        }
+        
+        // OCP: Adding new shapes without modifying existing code
+        List<Shape> shapes = Arrays.asList(
+            new Rectangle(5, 3),
+            new Circle(2),
+            new Triangle(4, 6),
+            new Pentagon(3) // New shape added without changing AreaCalculator
+        );
+        
+        AreaCalculator calculator = new AreaCalculator();
+        System.out.println("Total area: " + calculator.calculateTotalArea(shapes));
+        
+        // LSP: Proper substitution
+        List<Bird> birds = Arrays.asList(new Eagle(), new Penguin());
+        birds.forEach(bird -> makeBirdMove(bird)); // Works for all birds
+        
+        // ISP: Using only required interfaces
+        WorkManager workManager = new WorkManager();
+        Human human = new Human();
+        Robot robot = new Robot();
+        
+        workManager.manageWork(human);
+        workManager.manageWork(robot);
+        workManager.manageMealTime(human); // Only human can eat
+        
+        // DIP: Dependency injection
+        List<NotificationService> notificationServices = Arrays.asList(
+            new EmailService(),
+            new SmsService(),
+            new PushNotificationService()
+        );
+        
+        NotificationManager notificationManager = new NotificationManager(notificationServices);
+        notificationManager.sendNotification("Welcome to our platform!");
+    }
+    
+    static void makeBirdMove(Bird bird) {
+        bird.move();
+    }
+}
+```
+*Notice: SOLID principles work together to create maintainable, extensible, and testable code. Apply them gradually and pragmatically.*
+
+</div>
+
+### Advanced Design Patterns {#advanced-design-patterns}
+<!-- tags: patterns, architectural, enterprise, advanced -->
+
+<div class="concept-section definition">
+
+📋 **Advanced Design Patterns**  
+*Beyond basic patterns, enterprise applications use architectural patterns like **MVC** (Model-View-Controller), **MVP** (Model-View-Presenter), **Repository** (data access abstraction), **Unit of Work** (transaction management), and **Specification** (business rule encapsulation). These patterns address complex architectural concerns and promote clean separation of concerns.*
+
+</div>
+
+<div class="runnable-model" data-filter="patterns architectural enterprise">
+
+**Runnable mental model**
+```java
+// 1. REPOSITORY PATTERN - Data access abstraction
+
+// Domain entity
+class User {
+    private Long id;
+    private String username;
+    private String email;
+    private LocalDateTime createdAt;
+    
+    // Constructors, getters, setters
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+        this.createdAt = LocalDateTime.now();
+    }
+    
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getUsername() { return username; }
+    public String getEmail() { return email; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+}
+
+// Repository interface (abstraction)
+interface UserRepository {
+    void save(User user);
+    Optional<User> findById(Long id);
+    Optional<User> findByUsername(String username);
+    List<User> findByEmailDomain(String domain);
+    void delete(User user);
+    List<User> findAll();
+}
+
+// Concrete implementation
+class DatabaseUserRepository implements UserRepository {
+    private final DataSource dataSource;
+    
+    public DatabaseUserRepository(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+    @Override
+    public void save(User user) {
+        String sql = user.getId() == null 
+            ? "INSERT INTO users (username, email, created_at) VALUES (?, ?, ?)"
+            : "UPDATE users SET username = ?, email = ? WHERE id = ?";
+        
+        // Database operation simulation
+        System.out.println("Saving user to database: " + user.getUsername());
+    }
+    
+    @Override
+    public Optional<User> findById(Long id) {
+        System.out.println("Finding user by ID: " + id);
+        // Database query simulation
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<User> findByUsername(String username) {
+        System.out.println("Finding user by username: " + username);
+        // Database query simulation
+        return Optional.empty();
+    }
+    
+    @Override
+    public List<User> findByEmailDomain(String domain) {
+        System.out.println("Finding users by email domain: " + domain);
+        // Database query simulation
+        return new ArrayList<>();
+    }
+    
+    @Override
+    public void delete(User user) {
+        System.out.println("Deleting user: " + user.getUsername());
+    }
+    
+    @Override
+    public List<User> findAll() {
+        System.out.println("Finding all users");
+        return new ArrayList<>();
+    }
+}
+
+// In-memory implementation (for testing)
+class InMemoryUserRepository implements UserRepository {
+    private final Map<Long, User> users = new HashMap<>();
+    private Long nextId = 1L;
+    
+    @Override
+    public void save(User user) {
+        if (user.getId() == null) {
+            user.setId(nextId++);
+        }
+        users.put(user.getId(), user);
+        System.out.println("Saved user in memory: " + user.getUsername());
+    }
+    
+    @Override
+    public Optional<User> findById(Long id) {
+        return Optional.ofNullable(users.get(id));
+    }
+    
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return users.values().stream()
+                   .filter(user -> user.getUsername().equals(username))
+                   .findFirst();
+    }
+    
+    @Override
+    public List<User> findByEmailDomain(String domain) {
+        return users.values().stream()
+                   .filter(user -> user.getEmail().endsWith("@" + domain))
+                   .collect(Collectors.toList());
+    }
+    
+    @Override
+    public void delete(User user) {
+        users.remove(user.getId());
+    }
+    
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(users.values());
+    }
+}
+
+// 2. SPECIFICATION PATTERN - Business rules encapsulation
+
+interface Specification<T> {
+    boolean isSatisfiedBy(T candidate);
+    Specification<T> and(Specification<T> other);
+    Specification<T> or(Specification<T> other);
+    Specification<T> not();
+}
+
+abstract class AbstractSpecification<T> implements Specification<T> {
+    @Override
+    public Specification<T> and(Specification<T> other) {
+        return new AndSpecification<>(this, other);
+    }
+    
+    @Override
+    public Specification<T> or(Specification<T> other) {
+        return new OrSpecification<>(this, other);
+    }
+    
+    @Override
+    public Specification<T> not() {
+        return new NotSpecification<>(this);
+    }
+}
+
+class AndSpecification<T> extends AbstractSpecification<T> {
+    private final Specification<T> left;
+    private final Specification<T> right;
+    
+    public AndSpecification(Specification<T> left, Specification<T> right) {
+        this.left = left;
+        this.right = right;
+    }
+    
+    @Override
+    public boolean isSatisfiedBy(T candidate) {
+        return left.isSatisfiedBy(candidate) && right.isSatisfiedBy(candidate);
+    }
+}
+
+class OrSpecification<T> extends AbstractSpecification<T> {
+    private final Specification<T> left;
+    private final Specification<T> right;
+    
+    public OrSpecification(Specification<T> left, Specification<T> right) {
+        this.left = left;
+        this.right = right;
+    }
+    
+    @Override
+    public boolean isSatisfiedBy(T candidate) {
+        return left.isSatisfiedBy(candidate) || right.isSatisfiedBy(candidate);
+    }
+}
+
+class NotSpecification<T> extends AbstractSpecification<T> {
+    private final Specification<T> specification;
+    
+    public NotSpecification(Specification<T> specification) {
+        this.specification = specification;
+    }
+    
+    @Override
+    public boolean isSatisfiedBy(T candidate) {
+        return !specification.isSatisfiedBy(candidate);
+    }
+}
+
+// Concrete specifications for User
+class UserIsActiveSpecification extends AbstractSpecification<User> {
+    @Override
+    public boolean isSatisfiedBy(User user) {
+        // Business rule: User is active if created within last 30 days
+        return user.getCreatedAt().isAfter(LocalDateTime.now().minusDays(30));
+    }
+}
+
+class UserHasValidEmailSpecification extends AbstractSpecification<User> {
+    @Override
+    public boolean isSatisfiedBy(User user) {
+        // Business rule: Valid email contains @ and a domain
+        return user.getEmail() != null && 
+               user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+\\..+)$");
+    }
+}
+
+class UserIsFromDomainSpecification extends AbstractSpecification<User> {
+    private final String domain;
+    
+    public UserIsFromDomainSpecification(String domain) {
+        this.domain = domain;
+    }
+    
+    @Override
+    public boolean isSatisfiedBy(User user) {
+        return user.getEmail().endsWith("@" + domain);
+    }
+}
+
+// 3. UNIT OF WORK PATTERN - Transaction management
+
+interface UnitOfWork {
+    void registerNew(Object entity);
+    void registerDirty(Object entity);
+    void registerDeleted(Object entity);
+    void commit();
+    void rollback();
+}
+
+class DatabaseUnitOfWork implements UnitOfWork {
+    private final Set<Object> newEntities = new HashSet<>();
+    private final Set<Object> dirtyEntities = new HashSet<>();
+    private final Set<Object> deletedEntities = new HashSet<>();
+    private boolean committed = false;
+    
+    @Override
+    public void registerNew(Object entity) {
+        if (committed) throw new IllegalStateException("UnitOfWork already committed");
+        newEntities.add(entity);
+    }
+    
+    @Override
+    public void registerDirty(Object entity) {
+        if (committed) throw new IllegalStateException("UnitOfWork already committed");
+        dirtyEntities.add(entity);
+    }
+    
+    @Override
+    public void registerDeleted(Object entity) {
+        if (committed) throw new IllegalStateException("UnitOfWork already committed");
+        deletedEntities.add(entity);
+    }
+    
+    @Override
+    public void commit() {
+        if (committed) throw new IllegalStateException("UnitOfWork already committed");
+        
+        try {
+            // Begin transaction
+            System.out.println("Beginning database transaction");
+            
+            // Insert new entities
+            for (Object entity : newEntities) {
+                System.out.println("Inserting: " + entity);
+            }
+            
+            // Update dirty entities
+            for (Object entity : dirtyEntities) {
+                System.out.println("Updating: " + entity);
+            }
+            
+            // Delete entities
+            for (Object entity : deletedEntities) {
+                System.out.println("Deleting: " + entity);
+            }
+            
+            // Commit transaction
+            System.out.println("Committing transaction");
+            committed = true;
+            
+        } catch (Exception e) {
+            rollback();
+            throw new RuntimeException("Transaction failed", e);
+        }
+    }
+    
+    @Override
+    public void rollback() {
+        System.out.println("Rolling back transaction");
+        newEntities.clear();
+        dirtyEntities.clear();
+        deletedEntities.clear();
+        committed = false;
+    }
+}
+
+// 4. SERVICE LAYER PATTERN - Business logic coordination
+
+class UserService {
+    private final UserRepository userRepository;
+    private final UnitOfWork unitOfWork;
+    private final Specification<User> validUserSpec;
+    
+    public UserService(UserRepository userRepository, UnitOfWork unitOfWork) {
+        this.userRepository = userRepository;
+        this.unitOfWork = unitOfWork;
+        this.validUserSpec = new UserHasValidEmailSpecification();
+    }
+    
+    public void createUser(String username, String email) {
+        User user = new User(username, email);
+        
+        // Business rule validation
+        if (!validUserSpec.isSatisfiedBy(user)) {
+            throw new IllegalArgumentException("Invalid user data");
+        }
+        
+        // Check if username already exists
+        if (userRepository.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        
+        // Register for persistence
+        unitOfWork.registerNew(user);
+        
+        System.out.println("User created: " + username);
+    }
+    
+    public List<User> getActiveUsersFromDomain(String domain) {
+        Specification<User> spec = new UserIsActiveSpecification()
+            .and(new UserIsFromDomainSpecification(domain));
+        
+        return userRepository.findAll().stream()
+                           .filter(spec::isSatisfiedBy)
+                           .collect(Collectors.toList());
+    }
+    
+    public void deactivateUser(String username) {
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            unitOfWork.registerDeleted(user);
+            System.out.println("User deactivated: " + username);
+        }
+    }
+    
+    public void commitChanges() {
+        unitOfWork.commit();
+    }
+}
+
+// 5. COMMAND PATTERN - Encapsulate requests as objects
+
+interface Command {
+    void execute();
+    void undo();
+}
+
+class CreateUserCommand implements Command {
+    private final UserService userService;
+    private final String username;
+    private final String email;
+    private User createdUser;
+    
+    public CreateUserCommand(UserService userService, String username, String email) {
+        this.userService = userService;
+        this.username = username;
+        this.email = email;
+    }
+    
+    @Override
+    public void execute() {
+        userService.createUser(username, email);
+        System.out.println("Executed: Create user " + username);
+    }
+    
+    @Override
+    public void undo() {
+        if (createdUser != null) {
+            userService.deactivateUser(username);
+            System.out.println("Undone: Create user " + username);
+        }
+    }
+}
+
+class CommandProcessor {
+    private final Stack<Command> history = new Stack<>();
+    
+    public void execute(Command command) {
+        command.execute();
+        history.push(command);
+    }
+    
+    public void undo() {
+        if (!history.isEmpty()) {
+            Command command = history.pop();
+            command.undo();
+        }
+    }
+}
+
+// Complete example usage
+public class AdvancedPatternsDemo {
+    public static void main(String[] args) {
+        // Setup dependencies
+        UserRepository userRepository = new InMemoryUserRepository();
+        UnitOfWork unitOfWork = new DatabaseUnitOfWork();
+        UserService userService = new UserService(userRepository, unitOfWork);
+        CommandProcessor commandProcessor = new CommandProcessor();
+        
+        // Create users using Command pattern
+        Command createJohn = new CreateUserCommand(userService, "john", "john@example.com");
+        Command createJane = new CreateUserCommand(userService, "jane", "jane@company.com");
+        
+        commandProcessor.execute(createJohn);
+        commandProcessor.execute(createJane);
+        
+        // Commit all changes
+        userService.commitChanges();
+        
+        // Specification pattern usage
+        Specification<User> activeCompanyUsers = new UserIsActiveSpecification()
+            .and(new UserIsFromDomainSpecification("company.com"));
+        
+        System.out.println("Finding active company users...");
+        
+        // Undo last command
+        System.out.println("Undoing last command...");
+        commandProcessor.undo();
+        
+        // Repository pattern benefits: easy testing
+        System.out.println("\nTesting with in-memory repository:");
+        testUserService(new InMemoryUserRepository());
+    }
+    
+    private static void testUserService(UserRepository repository) {
+        UnitOfWork unitOfWork = new DatabaseUnitOfWork();
+        UserService service = new UserService(repository, unitOfWork);
+        
+        service.createUser("testuser", "test@test.com");
+        service.commitChanges();
+        
+        System.out.println("Test completed successfully");
+    }
+}
+```
+*Notice: Advanced patterns solve architectural problems but add complexity. Use them when benefits outweigh the costs.*
+
+</div>
+
+---
+
+### SOLID Principles in Depth {#solid-principles-deep}
+<!-- tags: solid, design-principles, best-practices, architecture -->
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**SOLID principles are five fundamental design principles that make software designs more understandable, flexible, and maintainable**. **Single Responsibility Principle (SRP)**: a class should have only one reason to change. **Open/Closed Principle (OCP)**: open for extension, closed for modification. **Liskov Substitution Principle (LSP)**: objects of superclass should be replaceable with objects of subclass. **Interface Segregation Principle (ISP)**: clients should not depend on interfaces they don't use. **Dependency Inversion Principle (DIP)**: depend on abstractions, not concretions. **Benefits**: reduced coupling, increased cohesion, better testability, easier maintenance and extension.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Code quality**: produces cleaner, more maintainable code
+- **Flexibility**: easier to extend and modify existing functionality
+- **Testing**: promotes testable and mockable designs
+- **Team productivity**: reduces debugging time and development friction
+
+</div>
+
+<div class="runnable-model" data-filter="solid">
+
+**Runnable mental model**
+```java
+// === SINGLE RESPONSIBILITY PRINCIPLE (SRP) ===
+
+// BAD: Class with multiple responsibilities
+class BadUserManager {
+    private List<User> users = new ArrayList<>();
+    
+    // Responsibility 1: User management
+    public void addUser(User user) { users.add(user); }
+    public void removeUser(User user) { users.remove(user); }
+    
+    // Responsibility 2: Data persistence
+    public void saveToDatabase() {
+        // Database logic
+    }
+    
+    // Responsibility 3: Email notifications
+    public void sendWelcomeEmail(User user) {
+        // Email logic
+    }
+    
+    // Responsibility 4: Validation
+    public boolean validateUser(User user) {
+        // Validation logic
+        return true;
+    }
+}
+
+// GOOD: Separated responsibilities
+class UserRepository {
+    private List<User> users = new ArrayList<>();
+    
+    public void add(User user) { users.add(user); }
+    public void remove(User user) { users.remove(user); }
+    public List<User> findAll() { return new ArrayList<>(users); }
+    public Optional<User> findById(String id) {
+        return users.stream().filter(u -> u.getId().equals(id)).findFirst();
+    }
+}
+
+class UserPersistenceService {
+    private DatabaseConnection connection;
+    
+    public void save(User user) {
+        // Only handles persistence
+        connection.execute("INSERT INTO users...", user);
+    }
+    
+    public void delete(String userId) {
+        connection.execute("DELETE FROM users WHERE id = ?", userId);
+    }
+}
+
+class EmailNotificationService {
+    public void sendWelcomeEmail(User user) {
+        // Only handles email notifications
+        EmailMessage message = new EmailMessage()
+            .to(user.getEmail())
+            .subject("Welcome!")
+            .body("Welcome to our platform, " + user.getName());
+        
+        emailClient.send(message);
+    }
+    
+    public void sendPasswordResetEmail(User user, String token) {
+        // Handle password reset emails
+    }
+}
+
+class UserValidator {
+    public ValidationResult validate(User user) {
+        // Only handles validation
+        ValidationResult result = new ValidationResult();
+        
+        if (user.getName() == null || user.getName().trim().isEmpty()) {
+            result.addError("Name is required");
+        }
+        
+        if (user.getEmail() == null || !isValidEmail(user.getEmail())) {
+            result.addError("Valid email is required");
+        }
+        
+        return result;
+    }
+    
+    private boolean isValidEmail(String email) {
+        return email.contains("@") && email.contains(".");
+    }
+}
+
+// === OPEN/CLOSED PRINCIPLE (OCP) ===
+
+// BAD: Need to modify existing code for new shapes
+class BadAreaCalculator {
+    public double calculateArea(Object shape) {
+        if (shape instanceof Rectangle) {
+            Rectangle rect = (Rectangle) shape;
+            return rect.getWidth() * rect.getHeight();
+        } else if (shape instanceof Circle) {
+            Circle circle = (Circle) shape;
+            return Math.PI * circle.getRadius() * circle.getRadius();
+        }
+        // Need to modify this method for new shapes!
+        return 0;
+    }
+}
+
+// GOOD: Open for extension, closed for modification
+interface Shape {
+    double calculateArea();
+}
+
+class Rectangle implements Shape {
+    private double width, height;
+    
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return width * height;
+    }
+    
+    // getters...
+}
+
+class Circle implements Shape {
+    private double radius;
+    
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return Math.PI * radius * radius;
+    }
+    
+    // getters...
+}
+
+// New shapes can be added without modifying existing code
+class Triangle implements Shape {
+    private double base, height;
+    
+    public Triangle(double base, double height) {
+        this.base = base;
+        this.height = height;
+    }
+    
+    @Override
+    public double calculateArea() {
+        return 0.5 * base * height;
+    }
+}
+
+class AreaCalculator {
+    public double calculateTotalArea(List<Shape> shapes) {
+        return shapes.stream()
+            .mapToDouble(Shape::calculateArea)
+            .sum();
+    }
+}
+
+// === LISKOV SUBSTITUTION PRINCIPLE (LSP) ===
+
+// BAD: Subclass violates superclass contract
+class BadBird {
+    public void fly() {
+        System.out.println("Flying...");
+    }
+}
+
+class BadPenguin extends BadBird {
+    @Override
+    public void fly() {
+        throw new UnsupportedOperationException("Penguins can't fly!");
+        // Violates LSP - clients expecting Bird behavior will fail
+    }
+}
+
+// GOOD: Proper abstraction hierarchy
+abstract class Bird {
+    public abstract void move();
+    public void eat() { System.out.println("Eating..."); }
+}
+
+interface Flyable {
+    void fly();
+}
+
+interface Swimmable {
+    void swim();
+}
+
+class Eagle extends Bird implements Flyable {
+    @Override
+    public void move() {
+        fly();
+    }
+    
+    @Override
+    public void fly() {
+        System.out.println("Eagle flying high...");
+    }
+}
+
+class Penguin extends Bird implements Swimmable {
+    @Override
+    public void move() {
+        swim();
+    }
+    
+    @Override
+    public void swim() {
+        System.out.println("Penguin swimming...");
+    }
+}
+
+class Duck extends Bird implements Flyable, Swimmable {
+    @Override
+    public void move() {
+        // Can choose to fly or swim
+        fly();
+    }
+    
+    @Override
+    public void fly() {
+        System.out.println("Duck flying...");
+    }
+    
+    @Override
+    public void swim() {
+        System.out.println("Duck swimming...");
+    }
+}
+
+// === INTERFACE SEGREGATION PRINCIPLE (ISP) ===
+
+// BAD: Fat interface forces unnecessary dependencies
+interface BadWorker {
+    void work();
+    void eat();
+    void sleep();
+    void code();
+    void designUI();
+    void testSoftware();
+}
+
+class BadProgrammer implements BadWorker {
+    @Override
+    public void work() { System.out.println("Programming..."); }
+    
+    @Override
+    public void eat() { System.out.println("Eating..."); }
+    
+    @Override
+    public void sleep() { System.out.println("Sleeping..."); }
+    
+    @Override
+    public void code() { System.out.println("Writing code..."); }
+    
+    @Override
+    public void designUI() {
+        throw new UnsupportedOperationException("Not a UI designer!");
+    }
+    
+    @Override
+    public void testSoftware() {
+        throw new UnsupportedOperationException("Not a tester!");
+    }
+}
+
+// GOOD: Segregated interfaces
+interface Worker {
+    void work();
+}
+
+interface Human {
+    void eat();
+    void sleep();
+}
+
+interface Programmer {
+    void code();
+    void debug();
+}
+
+interface UIDesigner {
+    void designUI();
+    void createMockups();
+}
+
+interface Tester {
+    void testSoftware();
+    void writeTestCases();
+}
+
+class SoftwareDeveloper implements Worker, Human, Programmer {
+    @Override
+    public void work() { 
+        code(); 
+        debug();
+    }
+    
+    @Override
+    public void eat() { 
+        System.out.println("Eating while coding..."); 
+    }
+    
+    @Override
+    public void sleep() { 
+        System.out.println("Dreaming about code..."); 
+    }
+    
+    @Override
+    public void code() { 
+        System.out.println("Writing clean code..."); 
+    }
+    
+    @Override
+    public void debug() { 
+        System.out.println("Debugging issues..."); 
+    }
+}
+
+class QAEngineer implements Worker, Human, Tester {
+    @Override
+    public void work() { 
+        testSoftware();
+        writeTestCases();
+    }
+    
+    @Override
+    public void eat() { 
+        System.out.println("Eating..."); 
+    }
+    
+    @Override
+    public void sleep() { 
+        System.out.println("Sleeping..."); 
+    }
+    
+    @Override
+    public void testSoftware() { 
+        System.out.println("Testing application..."); 
+    }
+    
+    @Override
+    public void writeTestCases() { 
+        System.out.println("Writing test cases..."); 
+    }
+}
+
+// === DEPENDENCY INVERSION PRINCIPLE (DIP) ===
+
+// BAD: High-level module depends on low-level module
+class BadOrderService {
+    private MySQLDatabase database; // Direct dependency on concrete class
+    
+    public BadOrderService() {
+        this.database = new MySQLDatabase(); // Tight coupling
+    }
+    
+    public void processOrder(Order order) {
+        // Business logic
+        order.setStatus(OrderStatus.PROCESSING);
+        
+        // Directly depends on MySQL implementation
+        database.save(order);
+    }
+}
+
+class MySQLDatabase {
+    public void save(Order order) {
+        System.out.println("Saving to MySQL: " + order);
+    }
+}
+
+// GOOD: Depend on abstractions
+interface OrderRepository {
+    void save(Order order);
+    Optional<Order> findById(String id);
+    List<Order> findByCustomerId(String customerId);
+}
+
+interface NotificationService {
+    void sendOrderConfirmation(Order order);
+}
+
+class OrderService {
+    private final OrderRepository orderRepository;
+    private final NotificationService notificationService;
+    
+    // Dependency injection through constructor
+    public OrderService(OrderRepository orderRepository, 
+                       NotificationService notificationService) {
+        this.orderRepository = orderRepository;
+        this.notificationService = notificationService;
+    }
+    
+    public void processOrder(Order order) {
+        // Business logic
+        validateOrder(order);
+        order.setStatus(OrderStatus.PROCESSING);
+        
+        // Depends on abstractions, not concrete implementations
+        orderRepository.save(order);
+        notificationService.sendOrderConfirmation(order);
+        
+        order.setStatus(OrderStatus.CONFIRMED);
+        orderRepository.save(order);
+    }
+    
+    private void validateOrder(Order order) {
+        if (order.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Order must have items");
+        }
+        if (order.getCustomerId() == null) {
+            throw new IllegalArgumentException("Order must have customer");
+        }
+    }
+}
+
+// Concrete implementations
+class DatabaseOrderRepository implements OrderRepository {
+    private DatabaseConnection connection;
+    
+    public DatabaseOrderRepository(DatabaseConnection connection) {
+        this.connection = connection;
+    }
+    
+    @Override
+    public void save(Order order) {
+        String sql = "INSERT INTO orders (id, customer_id, status, total) VALUES (?, ?, ?, ?)";
+        connection.execute(sql, order.getId(), order.getCustomerId(), 
+                         order.getStatus(), order.getTotal());
+    }
+    
+    @Override
+    public Optional<Order> findById(String id) {
+        String sql = "SELECT * FROM orders WHERE id = ?";
+        return connection.queryForObject(sql, Order.class, id);
+    }
+    
+    @Override
+    public List<Order> findByCustomerId(String customerId) {
+        String sql = "SELECT * FROM orders WHERE customer_id = ?";
+        return connection.queryForList(sql, Order.class, customerId);
+    }
+}
+
+class EmailNotificationService implements NotificationService {
+    private EmailClient emailClient;
+    
+    public EmailNotificationService(EmailClient emailClient) {
+        this.emailClient = emailClient;
+    }
+    
+    @Override
+    public void sendOrderConfirmation(Order order) {
+        String subject = "Order Confirmation - " + order.getId();
+        String body = buildOrderConfirmationEmail(order);
+        
+        emailClient.sendEmail(order.getCustomerEmail(), subject, body);
+    }
+    
+    private String buildOrderConfirmationEmail(Order order) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Thank you for your order!\n\n");
+        sb.append("Order ID: ").append(order.getId()).append("\n");
+        sb.append("Total: $").append(order.getTotal()).append("\n\n");
+        sb.append("Items:\n");
+        
+        order.getItems().forEach(item -> 
+            sb.append("- ").append(item.getName())
+              .append(" x").append(item.getQuantity())
+              .append(" = $").append(item.getPrice() * item.getQuantity())
+              .append("\n")
+        );
+        
+        return sb.toString();
+    }
+}
+
+// In-memory implementation for testing
+class InMemoryOrderRepository implements OrderRepository {
+    private Map<String, Order> orders = new HashMap<>();
+    
+    @Override
+    public void save(Order order) {
+        orders.put(order.getId(), order);
+    }
+    
+    @Override
+    public Optional<Order> findById(String id) {
+        return Optional.ofNullable(orders.get(id));
+    }
+    
+    @Override
+    public List<Order> findByCustomerId(String customerId) {
+        return orders.values().stream()
+            .filter(order -> order.getCustomerId().equals(customerId))
+            .collect(Collectors.toList());
+    }
+}
+
+// === SOLID PRINCIPLES INTEGRATION EXAMPLE ===
+
+class SOLIDOrderProcessingSystem {
+    public static void main(String[] args) {
+        // Dependency injection configuration
+        DatabaseConnection connection = new DatabaseConnection("jdbc:mysql://localhost/orders");
+        EmailClient emailClient = new EmailClient("smtp.company.com");
+        
+        OrderRepository orderRepository = new DatabaseOrderRepository(connection);
+        NotificationService notificationService = new EmailNotificationService(emailClient);
+        
+        // High-level module depends only on abstractions
+        OrderService orderService = new OrderService(orderRepository, notificationService);
+        
+        // Create sample order
+        Order order = new Order.Builder()
+            .id("ORD-001")
+            .customerId("CUST-123")
+            .customerEmail("customer@example.com")
+            .addItem(new OrderItem("Laptop", 1, 999.99))
+            .addItem(new OrderItem("Mouse", 2, 29.99))
+            .build();
+        
+        // Process order using SOLID principles
+        orderService.processOrder(order);
+        
+        // Easy to test with in-memory implementations
+        testOrderService();
+    }
+    
+    private static void testOrderService() {
+        // Test with in-memory implementations
+        OrderRepository testRepository = new InMemoryOrderRepository();
+        NotificationService testNotification = order -> 
+            System.out.println("Test notification sent for order: " + order.getId());
+        
+        OrderService testService = new OrderService(testRepository, testNotification);
+        
+        Order testOrder = new Order.Builder()
+            .id("TEST-001")
+            .customerId("TEST-CUSTOMER")
+            .customerEmail("test@test.com")
+            .addItem(new OrderItem("Test Product", 1, 50.0))
+            .build();
+        
+        testService.processOrder(testOrder);
+        
+        // Verify order was saved
+        Optional<Order> savedOrder = testRepository.findById("TEST-001");
+        assert savedOrder.isPresent();
+        assert savedOrder.get().getStatus() == OrderStatus.CONFIRMED;
+        
+        System.out.println("✅ All SOLID principles tests passed!");
+    }
+}
+
+// Supporting classes
+enum OrderStatus {
+    PENDING, PROCESSING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+}
+
+class Order {
+    private String id;
+    private String customerId;
+    private String customerEmail;
+    private List<OrderItem> items;
+    private OrderStatus status;
+    private double total;
+    
+    private Order(Builder builder) {
+        this.id = builder.id;
+        this.customerId = builder.customerId;
+        this.customerEmail = builder.customerEmail;
+        this.items = new ArrayList<>(builder.items);
+        this.status = OrderStatus.PENDING;
+        this.total = calculateTotal();
+    }
+    
+    private double calculateTotal() {
+        return items.stream()
+            .mapToDouble(item -> item.getPrice() * item.getQuantity())
+            .sum();
+    }
+    
+    // Builder pattern for complex object construction
+    public static class Builder {
+        private String id;
+        private String customerId;
+        private String customerEmail;
+        private List<OrderItem> items = new ArrayList<>();
+        
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
+        
+        public Builder customerId(String customerId) {
+            this.customerId = customerId;
+            return this;
+        }
+        
+        public Builder customerEmail(String customerEmail) {
+            this.customerEmail = customerEmail;
+            return this;
+        }
+        
+        public Builder addItem(OrderItem item) {
+            this.items.add(item);
+            return this;
+        }
+        
+        public Order build() {
+            return new Order(this);
+        }
+    }
+    
+    // Getters and setters
+    public String getId() { return id; }
+    public String getCustomerId() { return customerId; }
+    public String getCustomerEmail() { return customerEmail; }
+    public List<OrderItem> getItems() { return new ArrayList<>(items); }
+    public OrderStatus getStatus() { return status; }
+    public void setStatus(OrderStatus status) { this.status = status; }
+    public double getTotal() { return total; }
+}
+
+class OrderItem {
+    private String name;
+    private int quantity;
+    private double price;
+    
+    public OrderItem(String name, int quantity, double price) {
+        this.name = name;
+        this.quantity = quantity;
+        this.price = price;
+    }
+    
+    // Getters
+    public String getName() { return name; }
+    public int getQuantity() { return quantity; }
+    public double getPrice() { return price; }
+}
+```
+*Notice: SOLID principles work together to create flexible, maintainable designs. Each principle addresses specific design problems and promotes good software architecture.*
+
+</div>
+
+<div class="concept-section common-mistakes">
+
+<details>
+<summary>⚠️ <strong>Common mistakes</strong></summary>
+
+<div>
+
+- **Over-engineering**: Applying SOLID principles where simple solutions would suffice
+- **Premature abstraction**: Creating interfaces without clear need for multiple implementations
+- **Violation of SRP**: Classes that handle multiple concerns (data access + business logic + presentation)
+- **LSP violations**: Subclasses that throw exceptions or behave differently than expected
+- **Interface pollution**: Forcing classes to implement methods they don't need
+- **Concrete dependencies**: Depending on concrete classes instead of abstractions
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section applications">
+
+📚 **Application areas**
+- **Enterprise applications**: large-scale systems requiring maintainability
+- **Framework design**: creating extensible and flexible frameworks
+- **API design**: designing clean and intuitive public interfaces
+- **Testing**: creating testable code with mockable dependencies
+- **Team development**: establishing coding standards and best practices
+
+</div>
+
+<div class="concept-section interview-questions">
+
+💼 **Interview questions**
+1. **"Explain SOLID principles with examples"** → Detailed explanation of each principle with real-world examples
+2. **"How would you refactor this code to follow SRP?"** → Identifying and separating responsibilities
+3. **"Design a system following OCP"** → Creating extensible designs without modifying existing code
+4. **"What's wrong with this inheritance hierarchy?"** → Identifying LSP violations
+5. **"How does DIP improve testability?"** → Dependency injection and mocking strategies
+
+</div>
+
+<div class="concept-section related-concepts">
+
+🔗 **Related concepts**  
+`Design Patterns` · `Dependency Injection` · `Clean Architecture` · `Domain-Driven Design` · `Test-Driven Development`
+
+</div>
+
+<div class="tags">
+  <span class="tag">solid</span>
+  <span class="tag">design-principles</span>
+  <span class="tag">best-practices</span>
+  <span class="tag">architecture</span>
+  <span class="tag">maintainability</span>
+  <span class="tag">medior</span>
+</div>
+
+---
+
+### Advanced Design Patterns {#advanced-design-patterns}
+<!-- tags: design-patterns, gof-patterns, architectural-patterns, best-practices -->
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Advanced design patterns provide sophisticated solutions to complex software design problems, extending beyond basic GoF patterns to address architectural concerns**. **Structural patterns**: Composite for tree structures, Proxy for controlled access, Flyweight for memory optimization. **Behavioral patterns**: Chain of Responsibility for request handling, Mediator for object communication, Visitor for operations on object structures. **Architectural patterns**: MVC/MVP/MVVM for separation of concerns, Repository for data access abstraction, Unit of Work for transaction management. **Concurrency patterns**: Producer-Consumer, Thread Pool, Active Object for multi-threaded applications. **Enterprise patterns**: Data Transfer Object, Service Layer, Domain Model for business applications.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Code reusability**: proven solutions that can be applied across projects
+- **Communication**: common vocabulary for discussing design solutions
+- **Quality**: patterns embody best practices and design principles
+- **Maintainability**: well-structured code that's easier to understand and modify
+
+</div>
+
+<div class="runnable-model" data-filter="patterns">
+
+**Runnable mental model**
+```java
+// === COMPOSITE PATTERN ===
+// For handling tree-like structures uniformly
+
+interface FileSystemComponent {
+    String getName();
+    long getSize();
+    void display(String indent);
+}
+
+class File implements FileSystemComponent {
+    private String name;
+    private long size;
+    
+    public File(String name, long size) {
+        this.name = name;
+        this.size = size;
+    }
+    
+    @Override
+    public String getName() { return name; }
+    
+    @Override
+    public long getSize() { return size; }
+    
+    @Override
+    public void display(String indent) {
+        System.out.println(indent + "📄 " + name + " (" + size + " bytes)");
+    }
+}
+
+class Directory implements FileSystemComponent {
+    private String name;
+    private List<FileSystemComponent> children = new ArrayList<>();
+    
+    public Directory(String name) {
+        this.name = name;
+    }
+    
+    public void add(FileSystemComponent component) {
+        children.add(component);
+    }
+    
+    public void remove(FileSystemComponent component) {
+        children.remove(component);
+    }
+    
+    @Override
+    public String getName() { return name; }
+    
+    @Override
+    public long getSize() {
+        return children.stream()
+            .mapToLong(FileSystemComponent::getSize)
+            .sum();
+    }
+    
+    @Override
+    public void display(String indent) {
+        System.out.println(indent + "📁 " + name + "/");
+        for (FileSystemComponent child : children) {
+            child.display(indent + "  ");
+        }
+    }
+}
+
+// === PROXY PATTERN ===
+// For controlling access to another object
+
+interface ImageLoader {
+    void display();
+    String getInfo();
+}
+
+class RealImage implements ImageLoader {
+    private String filename;
+    private byte[] imageData;
+    
+    public RealImage(String filename) {
+        this.filename = filename;
+        loadFromDisk();
+    }
+    
+    private void loadFromDisk() {
+        System.out.println("Loading image from disk: " + filename);
+        // Simulate expensive loading operation
+        try {
+            Thread.sleep(2000); // 2 seconds delay
+            imageData = new byte[1024 * 1024]; // 1MB dummy data
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    
+    @Override
+    public void display() {
+        System.out.println("Displaying image: " + filename);
+    }
+    
+    @Override
+    public String getInfo() {
+        return "Image: " + filename + " (Size: " + imageData.length + " bytes)";
+    }
+}
+
+class ImageProxy implements ImageLoader {
+    private String filename;
+    private RealImage realImage;
+    private boolean hasAccess;
+    
+    public ImageProxy(String filename, boolean hasAccess) {
+        this.filename = filename;
+        this.hasAccess = hasAccess;
+    }
+    
+    @Override
+    public void display() {
+        if (!hasAccess) {
+            System.out.println("Access denied: Cannot display " + filename);
+            return;
+        }
+        
+        if (realImage == null) {
+            realImage = new RealImage(filename);
+        }
+        realImage.display();
+    }
+    
+    @Override
+    public String getInfo() {
+        if (!hasAccess) {
+            return "Access denied for: " + filename;
+        }
+        
+        // Can provide info without loading the actual image
+        return "Proxy for image: " + filename;
+    }
+}
+
+// === CHAIN OF RESPONSIBILITY PATTERN ===
+// For passing requests along a chain of handlers
+
+abstract class SupportHandler {
+    protected SupportHandler nextHandler;
+    
+    public void setNext(SupportHandler nextHandler) {
+        this.nextHandler = nextHandler;
+    }
+    
+    public abstract void handleRequest(SupportTicket ticket);
+}
+
+class Level1Support extends SupportHandler {
+    @Override
+    public void handleRequest(SupportTicket ticket) {
+        if (ticket.getPriority() == Priority.LOW) {
+            System.out.println("Level 1 Support: Handling ticket #" + ticket.getId());
+            ticket.setStatus(TicketStatus.RESOLVED);
+            ticket.setResolution("Basic troubleshooting completed");
+        } else if (nextHandler != null) {
+            System.out.println("Level 1 Support: Escalating ticket #" + ticket.getId());
+            nextHandler.handleRequest(ticket);
+        }
+    }
+}
+
+class Level2Support extends SupportHandler {
+    @Override
+    public void handleRequest(SupportTicket ticket) {
+        if (ticket.getPriority() == Priority.MEDIUM) {
+            System.out.println("Level 2 Support: Handling ticket #" + ticket.getId());
+            ticket.setStatus(TicketStatus.RESOLVED);
+            ticket.setResolution("Advanced technical support provided");
+        } else if (nextHandler != null) {
+            System.out.println("Level 2 Support: Escalating ticket #" + ticket.getId());
+            nextHandler.handleRequest(ticket);
+        }
+    }
+}
+
+class Level3Support extends SupportHandler {
+    @Override
+    public void handleRequest(SupportTicket ticket) {
+        if (ticket.getPriority() == Priority.HIGH || ticket.getPriority() == Priority.CRITICAL) {
+            System.out.println("Level 3 Support: Handling critical ticket #" + ticket.getId());
+            ticket.setStatus(TicketStatus.RESOLVED);
+            ticket.setResolution("Expert-level resolution provided");
+        } else {
+            System.out.println("Level 3 Support: Unable to handle ticket #" + ticket.getId());
+            ticket.setStatus(TicketStatus.UNRESOLVED);
+        }
+    }
+}
+
+// === MEDIATOR PATTERN ===
+// For defining how objects interact with each other
+
+interface ChatMediator {
+    void sendMessage(String message, User user);
+    void addUser(User user);
+    void removeUser(User user);
+}
+
+class ChatRoom implements ChatMediator {
+    private List<User> users = new ArrayList<>();
+    private List<String> chatHistory = new ArrayList<>();
+    
+    @Override
+    public void addUser(User user) {
+        users.add(user);
+        notifyUsers(user.getName() + " joined the chat", null);
+    }
+    
+    @Override
+    public void removeUser(User user) {
+        users.remove(user);
+        notifyUsers(user.getName() + " left the chat", null);
+    }
+    
+    @Override
+    public void sendMessage(String message, User sender) {
+        String formattedMessage = sender.getName() + ": " + message;
+        chatHistory.add(formattedMessage);
+        
+        for (User user : users) {
+            if (user != sender) {
+                user.receive(formattedMessage);
+            }
+        }
+    }
+    
+    private void notifyUsers(String message, User excludeUser) {
+        for (User user : users) {
+            if (user != excludeUser) {
+                user.receive("System: " + message);
+            }
+        }
+    }
+    
+    public List<String> getChatHistory() {
+        return new ArrayList<>(chatHistory);
+    }
+}
+
+abstract class User {
+    protected ChatMediator mediator;
+    protected String name;
+    
+    public User(ChatMediator mediator, String name) {
+        this.mediator = mediator;
+        this.name = name;
+    }
+    
+    public abstract void send(String message);
+    public abstract void receive(String message);
+    
+    public String getName() { return name; }
+}
+
+class ChatUser extends User {
+    public ChatUser(ChatMediator mediator, String name) {
+        super(mediator, name);
+    }
+    
+    @Override
+    public void send(String message) {
+        System.out.println(name + " sending: " + message);
+        mediator.sendMessage(message, this);
+    }
+    
+    @Override
+    public void receive(String message) {
+        System.out.println(name + " received: " + message);
+    }
+}
+
+// === VISITOR PATTERN ===
+// For performing operations on object structures
+
+interface ShapeVisitor {
+    void visit(Circle circle);
+    void visit(Rectangle rectangle);
+    void visit(Triangle triangle);
+}
+
+interface VisitableShape {
+    void accept(ShapeVisitor visitor);
+}
+
+class Circle implements VisitableShape {
+    private double radius;
+    
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+    
+    public double getRadius() { return radius; }
+    
+    @Override
+    public void accept(ShapeVisitor visitor) {
+        visitor.visit(this);
+    }
+}
+
+class Rectangle implements VisitableShape {
+    private double width, height;
+    
+    public Rectangle(double width, double height) {
+        this.width = width;
+        this.height = height;
+    }
+    
+    public double getWidth() { return width; }
+    public double getHeight() { return height; }
+    
+    @Override
+    public void accept(ShapeVisitor visitor) {
+        visitor.visit(this);
+    }
+}
+
+class Triangle implements VisitableShape {
+    private double base, height;
+    
+    public Triangle(double base, double height) {
+        this.base = base;
+        this.height = height;
+    }
+    
+    public double getBase() { return base; }
+    public double getHeight() { return height; }
+    
+    @Override
+    public void accept(ShapeVisitor visitor) {
+        visitor.visit(this);
+    }
+}
+
+// Different visitors for different operations
+class AreaCalculatorVisitor implements ShapeVisitor {
+    private double totalArea = 0;
+    
+    @Override
+    public void visit(Circle circle) {
+        double area = Math.PI * circle.getRadius() * circle.getRadius();
+        totalArea += area;
+        System.out.println("Circle area: " + area);
+    }
+    
+    @Override
+    public void visit(Rectangle rectangle) {
+        double area = rectangle.getWidth() * rectangle.getHeight();
+        totalArea += area;
+        System.out.println("Rectangle area: " + area);
+    }
+    
+    @Override
+    public void visit(Triangle triangle) {
+        double area = 0.5 * triangle.getBase() * triangle.getHeight();
+        totalArea += area;
+        System.out.println("Triangle area: " + area);
+    }
+    
+    public double getTotalArea() { return totalArea; }
+}
+
+class PerimeterCalculatorVisitor implements ShapeVisitor {
+    private double totalPerimeter = 0;
+    
+    @Override
+    public void visit(Circle circle) {
+        double perimeter = 2 * Math.PI * circle.getRadius();
+        totalPerimeter += perimeter;
+        System.out.println("Circle perimeter: " + perimeter);
+    }
+    
+    @Override
+    public void visit(Rectangle rectangle) {
+        double perimeter = 2 * (rectangle.getWidth() + rectangle.getHeight());
+        totalPerimeter += perimeter;
+        System.out.println("Rectangle perimeter: " + perimeter);
+    }
+    
+    @Override
+    public void visit(Triangle triangle) {
+        // Simplified: assuming right triangle
+        double hypotenuse = Math.sqrt(triangle.getBase() * triangle.getBase() + 
+                                    triangle.getHeight() * triangle.getHeight());
+        double perimeter = triangle.getBase() + triangle.getHeight() + hypotenuse;
+        totalPerimeter += perimeter;
+        System.out.println("Triangle perimeter: " + perimeter);
+    }
+    
+    public double getTotalPerimeter() { return totalPerimeter; }
+}
+
+// === MVC PATTERN ===
+// Model-View-Controller architectural pattern
+
+// Model
+class UserModel {
+    private String id;
+    private String name;
+    private String email;
+    private List<UserModelListener> listeners = new ArrayList<>();
+    
+    public UserModel(String id, String name, String email) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+    
+    public void addListener(UserModelListener listener) {
+        listeners.add(listener);
+    }
+    
+    public void removeListener(UserModelListener listener) {
+        listeners.remove(listener);
+    }
+    
+    private void notifyListeners() {
+        for (UserModelListener listener : listeners) {
+            listener.onUserChanged(this);
+        }
+    }
+    
+    // Getters and setters with notifications
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+    
+    public void setName(String name) {
+        this.name = name;
+        notifyListeners();
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+        notifyListeners();
+    }
+}
+
+interface UserModelListener {
+    void onUserChanged(UserModel user);
+}
+
+// View
+interface UserView extends UserModelListener {
+    void displayUser(UserModel user);
+    void displayError(String error);
+    void setController(UserController controller);
+}
+
+class ConsoleUserView implements UserView {
+    private UserController controller;
+    
+    @Override
+    public void setController(UserController controller) {
+        this.controller = controller;
+    }
+    
+    @Override
+    public void displayUser(UserModel user) {
+        System.out.println("=== User Information ===");
+        System.out.println("ID: " + user.getId());
+        System.out.println("Name: " + user.getName());
+        System.out.println("Email: " + user.getEmail());
+        System.out.println("========================");
+    }
+    
+    @Override
+    public void displayError(String error) {
+        System.err.println("Error: " + error);
+    }
+    
+    @Override
+    public void onUserChanged(UserModel user) {
+        displayUser(user);
+    }
+    
+    // Simulate user input
+    public void simulateUserInput() {
+        // In real application, this would handle actual user input
+        System.out.println("Simulating user input...");
+        controller.updateUserName("John Updated");
+        controller.updateUserEmail("john.updated@example.com");
+    }
+}
+
+// Controller
+class UserController {
+    private UserModel model;
+    private UserView view;
+    
+    public UserController(UserModel model, UserView view) {
+        this.model = model;
+        this.view = view;
+        
+        // Register view as listener to model
+        model.addListener(view);
+        view.setController(this);
+    }
+    
+    public void updateUserName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            view.displayError("Name cannot be empty");
+            return;
+        }
+        model.setName(name);
+    }
+    
+    public void updateUserEmail(String email) {
+        if (email == null || !isValidEmail(email)) {
+            view.displayError("Invalid email format");
+            return;
+        }
+        model.setEmail(email);
+    }
+    
+    public void displayUser() {
+        view.displayUser(model);
+    }
+    
+    private boolean isValidEmail(String email) {
+        return email.contains("@") && email.contains(".");
+    }
+}
+
+// === PATTERN INTEGRATION EXAMPLE ===
+
+class AdvancedPatternDemo {
+    public static void main(String[] args) {
+        demonstrateCompositePattern();
+        demonstrateProxyPattern();
+        demonstrateChainOfResponsibility();
+        demonstrateMediatorPattern();
+        demonstrateVisitorPattern();
+        demonstrateMVCPattern();
+    }
+    
+    private static void demonstrateCompositePattern() {
+        System.out.println("=== COMPOSITE PATTERN DEMO ===");
+        
+        Directory root = new Directory("root");
+        Directory docs = new Directory("documents");
+        Directory pics = new Directory("pictures");
+        
+        docs.add(new File("resume.pdf", 1024));
+        docs.add(new File("cover_letter.docx", 2048));
+        
+        pics.add(new File("vacation.jpg", 512000));
+        pics.add(new File("family.png", 256000));
+        
+        root.add(docs);
+        root.add(pics);
+        root.add(new File("readme.txt", 128));
+        
+        root.display("");
+        System.out.println("Total size: " + root.getSize() + " bytes\n");
+    }
+    
+    private static void demonstrateProxyPattern() {
+        System.out.println("=== PROXY PATTERN DEMO ===");
+        
+        ImageLoader publicImage = new ImageProxy("public_photo.jpg", true);
+        ImageLoader privateImage = new ImageProxy("private_photo.jpg", false);
+        
+        System.out.println("Accessing public image:");
+        System.out.println(publicImage.getInfo());
+        publicImage.display();
+        
+        System.out.println("\nAccessing private image:");
+        System.out.println(privateImage.getInfo());
+        privateImage.display();
+        System.out.println();
+    }
+    
+    private static void demonstrateChainOfResponsibility() {
+        System.out.println("=== CHAIN OF RESPONSIBILITY DEMO ===");
+        
+        Level1Support level1 = new Level1Support();
+        Level2Support level2 = new Level2Support();
+        Level3Support level3 = new Level3Support();
+        
+        level1.setNext(level2);
+        level2.setNext(level3);
+        
+        SupportTicket[] tickets = {
+            new SupportTicket("T001", Priority.LOW, "Password reset request"),
+            new SupportTicket("T002", Priority.MEDIUM, "Software installation issue"),
+            new SupportTicket("T003", Priority.HIGH, "System crash investigation"),
+            new SupportTicket("T004", Priority.CRITICAL, "Security breach detected")
+        };
+        
+        for (SupportTicket ticket : tickets) {
+            System.out.println("Processing ticket: " + ticket.getDescription());
+            level1.handleRequest(ticket);
+            System.out.println("Status: " + ticket.getStatus() + "\n");
+        }
+    }
+    
+    private static void demonstrateMediatorPattern() {
+        System.out.println("=== MEDIATOR PATTERN DEMO ===");
+        
+        ChatRoom chatRoom = new ChatRoom();
+        
+        User alice = new ChatUser(chatRoom, "Alice");
+        User bob = new ChatUser(chatRoom, "Bob");
+        User charlie = new ChatUser(chatRoom, "Charlie");
+        
+        chatRoom.addUser(alice);
+        chatRoom.addUser(bob);
+        chatRoom.addUser(charlie);
+        
+        alice.send("Hello everyone!");
+        bob.send("Hi Alice!");
+        charlie.send("Good morning!");
+        
+        chatRoom.removeUser(bob);
+        alice.send("Where did Bob go?");
+        System.out.println();
+    }
+    
+    private static void demonstrateVisitorPattern() {
+        System.out.println("=== VISITOR PATTERN DEMO ===");
+        
+        List<VisitableShape> shapes = Arrays.asList(
+            new Circle(5),
+            new Rectangle(4, 6),
+            new Triangle(3, 4)
+        );
+        
+        AreaCalculatorVisitor areaVisitor = new AreaCalculatorVisitor();
+        PerimeterCalculatorVisitor perimeterVisitor = new PerimeterCalculatorVisitor();
+        
+        System.out.println("Calculating areas:");
+        for (VisitableShape shape : shapes) {
+            shape.accept(areaVisitor);
+        }
+        System.out.println("Total area: " + areaVisitor.getTotalArea());
+        
+        System.out.println("\nCalculating perimeters:");
+        for (VisitableShape shape : shapes) {
+            shape.accept(perimeterVisitor);
+        }
+        System.out.println("Total perimeter: " + perimeterVisitor.getTotalPerimeter());
+        System.out.println();
+    }
+    
+    private static void demonstrateMVCPattern() {
+        System.out.println("=== MVC PATTERN DEMO ===");
+        
+        UserModel model = new UserModel("U001", "John Doe", "john@example.com");
+        UserView view = new ConsoleUserView();
+        UserController controller = new UserController(model, view);
+        
+        controller.displayUser();
+        view.simulateUserInput();
+    }
+}
+
+// Supporting classes for patterns
+enum Priority { LOW, MEDIUM, HIGH, CRITICAL }
+enum TicketStatus { OPEN, IN_PROGRESS, RESOLVED, UNRESOLVED }
+
+class SupportTicket {
+    private String id;
+    private Priority priority;
+    private String description;
+    private TicketStatus status;
+    private String resolution;
+    
+    public SupportTicket(String id, Priority priority, String description) {
+        this.id = id;
+        this.priority = priority;
+        this.description = description;
+        this.status = TicketStatus.OPEN;
+    }
+    
+    // Getters and setters
+    public String getId() { return id; }
+    public Priority getPriority() { return priority; }
+    public String getDescription() { return description; }
+    public TicketStatus getStatus() { return status; }
+    public void setStatus(TicketStatus status) { this.status = status; }
+    public String getResolution() { return resolution; }
+    public void setResolution(String resolution) { this.resolution = resolution; }
+}
+```
+*Notice: Advanced design patterns provide powerful solutions but should be used judiciously. Choose patterns based on actual needs rather than for their own sake.*
+
+</div>
+
+<div class="concept-section common-mistakes">
+
+<details>
+<summary>⚠️ <strong>Common mistakes</strong></summary>
+
+<div>
+
+- **Pattern overuse**: Applying patterns where simple solutions would suffice
+- **Wrong pattern choice**: Using a pattern that doesn't fit the actual problem
+- **Premature optimization**: Implementing complex patterns before they're needed
+- **Ignoring context**: Not considering the specific requirements and constraints
+- **Poor implementation**: Following pattern structure without understanding intent
+- **Maintenance burden**: Adding unnecessary complexity that makes code harder to maintain
+
+</div>
+</details>
+
+</div>
+
+<div class="concept-section applications">
+
+📚 **Application areas**
+- **GUI frameworks**: MVC/MVP patterns for user interface architecture
+- **Game development**: Component patterns for entity systems, State patterns for game logic
+- **Enterprise applications**: Repository, Unit of Work, and Service Layer patterns
+- **Distributed systems**: Proxy patterns for remote services, Mediator for service communication
+- **Compilers and interpreters**: Visitor pattern for AST operations, Interpreter pattern
+
+</div>
+
+<div class="concept-section interview-questions">
+
+💼 **Interview questions**
+1. **"When would you use the Composite pattern?"** → Tree structures, uniform treatment of objects
+2. **"Explain the difference between Proxy and Decorator"** → Intent and structural differences
+3. **"How does the Visitor pattern support extensibility?"** → Adding operations without modifying existing classes
+4. **"Design a notification system using patterns"** → Observer, Chain of Responsibility, Strategy combinations
+5. **"What are the trade-offs of using MVC?"** → Benefits and complexity considerations
+
+</div>
+
+<div class="concept-section related-concepts">
+
+🔗 **Related concepts**  
+`SOLID Principles` · `Gang of Four Patterns` · `Architectural Patterns` · `Enterprise Patterns` · `Refactoring`
+
+</div>
+
+<div class="tags">
+  <span class="tag">design-patterns</span>
+  <span class="tag">gof-patterns</span>
+  <span class="tag">architectural-patterns</span>
+  <span class="tag">best-practices</span>
+  <span class="tag">software-design</span>
+  <span class="tag">medior</span>
+</div>

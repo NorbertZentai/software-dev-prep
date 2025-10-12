@@ -1651,6 +1651,743 @@ class UserRepositoryTest {
 
 </div>
 
+### @Repository {#repository}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Specialized @Component** for data access layer (DAO) classes. Provides **automatic exception translation**: converts platform-specific database exceptions (SQLException) into Spring's DataAccessException hierarchy. Indicates the class performs data persistence operations (CRUD, query execution). Often used with JdbcTemplate, JPA EntityManager, or Spring Data repositories.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Exception translation**: Database-specific exceptions → Spring DataAccessException
+- **Data access abstraction**: Clean data access interface
+- **Semantic clarity**: Explicit data layer component marker
+- **Integration support**: Works with Spring Data JPA, MongoDB, Redis
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+@Repository
+public class UserRepository {
+    private final JdbcTemplate jdbcTemplate;
+
+    public UserRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public User findById(Long id) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, this::mapRowToUser, id);
+    }
+
+    public void save(User user) {
+        String sql = "INSERT INTO users (name, email) VALUES (?, ?)";
+        jdbcTemplate.update(sql, user.getName(), user.getEmail());
+    }
+
+    private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
+        return new User(rs.getLong("id"), rs.getString("name"), rs.getString("email"));
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Data Access Layer` · `Exception Translation` · `Spring Data` · `JdbcTemplate` · `Repository Pattern`
+
+</div>
+
+### @Configuration {#configuration}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Java-based configuration class** replacing XML configuration. Annotated with @Configuration to indicate the class contains @Bean definitions. Spring processes these classes at startup, creating beans defined by @Bean methods. Supports component scanning, profile-specific configuration, and property injection.
+
+</div>
+
+<div class="concept-section why-important">
+
+💡 **Why it matters?**
+- **Type-safe configuration**: Compile-time checking vs XML
+- **Refactoring support**: IDE refactoring works with Java
+- **Conditional beans**: @Conditional annotations for dynamic configuration
+- **Integration**: Easy to combine with @ComponentScan and @PropertySource
+
+</div>
+
+<div class="runnable-model">
+
+**Runnable mental model**
+```java
+@Configuration
+public class AppConfig {
+    
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/mydb");
+        dataSource.setUsername("user");
+        dataSource.setPassword("pass");
+        return dataSource;
+    }
+    
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
+    }
+    
+    @Bean
+    @Profile("dev")
+    public DataSource devDataSource() {
+        return new EmbeddedDatabaseBuilder()
+            .setType(EmbeddedDatabaseType.H2)
+            .build();
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Java Config` · `Bean Definition` · `@Bean` · `Component Scanning` · `Profiles`
+
+</div>
+
+### @ConfigurationProperties {#configurationproperties}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Type-safe configuration binding** from application.properties/yml to Java objects. Maps external properties to POJO fields using prefix. Supports validation (@Validated), nested properties, and relaxed binding (kebab-case, camelCase). Alternative to @Value for complex configurations.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+// application.yml
+// app:
+//   name: MyApp
+//   timeout: 5000
+//   features:
+//     - feature1
+//     - feature2
+
+@ConfigurationProperties(prefix = "app")
+@Validated
+public class AppProperties {
+    @NotBlank
+    private String name;
+    
+    @Min(1000)
+    private int timeout;
+    
+    private List<String> features;
+    
+    // getters and setters
+}
+
+@Configuration
+@EnableConfigurationProperties(AppProperties.class)
+public class AppConfig {
+    // AppProperties bean automatically created
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Externalized Configuration` · `Type Safety` · `Validation` · `Property Binding`
+
+</div>
+
+### Profiles {#profiles}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Environment-specific configuration** mechanism. Activate beans conditionally based on active profiles (dev, test, prod). Use @Profile on beans/configurations, activate via spring.profiles.active property. Supports profile-specific property files (application-dev.yml).
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+@Configuration
+public class DataSourceConfig {
+    
+    @Bean
+    @Profile("dev")
+    public DataSource devDataSource() {
+        return new EmbeddedDatabaseBuilder()
+            .setType(EmbeddedDatabaseType.H2)
+            .build();
+    }
+    
+    @Bean
+    @Profile("prod")
+    public DataSource prodDataSource() {
+        HikariDataSource ds = new HikariDataSource();
+        ds.setJdbcUrl("jdbc:postgresql://prod-db:5432/mydb");
+        return ds;
+    }
+}
+
+// Activate: java -jar app.jar --spring.profiles.active=dev
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Environment Configuration` · `Conditional Beans` · `Property Files` · `Deployment`
+
+</div>
+
+### RestTemplate / WebClient {#resttemplate-webclient}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**HTTP clients** for consuming REST APIs. **RestTemplate**: Synchronous, blocking client (maintenance mode). **WebClient**: Reactive, non-blocking client (recommended for new projects). Supports request/response handling, error handling, interceptors.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+// RestTemplate (synchronous)
+@Service
+public class UserClient {
+    private final RestTemplate restTemplate;
+    
+    public UserClient(RestTemplateBuilder builder) {
+        this.restTemplate = builder
+            .rootUri("https://api.example.com")
+            .build();
+    }
+    
+    public User getUser(Long id) {
+        return restTemplate.getForObject("/users/{id}", User.class, id);
+    }
+    
+    public User createUser(User user) {
+        return restTemplate.postForObject("/users", user, User.class);
+    }
+}
+
+// WebClient (reactive)
+@Service
+public class UserClientReactive {
+    private final WebClient webClient;
+    
+    public UserClientReactive(WebClient.Builder builder) {
+        this.webClient = builder
+            .baseUrl("https://api.example.com")
+            .build();
+    }
+    
+    public Mono<User> getUser(Long id) {
+        return webClient.get()
+            .uri("/users/{id}", id)
+            .retrieve()
+            .bodyToMono(User.class);
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`HTTP Client` · `REST API` · `Reactive Programming` · `WebFlux`
+
+</div>
+
+### Validation {#validation}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Bean Validation (JSR-303/380)** integration for input validation. Use annotations (@NotNull, @Size, @Email, @Valid) on DTOs, @Validated on classes. Automatic validation in @RequestBody, manual validation with Validator. MethodValidationPostProcessor for method parameter validation.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+public class CreateUserRequest {
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 50)
+    private String name;
+    
+    @Email(message = "Invalid email format")
+    @NotBlank
+    private String email;
+    
+    @Min(18)
+    @Max(120)
+    private int age;
+}
+
+@RestController
+public class UserController {
+    
+    @PostMapping("/users")
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserRequest request) {
+        // If validation fails, MethodArgumentNotValidException thrown
+        User user = userService.create(request);
+        return ResponseEntity.ok(user);
+    }
+}
+
+@ControllerAdvice
+public class ValidationExceptionHandler {
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> 
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+        return ResponseEntity.badRequest().body(errors);
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Bean Validation` · `Input Validation` · `JSR-303` · `Error Handling`
+
+</div>
+
+### Transaction (@Transactional) {#transactional}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Declarative transaction management** using @Transactional annotation. Manages transaction boundaries (begin, commit, rollback) via AOP proxies. Supports isolation levels, propagation types, rollback rules, read-only optimization. Works with JDBC, JPA, Hibernate.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+@Service
+public class OrderService {
+    private final OrderRepository orderRepository;
+    private final InventoryService inventoryService;
+    
+    @Transactional(rollbackFor = Exception.class)
+    public Order createOrder(CreateOrderRequest request) {
+        // All DB operations in single transaction
+        Order order = new Order(request);
+        orderRepository.save(order);
+        
+        // If this fails, entire transaction rolls back
+        inventoryService.reserveStock(order.getItems());
+        
+        return order;
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Order> findUserOrders(Long userId) {
+        // Read-only optimization (no dirty checking)
+        return orderRepository.findByUserId(userId);
+    }
+    
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void logActivity(String activity) {
+        // New transaction (commits independently)
+        activityRepository.save(new Activity(activity));
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Transaction Management` · `ACID` · `Isolation Levels` · `Rollback` · `AOP`
+
+</div>
+
+### Actuator {#actuator}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Production-ready features** for monitoring and managing Spring Boot applications. Provides HTTP endpoints (/actuator/health, /actuator/metrics) exposing application internals. Includes health checks, metrics, environment info, thread dumps. Integrates with Prometheus, Micrometer.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+// Add dependency: spring-boot-starter-actuator
+
+// application.yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,env
+  endpoint:
+    health:
+      show-details: always
+
+// Custom health indicator
+@Component
+public class DatabaseHealthIndicator implements HealthIndicator {
+    private final DataSource dataSource;
+    
+    @Override
+    public Health health() {
+        try (Connection conn = dataSource.getConnection()) {
+            return Health.up()
+                .withDetail("database", "PostgreSQL")
+                .withDetail("connection", "Active")
+                .build();
+        } catch (SQLException e) {
+            return Health.down()
+                .withDetail("error", e.getMessage())
+                .build();
+        }
+    }
+}
+
+// Endpoints:
+// GET /actuator/health - Application health status
+// GET /actuator/metrics - Available metrics
+// GET /actuator/metrics/jvm.memory.used - Specific metric
+// GET /actuator/env - Environment properties
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Monitoring` · `Health Checks` · `Metrics` · `Production Ready` · `Observability`
+
+</div>
+
+### Spring Security {#spring-security}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Authentication and authorization framework** for Spring applications. Provides filter-based security, protecting URLs, methods, and domain objects. Supports various authentication mechanisms (form login, OAuth2, JWT, LDAP). Integrates with Spring MVC, WebFlux.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/public/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/home")
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+            )
+            .csrf(csrf -> csrf.disable()); // Disable for API
+        
+        return http.build();
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+
+@Service
+public class UserDetailsServiceImpl implements UserDetailsService {
+    private final UserRepository userRepository;
+    
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException(username));
+        
+        return org.springframework.security.core.userdetails.User
+            .withUsername(user.getUsername())
+            .password(user.getPassword())
+            .roles(user.getRoles().toArray(new String[0]))
+            .build();
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Security` · `Authentication` · `Authorization` · `OAuth2` · `JWT`
+
+</div>
+
+### Spring AOP {#spring-aop}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Aspect-Oriented Programming** support for cross-cutting concerns (logging, security, transactions). Define aspects with @Aspect, pointcuts with @Pointcut, advice types (@Before, @After, @Around, @AfterReturning, @AfterThrowing). Uses proxy-based or AspectJ weaving.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+@Aspect
+@Component
+public class LoggingAspect {
+    
+    @Pointcut("execution(* com.example.service.*.*(..))")
+    public void serviceMethods() {}
+    
+    @Before("serviceMethods()")
+    public void logBefore(JoinPoint joinPoint) {
+        String methodName = joinPoint.getSignature().getName();
+        System.out.println("Executing: " + methodName);
+    }
+    
+    @Around("serviceMethods()")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+        Object result = joinPoint.proceed();
+        long duration = System.currentTimeMillis() - start;
+        System.out.println(joinPoint.getSignature() + " took " + duration + "ms");
+        return result;
+    }
+    
+    @AfterThrowing(pointcut = "serviceMethods()", throwing = "ex")
+    public void logException(JoinPoint joinPoint, Exception ex) {
+        System.err.println("Exception in " + joinPoint.getSignature() + ": " + ex.getMessage());
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Cross-Cutting Concerns` · `Logging` · `Transactions` · `Proxies` · `AspectJ`
+
+</div>
+
+### Caching {#caching}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Declarative caching abstraction** using @EnableCaching and cache annotations (@Cacheable, @CachePut, @CacheEvict). Supports multiple providers (EhCache, Redis, Caffeine, Hazelcast). Improves performance by caching expensive method results.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+@Configuration
+@EnableCaching
+public class CacheConfig {
+    @Bean
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("users", "products");
+    }
+}
+
+@Service
+public class UserService {
+    
+    @Cacheable(value = "users", key = "#id")
+    public User findById(Long id) {
+        // Expensive DB query - result cached
+        return userRepository.findById(id).orElseThrow();
+    }
+    
+    @CachePut(value = "users", key = "#user.id")
+    public User update(User user) {
+        // Update DB and cache
+        return userRepository.save(user);
+    }
+    
+    @CacheEvict(value = "users", key = "#id")
+    public void delete(Long id) {
+        // Remove from cache
+        userRepository.deleteById(id);
+    }
+    
+    @CacheEvict(value = "users", allEntries = true)
+    public void clearCache() {
+        // Clear entire cache
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Performance` · `Redis` · `Cache Providers` · `TTL` · `Cache Eviction`
+
+</div>
+
+### Event Handling {#event-handling}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Application event mechanism** for decoupled communication between components. Publish events with ApplicationEventPublisher, listen with @EventListener or @TransactionalEventListener. Supports synchronous and asynchronous processing.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+// Event class
+public class UserRegisteredEvent extends ApplicationEvent {
+    private final User user;
+    
+    public UserRegisteredEvent(Object source, User user) {
+        super(source);
+        this.user = user;
+    }
+    
+    public User getUser() { return user; }
+}
+
+// Publisher
+@Service
+public class UserService {
+    private final ApplicationEventPublisher eventPublisher;
+    
+    public User register(RegisterRequest request) {
+        User user = new User(request);
+        userRepository.save(user);
+        
+        // Publish event
+        eventPublisher.publishEvent(new UserRegisteredEvent(this, user));
+        
+        return user;
+    }
+}
+
+// Listener
+@Component
+public class EmailNotificationListener {
+    
+    @EventListener
+    public void handleUserRegistered(UserRegisteredEvent event) {
+        User user = event.getUser();
+        emailService.sendWelcomeEmail(user.getEmail());
+    }
+    
+    @Async
+    @EventListener
+    public void handleUserRegisteredAsync(UserRegisteredEvent event) {
+        // Asynchronous processing
+        analyticsService.trackRegistration(event.getUser());
+    }
+    
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleAfterCommit(UserRegisteredEvent event) {
+        // Execute only after transaction commits
+        externalApiService.notifyPartner(event.getUser());
+    }
+}
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Event-Driven` · `Decoupling` · `Async Processing` · `Transaction Events`
+
+</div>
+
+### Custom Auto-Configuration {#custom-auto-configuration}
+
+<div class="concept-section definition">
+
+📋 **Concept Definition**  
+**Create reusable auto-configuration** for Spring Boot starters. Use @Configuration with @ConditionalOnClass, @ConditionalOnProperty, @EnableConfigurationProperties. Register in META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports.
+
+</div>
+
+<div class="concept-section runnable-model">
+
+**Runnable mental model**
+```java
+@ConfigurationProperties(prefix = "mylib")
+public class MyLibraryProperties {
+    private boolean enabled = true;
+    private String apiKey;
+    // getters, setters
+}
+
+@Configuration
+@ConditionalOnClass(MyLibraryClient.class)
+@ConditionalOnProperty(prefix = "mylib", name = "enabled", havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(MyLibraryProperties.class)
+public class MyLibraryAutoConfiguration {
+    
+    @Bean
+    @ConditionalOnMissingBean
+    public MyLibraryClient myLibraryClient(MyLibraryProperties properties) {
+        return new MyLibraryClient(properties.getApiKey());
+    }
+}
+
+// META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
+// com.example.MyLibraryAutoConfiguration
+```
+</div>
+
+<div class="concept-section connection-map">
+
+🗺️ **Connection map**  
+`Spring Boot Starters` · `Auto-Configuration` · `Conditional Beans` · `Library Development`
+
+</div>
+
 ## Best Practices
 
 1. **Constructor injection over field injection**: More testable and immutable
