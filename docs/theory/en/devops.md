@@ -10475,13 +10475,13 @@ template {
 
 # Database template
 # vault/templates/database.tpl
-{{- with secret "database/creds/myapp-role" -}}
+{% raw %}{{- with secret "database/creds/myapp-role" -}}
 export DB_USERNAME="{{ .Data.username }}"
 export DB_PASSWORD="{{ .Data.password }}"
 export DB_HOST="postgres.company.com"
 export DB_PORT="5432"
 export DB_NAME="myapp"
-{{- end }}
+{{- end }}{% endraw %}
 
 # External Secrets Operator configuration
 # secrets/external-secret.yaml
