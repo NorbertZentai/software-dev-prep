@@ -14,7 +14,7 @@ starter: {
 
 ## Task Description
 
-Develop a fully accessible web application that meets WCAG 2.1 AA level requirements. The application will be a library catalog with search functionality, filters, and detailed book information.
+Develop a fully accessible web application that meets WCAG 2.1 AA level requirements. 
 
 ## WCAG 2.1 Principles
 
@@ -22,22 +22,134 @@ Develop a fully accessible web application that meets WCAG 2.1 AA level requirem
 - Alternative text for all images
 - Adequate color contrast
 - Text scalability
-- Multimedia alternatives
 
-### 2. Operable
+### 2. Operable  
 - Keyboard navigation
-- No seizure-inducing content
-- Sufficient time limits
 - Clear navigation
 
 ### 3. Understandable
 - Readable text
 - Predictable functionality
-- Input assistance
 
 ### 4. Robust
 - Compatible with assistive technologies
 - Valid, semantic markup
+
+## Basic HTML Example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Accessible Library</title>
+    <meta name="description" content="Library catalog">
+</head>
+<body>
+    <header role="banner">
+        <h1>Accessible Library</h1>
+    </header>
+    
+    <main id="main-content" role="main">
+        <section aria-labelledby="search-heading">
+            <h2 id="search-heading">Search</h2>
+            <form role="search">
+                <label for="search-input">Search books</label>
+                <input type="search" id="search-input" name="search">
+                <button type="submit">Search</button>
+            </form>
+        </section>
+    </main>
+    
+    <footer role="contentinfo">
+        <p>&copy; 2024 Accessible Library</p>
+    </footer>
+</body>
+</html>
+```
+
+## Testing Checklist
+
+- [ ] Semantic HTML5 elements used
+- [ ] Proper heading hierarchy
+- [ ] ARIA labels for interactive elements
+- [ ] Keyboard navigation works
+- [ ] Screen reader compatible
+- [ ] Color contrast 4.5:1 minimum
+- [ ] Alternative text for images
+
+## Tools
+
+```bash
+npm install -g axe-core pa11y lighthouse
+pa11y http://localhost:3000
+```
+
+## Next Steps
+
+- WCAG 2.1 AAA compliance
+- Advanced ARIA patterns
+- User testing
+├── images/
+│   └── book-covers/
+└── data/
+    └── books.json
+```
+
+## Task 1: Semantic HTML Structure
+
+Create a semantic HTML structure with proper headings, landmarks, and ARIA attributes.
+
+## Task 2: ARIA Implementation
+
+Implement ARIA labels, roles, and properties for screen reader compatibility.
+
+## Task 3: Keyboard Navigation
+
+Ensure all functionality is accessible via keyboard navigation.
+
+## Task 4: Testing
+
+Test with screen readers and automated accessibility tools.
+
+## Checklist
+
+- [ ] Semantic HTML5 elements used
+- [ ] Proper heading hierarchy (h1-h6)
+- [ ] ARIA labels and descriptions for all interactive elements
+- [ ] Keyboard navigation for all functionality
+- [ ] Screen reader compatible content
+- [ ] Color contrast minimum 4.5:1 ratio
+- [ ] Focus indicators clearly visible
+- [ ] Alternative text for all images
+- [ ] Responsive design mobile-friendly
+
+## Testing Tools
+
+### Automated Testing
+```bash
+# Install accessibility testing tools
+npm install -g axe-core pa11y lighthouse
+
+# Run automated accessibility tests
+pa11y http://localhost:3000
+axe http://localhost:3000
+lighthouse http://localhost:3000 --only-categories=accessibility
+```
+
+### Manual Testing Checklist
+- [ ] Navigate entire site using only keyboard
+- [ ] Test with screen reader (NVDA, JAWS, VoiceOver)
+- [ ] Check with browser zoom at 200%
+- [ ] Verify in high contrast mode
+
+## Next Steps
+
+- WCAG 2.1 AAA level compliance
+- Voice control support
+- Advanced ARIA patterns
+- Automated accessibility testing in CI/CD
+- User testing with real users with disabilities
 
 ## Project Structure
 

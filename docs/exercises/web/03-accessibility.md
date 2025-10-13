@@ -14,7 +14,7 @@ starter: {
 
 ## Feladat leírása
 
-Fejlessz ki egy teljes mértékben accessible web alkalmazást, amely megfelel a WCAG 2.1 AA szint követelményeinek. Az alkalmazás egy könyvtári katalógus lesz, keresési funkcióval, szűrőkkel és részletes könyv információkkal.
+Fejlessz ki egy teljes mértékben accessible web alkalmazást, amely megfelel a WCAG 2.1 AA szint követelményeinek.
 
 ## WCAG 2.1 Alapelvek
 
@@ -22,33 +22,74 @@ Fejlessz ki egy teljes mértékben accessible web alkalmazást, amely megfelel a
 - Alternatív szöveg minden képhez
 - Megfelelő színkontraszt
 - Szöveg méretezhetősége
-- Multimédia alternatívák
 
 ### 2. Operable (Használható)
 - Keyboard navigation
-- No seizure-inducing content
-- Sufficient time limits
 - Clear navigation
 
 ### 3. Understandable (Érthető)
 - Readable text
 - Predictable functionality
-- Input assistance
 
 ### 4. Robust (Robusztus)
 - Compatible with assistive technologies
 - Valid, semantic markup
 
-## Projekt struktúra
+## Példa HTML
 
+```html
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Accessible Library</title>
+    <meta name="description" content="Könyvtári katalógus">
+</head>
+<body>
+    <header role="banner">
+        <h1>Accessible Library</h1>
+    </header>
+    
+    <main id="main-content" role="main">
+        <section aria-labelledby="search-heading">
+            <h2 id="search-heading">Keresés</h2>
+            <form role="search">
+                <label for="search-input">Könyvkeresés</label>
+                <input type="search" id="search-input" name="search">
+                <button type="submit">Keresés</button>
+            </form>
+        </section>
+    </main>
+    
+    <footer role="contentinfo">
+        <p>&copy; 2024 Accessible Library</p>
+    </footer>
+</body>
+</html>
 ```
-accessible-library/
-├── index.html
-├── css/
-│   ├── styles.css
-│   ├── high-contrast.css
-│   └── print.css
-├── js/
+
+## Ellenőrző lista
+
+- [ ] Semantic HTML5 elements használata
+- [ ] Proper heading hierarchy
+- [ ] ARIA labels minden interactive elemhez
+- [ ] Keyboard navigation működik
+- [ ] Screen reader compatible
+- [ ] Color contrast 4.5:1 minimum
+- [ ] Alternative text minden képhez
+
+## Eszközök
+
+```bash
+npm install -g axe-core pa11y lighthouse
+pa11y http://localhost:3000
+```
+
+## Következő lépések
+
+- WCAG 2.1 AAA megfelelés
+- Advanced ARIA patterns
+- User testing
 │   ├── main.js
 │   ├── accessibility.js
 │   ├── keyboard-navigation.js
