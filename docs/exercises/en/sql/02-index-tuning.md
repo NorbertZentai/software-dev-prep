@@ -1,9 +1,12 @@
 ---
 title: "Index Optimization and Query Tuning"
 difficulty: intermediate
-goals: ["Index strategy", "Execution plans", "Query optimization"]
+goals: 
+  - "Index strategy"
+  - "Execution plans"
+  - "Query optimization"
 estimatedMinutes: 40
-starter: {
+starter:
   "stackblitz": "",
   "codesandbox": "",
   "dbfiddle": "https://www.db-fiddle.com/f/5fFazk8vVQEcj2z4qY9d8e/1"

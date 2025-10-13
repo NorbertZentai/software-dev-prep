@@ -1,9 +1,13 @@
 ---
 title: "Unit Testing – TDD alapok"
 difficulty: intermediate
-goals: ["JUnit 5", "Mockito", "TDD cycle", "Test coverage"]
-estimatedMinutes: 45
-starter: {
+goals: 
+  - "JUnit 5"
+  - "Mockito"
+  - "TDD cycle"
+  - "Test coverage"
+estimatedMinutes: 40
+starter:
   "stackblitz": "",
   "codesandbox": "",
   "dbfiddle": ""

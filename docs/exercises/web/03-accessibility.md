@@ -3,11 +3,10 @@ title: "Web Accessibility (WCAG) implementálás"
 difficulty: intermediate
 goals: ["WCAG guidelines", "Semantic HTML", "ARIA attributes", "Keyboard navigation", "Screen reader compatibility"]
 estimatedMinutes: 40
-starter: {
-  "stackblitz": "https://stackblitz.com/edit/web-accessibility-demo?file=index.html",
-  "codesandbox": "https://codesandbox.io/s/accessibility-practice",
-  "dbfiddle": ""
-}
+starter:
+  stackblitz: "https://stackblitz.com/edit/web-accessibility-demo?file=index.html"
+  codesandbox: "https://codesandbox.io/s/accessibility-practice"
+  dbfiddle: ""
 ---
 
 # Web Accessibility (WCAG) Implementálás

@@ -1,9 +1,13 @@
 ---
 title: "Transactions and ACID Properties"
 difficulty: advanced
-goals: ["Transaction isolation", "ACID principles", "Deadlock handling", "Locking strategies"]
-estimatedMinutes: 50
-starter: {
+goals: 
+  - "Transaction isolation"
+  - "ACID principles"
+  - "Deadlock handling"
+  - "Locking strategies"
+estimatedMinutes: 40
+starter:
   "stackblitz": "",
   "codesandbox": "",
   "dbfiddle": "https://www.db-fiddle.com/f/hGpGpMVkZHxCnRGNcQWz9/0"

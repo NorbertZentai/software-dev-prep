@@ -1,13 +1,15 @@
 ---
 title: "Spring REST – alap endpoint"
 difficulty: beginner
-goals: ["@RestController", "DTO", "HTTP status"]
+goals: 
+  - "@RestController"
+  - "DTO"
+  - "HTTP status"
 estimatedMinutes: 30
-starter: {
-  "stackblitz": "https://stackblitz.com/edit/spring-boot-rest-basic?file=src/main/java/com/example/demo/UserController.java",
-  "codesandbox": "",
-  "dbfiddle": ""
-}
+starter:
+  stackblitz: "https://stackblitz.com/edit/spring-boot-rest-basic?file=src/main/java/com/example/demo/UserController.java"
+  codesandbox: ""
+  dbfiddle: ""
 ---
 
 # Spring REST – Alap Endpoint

@@ -1,13 +1,17 @@
 ---
 title: "REST vs gRPC Mikroszolgáltatás Kommunikáció"
 difficulty: intermediate
-goals: ["REST API design", "gRPC proto definitions", "Performance comparison", "Service mesh integration", "API versioning"]
+goals: 
+  - "REST API design"
+  - "gRPC proto definitions"
+  - "Performance comparison"
+  - "Service mesh integration"
+  - "API versioning"
 estimatedMinutes: 45
-starter: {
-  "stackblitz": "https://stackblitz.com/edit/rest-grpc-comparison?file=README.md",
-  "codesandbox": "https://codesandbox.io/s/microservices-communication",
-  "dbfiddle": ""
-}
+starter:
+  stackblitz: "https://stackblitz.com/edit/rest-grpc-comparison?file=README.md"
+  codesandbox: "https://codesandbox.io/s/microservices-communication"
+  dbfiddle: ""
 ---
 
 # REST vs gRPC Mikroszolgáltatás Kommunikáció

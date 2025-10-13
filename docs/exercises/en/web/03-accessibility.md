@@ -198,6 +198,13 @@ lighthouse http://localhost:3000 --only-categories=accessibility
 
 ## Next Steps
 
+- [ ] Navigate entire site using only keyboard
+- [ ] Test with screen reader (NVDA, JAWS, VoiceOver)
+- [ ] Check with browser zoom at 200%
+- [ ] Verify in high contrast mode
+
+## Next Steps
+
 - WCAG 2.1 AAA level compliance
 - Voice control support
 - Advanced ARIA patterns

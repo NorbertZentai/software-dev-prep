@@ -1,13 +1,17 @@
 ---
 title: "Message Queues és Event-Driven Architecture"
 difficulty: advanced
-goals: ["RabbitMQ/Apache Kafka", "Event Sourcing", "CQRS pattern", "Saga Pattern", "Dead Letter Queues"]
+goals: 
+  - "RabbitMQ/Apache Kafka"
+  - "Event Sourcing"
+  - "CQRS pattern"
+  - "Saga Pattern"
+  - "Dead Letter Queues"
 estimatedMinutes: 60
-starter: {
-  "stackblitz": "https://stackblitz.com/edit/event-driven-microservices?file=README.md",
-  "codesandbox": "https://codesandbox.io/s/message-queues-demo",
-  "dbfiddle": ""
-}
+starter:
+  stackblitz: "https://stackblitz.com/edit/event-driven-microservices?file=README.md"
+  codesandbox: "https://codesandbox.io/s/message-queues-demo"
+  dbfiddle: ""
 ---
 
 # Message Queues és Event-Driven Architecture

@@ -1,13 +1,17 @@
 ---
 title: "Circuit Breaker és Resilience Patterns"
 difficulty: advanced
-goals: ["Hystrix/Resilience4j", "Bulkhead Pattern", "Timeout & Retry", "Rate Limiting", "Health Monitoring"]
+goals: 
+  - "Hystrix/Resilience4j"
+  - "Bulkhead Pattern"
+  - "Timeout & Retry"
+  - "Rate Limiting"
+  - "Health Monitoring"
 estimatedMinutes: 50
-starter: {
-  "stackblitz": "https://stackblitz.com/edit/resilience-patterns?file=README.md",
-  "codesandbox": "https://codesandbox.io/s/circuit-breaker-demo",
-  "dbfiddle": ""
-}
+starter:
+  stackblitz: "https://stackblitz.com/edit/resilience-patterns?file=README.md"
+  codesandbox: "https://codesandbox.io/s/circuit-breaker-demo"
+  dbfiddle: ""
 ---
 
 # Circuit Breaker és Resilience Patterns

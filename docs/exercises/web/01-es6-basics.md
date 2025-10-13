@@ -1,13 +1,17 @@
 ---
 title: "ES6+ Modern JavaScript alapok"
 difficulty: beginner
-goals: ["Arrow functions", "Destructuring", "Promises", "Async/await", "Modules"]
+goals: 
+  - "Arrow functions"
+  - "Destructuring"
+  - "Promises"
+  - "Async/await"
+  - "Modules"
 estimatedMinutes: 35
-starter: {
-  "stackblitz": "https://stackblitz.com/edit/js-es6-fundamentals?file=index.js",
-  "codesandbox": "https://codesandbox.io/s/es6-basics-template",
-  "dbfiddle": ""
-}
+starter:
+  stackblitz: "https://stackblitz.com/edit/js-es6-fundamentals?file=index.js"
+  codesandbox: "https://codesandbox.io/s/es6-basics-template"
+  dbfiddle: ""
 ---
 
 # ES6+ Modern JavaScript Alapok

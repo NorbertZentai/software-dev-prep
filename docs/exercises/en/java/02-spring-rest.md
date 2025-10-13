@@ -1,9 +1,12 @@
 ---
 title: "Spring REST – Basic Endpoints"
 difficulty: beginner
-goals: ["@RestController", "DTO", "HTTP status"]
-estimatedMinutes: 30
-starter: {
+goals: 
+  - "@RestController"
+  - "DTO"
+  - "HTTP status"
+estimatedMinutes: 40
+starter:
   "stackblitz": "https://stackblitz.com/edit/spring-boot-rest-basic?file=src/main/java/com/example/demo/UserController.java",
   "codesandbox": "",
   "dbfiddle": ""

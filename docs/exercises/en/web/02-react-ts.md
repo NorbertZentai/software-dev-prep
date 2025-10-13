@@ -1,9 +1,13 @@
 ---
 title: "React + TypeScript Component Development"
 difficulty: intermediate
-goals: ["TypeScript interfaces", "React Hooks", "Component composition", "State management"]
-estimatedMinutes: 60
-starter: {
+goals: 
+  - "TypeScript interfaces"
+  - "React Hooks"
+  - "Component composition"
+  - "State management"
+estimatedMinutes: 40
+starter:
   "stackblitz": "https://stackblitz.com/edit/react-typescript-todo?file=src/App.tsx",
   "codesandbox": "https://codesandbox.io/s/react-typescript-template",
   "dbfiddle": ""

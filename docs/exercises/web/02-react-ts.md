@@ -1,13 +1,16 @@
 ---
 title: "React + TypeScript komponens fejlesztés"
 difficulty: intermediate
-goals: ["TypeScript interfaces", "React Hooks", "Component composition", "State management"]
+goals: 
+  - "TypeScript interfaces"
+  - "React Hooks"
+  - "Component composition"
+  - "State management"
 estimatedMinutes: 60
-starter: {
-  "stackblitz": "https://stackblitz.com/edit/react-typescript-todo?file=src/App.tsx",
-  "codesandbox": "https://codesandbox.io/s/react-typescript-template",
-  "dbfiddle": ""
-}
+starter:
+  stackblitz: "https://stackblitz.com/edit/react-typescript-todo?file=src/App.tsx"
+  codesandbox: "https://codesandbox.io/s/react-typescript-template"
+  dbfiddle: ""
 ---
 
 # React + TypeScript Komponens Fejlesztés
