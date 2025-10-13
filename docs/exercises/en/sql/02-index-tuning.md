@@ -7,10 +7,9 @@ goals:
   - "Query optimization"
 estimatedMinutes: 40
 starter:
-  "stackblitz": "",
-  "codesandbox": "",
-  "dbfiddle": "https://www.db-fiddle.com/f/5fFazk8vVQEcj2z4qY9d8e/1"
-}
+  stackblitz: ""
+  codesandbox: ""
+  dbfiddle: "https://www.db-fiddle.com/f/5fFazk8vVQEcj2z4qY9d8e/1"
 ---
 
 # Index Optimization and Query Tuning

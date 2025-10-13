@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 # CI/CD & DevOps
 
 ## Rövid összefoglaló
@@ -11209,9 +11213,9 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
             - name: DATABASE_URL
-              value: {% raw %}{{ printf "jdbc:postgresql://%s-postgresql:5432/%s" (include "myapp.fullname" .) .Values.postgresql.auth.database }}{% endraw %}
+              value: {{ printf "jdbc:postgresql://%s-postgresql:5432/%s" (include "myapp.fullname" .) .Values.postgresql.auth.database }}
             - name: REDIS_URL
-              value: {% raw %}{{ printf "redis://%s-redis:6379" (include "myapp.fullname" .) }}{% endraw %}
+              value: {{ printf "redis://%s-redis:6379" (include "myapp.fullname" .) }}
 ```
 
 ## Gyakori hibák
@@ -12086,12 +12090,12 @@ spec:
         vault.hashicorp.com/role: "myapp-role"
         vault.hashicorp.com/agent-inject-secret-database: "secret/data/app/database"
         vault.hashicorp.com/agent-inject-template-database: |
-          {% raw %}{{- with secret "secret/data/app/database" -}}
+          {{- with secret "secret/data/app/database" -}}
           DATABASE_HOST="{{ .Data.data.host }}"
           DATABASE_PORT="{{ .Data.data.port }}"
           DATABASE_USER="{{ .Data.data.username }}"
           DATABASE_PASSWORD="{{ .Data.data.password }}"
-          {{- end }}{% endraw %}
+          {{- end }}
       labels:
         app: myapp
     spec:

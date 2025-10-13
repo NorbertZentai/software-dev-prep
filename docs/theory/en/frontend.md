@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 # Frontend Development (React, TypeScript, Node.js)
 
 ## Brief Summary

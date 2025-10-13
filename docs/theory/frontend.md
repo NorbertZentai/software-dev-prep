@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 # Frontend (React, TypeScript, Node.js)
 
 ## Rövid összefoglaló

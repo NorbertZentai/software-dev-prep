@@ -9,10 +9,9 @@ goals:
   - "API versioning"
 estimatedMinutes: 40
 starter:
-  "stackblitz": "https://stackblitz.com/edit/rest-grpc-comparison?file=README.md",
-  "codesandbox": "https://codesandbox.io/s/microservices-communication",
-  "dbfiddle": ""
-}
+  stackblitz: "https://stackblitz.com/edit/rest-grpc-comparison?file=README.md"
+  codesandbox: "https://codesandbox.io/s/microservices-communication"
+  dbfiddle: ""
 ---
 
 # REST vs gRPC Microservice Communication

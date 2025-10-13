@@ -9,10 +9,9 @@ goals:
   - "Dead Letter Queues"
 estimatedMinutes: 40
 starter:
-  "stackblitz": "https://stackblitz.com/edit/event-driven-microservices?file=README.md",
-  "codesandbox": "https://codesandbox.io/s/message-queues-demo",
-  "dbfiddle": ""
-}
+    stackblitz: "https://stackblitz.com/edit/event-driven-microservices?file=README.md"
+    codesandbox: "https://codesandbox.io/s/message-queues-demo"
+    dbfiddle: ""
 ---
 
 # Message Queues and Event-Driven Architecture

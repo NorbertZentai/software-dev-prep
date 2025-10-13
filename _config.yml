@@ -1,0 +1,36 @@
+# Jekyll configuration for GitHub Pages
+theme: jekyll-theme-primer
+
+# Exclude Liquid processing for theory and exercise files
+# since they contain code examples with {{ }} syntax
+defaults:
+  - scope:
+      path: "docs/theory"
+    values:
+      render_with_liquid: false
+  - scope:
+      path: "docs/exercises"
+    values:
+      render_with_liquid: false
+
+# Include docs folder in build
+include:
+  - docs
+
+# Exclude build artifacts and config files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+  - gemfiles
+  - README.md
+  - prompts
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge

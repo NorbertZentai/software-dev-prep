@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 # CI/CD & DevOps
 
 ## Brief Summary
@@ -10475,13 +10479,13 @@ template {
 
 # Database template
 # vault/templates/database.tpl
-{% raw %}{{- with secret "database/creds/myapp-role" -}}
+{{- with secret "database/creds/myapp-role" -}}
 export DB_USERNAME="{{ .Data.username }}"
 export DB_PASSWORD="{{ .Data.password }}"
 export DB_HOST="postgres.company.com"
 export DB_PORT="5432"
 export DB_NAME="myapp"
-{{- end }}{% endraw %}
+{{- end }}
 
 # External Secrets Operator configuration
 # secrets/external-secret.yaml

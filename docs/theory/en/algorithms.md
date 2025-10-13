@@ -1,3 +1,7 @@
+---
+render_with_liquid: false
+---
+
 # Algorithms & Data Structures
 
 ## Brief Summary
@@ -10521,7 +10525,7 @@ public class UnionFindPatterns {
         List<Integer> result = new ArrayList<>();
         UnionFind uf = new UnionFind(m * n);
         boolean[][] grid = new boolean[m][n];
-        int[][] directions = {% raw %}{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}{% endraw %};
+    int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
         int islands = 0;
         
         for (int[] pos : positions) {
@@ -10657,7 +10661,7 @@ public class UnionFindPatterns {
                     }
                     
                     // Connect to adjacent open cells
-                    int[][] directions = {% raw %}{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}{% endraw %};
+                    int[][] directions = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
                     for (int[] dir : directions) {
                         int newRow = i + dir[0];
                         int newCol = j + dir[1];

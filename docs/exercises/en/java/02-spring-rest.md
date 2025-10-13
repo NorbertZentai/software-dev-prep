@@ -7,10 +7,9 @@ goals:
   - "HTTP status"
 estimatedMinutes: 40
 starter:
-  "stackblitz": "https://stackblitz.com/edit/spring-boot-rest-basic?file=src/main/java/com/example/demo/UserController.java",
-  "codesandbox": "",
-  "dbfiddle": ""
-}
+  stackblitz: "https://stackblitz.com/edit/spring-boot-rest-basic?file=src/main/java/com/example/demo/UserController.java"
+  codesandbox: ""
+  dbfiddle: ""
 ---
 
 # Spring REST – Basic Endpoints

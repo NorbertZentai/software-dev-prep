@@ -7,6 +7,7 @@ goals:
   - "Component composition"
   - "State management"
 estimatedMinutes: 60
+render_with_liquid: false
 starter:
   stackblitz: "https://stackblitz.com/edit/react-typescript-todo?file=src/App.tsx"
   codesandbox: "https://codesandbox.io/s/react-typescript-template"
@@ -772,13 +773,13 @@ const TodoForm: React.FC<TodoFormProps> = ({
               }
             }}
             placeholder="Add tags..."
-            style={{
+            style={ {
               border: 'none',
               background: 'transparent',
               outline: 'none',
               flex: 1,
               minWidth: '120px'
-            }}
+            } }
           />
         </TagInput>
       </FormGroup>

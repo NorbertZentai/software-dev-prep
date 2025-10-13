@@ -9,10 +9,9 @@ goals:
   - "Health Monitoring"
 estimatedMinutes: 40
 starter:
-  "stackblitz": "https://stackblitz.com/edit/resilience-patterns?file=README.md",
-  "codesandbox": "https://codesandbox.io/s/circuit-breaker-demo",
-  "dbfiddle": ""
-}
+    stackblitz: "https://stackblitz.com/edit/circuit-breaker-pattern?file=README.md"
+    codesandbox: "https://codesandbox.io/s/resilience-patterns"
+    dbfiddle: ""
 ---
 
 # Circuit Breaker and Resilience Patterns

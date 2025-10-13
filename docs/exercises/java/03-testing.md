@@ -8,10 +8,9 @@ goals:
   - "Test coverage"
 estimatedMinutes: 40
 starter:
-  "stackblitz": "",
-  "codesandbox": "",
-  "dbfiddle": ""
-}
+    stackblitz: ""
+    codesandbox: ""
+    dbfiddle: ""
 ---
 
 # Unit Testing – TDD Alapok

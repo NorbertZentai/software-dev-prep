@@ -1,4 +1,8 @@
-ít# Software Architecture
+---
+render_with_liquid: false
+---
+
+# Software Architecture
 
 ## Brief Summary
 
